@@ -1,0 +1,12 @@
+tr.shown .cto_show_detail{
+    display:none;
+}
+tr.shown .cto_hide_detail{
+    display:block;
+}
+tr .cto_show_detail{
+    display:block;
+}
+tr .cto_hide_detail{
+    display:none;
+}
