@@ -149,11 +149,21 @@ class TransactionController extends Controller
 
         $rules = $page_data["fieldsrules"];
         $messages = $page_data["fieldsmessages"];
+
+        $transaction_number = Transaction::where("unitkerja", $request->unitkerja)->get()->count()+1;
+        $transaction_number = (string) $transaction_number;
+        $journalunitkerja = array("", "RE", "MA", "UA", "AM");
+        $journalnum = $journalunitkerja[$request->unitkerja];
+        for($x = 0; $x < 8-(strlen($transaction_number)); $x++){
+            $journalnum = $journalnum."0";
+        }
+        $journalnum = $journalnum.$transaction_number;
+        
         if($request->validate($rules, $messages)){
             $id = Transaction::create([
                 "unitkerja"=> $request->unitkerja,
                 "unitkerja_label"=> $request->unitkerja_label,
-                "journal_number"=> $request->journal_number,
+                "journal_number"=> $journalnum,
                 "anggaran_name"=> $request->anggaran_name,
                 "transaction_date"=> $request->transaction_date?\Carbon\Carbon::createFromFormat('d/m/Y', $request->transaction_date)->format('Y-m-d'):null,
                 "description"=> $request->description,
@@ -438,7 +448,23 @@ class TransactionController extends Controller
             }elseif($request->field == "coa"){
                 $lists = Coa::where(function($q) use ($request) {
                     $q->where("coa_name", "LIKE", "%" . $request->term. "%")->orWhere("coa_code", "LIKE", "%" . $request->term. "%");
-                })->whereNull("fheader")->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("concat(coa_code, ' ',coa_name) as text")]);
+                })->whereNull("fheader")->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("coa_name as text"), DB::raw("coa_code as coa")]);
+                foreach($lists as $string){
+                    $length = strlen($string->coa);
+                    $val = "";
+                    for ($i=0; $i<$length; $i++) {
+                        if($i == 0){
+                            $val = $val.$string->coa[$i]."-";
+                        }else if($i == 2 || $i == 4){
+                            $val = $val.$string->coa[$i].".";
+                        }else if($i > 4 && ($i-4)%3 == 0){
+                            $val = $val.$string->coa[$i].".";
+                        }else{
+                            $val = $val.$string->coa[$i];
+                        }
+                    }
+                    $string->text = $val." ".$string->text;
+                }
                 $count = Coa::count();
             }
 

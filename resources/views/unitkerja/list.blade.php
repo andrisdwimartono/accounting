@@ -9,14 +9,14 @@
                 <div class="row page-titles mx-0">
                     <div class="col-sm-6 p-md-0">
                         <div class="welcome-text">
-                            <h4>Hi, welcome back!</h4>
-                            <span>Element</span>
+                            <!-- <h4>Hi, welcome back!</h4>
+                            <span>Element</span> -->
                         </div>
                     </div>
                     <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="javascript:void(0)">Form</a></li>
-                            <li class="breadcrumb-item active"><a href="javascript:void(0)">Element</a></li>
+                            <li class="breadcrumb-item"><a href="javascript:void(0)">Master</a></li>
+                            <li class="breadcrumb-item active"><a href="/unitkerja">Unit Kerja</a></li>
                         </ol>
                     </div>
                 </div>
@@ -25,7 +25,7 @@
                 <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4 class="card-title">User</h4>
+                                <h4 class="card-title">Unit Kerja</h4>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">

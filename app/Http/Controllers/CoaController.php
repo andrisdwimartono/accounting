@@ -43,8 +43,8 @@ class CoaController extends Controller
         $category_list = "aset,hutang,modal,pendapatan,biaya,biaya_lainnya,pendapatan_lainnya";
 
         $td["fieldsrules"] = [
-            "coa_code" => "required|min:5|max:20",
-            "coa_name" => "required|min:2|max:255",
+            "coa_code" => "required|min:5|max:20|unique:coas,coa_code",
+            "coa_name" => "required|min:2|max:255|unique:coas,coa_name",
             "level_coa" => "required|min:1|max:4",
             "coa" => "exists:coas,id",
             "category" => "required|in:aset,hutang,modal,pendapatan,biaya,biaya_lainnya,pendapatan_lainnya",
@@ -57,7 +57,8 @@ class CoaController extends Controller
             "max" => ":attribute maksimal :max karakter!!",
             "in" => "Tidak ada dalam pilihan :attribute!!",
             "exists" => "Tidak ada dalam :attribute!!",
-            "date_format" => "Format tidak sesuai di :attribute!!"
+            "date_format" => "Format tidak sesuai di :attribute!!",
+            "unique" => ":attribute sudah ada!!"
         ];
 
         return $td;
@@ -72,7 +73,7 @@ class CoaController extends Controller
     {
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "List";
-        $page_data["footer_js_page_specific_script"] = ["paging.page_specific_script.footer_js_list"];
+        $page_data["footer_js_page_specific_script"] = ["coa.page_specific_script.footer_js_list"];
         $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_list"];
         
         return view("coa.list", ["page_data" => $page_data]);
@@ -244,23 +245,27 @@ class CoaController extends Controller
         $no = 0;
         foreach(Coa::where(function($q) use ($keyword) {
             $q->where("coa_code", "LIKE", "%" . $keyword. "%")->orWhere("coa_name", "LIKE", "%" . $keyword. "%")->orWhere("level_coa", "LIKE", "%" . $keyword. "%")->orWhere("fheader", "LIKE", "%" . $keyword. "%")->orWhere("factive", "LIKE", "%" . $keyword. "%");
-        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "coa_code", "coa_name", "level_coa", "fheader", "factive"]) as $coa){
+        })->where("category", $request->category_filter)->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "coa_code", "coa_name", "level_coa", "coa", "coa_label", "category", "category_label", "fheader", "factive"]) as $coa){
             $no = $no+1;
             $act = '
-            <a href="/coa/'.$coa->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
+            <a href="/coa/'.$coa->id.'" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-info"></i></a>
 
-            <a href="/coa/'.$coa->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
+            <a href="/coa/'.$coa->id.'/edit" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-success"></i></a>
 
-            <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button>';
+            <button type="button" class="row-delete"> <i class="fas fa-minus-circle text-danger"></i> </button>
+            
+            <button type="button" class="row-update-line"> <i class="fas fa-edit text-success"></i> </button>
+            
+            <button type="button" class="row-add-child"> <i class="fas fa-plus text-info"></i> </button>';
 
-            array_push($dt, array($coa->id, $coa->coa_code, $coa->coa_name, $coa->level_coa, $coa->fheader, $coa->factive, $act));
+            array_push($dt, array($coa->id, $coa->coa_code, $coa->coa_name, $coa->level_coa, $coa->coa, $coa->coa_label, $coa->category, $coa->category_label, $coa->fheader, $coa->factive, $act));
     }
         $output = array(
             "draw" => intval($request->draw),
             "recordsTotal" => Coa::get()->count(),
             "recordsFiltered" => intval(Coa::where(function($q) use ($keyword) {
                 $q->where("coa_code", "LIKE", "%" . $keyword. "%")->orWhere("coa_name", "LIKE", "%" . $keyword. "%")->orWhere("level_coa", "LIKE", "%" . $keyword. "%")->orWhere("fheader", "LIKE", "%" . $keyword. "%")->orWhere("factive", "LIKE", "%" . $keyword. "%");
-            })->orderBy($orders[0], $orders[1])->get()->count()),
+            })->where("category", $request->category_filter)->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
 

@@ -1,6 +1,6 @@
 <!-- Required vendors -->
 <script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
-	<script src="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/js/bootstrap-select.min.js") }} "></script>
+	<!-- <script src="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/js/bootstrap-select.min.js") }} "></script> -->
     <script src="{{ asset ("/assets/motaadmin/vendor/chart.js/Chart.bundle.min.js") }}"></script>
     <script src="{{ asset ("/assets/motaadmin/js/custom.min.js") }}"></script>
 	<script src="{{ asset ("/assets/motaadmin/js/deznav-init.js") }}"></script>
@@ -151,6 +151,8 @@ $.fn.modal.Constructor.prototype._enforceFocus = function() {
 
 $("#unitkerja").on("change", function() {
     $("#unitkerja_label").val($("#unitkerja option:selected").text());
+    var journalunitkerja = ["", "RE########", "MA########", "UA########", "AM########"];
+    $("#journal_number").val(journalunitkerja[$("#unitkerja").val()]);
 });
 
 $("#transaction_type").on("change", function() {
@@ -347,10 +349,16 @@ $(document).ready(function() {
         aoColumnDefs: [{
             aTargets: [4, 5],
             mRender: function (data, type, full){
-                var formattedvalue = parseFloat(data).toFixed(2);
-                formattedvalue = formattedvalue.toString().replace(".", ",");
-                formattedvalue = formattedvalue.toString().replace(/(\d+)(\d{3})/, '$1'+'.'+'$2');
-                return formattedvalue;
+                data = data.toString();
+                var val_1 = data.split(".")[0];
+                var new_val_1 = "";
+                for(var i = val_1.length-1; i >= 0; i--){
+                    if((val_1.length-1-i)%3 == 0 && i != (val_1.length-1)){
+                        new_val_1 = "."+new_val_1;
+                    }
+                    new_val_1 = val_1.charAt(i)+new_val_1;
+                }
+                return new_val_1+","+(data.split(".")[1]!=null?data.split(".")[1]:"00");
             }
         }],
         //add button

@@ -35,4 +35,14 @@
       float: right;
       text-align: right;
     }
+    .select2-selection__rendered {
+      line-height: 26px !important;
+    }
+    .select2-container .select2-selection--single {
+        height: 26px !important;
+    }
+    .select2-selection__arrow {
+        height: 26px !important;
+    }
+
   </style>
