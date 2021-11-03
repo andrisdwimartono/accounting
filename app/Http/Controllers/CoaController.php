@@ -172,6 +172,8 @@ class CoaController extends Controller
     {
         $page_data = $this->tabledesign();
         $rules = $page_data["fieldsrules"];
+        $rules["coa_code"] = $rules["coa_code"].",".$id;
+        $rules["coa_name"] = $rules["coa_name"].",".$id;
         $messages = $page_data["fieldsmessages"];
         if($request->validate($rules, $messages)){
             Coa::where("id", $id)->update([

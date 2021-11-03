@@ -97,7 +97,7 @@ class TransactionController extends Controller
     {
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "List";
-        $page_data["footer_js_page_specific_script"] = ["paging.page_specific_script.footer_js_list"];
+        $page_data["footer_js_page_specific_script"] = ["transaction.page_specific_script.footer_js_list"];
         $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_list"];
         
         return view("transaction.list", ["page_data" => $page_data]);

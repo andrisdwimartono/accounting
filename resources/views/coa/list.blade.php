@@ -33,16 +33,16 @@
                                     <table id="example1" class="table table-bordered table-striped">
                                     <thead class="bg-primary">
                                         <tr>
-                                            <th width="10px">No</th>
+                                            <th width="10px" class="column-hidden">No</th>
                                             <th width="100px">Kode</th>
                                             <th width="250px">Nama</th>
-                                            <th width="10px">Level</th>
-                                            <th width="10px">Rek. Akun.</th>
-                                            <th width="10px">Rek. Akun.</th>
-                                            <th width="10px">Kategori</th>
-                                            <th width="10px">Kategori</th>
-                                            <th width="10px">Header?</th>
-                                            <th width="10px">Aktif?</th>
+                                            <th width="10px" class="column-hidden">Level</th>
+                                            <th width="10px" class="column-hidden">Rek. Akun.</th>
+                                            <th width="10px" class="column-hidden">Rek. Akun.</th>
+                                            <th width="10px" class="column-hidden">Kategori</th>
+                                            <th width="10px" class="column-hidden">Kategori</th>
+                                            <th width="10px" class="column-hidden">Header?</th>
+                                            <th width="10px" class="column-hidden">Aktif?</th>
                                             <th width="10px">Action</th>
                                         </tr>
                                         </thead>

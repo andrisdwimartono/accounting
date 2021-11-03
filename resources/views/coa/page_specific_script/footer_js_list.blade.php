@@ -57,7 +57,7 @@
     $('#example1').DataTable().destroy();
     var dataTable = $('#example1').DataTable({
       // language: { search: "" , searchPlaceholder: "Search..."},
-      "searching": false,
+      //"searching": false,
       buttons: [
             {
                 text: "+",
@@ -116,29 +116,41 @@
                 }
             },
         ],
-      aoColumnDefs: [{
-            aTargets: [1],
-            mRender: function (data, type, full){
-                data = data.toString();
-                var val = "";
-                for(var i = 0; i < data.length; i++){
-                    if(i == 0){
-                      val = val+data.charAt(i)+"-";
-                    }else if(i == 2 || i == 4){
-                      val = val+data.charAt(i)+"-";
-                    }else if(i > 4 && (i-4)%3 == 0 && i != data.length-1){
-                      val = val+data.charAt(i)+"-";
-                    }else{
-                      val = val+data.charAt(i);
-                    }
-                }
-                return val;
+          aoColumnDefs: [{
+              aTargets: [1],
+              mRender: function (data, type, full){
+                  data = data.toString();
+                  var val = convertCode(data);
+                  return "<span>"+val+"</span>";
+              },
+              createdCell: function (td, cellData, rowData, row, col) {
+                var padd = ((parseInt(rowData[3])-1)*10)+"px";
+                $(td).css('padding-left', padd);
+                $(td).addClass('asset_value');
+                $(td).addClass('caktext');
+                $(td).addClass('coa_code_column');
+                $(td).attr('data-id', rowData[0]);
+              }
             },
-            createdCell: function (td, cellData, rowData, row, col) {
-              var padd = ((parseInt(rowData[3])-1)*10)+"px";
-              $(td).css('padding-left', padd);
-            }
-        }],
+            {
+              aTargets: [2],
+              mRender: function (data, type, full){
+                  data = data.toString();
+                  return "<span>"+data+"</span>";
+              },
+              createdCell: function (td, cellData, rowData, row, col) {
+                $(td).addClass('asset_value');
+                $(td).addClass('caktext');
+                $(td).attr('data-id', rowData[0]);
+              }
+            },
+            {
+              aTargets: [0,3,4,5,6,7,8,9],
+              createdCell: function (td, cellData, rowData, row, col) {
+                $(td).addClass('column-hidden');
+              }
+            },
+          ],
           "autoWidth": false,
           dom: 'Bfrtip',
           "scrollX" : true,
@@ -158,29 +170,52 @@
    });
    cto_loading_hide();
    table = dataTable;
-   table.column(0).visible(false);
-   table.column(3).visible(false);
-   table.column(4).visible(false);
-   table.column(5).visible(false);
-   table.column(6).visible(false);
-   table.column(7).visible(false);
-   table.column(8).visible(false);
-   table.column(9).visible(false);
+  //  table.column(0).visible(false);
+  //  table.column(3).visible(false);
+  //  table.column(4).visible(false);
+  //  table.column(5).visible(false);
+  //  table.column(6).visible(false);
+  //  table.column(7).visible(false);
+  //  table.column(8).visible(false);
+  //  table.column(9).visible(false);
 
-   var name = "";
-   $('#example1 tbody').on('click', 'tr', function () {
-        $(this).toggleClass('selected');
-        $(this).toggleClass('editable');
-        if($(this).hasClass('editable')){
-          if(!$(this).find("td:eq(1)").find('input').length){
-            name = $(this).find("td:eq(1)").text();
+    $('#example1').on('click', 'span', function() {
+      var $e = $(this).parent();
+      var id_td = $e.attr('data-id');
+      var val = $(this).html();
+
+      if($e.hasClass("coa_code_column")){
+        val = val.replace(/-/g, '');
+      }
+
+      if($e.hasClass("caktext")){
+        $e.html('<input type="text" value="" />');
+        var $newE = $e.find('input');
+        $newE.focus();
+        $newE.val(val);
+        $newE.on('blur', function() {
+          if($e.hasClass("coa_code_column")){
+            var value = convertCode($(this).val());
+          }else{
+            var value = $(this).val();
           }
-          $(this).find("td:eq(1)").html("<input type='text' id='input-inline-name' value='"+name+"' style='width: 100%; box-sizing: border-box;'>");
-          $("#input-inline-name").focus();
-        }else{
-          $(this).find("td:eq(1)").html(name);
-        }
-        //showChildTable_transaction_detail("staticBackdrop_transaction_detail", table_transaction_detail.row( this ));
+          $(this).parent().html('<span>'+value+'</span>');
+          if(val != $(this).val()){
+            console.log("update here");
+            console.log(id_td);
+            var tr = $e.parent();
+            var val_arr = [];
+            tr.find('td').each(function(index, value){
+              if(index == 1){
+                val_arr.push($(value).text().replace(/-/g, ''));
+              }else{
+                val_arr.push($(value).text());
+              }
+            });
+            submitform(val_arr);
+          }
+        });
+      }
     });
   }
 
@@ -229,4 +264,75 @@
       })
   } ); 
  });
+
+ function convertCode(data){
+    var val = "";
+    for(var i = 0; i < data.length; i++){
+        if(i == 0){
+          val = val+data.charAt(i)+"-";
+        }else if(i == 2 || i == 4){
+          val = val+data.charAt(i)+"-";
+        }else if(i > 4 && (i-4)%3 == 0 && i != data.length-1){
+          val = val+data.charAt(i)+"-";
+        }else{
+          val = val+data.charAt(i);
+        }
+    }
+    return val;
+ }
+
+ function submitform(val_arr){
+  var field_arr = ["id", "coa_code", "coa_name", "level_coa", "coa", "coa_label", "category", "category_label", "fheader", "factive"];
+  cto_loading_show();
+
+  var values = "_token="+$("input[name=_token]").val();
+  for(var x = 0; x < field_arr.length; x++){
+    values = values+"&"+field_arr[x]+"="+val_arr[x];
+  }
+  var ajaxRequest;
+  ajaxRequest = $.ajax({
+      url: "/updatecoa/"+val_arr[0],
+      type: "post",
+      data: values,
+      success: function(data){
+          if(data.status >= 200 && data.status <= 299){
+              id_coa = data.data.id;
+              $.toast({
+                  text: data.message,
+                  heading: 'Status',
+                  icon: 'success',
+                  showHideTransition: 'fade',
+                  allowToastClose: true,
+                  hideAfter: 3000,
+                  position: 'mid-center',
+                  textAlign: 'left'
+              });
+          }
+          cto_loading_hide();
+      },
+      error: function (err) {
+          if (err.status == 422) {
+              var errors = "";
+              $.each(err.responseJSON.errors, function (i, error) {
+                  //var validator = $("#quickForm").validate();
+                  // var errors = {};
+                  // errors[i] = error[0];
+                  //validator.showErrors(errors);
+                  errors += error[0];
+              });
+              $.toast({
+                    text: errors,
+                    heading: 'Status',
+                    icon: 'danger',
+                    showHideTransition: 'fade',
+                    allowToastClose: true,
+                    hideAfter: 3000,
+                    position: 'mid-center',
+                    textAlign: 'left'
+                });
+          }
+        cto_loading_hide();
+      }
+  });
+ }
 </script>

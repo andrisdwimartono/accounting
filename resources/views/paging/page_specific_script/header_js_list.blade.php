@@ -54,4 +54,24 @@
     .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
         border: 0px;
     }
+    .column-hidden{
+      display:none;
+    }
+    td { 
+      border: 1px solid #aaa; 
+      height: 30px; 
+      text-align: left; 
+      width: 100px; 
+    }
+    td > span{
+      display: inline-block;
+      width: 100%;
+    }
+    input, input:hover, input:focus { 
+      width: 100%; 
+      height: 30px; 
+      box-sizing: border-box;
+      outline: none; 
+      background-color: #fff; 
+    }
   </style>

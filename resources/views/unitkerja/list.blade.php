@@ -24,32 +24,21 @@
                 <div class="row">
                 <div class="col-12">
                         <div class="card">
-                            <div class="card-header">
-                                <h4 class="card-title">Unit Kerja</h4>
+                            <div class="card-header bg-primary">
+                                <h4 class="card-title text-white">Unit Kerja</h4>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
                                  @csrf
-                                    <div class="col-md-3">
-                                        <a href="/create{{$page_data["page_data_urlname"]}}" class="btn btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Add Data"><i class="fas fa-plus text-white"></i></a>
-                                    </div>
                                     <table id="example1" class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Kode Unit Kerja</th>
-                                            <th>Nama Unit Kerja</th>
-                                            <th>Action</th>
-                                        </tr>
+                                        <thead class="bg-primary">
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Kode Unit Kerja</th>
+                                                <th>Nama Unit Kerja</th>
+                                                <th>Action</th>
+                                            </tr>
                                         </thead>
-                                        <tfoot>
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Kode Unit Kerja</th>
-                                            <th>Nama Unit Kerja</th>
-                                            <th>Action</th>
-                                        </tr>
-                                        </tfoot>
                                     </table>
 
                                     <div class="modal fade" id="modal-delete" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">

@@ -24,34 +24,34 @@
                 <div class="row">
                     <div class="col-sm-10">
                         <div class="card">
-                            <div class="card-header">
-                                <h4 class="card-title">User</h4>
+                            <div class="card-header bg-primary">
+                                <h4 class="card-title text-white">Unit Kerja</h4>
                             </div>
                             
                             <form id="quickForm" action="#">
                             @csrf
                                 <div class="card-body">
-                                        <div class="form-group row">
+                                        <div class="form-group row m-0">
                                             <label class="col-sm-4 col-form-label" for="unitkerja_code">Kode Unit Kerja</label>
                                             <div class="col-sm-6 cakfield">
-                                                <input type="text" name="unitkerja_code" class="form-control" id="unitkerja_code" placeholder="Enter Kode Unit Kerja" @if($page_data["page_method_name"] == "View") readonly @endif>
+                                                <input type="text" name="unitkerja_code" class="form-control form-control-sm" id="unitkerja_code" placeholder="Enter Kode Unit Kerja" @if($page_data["page_method_name"] == "View") readonly @endif>
                                             </div>
                                         </div>
-                                        <div class="form-group row">
+                                        <div class="form-group row m-0">
                                             <label class="col-sm-4 col-form-label" for="unitkerja_name">Nama Unit Kerja</label>
                                             <div class="col-sm-6 cakfield">
-                                                <input type="text" name="unitkerja_name" class="form-control" id="unitkerja_name" placeholder="Enter Nama Unit Kerja" @if($page_data["page_method_name"] == "View") readonly @endif>
+                                                <input type="text" name="unitkerja_name" class="form-control form-control-sm" id="unitkerja_name" placeholder="Enter Nama Unit Kerja" @if($page_data["page_method_name"] == "View") readonly @endif>
                                             </div>
                                         </div>
                                 </div>
                                 @if($page_data["page_method_name"] != "View")
-                                <div class="form-group row">
+                                <div class="form-group row m-0">
                                     <div class="col-sm-9 offset-sm-9">
                                     <button type="submit" class="btn btn-primary" @if($page_data["page_method_name"] == "View") readonly @endif>Submit</button>
                                     </div>
                                 </div>
                                 @else
-                                <div class="form-group row">
+                                <div class="form-group row m-0">
                                     <div class="col-sm-9 offset-sm-9">
 
                                     </div>
