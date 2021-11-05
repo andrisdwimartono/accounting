@@ -122,6 +122,7 @@
                   data = data.toString();
                   var val = convertCode(data);
                   return "<span>"+val+"</span>";
+                 
               },
               createdCell: function (td, cellData, rowData, row, col) {
                 var padd = ((parseInt(rowData[3])-1)*10)+"px";
@@ -149,7 +150,7 @@
               createdCell: function (td, cellData, rowData, row, col) {
                 $(td).addClass('column-hidden');
               }
-            },
+            }
           ],
           "autoWidth": false,
           dom: 'Bfrtip',
@@ -167,18 +168,47 @@
             category_filter: category_filter,
             coa_parent_id: coa_parent_id
           }
+        },
+        "drawCallback": function(settings) {
+          $("#example1").on("click",".row-add-child", function () {
+            var data = table.row( $(this).parents('tr') );
+            var newRow = $("<tr>");
+            var cols = "";
+            cols += '<td class="column-hidden"></td>';
+            cols += '<td><input type="text" name="add_new_coa_code"/></td>';
+            cols += '<td><input type="text" name="add_new_coa_name"/></td>';
+            cols += '<td class="column-hidden">'+(parseInt(data.data()[3])+1)+'</td>';
+            cols += '<td class="column-hidden">'+data.data()[0]+'</td>';
+            cols += '<td class="column-hidden">'+data.data()[2]+'</td>';
+            cols += '<td class="column-hidden">'+data.data()[6]+'</td>';
+            cols += '<td class="column-hidden">'+data.data()[7]+'</td>';
+            cols += '<td class="column-hidden"></td>';
+            cols += '<td class="column-hidden">on</td>';
+            cols += '<td><a class="add-row-save" href="#"> <i class="fas fa-check text-success"></i> </a> &nbsp;&nbsp;&nbsp;&nbsp;<a class="add-row-cancel" href="#"><i class="fas fa-times text-danger"></i></a></td>';
+            newRow.append(cols);
+            newRow.insertAfter($(this).parents().closest('tr'));
+            $("input[name=add_new_coa_code]").focus();
+          });
+          
+
+          // $('#example1').on( 'click', '.row-add-child', function (e) {
+          //   var data = table.row( $(this).parents('tr') );
+          //   $('#example1 > tbody:last-child').append(
+          //     '<tr>'
+          //     +'<td class="column-hidden">'+data.data()[0]+'</td>'
+          //     +'<td><input type="text" value="" /></td>'
+          //     +'<td><input type="text" value="" /></td>'
+          //     +'<td class="column-hidden">'+(parseInt(data.data()[3])+1)+'</td>'
+          //     +'<td class="column-hidden"></td>'
+          //     +'<td>xasd</td>'
+          //     +'</tr>');
+          // });
         }
    });
    cto_loading_hide();
    table = dataTable;
-  //  table.column(0).visible(false);
-  //  table.column(3).visible(false);
-  //  table.column(4).visible(false);
-  //  table.column(5).visible(false);
-  //  table.column(6).visible(false);
-  //  table.column(7).visible(false);
-  //  table.column(8).visible(false);
-  //  table.column(9).visible(false);
+
+   
 
     $('#example1').on('click', 'span', function() {
       var $e = $(this).parent();
@@ -216,33 +246,7 @@
         });
       }
     });
-
-    var child_table_data = ["", '<input type="text" value="" />', '<input type="text" value="" />', 2, "data.data()[0]", "data.data()[1]", "data.data()[6]", "data.data()[7]", "", "on", "ok"];
-    table.row.add(child_table_data).draw(false)
-    // $('#example1').on( 'click', '.row-add-child', function (e) {
-    //   var data = table.row( $(this).parents('tr') );
-    //   newRow(data, e);
-    //   var id = data.data()[0];
-      
-    // });
-
-    // function newRow(data, e){
-    //   var dttb = $('#example1').DataTable();
-    //   var child_table_data = ["", '<input type="text" value="" />', '<input type="text" value="" />', parseInt(data.data()[3])+1, data.data()[0], data.data()[1], data.data()[6], data.data()[7], "", "on", "ok"];
-
-    //   if(dttb.row.add(child_table_data).draw(false)){
-    //     console.log("aaa");
-    //   }
-    //   // var child_table_data = ["", '<input type="text" value="" />', '<input type="text" value="" />'];
-
-    //   // if(validatequickModalForm_transaction_detail()){
-    //   //     if(dttb.row.add(child_table_data).draw( false )){
-    //   //         //$('#staticBackdrop_transaction_detail').modal('hide');
-    //   //     }
-    //   // }
-    // }
-
-  }
+ }
 
   $('#example1 tbody').on( 'click', '.row-delete', function () {
       $("#modal-delete").modal({'show': true});

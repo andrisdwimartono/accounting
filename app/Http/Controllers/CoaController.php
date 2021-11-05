@@ -214,7 +214,8 @@ class CoaController extends Controller
                 "status" => 417,
                 "message" => "Deleting failed"
             );
-            if(Coa::whereId($request->id)->forceDelete()){
+            //if(Coa::whereId($request->id)->forceDelete()){
+            if(Coa::whereId($request->id)->update(array("factive" => null))){
                 $results = array(
                     "status" => 204,
                     "message" => "Deleted successfully"
@@ -244,8 +245,8 @@ class CoaController extends Controller
         }
 
         $dt = array();
-        $this->get_list_data($dt, $request, $keyword, $limit, $orders, null, null);
-        array_push($dt, array("", 'x', 'x', "", "", "", "", "", "", "", ""));
+        $this->get_list_data($dt, $request, $keyword, $limit, $orders, null, $request->coa_parent_id);
+        //array_push($dt, array("", 'x', 'x', "", "", "", "", "", "", "", ""));
 
         $output = array(
             "draw" => intval($request->draw),
@@ -266,19 +267,23 @@ class CoaController extends Controller
             })->where("category", $request->category_filter)->where("coa", $parent_id)->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "coa_code", "coa_name", "level_coa", "coa", "coa_label", "category", "category_label", "fheader", "factive"]) as $coa){
                 $no = $no+1;
                 $act = '
-                <a href="/coa/'.$coa->id.'" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-info"></i></a>
+                <!--<a href="/coa/'.$coa->id.'" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-info"></i></a>
 
-                <a href="/coa/'.$coa->id.'/edit" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-success"></i></a>
+                <a href="/coa/'.$coa->id.'/edit" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-success"></i></a>-->
 
                 <button type="button" class="row-delete"> <i class="fas fa-minus-circle text-danger"></i> </button>
                 
-                <button type="button" class="row-update-line"> <i class="fas fa-edit text-success"></i> </button>
+                <!--
+                <button type="button" class="row-update-line"> <i class="fas fa-edit text-success"></i> </button>-->
                 
                 <button type="button" class="row-add-child"> <i class="fas fa-plus text-info"></i> </button>';
 
             array_push($dt, array($coa->id, $coa->coa_code, $coa->coa_name, $coa->level_coa, $coa->coa, $coa->coa_label, $coa->category, $coa->category_label, $coa->fheader, $coa->factive, $act));
+            if($coa->id == $add_child_parent_id){
+                array_push($dt, array("", '', '', "", "", "", "", "", "", "", ""));
+            }
             if($coa->fheader == "on"){
-                array_merge($dt, $this->get_list_data($dt, $request, $keyword, $limit, $orders, $coa->id, null));
+                array_merge($dt, $this->get_list_data($dt, $request, $keyword, $limit, $orders, $coa->id, $add_child_parent_id));
             }
         }
         return $dt;
