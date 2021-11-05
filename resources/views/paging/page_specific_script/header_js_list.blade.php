@@ -54,9 +54,9 @@
     .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
         border: 0px;
     }
-    .column-hidden{
+    /* .column-hidden{
       display:none;
-    }
+    } */
     td { 
       border: 1px solid #aaa; 
       height: 30px; 

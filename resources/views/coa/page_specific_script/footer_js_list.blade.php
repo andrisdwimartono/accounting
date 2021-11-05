@@ -47,7 +47,7 @@
 	  var table = null;
     fetch_data("aset");
     
-  function fetch_data(category_filter){
+  function fetch_data(category_filter, coa_parent_id = null){
     cto_loading_show();
     var target = [];
     $('#example1 thead tr th').each(function(i, obj) {
@@ -56,7 +56,7 @@
     target.shift();
     $('#example1').DataTable().destroy();
     var dataTable = $('#example1').DataTable({
-      // language: { search: "" , searchPlaceholder: "Search..."},
+      language: { search: "" , searchPlaceholder: "Search..."},
       //"searching": false,
       buttons: [
             {
@@ -157,14 +157,15 @@
           "processing" : true,
           "serverSide" : true,
           "pagingType": "full_numbers",
-          "pageLength": 20,
+          "pageLength": 2000,
           "order": [[ 1, "asc" ]],
           "ajax" : {
           url:"/getlist{{$page_data["page_data_urlname"]}}",
           type:"POST",
           data:{
             _token: $("input[name=_token]").val(),
-            category_filter: category_filter
+            category_filter: category_filter,
+            coa_parent_id: coa_parent_id
           }
         }
    });
@@ -201,8 +202,6 @@
           }
           $(this).parent().html('<span>'+value+'</span>');
           if(val != $(this).val()){
-            console.log("update here");
-            console.log(id_td);
             var tr = $e.parent();
             var val_arr = [];
             tr.find('td').each(function(index, value){
@@ -217,6 +216,32 @@
         });
       }
     });
+
+    var child_table_data = ["", '<input type="text" value="" />', '<input type="text" value="" />', 2, "data.data()[0]", "data.data()[1]", "data.data()[6]", "data.data()[7]", "", "on", "ok"];
+    table.row.add(child_table_data).draw(false)
+    // $('#example1').on( 'click', '.row-add-child', function (e) {
+    //   var data = table.row( $(this).parents('tr') );
+    //   newRow(data, e);
+    //   var id = data.data()[0];
+      
+    // });
+
+    // function newRow(data, e){
+    //   var dttb = $('#example1').DataTable();
+    //   var child_table_data = ["", '<input type="text" value="" />', '<input type="text" value="" />', parseInt(data.data()[3])+1, data.data()[0], data.data()[1], data.data()[6], data.data()[7], "", "on", "ok"];
+
+    //   if(dttb.row.add(child_table_data).draw(false)){
+    //     console.log("aaa");
+    //   }
+    //   // var child_table_data = ["", '<input type="text" value="" />', '<input type="text" value="" />'];
+
+    //   // if(validatequickModalForm_transaction_detail()){
+    //   //     if(dttb.row.add(child_table_data).draw( false )){
+    //   //         //$('#staticBackdrop_transaction_detail').modal('hide');
+    //   //     }
+    //   // }
+    // }
+
   }
 
   $('#example1 tbody').on( 'click', '.row-delete', function () {
@@ -262,10 +287,11 @@
         });
         $("#modal-delete").modal('hide');
       })
-  } ); 
+    }); 
+     
  });
 
- function convertCode(data){
+  function convertCode(data){
     var val = "";
     for(var i = 0; i < data.length; i++){
         if(i == 0){
