@@ -275,8 +275,11 @@ class CoaController extends Controller
                 
                 <!--
                 <button type="button" class="row-update-line"> <i class="fas fa-edit text-success"></i> </button>-->
-                
-                <button type="button" class="row-add-child"> <i class="fas fa-plus text-info"></i> </button>';
+                ';
+
+                if($coa->fheader == 'on'){
+                    $act .= '<button type="button" class="row-add-child"> <i class="fas fa-plus text-info"></i> </button>';
+                }
 
             array_push($dt, array($coa->id, $coa->coa_code, $coa->coa_name, $coa->level_coa, $coa->coa, $coa->coa_label, $coa->category, $coa->category_label, $coa->fheader, $coa->factive, $act));
             if($coa->id == $add_child_parent_id){

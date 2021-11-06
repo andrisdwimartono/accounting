@@ -146,7 +146,7 @@
               }
             },
             {
-              aTargets: [0,3,4,5,6,7,8,9],
+              aTargets: [0,3,4,5,6,7,9],
               createdCell: function (td, cellData, rowData, row, col) {
                 $(td).addClass('column-hidden');
               }
@@ -175,16 +175,16 @@
             var newRow = $("<tr>");
             var cols = "";
             cols += '<td class="column-hidden"></td>';
-            cols += '<td><input type="text" name="add_new_coa_code"/></td>';
-            cols += '<td><input type="text" name="add_new_coa_name"/></td>';
+            cols += '<td><input type="text" name="add_new_coa_code" tabindex="1" size="12"/></td>';
+            cols += '<td><input type="text" name="add_new_coa_name" tabindex="2"/></td>';
             cols += '<td class="column-hidden">'+(parseInt(data.data()[3])+1)+'</td>';
             cols += '<td class="column-hidden">'+data.data()[0]+'</td>';
             cols += '<td class="column-hidden">'+data.data()[2]+'</td>';
             cols += '<td class="column-hidden">'+data.data()[6]+'</td>';
             cols += '<td class="column-hidden">'+data.data()[7]+'</td>';
-            cols += '<td class="column-hidden"></td>';
+            cols += '<td><label class="form-check-label"><input type="checkbox" name="add_new_header" tabindex="3"> Header?</label></td>';
             cols += '<td class="column-hidden">on</td>';
-            cols += '<td><a class="add-row-save" href="#"> <i class="fas fa-check text-success"></i> </a> &nbsp;&nbsp;&nbsp;&nbsp;<a class="add-row-cancel" href="#"><i class="fas fa-times text-danger"></i></a></td>';
+            cols += '<td><a href="#" class="add-row-save"><i class="fas fa-check text-success" style="cursor: pointer;"></i></a> &nbsp;&nbsp;&nbsp;&nbsp;<i class="add-row-cancel fas fa-times text-danger" style="cursor: pointer;"></i></td>';
             newRow.append(cols);
             newRow.insertAfter($(this).parents().closest('tr'));
             $("input[name=add_new_coa_code]").focus();
@@ -208,7 +208,32 @@
    cto_loading_hide();
    table = dataTable;
 
-   
+   $('#example1').on('click', '.add-row-save', function() {
+          var $p = $(this).parent();
+          var tr = $($p).parent();
+          var val_arr = [];
+          tr.find('td').each(function(index, value){
+            if(index == 1 || index == 2){
+              var $inp = $(this).find('input');
+              value = $inp.val();
+              if(index == 1){
+                val_arr.push(value.replace(/-/g, ''));
+              }else{
+                val_arr.push(value);
+              }
+
+              // if($($inp).hasClass("coa_code_column")){
+              //   var value = convertCode(value);
+              // }
+              // $($inp).parent().html('<span>'+value+'</span>');
+
+            }else{
+              val_arr.push($(value).text());
+            }
+          });
+      submitform(val_arr, 'create');
+      $('#example1').dataTable().draw();
+    });
 
     $('#example1').on('click', 'span', function() {
       var $e = $(this).parent();
@@ -311,9 +336,14 @@
     return val;
  }
 
- function submitform(val_arr){
+ function submitform(val_arr, action = 'update'){
   var field_arr = ["id", "coa_code", "coa_name", "level_coa", "coa", "coa_label", "category", "category_label", "fheader", "factive"];
   cto_loading_show();
+
+  var urlaction = "/updatecoa/"+val_arr[0];
+  if(action == 'create'){
+    urlaction = "/storecoa";
+  }
 
   var values = "_token="+$("input[name=_token]").val();
   for(var x = 0; x < field_arr.length; x++){
@@ -321,7 +351,7 @@
   }
   var ajaxRequest;
   ajaxRequest = $.ajax({
-      url: "/updatecoa/"+val_arr[0],
+      url: urlaction,
       type: "post",
       data: values,
       success: function(data){

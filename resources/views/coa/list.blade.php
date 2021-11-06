@@ -41,9 +41,9 @@
                                             <th width="10px" class="column-hidden">Rek. Akun.</th>
                                             <th width="10px" class="column-hidden">Kategori</th>
                                             <th width="10px" class="column-hidden">Kategori</th>
-                                            <th width="10px" class="column-hidden">Header?</th>
+                                            <th width="10px">Head?</th>
                                             <th width="10px" class="column-hidden">Aktif?</th>
-                                            <th width="10px">Action</th>
+                                            <th width="10px">Act</th>
                                         </tr>
                                         </thead>
                                     </table>

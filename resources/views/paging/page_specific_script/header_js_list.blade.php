@@ -67,7 +67,7 @@
       display: inline-block;
       width: 100%;
     }
-    input, input:hover, input:focus { 
+    input:not([type=checkbox]), input:not([type=checkbox]):hover, input:not([type=checkbox])focus { 
       width: 100%; 
       height: 30px; 
       box-sizing: border-box;
