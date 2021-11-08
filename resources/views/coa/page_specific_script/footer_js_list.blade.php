@@ -26,36 +26,47 @@
 <script src="{{ asset ("/assets/cto/js/cakrudtemplate.js") }}"></script>
 <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
 
+  <script src="{{ asset ("/assets/node_modules/gijgo/js/gijgo.min.js") }}"></script>
+  <script src="{{ asset ("/assets/node_modules/autonumeric/dist/autoNumeric.min.js") }}"></script>
+  <script src="{{ asset ("/assets/bower_components/jquery-validation/dist/jquery.validate.min.js") }}"></script>
+  <script src="{{ asset ("/assets/bower_components/select2/dist/js/select2.full.min.js") }}"></script>
+  <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
+
 <script>
+  var cat_fil = "";
   $(function () {
-    $("#example1").DataTable({
-      "responsive": true, "lengthChange": false, "autoWidth": false,
-      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-    $('#example2').DataTable({
-      "paging": true,
-      "lengthChange": false,
-      "searching": false,
-      "ordering": true,
-      "info": true,
-      "autoWidth": false,
-      "responsive": true,
-    });
+    // $("#example1").DataTable({
+    //   "responsive": true, "lengthChange": false, "autoWidth": false,
+    //   "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    // }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    // $('#example2').DataTable({
+    //   "paging": true,
+    //   "lengthChange": false,
+    //   "searching": false,
+    //   "ordering": true,
+    //   "info": true,
+    //   "autoWidth": false,
+    //   "responsive": true,
+    // });
   });
 
   $(document).ready(function(){
 	  var table = null;
     fetch_data("aset");
-    
+    cat_fil = "aset";
+    var dataTable = $('#example1').DataTable();
+
   function fetch_data(category_filter, coa_parent_id = null){
     cto_loading_show();
-    var target = [];
-    $('#example1 thead tr th').each(function(i, obj) {
-        target.push(i);
-    });
-    target.shift();
-    $('#example1').DataTable().destroy();
-    var dataTable = $('#example1').DataTable({
+    // var target = [];
+    // $('#example1 thead tr th').each(function(i, obj) {
+    //     target.push(i);
+    // });
+    // target.shift();
+    if(dataTable){
+      dataTable.destroy();
+    }
+    dataTable = $('#example1').DataTable({
       language: { search: "" , searchPlaceholder: "Search..."},
       //"searching": false,
       buttons: [
@@ -63,7 +74,8 @@
                 text: "+",
                 className: "bg-success text-white m-0",
                 action: function ( e, dt, node, config ) {
-                  window.location.href = "/create{{$page_data["page_data_urlname"]}}";
+                  //window.location.href = "/create{{$page_data["page_data_urlname"]}}";
+                  $("#modal-add-new-coa").modal({'show': true});
                 }
             },
             {
@@ -71,6 +83,7 @@
                 className: category_filter=="aset"?"bg-secondary text-white m-0":"bg-success text-white m-0",
                 action: function ( e, dt, node, config ) {
                   fetch_data("aset");
+                  cat_fil = "aset";
                 }
             },
             {
@@ -78,6 +91,7 @@
                 className: category_filter=="hutang"?"bg-secondary text-white m-0":"bg-success text-white m-0",
                 action: function ( e, dt, node, config ) {
                   fetch_data("hutang");
+                  cat_fil = "hutang";
                 }
             },
             {
@@ -85,6 +99,7 @@
                 className: category_filter=="modal"?"bg-secondary text-white m-0":"bg-success text-white m-0",
                 action: function ( e, dt, node, config ) {
                   fetch_data("modal");
+                  cat_fil = "modal";
                 }
             },
             {
@@ -92,6 +107,7 @@
                 className: category_filter=="pendapatan"?"bg-secondary text-white m-0":"bg-success text-white m-0",
                 action: function ( e, dt, node, config ) {
                   fetch_data("pendapatan");
+                  cat_fil = "pendapatan";
                 }
             },
             {
@@ -99,6 +115,7 @@
                 className: category_filter=="biaya"?"bg-secondary text-white m-0":"bg-success text-white m-0",
                 action: function ( e, dt, node, config ) {
                   fetch_data("biaya");
+                  cat_fil = "biaya";
                 }
             },
             {
@@ -106,6 +123,7 @@
                 className: category_filter=="biaya_lainnya"?"bg-secondary text-white m-0":"bg-success text-white m-0",
                 action: function ( e, dt, node, config ) {
                   fetch_data("biaya_lainnya");
+                  cat_fil = "biaya_lainnya";
                 }
             },
             {
@@ -113,6 +131,7 @@
                 className: category_filter=="pendapatan_lainnya"?"bg-secondary text-white m-0":"bg-success text-white m-0",
                 action: function ( e, dt, node, config ) {
                   fetch_data("pendapatan_lainnya");
+                  cat_fil = "pendapatan_lainnya";
                 }
             },
         ],
@@ -170,8 +189,8 @@
           }
         },
         "drawCallback": function(settings) {
-          $("#example1").on("click",".row-add-child", function () {
-            var data = table.row( $(this).parents('tr') );
+          $("#example1").on("click",".row-add-child", function (event) {
+            var data = dataTable.row( $(this).parents('tr') );
             var newRow = $("<tr>");
             var cols = "";
             cols += '<td class="column-hidden"></td>';
@@ -208,31 +227,43 @@
    cto_loading_hide();
    table = dataTable;
 
-   $('#example1').on('click', '.add-row-save', function() {
-          var $p = $(this).parent();
-          var tr = $($p).parent();
-          var val_arr = [];
-          tr.find('td').each(function(index, value){
-            if(index == 1 || index == 2){
-              var $inp = $(this).find('input');
-              value = $inp.val();
-              if(index == 1){
-                val_arr.push(value.replace(/-/g, ''));
-              }else{
-                val_arr.push(value);
-              }
+   $('#example1').on('click', '.add-row-save', function(event) {
+      event.stopPropagation();
+      var $p = $(this).parent();
+      var tr = $($p).parent();
+      var val_arr = [];
+      var category = "hutang";
+      tr.find('td').each(function(index, value){
+        if(index == 1 || index == 2){
+          var $inp = $(this).find('input');
+          value = $inp.val();
+          if(index == 1){
+            val_arr.push(value.replace(/-/g, ''));
+          }else{
+            val_arr.push(value);
+          }
 
-              // if($($inp).hasClass("coa_code_column")){
-              //   var value = convertCode(value);
-              // }
-              // $($inp).parent().html('<span>'+value+'</span>');
+          // if($($inp).hasClass("coa_code_column")){
+          //   var value = convertCode(value);
+          // }
+          // $($inp).parent().html('<span>'+value+'</span>');
 
-            }else{
-              val_arr.push($(value).text());
-            }
-          });
+        }else if(index == 8){
+          var $inp = $(this).find('input');
+          if($inp.is(":checked")){
+            val_arr.push("on");
+          }else{
+            val_arr.push("");
+          }
+        }else{
+          val_arr.push($(value).text());
+        }
+        if(index == 6){
+          category = $(value).text();
+        }
+      });
       submitform(val_arr, 'create');
-      $('#example1').dataTable().draw();
+      fetch_data(cat_fil);
     });
 
     $('#example1').on('click', 'span', function() {
@@ -395,4 +426,264 @@
       }
   });
  }
+
+var editor;
+
+
+$(function () {
+
+    $.validator.setDefaults({
+        submitHandler: function (form, event) {
+            event.preventDefault();
+            event.stopPropagation();
+            cto_loading_show();
+            var quickForm = $("#quickForm");
+
+            var values = $('#quickForm').serialize();
+            var ajaxRequest;
+            ajaxRequest = $.ajax({
+                @if($page_data["page_method_name"] == "Update")
+                url: "/update{{$page_data["page_data_urlname"]}}/{{$page_data["id"]}}",
+                @else
+                url: "/store{{$page_data["page_data_urlname"]}}",
+                @endif
+                type: "post",
+                data: values,
+                success: function(data){
+                    if(data.status >= 200 && data.status <= 299){
+                        id_{{$page_data["page_data_urlname"]}} = data.data.id;
+                            $.toast({
+                                text: data.message,
+                                heading: 'Status',
+                                icon: 'success',
+                                showHideTransition: 'fade',
+                                allowToastClose: true,
+                                hideAfter: 3000,
+                                position: 'mid-center',
+                                textAlign: 'left'
+                            });
+                    }
+                    cto_loading_hide();
+                    fetch_data(cat_fil);
+                },
+                error: function (err) {
+                    if (err.status == 422) {
+                        $.each(err.responseJSON.errors, function (i, error) {
+                            var validator = $("#quickForm").validate();
+                            var errors = {};
+                            errors[i] = error[0];
+                            validator.showErrors(errors);
+                    });
+                }
+                cto_loading_hide();
+            }
+        });
+    }
+});
+
+$("select").select2({
+    placeholder: "Pilih satu",
+    allowClear: true,
+    theme: "bootstrap4" @if($page_data["page_method_name"] == "View"),
+    disabled: true @endif
+});
+
+$("#coa").on("change", function() {
+    $("#coa_label").val($("#coa option:selected").text());
+});
+
+$("#category").on("change", function() {
+    $("#category_label").val($("#category option:selected").text());
+});
+var fields = $("#quickForm").serialize();
+
+$.ajax({
+    url: "/getoptions{{$page_data["page_data_urlname"]}}",
+    type: "post",
+    data: {
+        fieldname: "category",
+        _token: $("#quickForm input[name=_token]").val()
+    },
+    success: function(data){
+        for(var i = 0; i < data.length; i++){
+            if(data[i].name){
+                var newState = new Option(data[i].label, data[i].name, true, false);
+                $("#category").append(newState).trigger("change");
+            }
+        }
+    },
+    error: function (err) {
+        if (err.status == 422) {
+            $.each(err.responseJSON.errors, function (i, error) {
+                var validator = $("#quickForm").validate();
+                var errors = {}
+                errors[i] = error[0];
+                validator.showErrors(errors);
+            });
+        }
+    }
+});
+
+$("#coa").select2({
+    ajax: {
+        url: "/getlinks{{$page_data["page_data_urlname"]}}",
+        type: "post",
+        dataType: "json",
+        data: function(params) {
+            return {
+                term: params.term || "",
+                page: params.page,
+                field: "coa",
+                _token: $("input[name=_token]").val()
+            }
+        },
+        processResults: function (data, params) {
+            params.page = params.page || 1;
+            return {
+                results: data.items,
+                pagination: {
+                more: (params.page * 25) < data.total_count
+                }
+            };
+        },
+        cache: true
+    }
+});
+
+$("#quickForm").validate({
+    rules: {
+        coa_code :{
+            required: true,
+            minlength:5,
+            maxlength:20
+        },
+        coa_name :{
+            required: true,
+            minlength:2,
+            maxlength:255
+        },
+        level_coa :{
+            required: true,
+            minlength:1,
+            maxlength:4
+        },
+        category :{
+            required: true
+        },
+        fheader :{
+            
+        },
+        factive :{
+            required: true
+        },
+    },
+    messages: {
+        coa_code :{
+            required: "Kode COA harus diisi!!",
+            minlength: "Kode COA minimal 5 karakter!!",
+            maxlength: "Kode COA maksimal 20 karakter!!"
+        },
+        coa_name :{
+            required: "Nama COA harus diisi!!",
+            minlength: "Nama COA minimal 2 karakter!!",
+            maxlength: "Nama COA maksimal 255 karakter!!"
+        },
+        level_coa :{
+            required: "Level COA harus diisi!!",
+            minlength: "Level COA minimal 1 karakter!!",
+            maxlength: "Level COA maksimal 4 karakter!!"
+        },
+        category :{
+            required: "Kategori harus diisi!!"
+        },
+        fheader :{
+            
+        },
+        factive :{
+            required: "Aktif? harus diisi!!"
+        },
+    },
+    errorElement: "span",
+    errorPlacement: function (error, element) {
+        error.addClass("invalid-feedback");
+        element.closest(".cakfield").append(error);
+    },
+    highlight: function (element, errorClass, validClass) {
+        $(element).addClass("is-invalid");
+    },
+    unhighlight: function (element, errorClass, validClass) {
+        $(element).removeClass("is-invalid");
+    }
+    });
+
+});
+$(document).ready(function() {
+    @if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")
+    getdata();
+    @endif
+} );
+
+@if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")
+function getdata(){
+    cto_loading_show();
+    $.ajax({
+        url: "/getdata{{$page_data["page_data_urlname"]}}",
+        type: "post",
+        data: {
+            id: {{$page_data["id"]}},
+            _token: $("#quickForm input[name=_token]").val()
+        },
+        success: function(data){
+            for(var i = 0; i < Object.keys(data.data.{{$page_data["page_data_urlname"]}}).length; i++){
+                if(Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i] == "coa"){
+                    if(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]){
+                        var newState = new Option(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"_label"], data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]], true, false);
+                        $("#"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]).append(newState).trigger("change");
+                    }
+                }else{
+                    if(["fheader", "factive"].includes(Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i])){
+                        $("input[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").prop("checked", data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
+                    }else{
+                    try{
+                        anObject[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]].set(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
+                    }catch(err){
+                        $("input[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").val(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
+                    }
+                        $("textarea[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").val(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
+                        if(["ewfsdfsafdsafasdfasdferad"].includes(Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i])){
+                            if(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]] != null){
+                                $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").removeAttr("disabled");
+                                $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").addClass("btn-success text-white");
+                                $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").removeClass("btn-primary");
+                                var filename = Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i];
+                                $("label[for=upload_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").html(filename);
+                                $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").html("Download");
+                            }
+                        }
+                    }
+                    $("select[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").val(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]).change();
+                }
+                }
+
+        cto_loading_hide();
+    },
+        error: function (err) {
+            // console.log(err);
+            if (err.status >= 400 && err.status <= 500) {
+                $.toast({
+                    text: err.status+" "+err.responseJSON.message,
+                    heading: 'Status',
+                    icon: 'warning',
+                    showHideTransition: 'fade',
+                    allowToastClose: true,
+                    hideAfter: 3000,
+                    position: 'mid-center',
+                    textAlign: 'left'
+                });
+            }
+            cto_loading_hide();
+        }
+    });
+}
+    @endif
 </script>

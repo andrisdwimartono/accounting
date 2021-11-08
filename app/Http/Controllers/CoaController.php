@@ -47,8 +47,7 @@ class CoaController extends Controller
             "coa_name" => "required|min:2|max:255|unique:coas,coa_name",
             "level_coa" => "required|min:1|max:4",
             "coa" => "exists:coas,id",
-            "category" => "required|in:aset,hutang,modal,pendapatan,biaya,biaya_lainnya,pendapatan_lainnya",
-            "factive" => "required"
+            "category" => "required|in:aset,hutang,modal,pendapatan,biaya,biaya_lainnya,pendapatan_lainnya"
         ];
 
         $td["fieldsmessages"] = [

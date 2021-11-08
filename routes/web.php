@@ -51,6 +51,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/coa', 'App\Http\Controllers\CoaController@index')->name('coa');
     Route::post('/getlistcoa', 'App\Http\Controllers\CoaController@get_list');
+    Route::get('/getlistcoa', 'App\Http\Controllers\CoaController@get_list');
     Route::get('/coa/{coa}', 'App\Http\Controllers\CoaController@show');
     Route::get('/createcoa', 'App\Http\Controllers\CoaController@create');
     Route::post('/storecoa', 'App\Http\Controllers\CoaController@store');
