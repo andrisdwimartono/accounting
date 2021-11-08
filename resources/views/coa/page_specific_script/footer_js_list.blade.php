@@ -84,6 +84,7 @@
                 action: function ( e, dt, node, config ) {
                   fetch_data("aset");
                   cat_fil = "aset";
+                  dataTable.columns(6).search("aset").draw();
                 }
             },
             {
@@ -92,6 +93,7 @@
                 action: function ( e, dt, node, config ) {
                   fetch_data("hutang");
                   cat_fil = "hutang";
+                  dataTable.columns(6).search("hutang").draw();
                 }
             },
             {
@@ -100,6 +102,7 @@
                 action: function ( e, dt, node, config ) {
                   fetch_data("modal");
                   cat_fil = "modal";
+                  dataTable.columns(6).search("modal").draw();
                 }
             },
             {
@@ -108,6 +111,7 @@
                 action: function ( e, dt, node, config ) {
                   fetch_data("pendapatan");
                   cat_fil = "pendapatan";
+                  dataTable.columns(6).search("pendapatan").draw();
                 }
             },
             {
@@ -116,6 +120,7 @@
                 action: function ( e, dt, node, config ) {
                   fetch_data("biaya");
                   cat_fil = "biaya";
+                  dataTable.columns(6).search("biaya").draw();
                 }
             },
             {
@@ -124,6 +129,7 @@
                 action: function ( e, dt, node, config ) {
                   fetch_data("biaya_lainnya");
                   cat_fil = "biaya_lainnya";
+                  dataTable.columns(6).search("biaya_lainnya").draw();
                 }
             },
             {
@@ -132,6 +138,7 @@
                 action: function ( e, dt, node, config ) {
                   fetch_data("pendapatan_lainnya");
                   cat_fil = "pendapatan_lainnya";
+                  dataTable.columns(6).search("pendapatan_lainnya").draw();
                 }
             },
         ],
@@ -190,20 +197,29 @@
         },
         "drawCallback": function(settings) {
           $("#example1").on("click",".row-add-child", function (event) {
-            var data = dataTable.row( $(this).parents('tr') );
+            
+            var data = [];
+            $tr = $(this).parents('tr');
+            $($tr).find('td').each(function(index, value) {
+              if(index == 2){
+                data[index] = $(this).find('span').html();
+              }
+              data[index] = $(this).html();
+              //console.log($(this).html());
+            });
             var newRow = $("<tr>");
             var cols = "";
             cols += '<td class="column-hidden"></td>';
             cols += '<td><input type="text" name="add_new_coa_code" tabindex="1" size="12"/></td>';
             cols += '<td><input type="text" name="add_new_coa_name" tabindex="2"/></td>';
-            cols += '<td class="column-hidden">'+(parseInt(data.data()[3])+1)+'</td>';
-            cols += '<td class="column-hidden">'+data.data()[0]+'</td>';
-            cols += '<td class="column-hidden">'+data.data()[2]+'</td>';
-            cols += '<td class="column-hidden">'+data.data()[6]+'</td>';
-            cols += '<td class="column-hidden">'+data.data()[7]+'</td>';
+            cols += '<td class="column-hidden">'+(parseInt(data[3])+1)+'</td>';
+            cols += '<td class="column-hidden">'+data[0]+'</td>';
+            cols += '<td class="column-hidden">'+data[2]+'</td>';
+            cols += '<td class="column-hidden">'+data[6]+'</td>';
+            cols += '<td class="column-hidden">'+data[7]+'</td>';
             cols += '<td><label class="form-check-label"><input type="checkbox" name="add_new_header" tabindex="3"> Header?</label></td>';
             cols += '<td class="column-hidden">on</td>';
-            cols += '<td><a href="#" class="add-row-save"><i class="fas fa-check text-success" style="cursor: pointer;"></i></a> &nbsp;&nbsp;&nbsp;&nbsp;<i class="add-row-cancel fas fa-times text-danger" style="cursor: pointer;"></i></td>';
+            cols += '<td><i class="add-row-save fas fa-check text-success" style="cursor: pointer;"></i> &nbsp;&nbsp;&nbsp;&nbsp;<i class="add-row-cancel fas fa-times text-danger" style="cursor: pointer;"></i></td>';
             newRow.append(cols);
             newRow.insertAfter($(this).parents().closest('tr'));
             $("input[name=add_new_coa_code]").focus();
@@ -224,6 +240,8 @@
           // });
         }
    });
+
+   dataTable.columns(6).search(category_filter).draw();
    cto_loading_hide();
    table = dataTable;
 
@@ -262,8 +280,41 @@
           category = $(value).text();
         }
       });
-      submitform(val_arr, 'create');
-      fetch_data(cat_fil);
+      var id_coa = submitform(val_arr, 'create');
+      if(id_coa == 0){
+        return;
+      }
+      $td = $(this).parent();
+      $tr = $($td).parent();
+      $($tr).find('td').each(function(index, value){
+        if(index == 0){
+          $(this).html(id_coa);
+        }else if(index == 1){
+          var padd = ((parseInt($($tr).find("td:eq(3)").text())-1)*10)+"px";
+          $(this).css('padding-left', padd);
+          $(this).addClass('asset_value');
+          $(this).addClass('caktext');
+          $(this).addClass('coa_code_column');
+          $(this).attr('data-id', id_coa);
+          $(this).html("<span>"+convertCode($(this).find('input').val())+"</span>");
+        }else if(index == 2){
+          $(this).addClass('asset_value');
+          $(this).addClass('caktext');
+          $(this).attr('data-id', id_coa);
+          $(this).html("<span>"+$(this).find('input').val()+"</span>");
+        }else if(index == 8){
+          if($(this).find('input').is(":checked")){
+            $(this).html("<span>on</span>");
+          }else{
+            $(this).html("");
+          }
+        }else if(index == 10){
+          $(this).html('<button type="button" class="row-delete"> <i class="fas fa-minus-circle text-danger"></i> </button>');
+          if($($tr).find("td:eq(8)").text() == "on"){
+            $(this).append(' <button type="button" class="row-add-child"> <i class="fas fa-plus text-info"></i> </button>');
+          }
+        }
+      });
     });
 
     $('#example1').on('click', 'span', function() {
@@ -276,7 +327,11 @@
       }
 
       if($e.hasClass("caktext")){
-        $e.html('<input type="text" value="" />');
+        if($e.hasClass("coa_code_column")){
+          $e.html('<input type="text" value="" />');
+        }else{
+          $e.html('<input type="text" value="" size="34"/>');
+        }
         var $newE = $e.find('input');
         $newE.focus();
         $newE.val(val);
@@ -381,10 +436,12 @@
     values = values+"&"+field_arr[x]+"="+val_arr[x];
   }
   var ajaxRequest;
+  var id_coa = 0;
   ajaxRequest = $.ajax({
       url: urlaction,
       type: "post",
       data: values,
+      async: false,
       success: function(data){
           if(data.status >= 200 && data.status <= 299){
               id_coa = data.data.id;
@@ -425,6 +482,8 @@
         cto_loading_hide();
       }
   });
+
+  return id_coa;
  }
 
 var editor;
