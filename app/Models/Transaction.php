@@ -9,14 +9,9 @@ class Transaction extends Model
 {
     use HasFactory;
     protected $table = 'transactions';
-    protected $fillable = ['unitkerja', 'unitkerja_label', 'journal_number', 'anggaran_name', 'transaction_date', 'description', 'transaction_type', 'transaction_type_label', 'user_creator_id', 'user_updater_id', 'updated_at'];
+    protected $fillable = ['parent_id', 'no_seq', 'unitkerja', 'unitkerja_label', 'anggaran', 'anggaran_label', 'no_jurnal', 'tanggal', 'keterangan', 'jenis_transaksi', 'coa', 'coa_label', 'deskripsi', 'jenisbayar', 'jenisbayar_label', 'nim', 'kode_va', 'fheader', 'debet', 'credit', 'user_creator_id', 'user_updater_id', 'updated_at'];
 
-    function getUnitkerja(){
-        return $this->hasOne('App\Models\Unitkerja')->orderBy('no_seq', 'ASC');
-    }
-
-
-    function getTransactiondetail(){
-        return $this->hasMany('App\Models\Transactiondetail')->orderBy('no_seq', 'ASC');
+    function getJurnal(){
+        return $this->hasOne('App\Models\Jurnal');
     }
 }

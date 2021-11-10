@@ -62,17 +62,16 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/getoptionscoa', 'App\Http\Controllers\CoaController@getoptions');
     Route::post('/getlinkscoa', 'App\Http\Controllers\CoaController@getlinks');
 
-    Route::get('/transaction', 'App\Http\Controllers\TransactionController@index')->name('transaction');
-    Route::post('/getlisttransaction', 'App\Http\Controllers\TransactionController@get_list');
-    Route::get('/transaction/{transaction}', 'App\Http\Controllers\TransactionController@show');
-    Route::get('/createtransaction', 'App\Http\Controllers\TransactionController@create');
-    Route::post('/storetransaction', 'App\Http\Controllers\TransactionController@store');
-    Route::get('/transaction/{transaction}/edit', 'App\Http\Controllers\TransactionController@edit');
-    Route::post('/getdatatransaction', 'App\Http\Controllers\TransactionController@getdata');
-    Route::post('/updatetransaction/{transaction}', 'App\Http\Controllers\TransactionController@update');
-    Route::post('/deletetransaction', 'App\Http\Controllers\TransactionController@destroy');
-    Route::post('/getoptionstransaction', 'App\Http\Controllers\TransactionController@getoptions');
-    Route::post('/getlinkstransaction', 'App\Http\Controllers\TransactionController@getlinks');
+    Route::get('/jurnal', 'App\Http\Controllers\JurnalController@index')->name('jurnal');
+    Route::post('/getlistjurnal', 'App\Http\Controllers\JurnalController@get_list');
+    Route::get('/jurnal/{jurnal}', 'App\Http\Controllers\JurnalController@show');
+    Route::get('/createjurnal', 'App\Http\Controllers\JurnalController@create');
+    Route::post('/storejurnal', 'App\Http\Controllers\JurnalController@store');
+    Route::get('/jurnal/{jurnal}/edit', 'App\Http\Controllers\JurnalController@edit');
+    Route::post('/getdatajurnal', 'App\Http\Controllers\JurnalController@getdata');
+    Route::post('/updatejurnal/{jurnal}', 'App\Http\Controllers\JurnalController@update');
+    Route::post('/deletejurnal', 'App\Http\Controllers\JurnalController@destroy');
+    Route::post('/getlinksjurnal', 'App\Http\Controllers\JurnalController@getlinks');
     
     Route::middleware(['checkauth'])->group(function () {
         
