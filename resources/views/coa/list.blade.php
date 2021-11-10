@@ -28,9 +28,33 @@
                                 <h4 class="card-title text-white">Kode Rekening Akuntansi</h4>
                             </div>
                             <div class="card-body">
+                                <ul class="nav nav-tabs">
+                                    <li class="nav-item bg-success">
+                                        <a id="tabaset" class="nav-link{{$page_data['category'] == 'aset'?' active':''}}" data-toggle="tab" href="/coa/aset/list"> Aset</a>
+                                    </li>
+                                    <li class="nav-item bg-success">
+                                        <a id="tabhutang" class="nav-link{{$page_data['category'] == 'hutang'?' active':''}}" data-toggle="tab" href="/coa/hutang/list"> Hutang</a>
+                                    </li>
+                                    <li class="nav-item bg-success">
+                                        <a id="tabmodal" class="nav-link{{$page_data['category'] == 'modal'?' active':''}}" data-toggle="tab" href="/coa/modal/list"> Modal</a>
+                                    </li>
+                                    <li class="nav-item bg-success">
+                                        <a id="tabpendapatan" class="nav-link{{$page_data['category'] == 'pendapatan'?' active':''}}" data-toggle="tab" href="/coa/pendapatan/list"> Pendapatan</a>
+                                    </li>
+                                    <li class="nav-item bg-success">
+                                        <a id="tabbiaya" class="nav-link{{$page_data['category'] == 'biaya'?' active':''}}" data-toggle="tab" href="/coa/biaya/list"> Biaya</a>
+                                    </li>
+                                    <li class="nav-item bg-success">
+                                        <a id="tabbiaya_lainnya" class="nav-link{{$page_data['category'] == 'biaya_lainnya'?' active':''}}" data-toggle="tab" href="/coa/biaya_lainnya/list"> Biaya Lainnya</a>
+                                    </li>
+                                    <li class="nav-item bg-success">
+                                        <a id="tabpendapatan_lainnya" class="nav-link{{$page_data['category'] == 'pendapatan_lainnya'?' active':''}}" data-toggle="tab" href="/coa/pendapatan_lainnya/list"> Pendapatan Lainnya</a>
+                                    </li>
+                                </ul>                                    
+
                                 <div class="table-responsive">
-                                 @csrf
-                                    <table id="example1" class="table table-bordered table-striped">
+                                @csrf
+                                <table id="example1" class="dttables table table-bordered table-striped" table-category="aset">
                                     <thead class="bg-primary">
                                         <tr>
                                             <th width="10px" class="column-hidden">No</th>
@@ -45,8 +69,8 @@
                                             <th width="10px" class="column-hidden">Aktif?</th>
                                             <th width="10px">Act</th>
                                         </tr>
-                                        </thead>
-                                    </table>
+                                    </thead>
+                                </table>
                                     
                                     <div class="modal fade" id="modal-delete" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                                         <div class="modal-dialog modal-lg">

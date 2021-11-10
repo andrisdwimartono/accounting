@@ -33,40 +33,37 @@
   <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
 
 <script>
-  var cat_fil = "";
-  $(function () {
-    // $("#example1").DataTable({
-    //   "responsive": true, "lengthChange": false, "autoWidth": false,
-    //   "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-    // }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-    // $('#example2').DataTable({
-    //   "paging": true,
-    //   "lengthChange": false,
-    //   "searching": false,
-    //   "ordering": true,
-    //   "info": true,
-    //   "autoWidth": false,
-    //   "responsive": true,
-    // });
+  $("#tabaset").click(function(){
+    window.location.href = "/coa/aset/list";
   });
-
+  $("#tabhutang").click(function(){
+    window.location.href = "/coa/hutang/list";
+  });
+  $("#tabmodal").click(function(){
+    window.location.href = "/coa/modal/list";
+  });
+  $("#tabpendapatan").click(function(){
+    window.location.href = "/coa/pendapatan/list";
+  });
+  $("#tabbiaya").click(function(){
+    window.location.href = "/coa/biaya/list";
+  });
+  $("#tabbiaya_lainnya").click(function(){
+    window.location.href = "/coa/biaya_lainnya/list";
+  });
+  $("#tabpendapatan_lainnya").click(function(){
+    window.location.href = "/coa/pendapatan_lainnya/list";
+  });
+  var cat_fil = "";
   $(document).ready(function(){
 	  var table = null;
-    fetch_data("aset");
-    cat_fil = "aset";
-    var dataTable = $('#example1').DataTable();
-
-  function fetch_data(category_filter, coa_parent_id = null){
+    fetch_data1();
+    cat_fil = "{{$page_data['category']}}";
+    
+  function fetch_data1(){
     cto_loading_show();
-    // var target = [];
-    // $('#example1 thead tr th').each(function(i, obj) {
-    //     target.push(i);
-    // });
-    // target.shift();
-    if(dataTable){
-      dataTable.destroy();
-    }
-    dataTable = $('#example1').DataTable({
+    
+    var dataTable = $('#example1').DataTable({
       language: { search: "" , searchPlaceholder: "Search..."},
       //"searching": false,
       buttons: [
@@ -76,69 +73,6 @@
                 action: function ( e, dt, node, config ) {
                   //window.location.href = "/create{{$page_data["page_data_urlname"]}}";
                   $("#modal-add-new-coa").modal({'show': true});
-                }
-            },
-            {
-                text: "Aset",
-                className: category_filter=="aset"?"bg-secondary text-white m-0":"bg-success text-white m-0",
-                action: function ( e, dt, node, config ) {
-                  fetch_data("aset");
-                  cat_fil = "aset";
-                  dataTable.columns(6).search("aset").draw();
-                }
-            },
-            {
-                text: "Hutang",
-                className: category_filter=="hutang"?"bg-secondary text-white m-0":"bg-success text-white m-0",
-                action: function ( e, dt, node, config ) {
-                  fetch_data("hutang");
-                  cat_fil = "hutang";
-                  dataTable.columns(6).search("hutang").draw();
-                }
-            },
-            {
-                text: "Modal",
-                className: category_filter=="modal"?"bg-secondary text-white m-0":"bg-success text-white m-0",
-                action: function ( e, dt, node, config ) {
-                  fetch_data("modal");
-                  cat_fil = "modal";
-                  dataTable.columns(6).search("modal").draw();
-                }
-            },
-            {
-                text: "Pendapatan",
-                className: category_filter=="pendapatan"?"bg-secondary text-white m-0":"bg-success text-white m-0",
-                action: function ( e, dt, node, config ) {
-                  fetch_data("pendapatan");
-                  cat_fil = "pendapatan";
-                  dataTable.columns(6).search("pendapatan").draw();
-                }
-            },
-            {
-                text: "Biaya",
-                className: category_filter=="biaya"?"bg-secondary text-white m-0":"bg-success text-white m-0",
-                action: function ( e, dt, node, config ) {
-                  fetch_data("biaya");
-                  cat_fil = "biaya";
-                  dataTable.columns(6).search("biaya").draw();
-                }
-            },
-            {
-                text: "Biaya Lainnya",
-                className: category_filter=="biaya_lainnya"?"bg-secondary text-white m-0":"bg-success text-white m-0",
-                action: function ( e, dt, node, config ) {
-                  fetch_data("biaya_lainnya");
-                  cat_fil = "biaya_lainnya";
-                  dataTable.columns(6).search("biaya_lainnya").draw();
-                }
-            },
-            {
-                text: "Pendapatan Lainnya",
-                className: category_filter=="pendapatan_lainnya"?"bg-secondary text-white m-0":"bg-success text-white m-0",
-                action: function ( e, dt, node, config ) {
-                  fetch_data("pendapatan_lainnya");
-                  cat_fil = "pendapatan_lainnya";
-                  dataTable.columns(6).search("pendapatan_lainnya").draw();
                 }
             },
         ],
@@ -191,13 +125,11 @@
           type:"POST",
           data:{
             _token: $("input[name=_token]").val(),
-            category_filter: category_filter,
-            coa_parent_id: coa_parent_id
+            category_filter: "{{$page_data['category']}}"
           }
         },
         "drawCallback": function(settings) {
           $("#example1").on("click",".row-add-child", function (event) {
-            
             var data = [];
             $tr = $(this).parents('tr');
             $($tr).find('td').each(function(index, value) {
@@ -205,7 +137,6 @@
                 data[index] = $(this).find('span').html();
               }
               data[index] = $(this).html();
-              //console.log($(this).html());
             });
             var newRow = $("<tr>");
             var cols = "";
@@ -224,24 +155,9 @@
             newRow.insertAfter($(this).parents().closest('tr'));
             $("input[name=add_new_coa_code]").focus();
           });
-          
-
-          // $('#example1').on( 'click', '.row-add-child', function (e) {
-          //   var data = table.row( $(this).parents('tr') );
-          //   $('#example1 > tbody:last-child').append(
-          //     '<tr>'
-          //     +'<td class="column-hidden">'+data.data()[0]+'</td>'
-          //     +'<td><input type="text" value="" /></td>'
-          //     +'<td><input type="text" value="" /></td>'
-          //     +'<td class="column-hidden">'+(parseInt(data.data()[3])+1)+'</td>'
-          //     +'<td class="column-hidden"></td>'
-          //     +'<td>xasd</td>'
-          //     +'</tr>');
-          // });
         }
    });
 
-   dataTable.columns(6).search(category_filter).draw();
    cto_loading_hide();
    table = dataTable;
 
@@ -260,12 +176,6 @@
           }else{
             val_arr.push(value);
           }
-
-          // if($($inp).hasClass("coa_code_column")){
-          //   var value = convertCode(value);
-          // }
-          // $($inp).parent().html('<span>'+value+'</span>');
-
         }else if(index == 8){
           var $inp = $(this).find('input');
           if($inp.is(":checked")){
@@ -384,7 +294,7 @@
                 position: 'mid-center',
                 textAlign: 'left'
             });
-            fetch_data();
+            fetch_data1();
           },
           'error': function (err) {    
             $.toast({
@@ -490,11 +400,9 @@ var editor;
 
 
 $(function () {
-
     $.validator.setDefaults({
         submitHandler: function (form, event) {
             event.preventDefault();
-            event.stopPropagation();
             cto_loading_show();
             var quickForm = $("#quickForm");
 
@@ -523,7 +431,7 @@ $(function () {
                             });
                     }
                     cto_loading_hide();
-                    fetch_data(cat_fil);
+                    fetch_data1();
                 },
                 error: function (err) {
                     if (err.status == 422) {

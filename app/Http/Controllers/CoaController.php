@@ -68,10 +68,11 @@ class CoaController extends Controller
     *
     * @return \Illuminate\Http\Response
     */
-    public function index()
+    public function index($category)
     {
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "List";
+        $page_data["category"] = $category;
         $page_data["footer_js_page_specific_script"] = ["coa.page_specific_script.footer_js_list"];
         $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_list"];
         
@@ -244,26 +245,25 @@ class CoaController extends Controller
         }
 
         $dt = array();
-        $this->get_list_data($dt, $request, $keyword, $limit, $orders, null, $request->coa_parent_id);
-        //array_push($dt, array("", 'x', 'x', "", "", "", "", "", "", "", ""));
+        $this->get_list_data($dt, $request, $keyword, $limit, $orders, null);
         
         $output = array(
             "draw" => intval($request->draw),
             "recordsTotal" => Coa::get()->count(),
             "recordsFiltered" => intval(Coa::where(function($q) use ($keyword, $request) {
                 $q->where("coa_code", "LIKE", "%" . $keyword. "%")->orWhere("coa_name", "LIKE", "%" . $keyword. "%")->orWhere("level_coa", "LIKE", "%" . $keyword. "%")->orWhere("fheader", "LIKE", "%" . $keyword. "%")->orWhere("factive", "LIKE", "%" . $keyword. "%");
-            })->where("category", $request->columns[6]["search"]["value"])->orderBy($orders[0], $orders[1])->get()->count()),
+            })->where("category", $request->category_filter)->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
 
         echo json_encode($output);
     }
 
-    private function get_list_data(&$dt, $request, $keyword, $limit, $orders, $parent_id = null, $add_child_parent_id = null){
+    private function get_list_data(&$dt, $request, &$keyword, $limit, $orders, $parent_id = null){
         $no = 0;
-        foreach(Coa::where(function($q) use ($keyword, $request) {
+        foreach(Coa::where(function($q) use (&$keyword, $request) {
                 $q->where("coa_code", "LIKE", "%" . $keyword. "%")->orWhere("coa_name", "LIKE", "%" . $keyword. "%")->orWhere("level_coa", "LIKE", "%" . $keyword. "%")->orWhere("fheader", "LIKE", "%" . $keyword. "%")->orWhere("factive", "LIKE", "%" . $keyword. "%");
-            })->where("category", $request->columns[6]["search"]["value"])->where("coa", $parent_id)->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "coa_code", "coa_name", "level_coa", "coa", "coa_label", "category", "category_label", "fheader", "factive"]) as $coa){
+            })->where("category", $request->category_filter)->where("coa", $parent_id)->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "coa_code", "coa_name", "level_coa", "coa", "coa_label", "category", "category_label", "fheader", "factive"]) as $coa){
                 $no = $no+1;
                 $act = '
                 <!--<a href="/coa/'.$coa->id.'" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-info"></i></a>
@@ -281,12 +281,9 @@ class CoaController extends Controller
                 }
 
             array_push($dt, array($coa->id, $coa->coa_code, $coa->coa_name, $coa->level_coa, $coa->coa, $coa->coa_label, $coa->category, $coa->category_label, $coa->fheader, $coa->factive, $act));
-            if($coa->id == $add_child_parent_id){
-                array_push($dt, array("", '', '', "", "", "", "", "", "", "", ""));
-            }
-            if($coa->fheader == "on"){
-                array_merge($dt, $this->get_list_data($dt, $request, $keyword, $limit, $orders, $coa->id, $add_child_parent_id));
-            }
+            
+            array_merge($dt, $this->get_list_data($dt, $request, $keyword, $limit, $orders, $coa->id));
+            
         }
         return $dt;
     }

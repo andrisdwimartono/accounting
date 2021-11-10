@@ -74,4 +74,7 @@
       outline: none; 
       background-color: #fff; 
     }
+    .nav-link{
+      color: white;
+    }
   </style>

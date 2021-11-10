@@ -49,7 +49,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/updateunitkerja/{unitkerja}', 'App\Http\Controllers\UnitkerjaController@update');
     Route::post('/deleteunitkerja', 'App\Http\Controllers\UnitkerjaController@destroy');
 
-    Route::get('/coa', 'App\Http\Controllers\CoaController@index')->name('coa');
+    Route::get('/coa/{category}/list', 'App\Http\Controllers\CoaController@index');
     Route::post('/getlistcoa', 'App\Http\Controllers\CoaController@get_list');
     Route::get('/getlistcoa', 'App\Http\Controllers\CoaController@get_list');
     Route::get('/coa/{coa}', 'App\Http\Controllers\CoaController@show');
