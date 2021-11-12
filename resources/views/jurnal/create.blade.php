@@ -1,41 +1,62 @@
 @extends("paging.main")
 
 @section("content")
+<!--**********************************
+            Content body start
+        ***********************************-->
+        <div class="content-body">
+            <div class="container-fluid">
+                <!-- <div class="row page-titles mx-0">
+                    <div class="col-sm-10 p-md-0">
+                        <div class="welcome-text">
+                            <h4>Hi, welcome back!</h4>
+                            <span>Element</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-10 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="javascript:void(0)">Master</a></li>
+                            <li class="breadcrumb-item active"><a href="/coa">COA</a></li>
+                        </ol>
+                    </div>
+                </div> -->
+                <!-- row -->
+                <div class="row">
+                    <div class="col-sm-10">
+                        <div class="card">
+                            <div class="card-header bg-primary">
+                                <h4 class="card-title text-white">Kode Rekening Akuntansi</h4>
+                            </div>
+                            
                 <form id="quickForm" action="#">
                 @csrf
                     <div class="card-body">
-                            <div class="form-group row">
+                            <div class="form-group row m-0">
                                 <label class="col-sm-4 col-form-label" for="unitkerja">Unit Kerja</label>
                                 <div class="col-sm-6 cakfield">
-                                    <select name="unitkerja" id="unitkerja" class="form-control select2bs4" style="width: 100%;" @if($page_data["page_method_name"] == "View") readonly @endif>
+                                    <select name="unitkerja" id="unitkerja" class="form-control form-control-sm select2bs4" style="width: 100%;" @if($page_data["page_method_name"] == "View") readonly @endif>
 
                                     </select>
                                     <input type="hidden" name="unitkerja_label" id="unitkerja_label">
                                 </div>
                             </div>
-                            <div class="form-group row">
+                            <div class="form-group row m-0">
                                 <label class="col-sm-4 col-form-label" for="no_jurnal">Nomor Jurnal</label>
                                 <div class="col-sm-6 cakfield">
-                                    <input type="text" name="no_jurnal" class="form-control" id="no_jurnal" placeholder="Enter Nomor Jurnal" @if($page_data["page_method_name"] == "View") readonly @endif>
+                                    <input type="text" name="no_jurnal" class="form-control form-control-sm" id="no_jurnal" placeholder="Enter Nomor Jurnal" @if($page_data["page_method_name"] == "View") readonly @endif>
                                 </div>
                             </div>
-                        <div class="form-group row">
-                            <label for="tanggal_jurnal">Tanggal Jurnal</label>
-                                @if($page_data["page_method_name"] != "View")
-                                <div class="col-sm-6 cakfield" id="reservationdate_tanggal_jurnal" data-target-input="nearest">
-                                    <input type="text" name="tanggal_jurnal" class="form-control datetimepicker-input" data-target="#reservationdate_tanggal_jurnal"/>
-                                    <div class="input-group-append" data-target="#reservationdate_tanggal_jurnal" data-toggle="datetimepicker">
-                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                    </div>
-                                </div>
-                                @else
-                                <input type="text" name="tanggal_jurnal" class="form-control" id="reservationdate_tanggal_jurnal" placeholder="Enter Tanggal Jurnal" @if($page_data["page_method_name"] == "View") readonly @endif>
-                                @endif
+                            
+                        <div class="form-group row m-0">
+                            <label for="tanggal_jurnal" class="col-sm-4 col-form-label">Tanggal Jurnal</label>
+                            <div class="col-sm-6 cakfield">
+                                <input name="tanggal_jurnal" class="datepicker-default form-control form-control-sm" id="datepicker" <?=$page_data["page_method_name"] == "View"?"readonly":""?>>
+                            </div>
                         </div>
-                        <div class="form-group row">
+                        <div class="form-group row m-0">
                             <label class="col-sm-4 col-form-label" for="keterangan">Keterangan</label>
                             <div class="col-sm-6 cakfield">
-                                <textarea name="keterangan" class="form-control" id="keterangan" placeholder="Enter Keterangan" @if($page_data["page_method_name"] == "View") readonly @endif></textarea>
+                                <textarea name="keterangan" class="form-control form-control-sm" id="keterangan" placeholder="Enter Keterangan" @if($page_data["page_method_name"] == "View") readonly @endif></textarea>
                             </div>
                         </div>
                         <div class="form-group">
@@ -101,15 +122,6 @@
                         <div class="modal-body">
                             <form id="quickModalForm_transaksi" action="#">
                                 <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label" for="unitkerja">Unit Kerja</label>
-                                    <div class="col-sm-6 cakfield">
-                                        <select name="unitkerja" id="unitkerja" class="form-control select2bs4staticBackdrop" style="width: 100%;" @if($page_data["page_method_name"] == "View") readonly @endif>
-
-                                        </select>
-                                        <input type="hidden" name="unitkerja_label" id="unitkerja_label">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
                                     <label class="col-sm-4 col-form-label" for="anggaran">Anggaran</label>
                                     <div class="col-sm-6 cakfield">
                                         <select name="anggaran" id="anggaran" class="form-control select2bs4staticBackdrop" style="width: 100%;" @if($page_data["page_method_name"] == "View") readonly @endif>
@@ -119,18 +131,11 @@
                                     </div>
                                 </div>
                                 <input type="hidden" name="no_jurnal" id="no_jurnal">
-                                <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label" for="tanggal">Tanggal</label>
-                                        @if($page_data["page_method_name"] != "View")
-                                        <div class="input-group date" id="reservationdate_tanggal" data-target-input="nearest">
-                                            <input type="text" name="tanggal" class="form-control datetimepicker-input" data-target="#reservationdate_tanggal"/>
-                                            <div class="input-group-append" data-target="#reservationdate_tanggal" data-toggle="datetimepicker">
-                                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                            </div>
-                                        </div>
-                                        @else
-                                        <input type="text" name="tanggal" class="form-control" id="reservationdate_tanggal" placeholder="Enter Tanggal" @if($page_data["page_method_name"] == "View") readonly @endif>
-                                        @endif
+                                <div class="form-group row m-0">
+                                    <label for="tanggal" class="col-sm-4 col-form-label">Tanggal</label>
+                                    <div class="col-sm-6 cakfield">
+                                        <input name="tanggal" class="datepicker-default form-control form-control-sm" id="datepicker" <?=$page_data["page_method_name"] == "View"?"readonly":""?>>
+                                    </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label" for="keterangan">Keterangan</label>
@@ -187,4 +192,10 @@
                 </div>
             </div>
             <!-- Modal Transaksi End -->
+
+            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 @endsection

@@ -6,13 +6,21 @@
 	<script src="{{ asset ("/assets/motaadmin/js/deznav-init.js") }}"></script>
 	<!-- Apex Chart -->
 	<script src="{{ asset ("/assets/motaadmin/vendor/apexchart/apexchart.js") }}"></script>
-    
+
+    <script src="{{ asset ("/assets/motaadmin/vendor/moment/moment.min.js") }}"></script>
+
+    <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.js") }}"></script>
+    <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.time.js") }}"></script>
+    <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.date.js") }}"></script>
+    <!-- Pickdate -->
+    <!-- <script src="{{ asset ("/assets/motaadmin/js/plugins-init/pickadate-init.js") }}"></script> -->
+
 	<!-- Svganimation scripts -->
     <script src="{{ asset ("/assets/motaadmin/vendor/svganimation/vivus.min.js") }}"></script>
     <script src="{{ asset ("/assets/motaadmin/vendor/svganimation/svg.animation.js") }}"></script>
 
     <script src="{{ asset ("/assets/node_modules/@popperjs/core/dist/umd/popper.min.js") }}"></script>
-    <script src="{{ asset ("/assets/node_modules/gijgo/js/gijgo.min.js") }}"></script>
+    <!-- <script src="{{ asset ("/assets/node_modules/gijgo/js/gijgo.min.js") }}"></script> -->
     <script src="{{ asset ("/assets/node_modules/jquery-toast-plugin/dist/jquery.toast.min.js") }}"></script>
     <script src="{{ asset ("/assets/node_modules/autonumeric/dist/autoNumeric.min.js") }}"></script>
     <script src="{{ asset ("/assets/bootstrap/dist/js/bootstrap.bundle.min.js") }}"></script>
@@ -45,22 +53,25 @@
 
 
 $(function () {
-    @if($page_data["page_method_name"] != "View")
-    $("#reservationdate_tanggal_jurnal").datetimepicker({
-        format:"dd/mm/yyyy",
-        modal: true,
-        footer: true,
-        uiLibrary: 'bootstrap'
-    });
-    @endif
-    @if($page_data["page_method_name"] != "View")
-    $("#reservationdate_tanggal").datetimepicker({
-        format:"",
-        modal: true,
-        footer: true,
-        uiLibrary: 'bootstrap'
-    });
-    @endif
+    $('.datepicker-default').pickadate({
+        format: 'dd/mm/yyyy',
+        formatSubmit: 'yyyy-mm-dd',
+        hiddenName: true
+    })   
+    // @if($page_data["page_method_name"] != "View")
+    // $("#reservationdate_tanggal_jurnal").datepicker({
+    //     format:"dd/mm/yyyy",
+    //     modal: true,
+    //     footer: true
+    // });
+    // @endif
+    // @if($page_data["page_method_name"] != "View")
+    // $("#reservationdate_tanggal").datepicker({
+    //     format:"",
+    //     modal: true,
+    //     footer: true
+    // });
+    // @endif
 
     $.validator.setDefaults({
         submitHandler: function (form, event) {
@@ -134,10 +145,6 @@ $("select").select2({
 $.fn.modal.Constructor.prototype._enforceFocus = function() {
 
 };
-
-$("#unitkerja").on("change", function() {
-    $("#unitkerja_label").val($("#unitkerja option:selected").text());
-});
 
 $("#unitkerja").on("change", function() {
     $("#unitkerja_label").val($("#unitkerja option:selected").text());
@@ -522,8 +529,6 @@ function getdata(){
 }
     @endif
 function addChildTable_transaksi(childtablename){
-    $("select[name='unitkerja']").empty();
-    $("input[name='unitkerja_label']").val("");
     $("select[name='anggaran']").empty();
     $("input[name='anggaran_label']").val("");
     $("input[name='no_jurnal']").val("");
@@ -592,10 +597,6 @@ function addChildTable_transaksi(childtablename){
 }
 
 function showChildTable_transaksi(childtablename, data){
-    $("select[name='unitkerja']").empty();
-    var newState = new Option(data.data()[2], data.data()[1], true, false);
-    $("#unitkerja").append(newState).trigger('change');
-    $("input[name='unitkerja_label']").val(data.data()[2]);
     $("select[name='anggaran']").empty();
     var newState = new Option(data.data()[4], data.data()[3], true, false);
     $("#anggaran").append(newState).trigger('change');
