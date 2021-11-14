@@ -33,6 +33,10 @@
   <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
 
 <script>
+  var app_url = '{{ env('APP_URL') }}';
+
+  console.log(app_url)
+
   $("#tabaset").click(function(){
     window.location.href = "/coa/aset/list";
   });
@@ -121,7 +125,7 @@
           "pageLength": 2000,
           "order": [[ 1, "asc" ]],
           "ajax" : {
-          url:"/getlist{{$page_data["page_data_urlname"]}}",
+          url: app_url+"/getlist{{$page_data["page_data_urlname"]}}",
           type:"POST",
           data:{
             _token: $("input[name=_token]").val(),

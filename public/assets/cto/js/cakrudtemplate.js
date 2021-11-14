@@ -1,3 +1,5 @@
+var app_url = '{{ env('APP_URL') }}';
+
 $(document).ready(function () {
     // $.ajax({
     //     url: "/getusermenu",

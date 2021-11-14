@@ -269,7 +269,8 @@ body {
   line-height: 1.5;
   color: #89879f;
   text-align: left;
-  background-color: #ebeef6; }
+  background-color: #ebeef6 !important; 
+}
 
 [tabindex="-1"]:focus {
   outline: 0 !important; }
@@ -3675,7 +3676,8 @@ input[type="button"].btn-block {
   background-color: rgba(0, 0, 0, 0.03);
   border-bottom: 1px solid rgba(0, 0, 0, 0.125); }
   .card-header:first-child {
-    border-radius: calc(0.375rem - 1px) calc(0.375rem - 1px) 0 0; }
+    background: none !important;
+    border-radius: calc(0.375rem - 1px) calc(0.375rem - 1px) 0 0 !important; }
   .card-header + .list-group .list-group-item:first-child {
     border-top: 0; }
 
@@ -12783,6 +12785,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
     padding: 10px 0;
     display: block;
     font-weight: 400;
+    text-decoration : none;
     line-height: 1; }
     [data-theme-version="dark"] .tab-nav-menu li a {
       color: #89879f; }
@@ -12834,30 +12837,38 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
     left: -20rem;
     -webkit-transition: all 0.5s;
     -ms-transition: all 0.5s;
-    transition: all 0.5s; }
-    [data-sidebar-style="mini"][data-layout="vertical"] .fixed-content-box.active {
-      left: 5rem; } }
+    transition: all 0.5s; 
+  }
+  [data-sidebar-style="mini"][data-layout="vertical"] .fixed-content-box.active {
+      left: 5rem; 
+  } 
+}
 @media only screen and (max-width: 767px) {
-  [data-sidebar-style="overlay"] .fixed-content-box {
-    left: -20rem;
-    -webkit-transition: all 0.5s;
-    -ms-transition: all 0.5s;
-    transition: all 0.5s; }
+    [data-sidebar-style="overlay"] .fixed-content-box {
+      left: -20rem;
+      -webkit-transition: all 0.5s;
+      -ms-transition: all 0.5s;
+      transition: all 0.5s; 
+    }
     [data-sidebar-style="overlay"] .fixed-content-box.active {
-      left: 3.75rem; }
-  [data-sidebar-style="overlay"] .fixed-content-box + .header + .deznav {
-    width: 3.75rem; }
-  [data-sidebar-style="overlay"] .deznav .menu-tabs {
-    padding: 15px 7px; }
+        left: 3.75rem; }
+    [data-sidebar-style="overlay"] .fixed-content-box + .header + .deznav {
+      width: 3.75rem; }
+    [data-sidebar-style="overlay"] .deznav .menu-tabs {
+      padding: 15px 7px; }
     [data-sidebar-style="overlay"] .deznav .menu-tabs li a {
       padding: 10px 12px 10px 12px;
       border-radius: 6px; }
 
-  .header-right .right-sidebar {
-    margin-right: -15px; }
+    .header-right .right-sidebar {
+      margin-right: -15px; 
+    }
     .header-right .right-sidebar a {
       width: 60px;
-      height: 60px; } }
+      height: 60px; 
+    } 
+  }
+
 @media only screen and (max-width: 576px) {
   .header-right .header-profile > a.nav-link .header-info,
   .header-right .notification_dropdown {
@@ -12868,7 +12879,9 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
     font-size: 24px; }
 
   .fixed-content-box .tab-pane {
-    padding: 20px; } }
+    padding: 20px; } 
+}
+
 @media only screen and (min-width: 991px) {
   [data-sidebar-style="mini"][data-layout="vertical"] .nav-header {
     width: 5rem; }
@@ -12878,7 +12891,9 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   [data-sidebar-style="mini"][data-layout="vertical"] .fixed-content-box + .header + .deznav + .content-body {
     margin-left: 20.937rem; }
   [data-sidebar-style="mini"][data-layout="vertical"] .fixed-content-box + .header {
-    padding-left: 20.937rem; } }
+    padding-left: 20.937rem; } 
+}
+    
 .fixed-content-box {
   width: 255px;
   position: fixed;
@@ -12886,7 +12901,8 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   height: 100%;
   background: #fff;
   z-index: 4;
-  box-shadow: 0px 0px 40px 0px rgba(82, 63, 105, 0.1); }
+  box-shadow: 0px 0px 40px 0px rgba(82, 63, 105, 0.1); 
+}
   .fixed-content-box .head-name {
     height: 80px;
     border-bottom: 1px solid #ebeef6;
@@ -12899,7 +12915,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
     font-weight: 500;
     padding: 0 30px;
     text-align: left; }
-    @media only screen and (max-width: 767px) {
+  @media only screen and (max-width: 767px) {
       .fixed-content-box .head-name {
         height: 60px;
         font-size: 24px; } }
@@ -23390,7 +23406,8 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
     .page-titles .breadcrumb .breadcrumb-item + .breadcrumb-item:before {
       content: "\e606";
       font-family: 'simple-line-icons';
-      font-size: 10px; }
+      font-size: 10px; 
+      margin-top:5px; }
     .page-titles .breadcrumb-datepicker {
       font-size: 0.75rem;
       color: #89879f; }
