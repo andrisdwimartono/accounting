@@ -21,10 +21,10 @@
   <link rel="stylesheet" href="{{ asset ("/assets/motaadmin/vendor/pickadate/themes/default.css") }}">
   <link rel="stylesheet" href="{{ asset ("/assets/motaadmin/vendor/pickadate/themes/default.date.css") }}">
 
-  <!-- datatables -->
+  <!-- datatables
   <link href="{{ asset ("/assets/datatables/css/dataTables.bootstrap4.min.css") }}" rel="stylesheet" />
   <link href="{{ asset ("/assets/datatables/css/rowReorder.dataTables.min.css") }}" rel="stylesheet" />
-  <link href="{{ asset ("/assets/datatables/css/buttons.dataTables.min.css") }}" rel="stylesheet" />
+  <link href="{{ asset ("/assets/datatables/css/buttons.dataTables.min.css") }}" rel="stylesheet" /> -->
 
   <link href="{{ asset ("/assets/node_modules/jquery-toast-plugin/dist/jquery.toast.min.css") }}" rel="stylesheet" />
   <link href="{{ asset ("/assets/cto/css/cto_loadinganimation.min.css") }}" rel="stylesheet" />
@@ -49,6 +49,26 @@
     }
     .select2-selection__arrow {
         height: 26px !important;
+    }
+    .column-hidden{
+      display:none;
+    }
+    td { 
+      border: 1px solid #aaa; 
+      height: 30px; 
+      text-align: left; 
+      width: 100px; 
+    }
+    td > span{
+      display: inline-block;
+      width: 100%;
+    }
+    input:not([type=checkbox]), input:not([type=checkbox]):hover, input:not([type=checkbox])focus { 
+      width: 100%; 
+      height: 30px; 
+      box-sizing: border-box;
+      outline: none; 
+      background-color: #fff; 
     }
 
   </style>

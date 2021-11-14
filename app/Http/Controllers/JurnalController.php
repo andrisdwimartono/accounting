@@ -458,11 +458,6 @@ class JurnalController extends Controller
                     $q->where("unitkerja_name", "LIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("unitkerja_name as text")]);
                 $count = Unitkerja::count();
-            }elseif($request->field == "unitkerja"){
-                $lists = Unitkerja::where(function($q) use ($request) {
-                    $q->where("unitkerja_name", "LIKE", "%" . $request->term. "%");
-                })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("unitkerja_name as text")]);
-                $count = Unitkerja::count();
             }elseif($request->field == "anggaran"){
                 $lists = Anggaran::where(function($q) use ($request) {
                     $q->where("anggaran_name", "LIKE", "%" . $request->term. "%");
@@ -470,8 +465,8 @@ class JurnalController extends Controller
                 $count = Anggaran::count();
             }elseif($request->field == "coa"){
                 $lists = Coa::where(function($q) use ($request) {
-                    $q->where("coa_name", "LIKE", "%" . $request->term. "%");
-                })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("coa_name as text")]);
+                    $q->where("coa_name", "LIKE", "%" . $request->term. "%")->orWhere("coa_code", "LIKE", "%" . $request->term. "%");
+                })->where("fheader", null)->orderBy("coa_code", "asc")->skip($offset)->take($resultCount)->get(["id", DB::raw("concat(concat(coa_code, ' '), coa_name) as text"), DB::raw("coa_name as description")]);
                 $count = Coa::count();
             }elseif($request->field == "jenisbayar"){
                 $lists = Jenisbayar::where(function($q) use ($request) {

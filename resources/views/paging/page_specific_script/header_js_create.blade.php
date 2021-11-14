@@ -44,5 +44,25 @@
     .select2-selection__arrow {
         height: 26px !important;
     }
+    .column-hidden{
+      display:none;
+    }
+    td { 
+      border: 1px solid #aaa; 
+      height: 30px; 
+      text-align: left; 
+      width: 100px; 
+    }
+    td > span{
+      display: inline-block;
+      width: 100%;
+    }
+    input:not([type=checkbox]), input:not([type=checkbox]):hover, input:not([type=checkbox])focus { 
+      width: 100%; 
+      height: 30px; 
+      box-sizing: border-box;
+      outline: none; 
+      background-color: #fff; 
+    }
 
   </style>

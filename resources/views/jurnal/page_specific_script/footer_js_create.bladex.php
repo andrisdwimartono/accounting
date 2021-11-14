@@ -26,10 +26,10 @@
     <script src="{{ asset ("/assets/bootstrap/dist/js/bootstrap.bundle.min.js") }}"></script>
     <script src="{{ asset ("/assets/bower_components/jquery-validation/dist/jquery.validate.min.js") }}"></script>
     <script src="{{ asset ("/assets/bower_components/select2/dist/js/select2.full.min.js") }}"></script>
-    <!-- <script src="{{ asset ("/assets/datatables/js/jquery.dataTables.min.js") }}"></script>
+    <script src="{{ asset ("/assets/datatables/js/jquery.dataTables.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/dataTables.bootstrap4.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/dataTables.rowReorder.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/dataTables.buttons.min.js") }}"></script> -->
+    <script src="{{ asset ("/assets/datatables/js/dataTables.buttons.min.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/cakrudtemplate.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
@@ -48,8 +48,8 @@
         anObject[anElement[i].domElement.name] = anElement[i];
     }
 
-    // anObject["debet"].settings.minimumValue = 0;
-    // anObject["credit"].settings.minimumValue = 0;
+    anObject["debet"].settings.minimumValue = 0;
+    anObject["credit"].settings.minimumValue = 0;
 
 
 $(function () {
@@ -79,42 +79,27 @@ $(function () {
             cto_loading_show();
             var quickForm = $("#quickForm");
             var cttransaksi = [];
-            // var table = $("#cttransaksi").DataTable().rows().data();
-            // for(var i = 0; i < table.length; i++){
-            //     cttransaksi.push({"no_seq": table[i][0], "unitkerja": table[i][1], "unitkerja_label": table[i][2], "anggaran": table[i][3], "anggaran_label": table[i][4], "no_jurnal": table[i][5], "tanggal": table[i][6], "keterangan": table[i][7], "jenis_transaksi": table[i][8], "coa": table[i][9], "coa_label": table[i][10], "deskripsi": table[i][11], "jenisbayar": table[i][12], "jenisbayar_label": table[i][13], "nim": table[i][14], "kode_va": table[i][15], "fheader": table[i][16], "debet": table[i][17], "credit": table[i][18], "id": table[i][table.columns().header().length-1]});
-            // }
-            $("#caktable1 > tbody > tr").each(function(index, tr){
-                $(tr).find("td").each(function(index, td){
-                    if([0].includes(index)){
-                        console.log($(td).text());
-                    }else if([1].includes(index)){
-                        console.log($(td).html());
-                    }else if([2, 3, 4].includes(index)){
-
-                    }
-                });
-                // console.log(index);
-                // console.log(tr);
-            });
-            cto_loading_hide();
-            return;
+            var table = $("#cttransaksi").DataTable().rows().data();
+            for(var i = 0; i < table.length; i++){
+                cttransaksi.push({"no_seq": table[i][0], "unitkerja": table[i][1], "unitkerja_label": table[i][2], "anggaran": table[i][3], "anggaran_label": table[i][4], "no_jurnal": table[i][5], "tanggal": table[i][6], "keterangan": table[i][7], "jenis_transaksi": table[i][8], "coa": table[i][9], "coa_label": table[i][10], "deskripsi": table[i][11], "jenisbayar": table[i][12], "jenisbayar_label": table[i][13], "nim": table[i][14], "kode_va": table[i][15], "fheader": table[i][16], "debet": table[i][17], "credit": table[i][18], "id": table[i][table.columns().header().length-1]});
+            }
             $("#transaksi").val(JSON.stringify(cttransaksi));
-            var id_jurnal = 0;
+            var id_{{$page_data["page_data_urlname"]}} = 0;
             var values = $("#quickForm").serialize();
 
             var values = $('#quickForm').serialize();
             var ajaxRequest;
             ajaxRequest = $.ajax({
                 @if($page_data["page_method_name"] == "Update")
-                url: "/updatejurnal/{{$page_data["id"]}}",
+                url: "/update{{$page_data["page_data_urlname"]}}/{{$page_data["id"]}}",
                 @else
-                url: "/storejurnal",
+                url: "/store{{$page_data["page_data_urlname"]}}",
                 @endif
                 type: "post",
                 data: values,
                 success: function(data){
                     if(data.status >= 200 && data.status <= 299){
-                        id_jurnal = data.data.id;
+                        id_{{$page_data["page_data_urlname"]}} = data.data.id;
                             $.toast({
                                 text: data.message,
                                 heading: 'Status',
@@ -180,7 +165,7 @@ var fields = $("#quickForm").serialize();
 
 $("#unitkerja").select2({
     ajax: {
-        url: "/getlinksjurnal",
+        url: "/getlinks{{$page_data["page_data_urlname"]}}",
         type: "post",
         dataType: "json",
         data: function(params) {
@@ -206,7 +191,7 @@ $("#unitkerja").select2({
 
 $("#unitkerja").select2({
     ajax: {
-        url: "/getlinksjurnal",
+        url: "/getlinks{{$page_data["page_data_urlname"]}}",
         type: "post",
         dataType: "json",
         data: function(params) {
@@ -232,7 +217,7 @@ $("#unitkerja").select2({
 
 $("#anggaran").select2({
     ajax: {
-        url: "/getlinksjurnal",
+        url: "/getlinks{{$page_data["page_data_urlname"]}}",
         type: "post",
         dataType: "json",
         data: function(params) {
@@ -258,7 +243,7 @@ $("#anggaran").select2({
 
 $("#coa").select2({
     ajax: {
-        url: "/getlinksjurnal",
+        url: "/getlinks{{$page_data["page_data_urlname"]}}",
         type: "post",
         dataType: "json",
         data: function(params) {
@@ -284,7 +269,7 @@ $("#coa").select2({
 
 $("#jenisbayar").select2({
     ajax: {
-        url: "/getlinksjurnal",
+        url: "/getlinks{{$page_data["page_data_urlname"]}}",
         type: "post",
         dataType: "json",
         data: function(params) {
@@ -400,213 +385,107 @@ $("#quickModalForm_transaksi").validate({
 
 });
 $(document).ready(function() {
-    $(document).keydown(function(event) {
-        if((event.ctrlKey || event.metaKey) && event.which == 66) {
-            $("#addrow").trigger("click");
-            return false;
-        };
-        if((event.ctrlKey || event.metaKey) && event.which == 83) {
-            $("#quickForm").submit();
-            return false;
-        };
-    });
+    $("#forcaktable1").append($("table")
+        .attr("id", "caktable1")
+        .attr("width", "100%")
+        .append($("thead")
+            .append($("th")
+                .attr("id", "caktable1-coa")
+                .text("No. Rek. Akuntansi")
+            )
+            .append($("th")
+                .attr("id", "caktable1-deskripsi")
+                .text("Deskripsi")
+            )
+            .append($("th")
+                .attr("id", "caktable1-debit")
+                .text("Debit")
+            )
+            .append($("th")
+                .attr("id", "caktable1-kredit")
+                .text("Kredit")
+            )
+        )
+        .append($("tbody")
+            .append($("td")
+                .text("1")
+            )
+            .append($("td")
+                .text("Deskripsi")
+            )
+            .append($("td")
+                .text("Debit")
+            )
+            .append($("td")
+                .text("Kredit")
+            )
+        )
+    );
 
-    $("#submit-form").click(function(){
-        $("#quickForm").submit();
-    });
-    
-    $(".addnewrowselect").select2({
-        ajax: {
-            url: "/getlinksjurnal",
-            type: "post",
-            dataType: "json",
-            data: function(params) {
-                return {
-                    term: params.term || "",
-                    page: params.page,
-                    field: "coa",
-                    _token: $("input[name=_token]").val()
-                }
-            },
-            processResults: function (data, params) {
-                params.page = params.page || 1;
-                for(var i = 0; i < data.items.length; i++){
-                    var te = data.items[i].text.split(" ");
-                    text = data.items[i].text;
-                    data.items[i].text = convertCode(te[0])+" "+text.replace(te[0]+" ", "");
-                }
-                return {
-                    results: data.items,
-                    pagination: {
-                        more: (params.page * 25) < data.total_count
-                    }
-                };
-            },
-            cache: true
-        }
-    });
-
-    $(".addnewrowselect").on("change", function() {
-        var $td = $(this).parent();
-        var $tr = $($td).parent();
-        $($tr).find("td:eq(0)").text($(this).val());
-    });
-
-    $(".cakautonumeric").on("change", function(){
-        if(AutoNumeric.getNumber("#debet_"+$(this).attr("id").split("_")[1]) > 0 && AutoNumeric.getNumber("#kredit_"+$(this).attr("id").split("_")[1]) > 0){
-            $("#debet_"+$(this).attr("id").split("_")[1]).addClass("border-danger");
-            $("#kredit_"+$(this).attr("id").split("_")[1]).addClass("border-danger");
-        }else{
-            $("#debet_"+$(this).attr("id").split("_")[1]).removeClass("border-danger");
-            $("#kredit_"+$(this).attr("id").split("_")[1]).removeClass("border-danger");
-        }
-        calcTotal();
-    });
-
-    $("#addrow").click(function(){
-        var rowlen = $('#caktable1 tr').length;
-        
-        var rowaddlen = 0;
-        $("#caktable1").find('tbody')
-            .append("<tr class=\"addnewrow\">"
-                +"<td class=\"column-hidden\"></td>"
-                +"<td class=\"p-0\"><select name=\"coa_"+rowlen+"\" id=\"coa_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
-                +"<td class=\"p-0\"><input type=\"text\" name=\"deskripsi_"+rowlen+"\" class=\"form-control form-control-sm\"></td>"
-                +"<td class=\"p-0\"><input type=\"text\" name=\"debet_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float\" id=\"debet_"+rowlen+"\" placeholder=\"Enter Debet\"></td>"
-                +"<td class=\"p-0\"><input type=\"text\" name=\"kredit_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float\" id=\"kredit_"+rowlen+"\" placeholder=\"Enter Kredit\"></td>"
-                +"<td class=\"p-0 text-center\"><i class=\"text-danger fas fa-minus-circle\" style=\"cursor: pointer;\"></i></td>"
-            +"</tr>");
-        rowaddlen = $('#caktable1 tr.addnewrow').length;
-        
-        $("#coa_"+rowlen+"").on("change", function() {
-            var $td = $(this).parent();
-            var $tr = $($td).parent();
-            $($tr).find("td:eq(0)").text($(this).val());
-        });
-
-        var debets = new AutoNumeric("#debet_"+rowlen, {
-            decimalCharacter : ',',
-            digitGroupSeparator : '.',
-            minimumValue : 0,
-            decimalPlaces : 2,
-            unformatOnSubmit : true
-        });
-        var kredits = new AutoNumeric("#kredit_"+rowlen, {
-            decimalCharacter : ',',
-            digitGroupSeparator : '.',
-            minimumValue : 0,
-            decimalPlaces : 2,
-            unformatOnSubmit : true
-        });
-
-        $("#debet_"+rowlen+", #kredit_"+rowlen).on("change", function(){
-            if(debets.rawValue > 0 && kredits.rawValue > 0){
-                $("#debet_"+rowlen).addClass("border-danger");
-                $("#kredit_"+rowlen).addClass("border-danger");
-            }else{
-                $("#debet_"+rowlen).removeClass("border-danger");
-                $("#kredit_"+rowlen).removeClass("border-danger");
+    var table_transaksi = $("#cttransaksi").DataTable({
+        @if($page_data["page_method_name"] != "View")
+        rowReorder: true,
+        @endif
+        aoColumnDefs: [{
+            aTargets: [17, 18],
+            mRender: function (data, type, full){
+                var formattedvalue = parseFloat(data).toFixed(2);
+                formattedvalue = formattedvalue.toString().replace(".", ",");
+                formattedvalue = formattedvalue.toString().replace(/(\d+)(\d{3})/, '$1'+'.'+'$2');
+                return formattedvalue;
             }
-            calcTotal();
-        });
-
-        $("#coa_"+rowlen+"").select2({
-            ajax: {
-                url: "/getlinksjurnal",
-                type: "post",
-                dataType: "json",
-                data: function(params) {
-                    return {
-                        term: params.term || "",
-                        page: params.page,
-                        field: "coa",
-                        _token: $("input[name=_token]").val()
-                    }
-                },
-                processResults: function (data, params) {
-                    params.page = params.page || 1;
-                    for(var i = 0; i < data.items.length; i++){
-                        var te = data.items[i].text.split(" ");
-                        text = data.items[i].text;
-                        data.items[i].text = convertCode(te[0])+" "+text.replace(te[0]+" ", "");
-                    }
-                    return {
-                        results: data.items,
-                        pagination: {
-                            more: (params.page * 25) < data.total_count
-                        }
-                    };
-                },
-                cache: true
+        }],
+        //add button
+        dom: "Bfrtip" @if($page_data["page_method_name"] != "View") ,
+        buttons: [
+            {
+                text: "New",
+                action: function ( e, dt, node, config ) {
+                    $("#staticBackdrop_transaksi").modal({"show": true});
+                    addChildTable_transaksi("staticBackdrop_transaksi");
+                }
             }
-        });
+        ]
+        @endif
     });
-    
-    
-    // var table_transaksi = $("#cttransaksi").DataTable({
-    //     @if($page_data["page_method_name"] != "View")
-    //     rowReorder: true,
-    //     @endif
-    //     aoColumnDefs: [{
-    //         aTargets: [17, 18],
-    //         mRender: function (data, type, full){
-    //             var formattedvalue = parseFloat(data).toFixed(2);
-    //             formattedvalue = formattedvalue.toString().replace(".", ",");
-    //             formattedvalue = formattedvalue.toString().replace(/(\d+)(\d{3})/, '$1'+'.'+'$2');
-    //             return formattedvalue;
-    //         }
-    //     }],
-    //     //add button
-    //     dom: "Bfrtip" @if($page_data["page_method_name"] != "View") ,
-    //     buttons: [
-    //         {
-    //             text: "New",
-    //             action: function ( e, dt, node, config ) {
-    //                 $("#staticBackdrop_transaksi").modal({"show": true});
-    //                 addChildTable_transaksi("staticBackdrop_transaksi");
-    //             }
-    //         }
-    //     ]
-    //     @endif
-    // });
 
-    // table_transaksi.column(table_transaksi.columns().header().length-1).visible(false);
-    // table_transaksi.column(0).visible(false);
-    // table_transaksi.column(1).visible(false);
-    // table_transaksi.column(2).visible(false);
-    // table_transaksi.column(3).visible(false);
-    // table_transaksi.column(4).visible(false);
-    // table_transaksi.column(5).visible(false);
-    // table_transaksi.column(6).visible(false);
-    // table_transaksi.column(7).visible(false);
-    // table_transaksi.column(9).visible(false);
-    // table_transaksi.column(11).visible(false);
-    // table_transaksi.column(12).visible(false);
-    // table_transaksi.column(13).visible(false);
-    // table_transaksi.column(14).visible(false);
-    // table_transaksi.column(15).visible(false);
+    table_transaksi.column(table_transaksi.columns().header().length-1).visible(false);
+    table_transaksi.column(0).visible(false);
+    table_transaksi.column(1).visible(false);
+    table_transaksi.column(2).visible(false);
+    table_transaksi.column(3).visible(false);
+    table_transaksi.column(4).visible(false);
+    table_transaksi.column(5).visible(false);
+    table_transaksi.column(6).visible(false);
+    table_transaksi.column(7).visible(false);
+    table_transaksi.column(9).visible(false);
+    table_transaksi.column(11).visible(false);
+    table_transaksi.column(12).visible(false);
+    table_transaksi.column(13).visible(false);
+    table_transaksi.column(14).visible(false);
+    table_transaksi.column(15).visible(false);
 
-    // $("#cttransaksi tbody").on( "click", ".row-show", function () {
-    //     $("#staticBackdrop_transaksi").modal({"show": true});
-    //     showChildTable_transaksi("staticBackdrop_transaksi", table_transaksi.row( $(this).parents("tr") ));
-    // } );
+    $("#cttransaksi tbody").on( "click", ".row-show", function () {
+        $("#staticBackdrop_transaksi").modal({"show": true});
+        showChildTable_transaksi("staticBackdrop_transaksi", table_transaksi.row( $(this).parents("tr") ));
+    } );
 
     $("#staticBackdropClose_transaksi").click(function(){
         $("#staticBackdrop_transaksi").modal("hide");
     });
 
-    // table_transaksi.on( "row-reorder", function ( e, diff, edit ) {
-    //         var result = "Reorder started on row: "+edit.triggerRow.data()[1]+"<br>";
-    //         for ( var i=0, ien=diff.length ; i<ien ; i++ ) {
-    //             var rowData = table_transaksi.row( diff[i].node ).data();
-    //             result += rowData[1]+" updated to be in position "+
-    //                 diff[i].newData+" (was "+diff[i].oldData+")<br>";
-    //         }
-    //     $("#result").html( "Event result:<br>"+result );
-    // } );
-    // $("#cttransaksi tbody").on("click", ".row-delete", function () {
-    //     table_transaksi.row($(this).parents("tr")).remove().draw();
-    // });
+    table_transaksi.on( "row-reorder", function ( e, diff, edit ) {
+            var result = "Reorder started on row: "+edit.triggerRow.data()[1]+"<br>";
+            for ( var i=0, ien=diff.length ; i<ien ; i++ ) {
+                var rowData = table_transaksi.row( diff[i].node ).data();
+                result += rowData[1]+" updated to be in position "+
+                    diff[i].newData+" (was "+diff[i].oldData+")<br>";
+            }
+        $("#result").html( "Event result:<br>"+result );
+    } );
+    $("#cttransaksi tbody").on("click", ".row-delete", function () {
+        table_transaksi.row($(this).parents("tr")).remove().draw();
+    });
 
     @if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")
     getdata();
@@ -617,54 +496,54 @@ $(document).ready(function() {
 function getdata(){
     cto_loading_show();
     $.ajax({
-        url: "/getdatajurnal",
+        url: "/getdata{{$page_data["page_data_urlname"]}}",
         type: "post",
         data: {
             id: {{$page_data["id"]}},
             _token: $("#quickForm input[name=_token]").val()
         },
         success: function(data){
-            for(var i = 0; i < Object.keys(data.data.jurnal).length; i++){
-                if(Object.keys(data.data.jurnal)[i] == "unitkerja"){
-                    if(data.data.jurnal[Object.keys(data.data.jurnal)[i]]){
-                        var newState = new Option(data.data.jurnal[Object.keys(data.data.jurnal)[i]+"_label"], data.data.jurnal[Object.keys(data.data.jurnal)[i]], true, false);
-                        $("#"+Object.keys(data.data.jurnal)[i]).append(newState).trigger("change");
+            for(var i = 0; i < Object.keys(data.data.{{$page_data["page_data_urlname"]}}).length; i++){
+                if(Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i] == "unitkerja"){
+                    if(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]){
+                        var newState = new Option(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"_label"], data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]], true, false);
+                        $("#"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]).append(newState).trigger("change");
                     }
                 }else{
-                    if(["ewfsdfsafdsafasdfasdferad"].includes(Object.keys(data.data.jurnal)[i])){
-                        $("input[name="+Object.keys(data.data.jurnal)[i]+"]").prop("checked", data.data.jurnal[Object.keys(data.data.jurnal)[i]]);
+                    if(["ewfsdfsafdsafasdfasdferad"].includes(Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i])){
+                        $("input[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").prop("checked", data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
                     }else{
                     try{
-                        anObject[Object.keys(data.data.jurnal)[i]].set(data.data.jurnal[Object.keys(data.data.jurnal)[i]]);
+                        anObject[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]].set(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
                     }catch(err){
-                        $("input[name="+Object.keys(data.data.jurnal)[i]+"]").val(data.data.jurnal[Object.keys(data.data.jurnal)[i]]);
+                        $("input[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").val(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
                     }
-                        $("textarea[name="+Object.keys(data.data.jurnal)[i]+"]").val(data.data.jurnal[Object.keys(data.data.jurnal)[i]]);
-                        if(["ewfsdfsafdsafasdfasdferad"].includes(Object.keys(data.data.jurnal)[i])){
-                            if(data.data.jurnal[Object.keys(data.data.jurnal)[i]] != null){
-                                $("#btn_"+Object.keys(data.data.jurnal)[i]+"").removeAttr("disabled");
-                                $("#btn_"+Object.keys(data.data.jurnal)[i]+"").addClass("btn-success text-white");
-                                $("#btn_"+Object.keys(data.data.jurnal)[i]+"").removeClass("btn-primary");
-                                var filename = Object.keys(data.data.jurnal)[i];
-                                $("label[for=upload_"+Object.keys(data.data.jurnal)[i]+"]").html(filename);
-                                $("#btn_"+Object.keys(data.data.jurnal)[i]+"").html("Download");
+                        $("textarea[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").val(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
+                        if(["ewfsdfsafdsafasdfasdferad"].includes(Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i])){
+                            if(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]] != null){
+                                $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").removeAttr("disabled");
+                                $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").addClass("btn-success text-white");
+                                $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").removeClass("btn-primary");
+                                var filename = Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i];
+                                $("label[for=upload_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").html(filename);
+                                $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").html("Download");
                             }
                         }
                     }
-                    $("select[name="+Object.keys(data.data.jurnal)[i]+"]").val(data.data.jurnal[Object.keys(data.data.jurnal)[i]]).change();
+                    $("select[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").val(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]).change();
                 }
                 }
 
-            // $("#cttransaksi").DataTable().clear().draw();
-            // if(data.data.transaksi.length > 0){
-            //     for(var i = 0; i < data.data.transaksi.length; i++){
-            //         var dttb = $('#cttransaksi').DataTable();
-            //         var child_table_data = [data.data.transaksi[i].no_seq, data.data.transaksi[i].unitkerja, data.data.transaksi[i].unitkerja_label, data.data.transaksi[i].anggaran, data.data.transaksi[i].anggaran_label, data.data.transaksi[i].no_jurnal, data.data.transaksi[i].tanggal, data.data.transaksi[i].keterangan, data.data.transaksi[i].jenis_transaksi, data.data.transaksi[i].coa, data.data.transaksi[i].coa_label, data.data.transaksi[i].deskripsi, data.data.transaksi[i].jenisbayar, data.data.transaksi[i].jenisbayar_label, data.data.transaksi[i].nim, data.data.transaksi[i].kode_va, data.data.transaksi[i].fheader, data.data.transaksi[i].debet, data.data.transaksi[i].credit, @if($page_data["page_method_name"] != "View") '<div class="row-show"><i class="fa fa-eye" style="color:blue;cursor: pointer;"></i></div>     <div class="row-delete"><i class="fa fa-trash" style="color:red;cursor: pointer;"></i></div>' @else '<div class="row-show"><i class="fa fa-eye" style="color:blue;cursor: pointer;"></i></div>' @endif, data.data.transaksi[i].id];
-            //         if(dttb.row.add(child_table_data).draw( false )){
+            $("#cttransaksi").DataTable().clear().draw();
+            if(data.data.transaksi.length > 0){
+                for(var i = 0; i < data.data.transaksi.length; i++){
+                    var dttb = $('#cttransaksi').DataTable();
+                    var child_table_data = [data.data.transaksi[i].no_seq, data.data.transaksi[i].unitkerja, data.data.transaksi[i].unitkerja_label, data.data.transaksi[i].anggaran, data.data.transaksi[i].anggaran_label, data.data.transaksi[i].no_jurnal, data.data.transaksi[i].tanggal, data.data.transaksi[i].keterangan, data.data.transaksi[i].jenis_transaksi, data.data.transaksi[i].coa, data.data.transaksi[i].coa_label, data.data.transaksi[i].deskripsi, data.data.transaksi[i].jenisbayar, data.data.transaksi[i].jenisbayar_label, data.data.transaksi[i].nim, data.data.transaksi[i].kode_va, data.data.transaksi[i].fheader, data.data.transaksi[i].debet, data.data.transaksi[i].credit, @if($page_data["page_method_name"] != "View") '<div class="row-show"><i class="fa fa-eye" style="color:blue;cursor: pointer;"></i></div>     <div class="row-delete"><i class="fa fa-trash" style="color:red;cursor: pointer;"></i></div>' @else '<div class="row-show"><i class="fa fa-eye" style="color:blue;cursor: pointer;"></i></div>' @endif, data.data.transaksi[i].id];
+                    if(dttb.row.add(child_table_data).draw( false )){
 
-            //         }
-            //     }
-            // }
+                    }
+                }
+            }
         cto_loading_hide();
     },
         error: function (err) {
@@ -877,25 +756,5 @@ function validatequickModalForm_transaksi(){
         return true;
     }
 }
-
-function convertCode(data){
-    var val = "";
-    for(var i = 0; i < data.length; i++){
-        if(i == 0){
-          val = val+data.charAt(i)+"-";
-        }else if(i == 2 || i == 4){
-          val = val+data.charAt(i)+"-";
-        }else if(i > 4 && (i-4)%3 == 0 && i != data.length-1){
-          val = val+data.charAt(i)+"-";
-        }else{
-          val = val+data.charAt(i);
-        }
-    }
-    return val;
- }
-
- function calcTotal(){
-     
- }
 
 </script>
