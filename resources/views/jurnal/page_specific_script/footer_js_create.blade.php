@@ -53,78 +53,109 @@
 
 
 $(function () {
-    $('.datepicker-default').pickadate({
+    $('input[name=tanggal_jurnal], input[name=tanggal_jurnal_from], input[name=tanggal_jurnal_to]').pickadate({
         format: 'dd/mm/yyyy',
         formatSubmit: 'yyyy-mm-dd',
-        hiddenName: true
-    })   
-    // @if($page_data["page_method_name"] != "View")
-    // $("#reservationdate_tanggal_jurnal").datepicker({
-    //     format:"dd/mm/yyyy",
-    //     modal: true,
-    //     footer: true
-    // });
-    // @endif
-    // @if($page_data["page_method_name"] != "View")
-    // $("#reservationdate_tanggal").datepicker({
-    //     format:"",
-    //     modal: true,
-    //     footer: true
-    // });
-    // @endif
-
+        hiddenName: true,
+        onStart: function(){
+            var date = new Date();
+                this.set('select', date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate(), { format: 'yyyy-mm-dd' });
+        }
+    });
+    
     $.validator.setDefaults({
         submitHandler: function (form, event) {
             event.preventDefault();
             cto_loading_show();
             var quickForm = $("#quickForm");
             var cttransaksi = [];
-            // var table = $("#cttransaksi").DataTable().rows().data();
-            // for(var i = 0; i < table.length; i++){
-            //     cttransaksi.push({"no_seq": table[i][0], "unitkerja": table[i][1], "unitkerja_label": table[i][2], "anggaran": table[i][3], "anggaran_label": table[i][4], "no_jurnal": table[i][5], "tanggal": table[i][6], "keterangan": table[i][7], "jenis_transaksi": table[i][8], "coa": table[i][9], "coa_label": table[i][10], "deskripsi": table[i][11], "jenisbayar": table[i][12], "jenisbayar_label": table[i][13], "nim": table[i][14], "kode_va": table[i][15], "fheader": table[i][16], "debet": table[i][17], "credit": table[i][18], "id": table[i][table.columns().header().length-1]});
-            // }
+            
+            if(parseFloat($("#totalselisih").text().replace(".", "").replace(",", ".")) != 0){
+                $("#caktable1_message").html("Debet Kredit masih ada selisih!");
+                $("#caktable1_message").removeClass("d-none");
+                cto_loading_hide();
+                return;
+            }else{
+                $("#caktable1_message").html("");
+                $("#caktable1_message").addClass("d-none");
+            }
             $("#caktable1 > tbody > tr").each(function(index, tr){
-                $(tr).find("td").each(function(index, td){
-                    if([0].includes(index)){
-                        console.log($(td).text());
-                    }else if([1].includes(index)){
-                        console.log($(td).html());
-                    }else if([2, 3, 4].includes(index)){
+                if(AutoNumeric.getNumber("#debet_"+$(tr).attr("row-seq")) > 0 && AutoNumeric.getNumber("#kredit_"+$(tr).attr("row-seq")) > 0){
+                    $("#debet_"+$(tr).attr("row-seq")).addClass("border-danger");
+                    $("#kredit_"+$(tr).attr("row-seq")).addClass("border-danger");
+                    cto_loading_hide();
+                    return;
+                }
 
+                if(AutoNumeric.getNumber("#debet_"+$(tr).attr("row-seq")) == 0 && AutoNumeric.getNumber("#kredit_"+$(tr).attr("row-seq")) == 0 && $("#coa_"+$(tr).attr("row-seq")).val() == null){
+                    return true;
+                }
+                
+                var unitkerja = $("#unitkerja").val();
+                var unitkerja_label = $("#unitkerja").text();
+                var anggaran = 0;
+                var anggaran_label = $("#anggaran_label").val();
+                var tanggal = $("input[name=tanggal_jurnal]").val();
+                var coa = 0;
+                var coa_label = "";
+                var keterangan = "";
+                var deskripsi = "";
+                var jenisbayar = 0;
+                var jenisbayar_label = "";
+                var nim = "";
+                var kode_va = "";
+                var fheader = "";
+                var debet = 0;
+                var credit = 0;
+                var id = "";
+                $(tr).find("td").each(function(index, td){
+                    if(index == 0){
+                        coa = $(td).text();
+                    }else if(index == 1){
+                        coa_label = $(td).find("select").text();
+                    }else if(index == 2){
+                        deskripsi = $(td).find("input").val();
+                    }else if(index == 3){
+                        debet = AutoNumeric.getNumber("#debet_"+$(tr).attr("row-seq"));
+                    }else if(index == 4){
+                        credit = AutoNumeric.getNumber("#kredit_"+$(tr).attr("row-seq"));
+                    }else if(index == 6){
+                        id = $(td).text();
                     }
                 });
-                // console.log(index);
-                // console.log(tr);
+                cttransaksi.push({"no_seq": index, "unitkerja": unitkerja, "unitkerja_label": unitkerja_label, "anggaran": anggaran, "anggaran_label": anggaran_label, "no_jurnal": "", "tanggal": tanggal, "keterangan": keterangan, "jenis_transaksi": "", "coa": coa, "coa_label": coa_label, "deskripsi": deskripsi, "jenisbayar": jenisbayar, "jenisbayar_label": jenisbayar_label, "nim": nim, "kode_va": kode_va, "fheader": fheader, "debet": debet, "credit": credit, "id": id});
             });
-            cto_loading_hide();
-            return;
+            
             $("#transaksi").val(JSON.stringify(cttransaksi));
             var id_jurnal = 0;
             var values = $("#quickForm").serialize();
 
-            var values = $('#quickForm').serialize();
             var ajaxRequest;
+            var urlpage = "/storejurnal";
+            if($("#is_edit").val() == 1){
+                urlpage = "/updatejurnal/"+$("#id_jurnal").val();
+            }
             ajaxRequest = $.ajax({
-                @if($page_data["page_method_name"] == "Update")
-                url: "/updatejurnal/{{$page_data["id"]}}",
-                @else
-                url: "/storejurnal",
-                @endif
+                url: urlpage,
                 type: "post",
                 data: values,
                 success: function(data){
                     if(data.status >= 200 && data.status <= 299){
                         id_jurnal = data.data.id;
-                            $.toast({
-                                text: data.message,
-                                heading: 'Status',
-                                icon: 'success',
-                                showHideTransition: 'fade',
-                                allowToastClose: true,
-                                hideAfter: 3000,
-                                position: 'mid-center',
-                                textAlign: 'left'
-                            });
+                        $("#id_jurnal").val(data.data.id);
+                        $("#is_edit").val(1);
+                        $("#no_jurnal").val(data.data.no_jurnal);
+                        
+                        $.toast({
+                            text: data.message,
+                            heading: 'Status',
+                            icon: 'success',
+                            showHideTransition: 'fade',
+                            allowToastClose: true,
+                            hideAfter: 3000,
+                            position: 'mid-center',
+                            textAlign: 'left'
+                        });
                     }
                     cto_loading_hide();
                     @if($page_data["page_method_name"] == "Update")
@@ -400,6 +431,11 @@ $("#quickModalForm_transaksi").validate({
 
 });
 $(document).ready(function() {
+    getlist();
+    $("#no_jurnal_search, #countcaktable2").change(function(){
+        getlist();
+    });
+
     $(document).keydown(function(event) {
         if((event.ctrlKey || event.metaKey) && event.which == 66) {
             $("#addrow").trigger("click");
@@ -413,6 +449,13 @@ $(document).ready(function() {
 
     $("#submit-form").click(function(){
         $("#quickForm").submit();
+    });
+
+    $(".row-delete").click(function(){
+        var $td = $(this).parent();
+        var $tr = $($td).parent();
+        $($tr).remove();
+        calcTotal();
     });
     
     $(".addnewrowselect").select2({
@@ -464,20 +507,28 @@ $(document).ready(function() {
     });
 
     $("#addrow").click(function(){
-        var rowlen = $('#caktable1 tr').length;
-        
+        var rowlen = parseInt($('#caktable1 > tbody > tr:last').attr('row-seq'))+1;
+
         var rowaddlen = 0;
         $("#caktable1").find('tbody')
-            .append("<tr class=\"addnewrow\">"
+            .append("<tr row-seq=\""+rowlen+"\" class=\"addnewrow\">"
                 +"<td class=\"column-hidden\"></td>"
                 +"<td class=\"p-0\"><select name=\"coa_"+rowlen+"\" id=\"coa_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
-                +"<td class=\"p-0\"><input type=\"text\" name=\"deskripsi_"+rowlen+"\" class=\"form-control form-control-sm\"></td>"
+                +"<td class=\"p-0\"><input type=\"text\" name=\"deskripsi_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"deskripsi_"+rowlen+"\"></td>"
                 +"<td class=\"p-0\"><input type=\"text\" name=\"debet_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float\" id=\"debet_"+rowlen+"\" placeholder=\"Enter Debet\"></td>"
                 +"<td class=\"p-0\"><input type=\"text\" name=\"kredit_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float\" id=\"kredit_"+rowlen+"\" placeholder=\"Enter Kredit\"></td>"
-                +"<td class=\"p-0 text-center\"><i class=\"text-danger fas fa-minus-circle\" style=\"cursor: pointer;\"></i></td>"
+                +"<td class=\"p-0 text-center\"><button id=\"row_delete_"+rowlen+"\" class=\"bg-white border-0\"><i class=\"text-danger fas fa-minus-circle row-delete\" style=\"cursor: pointer;\"></i></button></td>"
+                +"<td class=\"column-hidden\"></td>"
             +"</tr>");
         rowaddlen = $('#caktable1 tr.addnewrow').length;
         
+        $("#row_delete_"+rowlen).on('click', function(){
+            var $td = $(this).parent();
+            var $tr = $($td).parent();
+            $($tr).remove();
+            calcTotal();
+        });
+
         $("#coa_"+rowlen+"").on("change", function() {
             var $td = $(this).parent();
             var $tr = $($td).parent();
@@ -541,86 +592,51 @@ $(document).ready(function() {
             }
         });
     });
+
     
     
-    // var table_transaksi = $("#cttransaksi").DataTable({
-    //     @if($page_data["page_method_name"] != "View")
-    //     rowReorder: true,
-    //     @endif
-    //     aoColumnDefs: [{
-    //         aTargets: [17, 18],
-    //         mRender: function (data, type, full){
-    //             var formattedvalue = parseFloat(data).toFixed(2);
-    //             formattedvalue = formattedvalue.toString().replace(".", ",");
-    //             formattedvalue = formattedvalue.toString().replace(/(\d+)(\d{3})/, '$1'+'.'+'$2');
-    //             return formattedvalue;
-    //         }
-    //     }],
-    //     //add button
-    //     dom: "Bfrtip" @if($page_data["page_method_name"] != "View") ,
-    //     buttons: [
-    //         {
-    //             text: "New",
-    //             action: function ( e, dt, node, config ) {
-    //                 $("#staticBackdrop_transaksi").modal({"show": true});
-    //                 addChildTable_transaksi("staticBackdrop_transaksi");
-    //             }
-    //         }
-    //     ]
-    //     @endif
-    // });
+    $("#createnew").click(function(){
+        $("#id_jurnal").val(0);
+        $("#is_edit").val(0);
+        $('#unitkerja').val(null).trigger('change');
+        $("#anggaran_label").val("");
+        $("#no_jurnal").val("JU#######");
+        $('#tanggal_jurnal').val("");
+        $('#coa_1').val(null).trigger('change');
+        $('#deskripsi_1').val("");
+        AutoNumeric.getAutoNumericElement('#debet_1').set(0);
+        AutoNumeric.getAutoNumericElement('#kredit_1').set(0);
+        var last_row = $('#caktable1 > tbody > tr:last').attr('row-seq');
+        if(parseInt(last_row) > 1){
+            for(var i = 2; i <= last_row; i++){
+                $("#row_delete_"+i).trigger("click");
+            }
+        }
+        calcTotal();
+        $("#addrow").trigger("click");
+        $("#addrow").trigger("click");
+        $("#addrow").trigger("click");
+    });
 
-    // table_transaksi.column(table_transaksi.columns().header().length-1).visible(false);
-    // table_transaksi.column(0).visible(false);
-    // table_transaksi.column(1).visible(false);
-    // table_transaksi.column(2).visible(false);
-    // table_transaksi.column(3).visible(false);
-    // table_transaksi.column(4).visible(false);
-    // table_transaksi.column(5).visible(false);
-    // table_transaksi.column(6).visible(false);
-    // table_transaksi.column(7).visible(false);
-    // table_transaksi.column(9).visible(false);
-    // table_transaksi.column(11).visible(false);
-    // table_transaksi.column(12).visible(false);
-    // table_transaksi.column(13).visible(false);
-    // table_transaksi.column(14).visible(false);
-    // table_transaksi.column(15).visible(false);
-
-    // $("#cttransaksi tbody").on( "click", ".row-show", function () {
-    //     $("#staticBackdrop_transaksi").modal({"show": true});
-    //     showChildTable_transaksi("staticBackdrop_transaksi", table_transaksi.row( $(this).parents("tr") ));
-    // } );
+    $("#createnew").trigger("click");
 
     $("#staticBackdropClose_transaksi").click(function(){
         $("#staticBackdrop_transaksi").modal("hide");
     });
 
-    // table_transaksi.on( "row-reorder", function ( e, diff, edit ) {
-    //         var result = "Reorder started on row: "+edit.triggerRow.data()[1]+"<br>";
-    //         for ( var i=0, ien=diff.length ; i<ien ; i++ ) {
-    //             var rowData = table_transaksi.row( diff[i].node ).data();
-    //             result += rowData[1]+" updated to be in position "+
-    //                 diff[i].newData+" (was "+diff[i].oldData+")<br>";
-    //         }
-    //     $("#result").html( "Event result:<br>"+result );
-    // } );
-    // $("#cttransaksi tbody").on("click", ".row-delete", function () {
-    //     table_transaksi.row($(this).parents("tr")).remove().draw();
-    // });
-
     @if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")
     getdata();
     @endif
-} );
+});
 
-@if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")
 function getdata(){
     cto_loading_show();
     $.ajax({
         url: "/getdatajurnal",
         type: "post",
         data: {
-            id: {{$page_data["id"]}},
+            id: $("#id_jurnal").val(),
+            //id: 4,
             _token: $("#quickForm input[name=_token]").val()
         },
         success: function(data){
@@ -634,27 +650,47 @@ function getdata(){
                     if(["ewfsdfsafdsafasdfasdferad"].includes(Object.keys(data.data.jurnal)[i])){
                         $("input[name="+Object.keys(data.data.jurnal)[i]+"]").prop("checked", data.data.jurnal[Object.keys(data.data.jurnal)[i]]);
                     }else{
-                    try{
-                        anObject[Object.keys(data.data.jurnal)[i]].set(data.data.jurnal[Object.keys(data.data.jurnal)[i]]);
-                    }catch(err){
-                        $("input[name="+Object.keys(data.data.jurnal)[i]+"]").val(data.data.jurnal[Object.keys(data.data.jurnal)[i]]);
-                    }
-                        $("textarea[name="+Object.keys(data.data.jurnal)[i]+"]").val(data.data.jurnal[Object.keys(data.data.jurnal)[i]]);
-                        if(["ewfsdfsafdsafasdfasdferad"].includes(Object.keys(data.data.jurnal)[i])){
-                            if(data.data.jurnal[Object.keys(data.data.jurnal)[i]] != null){
-                                $("#btn_"+Object.keys(data.data.jurnal)[i]+"").removeAttr("disabled");
-                                $("#btn_"+Object.keys(data.data.jurnal)[i]+"").addClass("btn-success text-white");
-                                $("#btn_"+Object.keys(data.data.jurnal)[i]+"").removeClass("btn-primary");
-                                var filename = Object.keys(data.data.jurnal)[i];
-                                $("label[for=upload_"+Object.keys(data.data.jurnal)[i]+"]").html(filename);
-                                $("#btn_"+Object.keys(data.data.jurnal)[i]+"").html("Download");
-                            }
+                        try{
+                            anObject[Object.keys(data.data.jurnal)[i]].set(data.data.jurnal[Object.keys(data.data.jurnal)[i]]);
+                        }catch(err){
+                            $("input[name="+Object.keys(data.data.jurnal)[i]+"]").val(data.data.jurnal[Object.keys(data.data.jurnal)[i]]);
                         }
+                        $("textarea[name="+Object.keys(data.data.jurnal)[i]+"]").val(data.data.jurnal[Object.keys(data.data.jurnal)[i]]);
                     }
                     $("select[name="+Object.keys(data.data.jurnal)[i]+"]").val(data.data.jurnal[Object.keys(data.data.jurnal)[i]]).change();
                 }
                 }
 
+                if(data.data.transaksi.length > 0){
+                    var biggest_seq = 0;
+                    for(var i = 0; i < data.data.transaksi.length; i++){
+                        if(data.data.transaksi[i].no_seq > biggest_seq){
+                            biggest_seq = data.data.transaksi[i].no_seq;
+                        }
+                    }
+
+                    var caktable1 = $("#caktable1");
+                    for(var i = 0; i < data.data.transaksi.length; i++){
+                        if(data.data.transaksi[i].no_seq > 3){
+                            var trexist = $("#caktable1 > tbody > tr[row-seq="+(data.data.transaksi[i].no_seq+1)+"]").length;
+                            while(!trexist){
+                                $("#addrow").trigger("click");
+                                trexist = $("#caktable1 > tbody > tr[row-seq="+(data.data.transaksi[i].no_seq+1)+"]").length;
+                            }
+                        }
+                        $("#caktable1 > tbody > tr[row-seq="+(data.data.transaksi[i].no_seq+1)+"]").find("td:eq(0)").text(data.data.transaksi[i].coa);
+                        $("select[name='coa_"+(data.data.transaksi[i].no_seq+1)+"']").empty();
+                        var newState = new Option(data.data.transaksi[i].coa_label, data.data.transaksi[i].coa, true, false);
+                        $("#coa_"+(data.data.transaksi[i].no_seq+1)+"").append(newState).trigger('change');
+                        $("#caktable1 > tbody > tr[row-seq=1]").find("td:eq(0)").text(data.data.transaksi[i].coa);
+
+                        $("input[name='deskripsi_"+(data.data.transaksi[i].no_seq+1)+"']").val(data.data.transaksi[i].deskripsi);
+
+                        AutoNumeric.getAutoNumericElement('#debet_'+(data.data.transaksi[i].no_seq+1)).set(data.data.transaksi[i].debet);
+                        AutoNumeric.getAutoNumericElement('#kredit_'+(data.data.transaksi[i].no_seq+1)).set(data.data.transaksi[i].credit);
+                        $("#caktable1 > tbody > tr[row-seq="+(data.data.transaksi[i].no_seq+1)+"]").find("td:eq(6)").text(data.data.transaksi[i].id);
+                    }
+                }
             // $("#cttransaksi").DataTable().clear().draw();
             // if(data.data.transaksi.length > 0){
             //     for(var i = 0; i < data.data.transaksi.length; i++){
@@ -685,7 +721,60 @@ function getdata(){
         }
     });
 }
-    @endif
+
+function getlist(){
+    cto_loading_show();
+    $.ajax({
+        url: "/getlistjurnal",
+        type: "post",
+        data: {
+            _token: $("#quickForm input[name=_token]").val(),
+            start: 0,
+            length: $("#countcaktable2").val(),
+            no_jurnal_search: $("#no_jurnal_search").val(),
+            tanggal_jurnal_to: $("#tanggal_jurnal_to").val(),
+            tanggal_jurnal_from: $("#tanggal_jurnal_from").val()
+        },
+        success: function(data){
+            $("#caktable2").find('tbody').empty();
+            const dat = JSON.parse(data);
+            for(var i = 0; i < dat.data.length; i++){
+                $("#caktable2").find('tbody')
+                    .append("<tr row-id=\""+dat.data[i][0]+"\" class=\"addnewrow2\">"
+                        +"<td class=\"column-hidden\">"+dat.data[i][0]+"</td>"
+                        +"<td class=\"p-0\">"+dat.data[i][1]+"</td>"
+                        +"<td class=\"p-0\">"+dat.data[i][2]+"</td>"
+                        +"<td class=\"p-0\">"+dat.data[i][3]+"</td>"
+                        // +"<td class=\"p-0\">"+dat.data[i][4]+"</td>"
+                        +"<td class=\"p-0 text-center\"><button id=\"row_delete_"+dat.data[i][0]+"\" class=\"bg-white border-0\"><i class=\"text-danger fas fa-minus-circle row-delete\" style=\"cursor: pointer;\"></i></button></td>"
+                        +"<td class=\"column-hidden\"></td>"
+                    +"</tr>");
+            }
+            $(".addnewrow2").click(function(){
+                $("#id_jurnal").val($(this).attr("row-id"));
+                $("#is_edit").val(1);
+                getdata();
+            });
+        cto_loading_hide();
+    },
+        error: function (err) {
+            if (err.status >= 400 && err.status <= 500) {
+                $.toast({
+                    text: err.status+" "+err.responseJSON.message,
+                    heading: 'Status',
+                    icon: 'warning',
+                    showHideTransition: 'fade',
+                    allowToastClose: true,
+                    hideAfter: 3000,
+                    position: 'mid-center',
+                    textAlign: 'left'
+                });
+            }
+            cto_loading_hide();
+        }
+    });
+}
+    
 function addChildTable_transaksi(childtablename){
     $("select[name='anggaran']").empty();
     $("input[name='anggaran_label']").val("");
@@ -895,7 +984,22 @@ function convertCode(data){
  }
 
  function calcTotal(){
-     
+     var totaldebet = 0;
+     var totalkredit = 0;
+     $("#caktable1 > tbody > tr").each(function(index, tr){
+        totaldebet += AutoNumeric.getNumber("#debet_"+$(tr).attr("row-seq"));
+        totalkredit += AutoNumeric.getNumber("#kredit_"+$(tr).attr("row-seq"));
+     });
+     $("#totaldebet").text(totaldebet.toLocaleString('id'));
+     $("#totalkredit").text(totalkredit.toLocaleString('id'));
+     $("#totalselisih").text((totaldebet-totalkredit).toLocaleString('id'));
+     if(totaldebet-totalkredit != 0){
+        $("#totalselisih").addClass("border-danger");
+        $("#totalselisih").addClass("text-danger");
+     }else{
+        $("#totalselisih").removeClass("border-danger");
+        $("#totalselisih").removeClass("text-danger");
+     }
  }
 
 </script>

@@ -55,7 +55,7 @@ class JurnalController extends Controller
         $td["fieldsrules"] = [
             "unitkerja" => "required|exists:unitkerjas,id",
             "no_jurnal" => "required|min:1|max:25",
-            "tanggal_jurnal" => "required|date_format:d/m/Y",
+            "tanggal_jurnal" => "required|date_format:Y-m-d",
             "keterangan" => "max:255",
             "transaksi" => "required"
         ];
@@ -74,10 +74,10 @@ class JurnalController extends Controller
             "debet" => "required|numeric",
             "credit" => "required|numeric",
             "unitkerja" => "required|exists:unitkerjas,id",
-            "anggaran" => "exists:anggarans,id",
+            // "anggaran" => "exists:anggarans,id",
             "tanggal" => "required",
             "coa" => "required|exists:coas,id",
-            "jenisbayar" => "exists:jenisbayars,id"
+            // "jenisbayar" => "exists:jenisbayars,id"
         ];
 
         $td["fieldsmessages_transaksi"] = [
@@ -150,10 +150,19 @@ class JurnalController extends Controller
                 "unitkerja"=> $request->unitkerja,
                 "unitkerja_label"=> $request->unitkerja_label,
                 "no_jurnal"=> $request->no_jurnal,
-                "tanggal_jurnal"=> $request->tanggal_jurnal?\Carbon\Carbon::createFromFormat('d/m/Y', $request->tanggal_jurnal)->format('Y-m-d'):null,
+                "tanggal_jurnal"=> $request->tanggal_jurnal,
                 "keterangan"=> $request->keterangan,
                 "user_creator_id"=> Auth::user()->id
             ])->id;
+
+            $no_jurnal = "JU";
+            for($i = 0; $i < 7-strlen((string)$id); $i++){
+                $no_jurnal .= "0";
+            }
+            $no_jurnal .= $id;
+            Jurnal::where("id", $id)->update([
+                "no_jurnal"=> $no_jurnal
+            ]);
 
             foreach($requests_transaksi as $ct_request){
                 Transaction::create([
@@ -166,7 +175,7 @@ class JurnalController extends Controller
                     "unitkerja_label"=> $ct_request["unitkerja_label"],
                     "anggaran"=> $ct_request["anggaran"],
                     "anggaran_label"=> $ct_request["anggaran_label"],
-                    "tanggal"=> $ct_request["tanggal"]?\Carbon\Carbon::createFromFormat('', $ct_request["tanggal"])->format('Y-m-d'):null,
+                    "tanggal"=> $ct_request["tanggal"],
                     "keterangan"=> $ct_request["keterangan"],
                     "jenis_transaksi"=> $ct_request["jenis_transaksi"],
                     "coa"=> $ct_request["coa"],
@@ -176,15 +185,15 @@ class JurnalController extends Controller
                     "nim"=> $ct_request["nim"],
                     "kode_va"=> $ct_request["kode_va"],
                     "fheader"=> $ct_request["fheader"],
-                    "no_jurnal"=> $ct_request["no_jurnal"],
+                    "no_jurnal"=> $no_jurnal,
                     "user_creator_id" => Auth::user()->id
                 ]);
             }
 
             return response()->json([
                 'status' => 201,
-                'message' => 'Created with id '.$id,
-                'data' => ['id' => $id]
+                'message' => 'Buat Jurnal Berhasil '.$no_jurnal,
+                'data' => ['id' => $id, 'no_jurnal' => $no_jurnal]
             ]);
         }
     }
@@ -251,8 +260,7 @@ class JurnalController extends Controller
             Jurnal::where("id", $id)->update([
                 "unitkerja"=> $request->unitkerja,
                 "unitkerja_label"=> $request->unitkerja_label,
-                "no_jurnal"=> $request->no_jurnal,
-                "tanggal_jurnal"=> $request->tanggal_jurnal?\Carbon\Carbon::createFromFormat('d/m/Y', $request->tanggal_jurnal)->format('Y-m-d'):null,
+                "tanggal_jurnal"=> $request->tanggal_jurnal,
                 "keterangan"=> $request->keterangan,
                 "user_updater_id"=> Auth::user()->id
             ]);
@@ -263,48 +271,47 @@ class JurnalController extends Controller
                     Transaction::where("id", $ct_request["id"])->update([
                         "no_seq" => $ct_request["no_seq"],
                         "parent_id" => $id,
-                    "deskripsi"=> $ct_request["deskripsi"],
-                    "debet"=> $ct_request["debet"],
-                    "credit"=> $ct_request["credit"],
-                    "unitkerja"=> $ct_request["unitkerja"],
-                    "unitkerja_label"=> $ct_request["unitkerja_label"],
-                    "anggaran"=> $ct_request["anggaran"],
-                    "anggaran_label"=> $ct_request["anggaran_label"],
-                    "tanggal"=> $ct_request["tanggal"]?\Carbon\Carbon::createFromFormat('', $ct_request["tanggal"])->format('Y-m-d'):null,
-                    "keterangan"=> $ct_request["keterangan"],
-                    "jenis_transaksi"=> $ct_request["jenis_transaksi"],
-                    "coa"=> $ct_request["coa"],
-                    "coa_label"=> $ct_request["coa_label"],
-                    "jenisbayar"=> $ct_request["jenisbayar"],
-                    "jenisbayar_label"=> $ct_request["jenisbayar_label"],
-                    "nim"=> $ct_request["nim"],
-                    "kode_va"=> $ct_request["kode_va"],
-                    "fheader"=> $ct_request["fheader"],
-                    "no_jurnal"=> $ct_request["no_jurnal"],
+                        "deskripsi"=> $ct_request["deskripsi"],
+                        "debet"=> $ct_request["debet"],
+                        "credit"=> $ct_request["credit"],
+                        "unitkerja"=> $ct_request["unitkerja"],
+                        "unitkerja_label"=> $ct_request["unitkerja_label"],
+                        "anggaran"=> $ct_request["anggaran"],
+                        "anggaran_label"=> $ct_request["anggaran_label"],
+                        "tanggal"=> $ct_request["tanggal"],
+                        "keterangan"=> $ct_request["keterangan"],
+                        "jenis_transaksi"=> $ct_request["jenis_transaksi"],
+                        "coa"=> $ct_request["coa"],
+                        "coa_label"=> $ct_request["coa_label"],
+                        "jenisbayar"=> $ct_request["jenisbayar"],
+                        "jenisbayar_label"=> $ct_request["jenisbayar_label"],
+                        "nim"=> $ct_request["nim"],
+                        "kode_va"=> $ct_request["kode_va"],
+                        "fheader"=> $ct_request["fheader"],
                         "user_updater_id" => Auth::user()->id
                     ]);
                 }else{
                     $idct = Transaction::create([
                         "no_seq" => $ct_request["no_seq"],
                         "parent_id" => $id,
-                    "deskripsi"=> $ct_request["deskripsi"],
-                    "debet"=> $ct_request["debet"],
-                    "credit"=> $ct_request["credit"],
-                    "unitkerja"=> $ct_request["unitkerja"],
-                    "unitkerja_label"=> $ct_request["unitkerja_label"],
-                    "anggaran"=> $ct_request["anggaran"],
-                    "anggaran_label"=> $ct_request["anggaran_label"],
-                    "tanggal"=> $ct_request["tanggal"]?\Carbon\Carbon::createFromFormat('', $ct_request["tanggal"])->format('Y-m-d'):null,
-                    "keterangan"=> $ct_request["keterangan"],
-                    "jenis_transaksi"=> $ct_request["jenis_transaksi"],
-                    "coa"=> $ct_request["coa"],
-                    "coa_label"=> $ct_request["coa_label"],
-                    "jenisbayar"=> $ct_request["jenisbayar"],
-                    "jenisbayar_label"=> $ct_request["jenisbayar_label"],
-                    "nim"=> $ct_request["nim"],
-                    "kode_va"=> $ct_request["kode_va"],
-                    "fheader"=> $ct_request["fheader"],
-                    "no_jurnal"=> $ct_request["no_jurnal"],
+                        "deskripsi"=> $ct_request["deskripsi"],
+                        "debet"=> $ct_request["debet"],
+                        "credit"=> $ct_request["credit"],
+                        "unitkerja"=> $ct_request["unitkerja"],
+                        "unitkerja_label"=> $ct_request["unitkerja_label"],
+                        "anggaran"=> $ct_request["anggaran"],
+                        "anggaran_label"=> $ct_request["anggaran_label"],
+                        "tanggal"=> $ct_request["tanggal"],
+                        "keterangan"=> $ct_request["keterangan"],
+                        "jenis_transaksi"=> $ct_request["jenis_transaksi"],
+                        "coa"=> $ct_request["coa"],
+                        "coa_label"=> $ct_request["coa_label"],
+                        "jenisbayar"=> $ct_request["jenisbayar"],
+                        "jenisbayar_label"=> $ct_request["jenisbayar_label"],
+                        "nim"=> $ct_request["nim"],
+                        "kode_va"=> $ct_request["kode_va"],
+                        "fheader"=> $ct_request["fheader"],
+                        "no_jurnal"=> $request->no_jurnal,
                         "user_creator_id" => Auth::user()->id
                     ])->id;
                     array_push($new_menu_field_ids, $idct);
@@ -325,8 +332,8 @@ class JurnalController extends Controller
 
             return response()->json([
                 'status' => 201,
-                'message' => 'Id '.$id.' is updated',
-                'data' => ['id' => $id]
+                'message' => 'No Jurnal '.$request->no_jurnal." telah diupdate",
+                'data' => ['id' => $id, 'no_jurnal' => $request->no_jurnal]
             ]);
         }
 }
@@ -359,29 +366,60 @@ class JurnalController extends Controller
         }
     }
 
+    // public function get_list(Request $request)
+    // {
+    //     $list_column = array("id", "unitkerja_label", "no_jurnal", "tanggal_jurnal", "id");
+    //     $keyword = null;
+    //     if(isset($request->search["value"])){
+    //         $keyword = $request->search["value"];
+    //     }
+
+    //     $orders = array("id", "ASC");
+    //     if(isset($request->order)){
+    //         $orders = array($list_column[$request->order["0"]["column"]], $request->order["0"]["dir"]);
+    //     }
+
+    //     $limit = null;
+    //     if(isset($request->length) && $request->length != -1){
+    //         $limit = array(intval($request->start), intval($request->length));
+    //     }
+
+    //     $dt = array();
+    //     $no = 0;
+    //     foreach(Jurnal::where(function($q) use ($keyword) {
+    //         $q->where("unitkerja_label", "LIKE", "%" . $keyword. "%")->orWhere("no_jurnal", "LIKE", "%" . $keyword. "%")->orWhere("tanggal_jurnal", "LIKE", "%" . $keyword. "%");
+    //     })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unitkerja_label", "no_jurnal", "tanggal_jurnal"]) as $jurnal){
+    //         $no = $no+1;
+    //         $act = '
+    //         <a href="/jurnal/'.$jurnal->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
+
+    //         <a href="/jurnal/'.$jurnal->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
+
+    //         <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button>';
+
+    //         array_push($dt, array($jurnal->id, $jurnal->unitkerja_label, $jurnal->no_jurnal, $jurnal->tanggal_jurnal, $act));
+    // }
+    //     $output = array(
+    //         "draw" => intval($request->draw),
+    //         "recordsTotal" => Jurnal::get()->count(),
+    //         "recordsFiltered" => intval(Jurnal::where(function($q) use ($keyword) {
+    //             $q->where("unitkerja_label", "LIKE", "%" . $keyword. "%")->orWhere("no_jurnal", "LIKE", "%" . $keyword. "%")->orWhere("tanggal_jurnal", "LIKE", "%" . $keyword. "%");
+    //         })->orderBy($orders[0], $orders[1])->get()->count()),
+    //         "data" => $dt
+    //     );
+
+    //     echo json_encode($output);
+    // }
+
     public function get_list(Request $request)
     {
-        $list_column = array("id", "unitkerja_label", "no_jurnal", "tanggal_jurnal", "id");
-        $keyword = null;
-        if(isset($request->search["value"])){
-            $keyword = $request->search["value"];
-        }
-
-        $orders = array("id", "ASC");
-        if(isset($request->order)){
-            $orders = array($list_column[$request->order["0"]["column"]], $request->order["0"]["dir"]);
-        }
-
-        $limit = null;
-        if(isset($request->length) && $request->length != -1){
-            $limit = array(intval($request->start), intval($request->length));
-        }
-
+        $list_column = array("id", "keterangan", "no_jurnal", "tanggal_jurnal", "id");
+        
         $dt = array();
         $no = 0;
-        foreach(Jurnal::where(function($q) use ($keyword) {
-            $q->where("unitkerja_label", "LIKE", "%" . $keyword. "%")->orWhere("no_jurnal", "LIKE", "%" . $keyword. "%")->orWhere("tanggal_jurnal", "LIKE", "%" . $keyword. "%");
-        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unitkerja_label", "no_jurnal", "tanggal_jurnal"]) as $jurnal){
+        foreach(Jurnal::where(function($q) use ($request) {
+            $q->where("no_jurnal", "LIKE", "%" . $request->no_jurnal_search. "%");
+        })->orderBy("tanggal_jurnal", "asc")->offset($request->start)->limit($request->length)->get(["id", "keterangan", "no_jurnal", "tanggal_jurnal"]) as $jurnal){
             $no = $no+1;
             $act = '
             <a href="/jurnal/'.$jurnal->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
@@ -390,14 +428,14 @@ class JurnalController extends Controller
 
             <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button>';
 
-            array_push($dt, array($jurnal->id, $jurnal->unitkerja_label, $jurnal->no_jurnal, $jurnal->tanggal_jurnal, $act));
+            array_push($dt, array($jurnal->id, $jurnal->tanggal_jurnal, $jurnal->no_jurnal, $jurnal->keterangan, $act));
     }
         $output = array(
             "draw" => intval($request->draw),
             "recordsTotal" => Jurnal::get()->count(),
-            "recordsFiltered" => intval(Jurnal::where(function($q) use ($keyword) {
-                $q->where("unitkerja_label", "LIKE", "%" . $keyword. "%")->orWhere("no_jurnal", "LIKE", "%" . $keyword. "%")->orWhere("tanggal_jurnal", "LIKE", "%" . $keyword. "%");
-            })->orderBy($orders[0], $orders[1])->get()->count()),
+            "recordsFiltered" => intval(Jurnal::where(function($q) use ($request) {
+                $q->where("no_jurnal", "LIKE", "%" . $request->no_jurnal_search. "%");
+            })->orderBy("tanggal_jurnal", "asc")->get()->count()),
             "data" => $dt
         );
 
@@ -412,13 +450,7 @@ class JurnalController extends Controller
                 abort(404, "Data not found");
             }
 
-            $jurnal->tanggal_jurnal = \Carbon\Carbon::createFromFormat('Y-m-d', $jurnal->tanggal_jurnal)->format('d/m/Y');
-            $transaksis = Transaction::whereParentId($request->id)->get();
-            foreach($transaksis as $transaksi){
-                if(isset($transaksi->tanggal)){
-                    $transaksi->tanggal = \Carbon\Carbon::createFromFormat('Y-m-d', $transaksi->tanggal)->format('');
-                }
-            }
+            $transaksis = Transaction::whereParentId($request->id)->orderBy("no_seq", "asc")->get();
 
             $results = array(
                 "status" => 201,

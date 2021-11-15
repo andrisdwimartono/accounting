@@ -31,29 +31,37 @@
                 <form id="quickForm" action="#">
                 @csrf
                     <div class="card-body">
-                            <div class="form-group row m-0">
-                                <label class="col-sm-4 col-form-label" for="unitkerja">Unit Kerja</label>
-                                <div class="col-sm-6 cakfield">
-                                    <select name="unitkerja" id="unitkerja" class="form-control form-control-sm select2bs4" style="width: 100%;" @if($page_data["page_method_name"] == "View") readonly @endif>
+                        <input type="hidden" id="id_jurnal" name="id_jurnal" value="3">
+                        <input type="hidden" id="is_edit" name="is_edit" value="1">
+                        <div class="form-group row m-0">
+                            <label class="col-sm-4 col-form-label" for="unitkerja">Unit Kerja</label>
+                            <div class="col-sm-6 cakfield">
+                                <select name="unitkerja" id="unitkerja" class="form-control form-control-sm select2bs4" style="width: 100%;" @if($page_data["page_method_name"] == "View") readonly @endif>
 
-                                    </select>
-                                    <input type="hidden" name="unitkerja_label" id="unitkerja_label">
-                                </div>
+                                </select>
+                                <input type="hidden" name="unitkerja_label" id="unitkerja_label">
                             </div>
-                            <div class="form-group row m-0">
-                                <label class="col-sm-4 col-form-label" for="no_jurnal">Nomor Jurnal</label>
-                                <div class="col-sm-6 cakfield">
-                                    <input type="text" name="no_jurnal" class="form-control form-control-sm" id="no_jurnal" placeholder="Enter Nomor Jurnal" @if($page_data["page_method_name"] == "View") readonly @endif>
-                                </div>
+                        </div>
+                        <div class="form-group row m-0">
+                            <label class="col-sm-4 col-form-label" for="anggaran_label">Tipe Anggaran</label>
+                            <div class="col-sm-6 cakfield">
+                                <input type="text" name="anggaran_label" class="form-control form-control-sm" id="anggaran_label" placeholder="Enter Tipe Anggaran" @if($page_data["page_method_name"] == "View") readonly @endif>
                             </div>
-                            
+                        </div>
+                        <div class="form-group row m-0">
+                            <label class="col-sm-4 col-form-label" for="no_jurnal">Nomor Jurnal</label>
+                            <div class="col-sm-6 cakfield">
+                                <input type="text" name="no_jurnal" class="form-control form-control-sm" id="no_jurnal" placeholder="Enter Nomor Jurnal" value="JU#######" readonly>
+                            </div>
+                        </div>
+                        
                         <div class="form-group row m-0">
                             <label for="tanggal_jurnal" class="col-sm-4 col-form-label">Tanggal Jurnal</label>
                             <div class="col-sm-6 cakfield">
                                 <input name="tanggal_jurnal" class="datepicker-default form-control form-control-sm" id="datepicker" <?=$page_data["page_method_name"] == "View"?"readonly":""?>>
                             </div>
                         </div>
-                        <div class="form-group row m-0">
+                        <div class="form-group row m-0 mb-1">
                             <label class="col-sm-4 col-form-label" for="keterangan">Keterangan</label>
                             <div class="col-sm-6 cakfield">
                                 <textarea name="keterangan" class="form-control form-control-sm" id="keterangan" placeholder="Enter Keterangan" @if($page_data["page_method_name"] == "View") readonly @endif></textarea>
@@ -65,113 +73,57 @@
                                     <thead class="bg-primary">
                                         <tr>
                                             <th class="column-hidden" scope="col">ID COA</th>
-                                            <th class="text-white text-center" scope="col">No. Rek. Transaksi</th>
+                                            <th class="text-white text-center" scope="col" width="150px">No. Rek. Transaksi</th>
                                             <th class="text-white text-center" scope="col">Deskripsi</th>
                                             <th class="text-white text-center" scope="col">Debet</th>
                                             <th class="text-white text-center" scope="col">Kredit</th>
                                             <th class="text-white text-center col-sm-1" scope="col">Act</th>
+                                            <th class="column-hidden" scope="col">ID</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
+                                        <tr row-seq="1">
                                             <td class="column-hidden"></td>
                                             <td class="p-0"><select name="coa_1" id="coa_1" class="form-control select2bs4staticBackdrop addnewrowselect" data-row="1" style="width: 100%;"></select></td>
-                                            <td class="p-0"><input type="text" name="deskripsi_1" class="form-control form-control-sm"></td>
+                                            <td class="p-0"><input type="text" name="deskripsi_1" class="form-control form-control-sm" id="deskripsi_1"></td>
                                             <td class="p-0"><input type="text" name="debet_1" value="0" class="form-control form-control-sm cakautonumeric cakautonumeric-float" id="debet_1" placeholder="Enter Debet"></td>
                                             <td class="p-0"><input type="text" name="kredit_1" value="0" class="form-control form-control-sm cakautonumeric cakautonumeric-float" id="kredit_1" placeholder="Enter Kredit"></td>
-                                            <td class="p-0 text-center"><i class="text-danger fas fa-minus-circle" style="cursor: pointer;"></i></td>
-                                        </tr>
-                                        <tr>
+                                            <td class="p-0 text-center"><i class="text-danger fas fa-minus-circle row-delete" id="row_delete_1" style="cursor: pointer;"></i></td>
                                             <td class="column-hidden"></td>
-                                            <td class="p-0"><select name="coa_2" id="coa_2" class="form-control select2bs4staticBackdrop addnewrowselect" data-row="1" style="width: 100%;"></select></td>
-                                            <td class="p-0"><input type="text" name="deskripsi_2" class="form-control form-control-sm"></td>
-                                            <td class="p-0"><input type="text" name="debet_2" value="0" class="form-control form-control-sm cakautonumeric cakautonumeric-float" id="debet_2" placeholder="Enter Debet"></td>
-                                            <td class="p-0"><input type="text" name="kredit_2" value="0" class="form-control form-control-sm cakautonumeric cakautonumeric-float" id="kredit_2" placeholder="Enter Kredit"></td>
-                                            <td class="p-0 text-center"><i class="text-danger fas fa-minus-circle" style="cursor: pointer;"></i></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="column-hidden"></td>
-                                            <td class="p-0"><select name="coa_3" id="coa_3" class="form-control select2bs4staticBackdrop addnewrowselect" data-row="1" style="width: 100%;"></select></td>
-                                            <td class="p-0"><input type="text" name="deskripsi_3" class="form-control form-control-sm"></td>
-                                            <td class="p-0"><input type="text" name="debet_3" value="0" class="form-control form-control-sm cakautonumeric cakautonumeric-float" id="debet_3" placeholder="Enter Debet"></td>
-                                            <td class="p-0"><input type="text" name="kredit_3" value="0" class="form-control form-control-sm cakautonumeric cakautonumeric-float" id="kredit_3" placeholder="Enter Kredit"></td>
-                                            <td class="p-0 text-center"><i class="text-danger fas fa-minus-circle" style="cursor: pointer;"></i></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="column-hidden"></td>
-                                            <td class="p-0"><select name="coa_4" id="coa_4" class="form-control select2bs4staticBackdrop addnewrowselect" data-row="1" style="width: 100%;"></select></td>
-                                            <td class="p-0"><input type="text" name="deskripsi_4" class="form-control form-control-sm"></td>
-                                            <td class="p-0"><input type="text" name="debet_4" value="0" class="form-control form-control-sm cakautonumeric cakautonumeric-float" id="debet_4" placeholder="Enter Debet"></td>
-                                            <td class="p-0"><input type="text" name="kredit_4" value="0" class="form-control form-control-sm cakautonumeric cakautonumeric-float" id="kredit_4" placeholder="Enter Kredit"></td>
-                                            <td class="p-0 text-center"><i class="text-danger fas fa-minus-circle" style="cursor: pointer;"></i></td>
                                         </tr>
                                     </tbody>
                                     <tfoot>
                                         <tr class="p-0">
                                             <td class="column-hidden"></td>
-                                            <td rowspan="2"></td>
+                                            <td rowspan="2" class="text-center">
+                                                <button type="button" id="createnew" class="btn btn-primary">Baru</button>
+                                                <button type="button" class="btn btn-success" id="submit-form" @if($page_data["page_method_name"] == "View") readonly @endif>Simpan</button>
+                                                <button type="button" id="addrow" class="btn btn-primary">+row</button>
+                                            </td>
                                             <td class="p-0 text-right">Total : </td>
+                                            <td class="p-0" id="totaldebet"></td>
+                                            <td class="p-0" id="totalkredit"></td>
                                             <td class="p-0"></td>
-                                            <td class="p-0"></td>
-                                            <td class="p-0"></td>
+                                            <td class="column-hidden"></td>
                                         </tr>
                                         <tr class="p-0">
                                             <td class="column-hidden"></td>
                                             <td class="p-0 text-right">Selisih : </td>
+                                            <td class="p-0" id="totalselisih"></td>
                                             <td class="p-0"></td>
                                             <td class="p-0"></td>
-                                            <td class="p-0"></td>
+                                            <td class="column-hidden"></td>
                                         </tr>
                                     </tfoot>
                                 </table>
-                                
-                            </div>
-                            <div class="col-sm-12 text-left p-0">
-                                <button type="button" id="addrow" class="btn btn-success">add</button>
+                                <div class="text-danger col-sm-12" id="caktable1_message"></div>
+                                <input type="hidden" name="transaksi" class="form-control" id="transaksi" placeholder="Enter Menu Field">
                             </div>
                         </div>
-                        <!-- <div class="form-group">
-                            <label for="transaksi">Transaksi</label>
-                            <div id="result">
-                                Event result:
-                            </div>
-                            <table id="cttransaksi" class="table table-bordered table-striped" style="width:100%">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Unit Kerja</th>
-                                        <th>Unit Kerja Label</th>
-                                        <th>Anggaran</th>
-                                        <th>Anggaran Label</th>
-                                        <th>No Jurnal</th>
-                                        <th>Tanggal</th>
-                                        <th>Keterangan</th>
-                                        <th>Jenis Transaksi</th>
-                                        <th>No. Rek. Akuntansi</th>
-                                        <th>No. Rek. Akuntansi Label</th>
-                                        <th>Deskripsi</th>
-                                        <th>Jenis Bayar</th>
-                                        <th>Jenis Bayar Label</th>
-                                        <th>NIM</th>
-                                        <th>Kode VA</th>
-                                        <th>Header?</th>
-                                        <th>Debet</th>
-                                        <th>Kredit</th>
-                                        <th>Action</th>
-                                        <th>id</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-
-                                </tbody>
-                            </table>
-                            <input type="hidden" name="transaksi" class="form-control" id="transaksi" placeholder="Enter Menu Field" @if($page_data["page_method_name"] == "View") readonly @endif>
-                        </div>
-                    </div> -->
                     @if($page_data["page_method_name"] != "View")
                     <div class="form-group row">
                         <div class="col-sm-9 offset-sm-9">
-                        <button type="button" class="btn btn-primary" id="submit-form" @if($page_data["page_method_name"] == "View") readonly @endif>Submit</button>
+                        
                         </div>
                     </div>
                     @else
@@ -182,6 +134,62 @@
                     </div>
                     @endif
                 </form>
+                <div class="form-group m-0">
+                    <div class="col-sm-12 row bg-primary" id="forcaktablesearch2">
+                        <div class="col-sm-1 cakfield">
+                            <select name="countcaktable2" id="countcaktable2" class="form-control form-control-sm bg-primary mt-1">
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="30">30</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
+                        <label for="tanggal_jurnal_from" class="col-sm-1 col-form-label">Tgl</label>
+                        <div class="col-sm-2 cakfield">
+                            <input name="tanggal_jurnal_from" class="datepicker-default form-control form-control-sm bg-primary mt-1" id="datepicker" <?=$page_data["page_method_name"] == "View"?"readonly":""?>>
+                        </div>
+                        <label for="tanggal_jurnal_to" class="col-sm-1 col-form-label">s/d</label>
+                        <div class="col-sm-2 cakfield">
+                            <input name="tanggal_jurnal_to" class="datepicker-default form-control form-control-sm bg-primary mt-1" id="datepicker" <?=$page_data["page_method_name"] == "View"?"readonly":""?>>
+                        </div>
+                        <label class="col-sm-2 text-right col-form-label" for="no_jurnal_search">No Jurnal</label>
+                        <div class="col-sm-3 cakfield">
+                            <input type="text" name="no_jurnal_search" class="form-control form-control-sm bg-primary mt-1" id="no_jurnal_search" placeholder="Enter Nomor Jurnal">
+                        </div>
+                    </div>
+                    <div class="col-sm-12 row" id="forcaktable2">
+                        <table id="caktable2" class="table table-bordered">
+                            <thead class="bg-white">
+                                <tr>
+                                    <th class="text-black text-center column-hidden" scope="col">ID</th>
+                                    <th class="text-black text-center" scope="col">Tanggal</th>
+                                    <th class="text-black text-center" scope="col">No Jurnal</th>
+                                    <!-- <th class="text-black text-center" scope="col">No Rek. Akuntansi</th> -->
+                                    <th class="text-black text-center" scope="col">Keterangan</th>
+                                    <!-- <th class="text-black text-center" scope="col">Debet</th>
+                                    <th class="text-black text-center" scope="col">Kredit</th> -->
+                                    <th class="text-black text-center col-sm-1" scope="col">Act</th>
+                                    <th class="column-hidden" scope="col">ID</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- <tr row-seq="1">
+                                    <td class="column-hidden"></td>
+                                    <td class="p-0"><select name="coa_1" id="coa_1" class="form-control select2bs4staticBackdrop addnewrowselect" data-row="1" style="width: 100%;"></select></td>
+                                    <td class="p-0"><input type="text" name="deskripsi_1" class="form-control form-control-sm" id="deskripsi_1"></td>
+                                    <td class="p-0"><input type="text" name="debet_1" value="0" class="form-control form-control-sm cakautonumeric cakautonumeric-float" id="debet_1" placeholder="Enter Debet"></td>
+                                    <td class="p-0"><input type="text" name="kredit_1" value="0" class="form-control form-control-sm cakautonumeric cakautonumeric-float" id="kredit_1" placeholder="Enter Kredit"></td>
+                                    <td class="p-0 text-center"><i class="text-danger fas fa-minus-circle row-delete" id="row_delete_1" style="cursor: pointer;"></i></td>
+                                    <td class="column-hidden"></td>
+                                </tr> -->
+                            </tbody>
+                            
+                        </table>
+                        <div class="text-danger col-sm-12" id="caktable2_message"></div>
+                        <input type="hidden" name="transaksi" class="form-control" id="transaksi" placeholder="Enter Menu Field">
+                    </div>
+                </div>
                 <!-- Modal Transaksi -->
                 <div class="modal fade bd-example-modal-lg" id="staticBackdrop_transaksi" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" data-focus="false" role="dialog" aria-labelledby="staticBackdrop_transaksi_Label" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
