@@ -35,8 +35,6 @@
 <script>
   var app_url = '{{ env('APP_URL') }}';
 
-  console.log(app_url)
-
   $("#tabaset").click(function(){
     window.location.href = "/coa/aset/list";
   });
@@ -75,7 +73,7 @@
             //     text: "+",
             //     className: "bg-success text-white m-0",
             //     action: function ( e, dt, node, config ) {
-            //       //window.location.href = "/create{{$page_data["page_data_urlname"]}}";
+            //       //window.location.href = "/createcoa";
             //       $("#modal-add-new-coa").modal({'show': true});
             //     }
             // },
@@ -125,7 +123,7 @@
           "pageLength": 2000,
           "order": [[ 1, "asc" ]],
           "ajax" : {
-          url: app_url+"/getlist{{$page_data["page_data_urlname"]}}",
+          url: app_url+"/getlistcoa",
           type:"POST",
           data:{
             _token: $("input[name=_token]").val(),
@@ -284,7 +282,7 @@
           'type': "POST",
           'global': false,
           'dataType': 'json',
-          'url': "/delete{{$page_data["page_data_urlname"]}}",
+          'url': app_url+"/deletecoa",
           'data': { 'id':  id, '_token': $("input[name=_token]").val()},
           'success': function (data) {
             cto_loading_hide();
@@ -340,9 +338,9 @@
   var field_arr = ["id", "coa_code", "coa_name", "level_coa", "coa", "coa_label", "category", "category_label", "fheader", "factive"];
   cto_loading_show();
 
-  var urlaction = "/updatecoa/"+val_arr[0];
+  var urlaction = app_url+"/updatecoa/"+val_arr[0];
   if(action == 'create'){
-    urlaction = "/storecoa";
+    urlaction = app_url+"/storecoa";
   }
 
   var values = "_token="+$("input[name=_token]").val();
@@ -414,15 +412,15 @@ $(function () {
             var ajaxRequest;
             ajaxRequest = $.ajax({
                 @if($page_data["page_method_name"] == "Update")
-                url: "/update{{$page_data["page_data_urlname"]}}/{{$page_data["id"]}}",
+                url: app_url+"/updatecoa/{{$page_data["id"]}}",
                 @else
-                url: "/store{{$page_data["page_data_urlname"]}}",
+                url: app_url+"/storecoa",
                 @endif
                 type: "post",
                 data: values,
                 success: function(data){
                     if(data.status >= 200 && data.status <= 299){
-                        id_{{$page_data["page_data_urlname"]}} = data.data.id;
+                        id_coa = data.data.id;
                             $.toast({
                                 text: data.message,
                                 heading: 'Status',
@@ -469,7 +467,7 @@ $("#category").on("change", function() {
 var fields = $("#quickForm").serialize();
 
 $.ajax({
-    url: "/getoptions{{$page_data["page_data_urlname"]}}",
+    url: app_url+"/getoptionscoa",
     type: "post",
     data: {
         fieldname: "category",
@@ -497,7 +495,7 @@ $.ajax({
 
 $("#coa").select2({
     ajax: {
-        url: "/getlinks{{$page_data["page_data_urlname"]}}",
+        url: app_url+"/getlinkscoa",
         type: "post",
         dataType: "json",
         data: function(params) {
@@ -602,41 +600,41 @@ $(document).ready(function() {
 function getdata(){
     cto_loading_show();
     $.ajax({
-        url: "/getdata{{$page_data["page_data_urlname"]}}",
+        url: app_url+"/getdatacoa",
         type: "post",
         data: {
             id: {{$page_data["id"]}},
             _token: $("#quickForm input[name=_token]").val()
         },
         success: function(data){
-            for(var i = 0; i < Object.keys(data.data.{{$page_data["page_data_urlname"]}}).length; i++){
-                if(Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i] == "coa"){
-                    if(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]){
-                        var newState = new Option(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"_label"], data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]], true, false);
-                        $("#"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]).append(newState).trigger("change");
+            for(var i = 0; i < Object.keys(data.data.coa).length; i++){
+                if(Object.keys(data.data.coa)[i] == "coa"){
+                    if(data.data.coa[Object.keys(data.data.coa)[i]]){
+                        var newState = new Option(data.data.coa[Object.keys(data.data.coa)[i]+"_label"], data.data.coa[Object.keys(data.data.coa)[i]], true, false);
+                        $("#"+Object.keys(data.data.coa)[i]).append(newState).trigger("change");
                     }
                 }else{
-                    if(["fheader", "factive"].includes(Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i])){
-                        $("input[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").prop("checked", data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
+                    if(["fheader", "factive"].includes(Object.keys(data.data.coa)[i])){
+                        $("input[name="+Object.keys(data.data.coa)[i]+"]").prop("checked", data.data.coa[Object.keys(data.data.coa)[i]]);
                     }else{
                     try{
-                        anObject[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]].set(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
+                        anObject[Object.keys(data.data.coa)[i]].set(data.data.coa[Object.keys(data.data.coa)[i]]);
                     }catch(err){
-                        $("input[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").val(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
+                        $("input[name="+Object.keys(data.data.coa)[i]+"]").val(data.data.coa[Object.keys(data.data.coa)[i]]);
                     }
-                        $("textarea[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").val(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
-                        if(["ewfsdfsafdsafasdfasdferad"].includes(Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i])){
-                            if(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]] != null){
-                                $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").removeAttr("disabled");
-                                $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").addClass("btn-success text-white");
-                                $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").removeClass("btn-primary");
-                                var filename = Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i];
-                                $("label[for=upload_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").html(filename);
-                                $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").html("Download");
+                        $("textarea[name="+Object.keys(data.data.coa)[i]+"]").val(data.data.coa[Object.keys(data.data.coa)[i]]);
+                        if(["ewfsdfsafdsafasdfasdferad"].includes(Object.keys(data.data.coa)[i])){
+                            if(data.data.coa[Object.keys(data.data.coa)[i]] != null){
+                                $("#btn_"+Object.keys(data.data.coa)[i]+"").removeAttr("disabled");
+                                $("#btn_"+Object.keys(data.data.coa)[i]+"").addClass("btn-success text-white");
+                                $("#btn_"+Object.keys(data.data.coa)[i]+"").removeClass("btn-primary");
+                                var filename = Object.keys(data.data.coa)[i];
+                                $("label[for=upload_"+Object.keys(data.data.coa)[i]+"]").html(filename);
+                                $("#btn_"+Object.keys(data.data.coa)[i]+"").html("Download");
                             }
                         }
                     }
-                    $("select[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").val(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]).change();
+                    $("select[name="+Object.keys(data.data.coa)[i]+"]").val(data.data.coa[Object.keys(data.data.coa)[i]]).change();
                 }
                 }
 

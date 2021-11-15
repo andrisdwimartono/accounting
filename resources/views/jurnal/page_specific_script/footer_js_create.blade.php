@@ -136,9 +136,9 @@ $(function () {
             var values = $("#quickForm").serialize();
 
             var ajaxRequest;
-            var urlpage = "/storejurnal";
+            var urlpage = app_url+"/storejurnal";
             if($("#is_edit").val() == 1){
-                urlpage = "/updatejurnal/"+$("#id_jurnal").val();
+                urlpage = app_url+"/updatejurnal/"+$("#id_jurnal").val();
             }
             ajaxRequest = $.ajax({
                 url: urlpage,
@@ -166,6 +166,7 @@ $(function () {
                     @if($page_data["page_method_name"] == "Update")
                     getdata();
                     @endif
+                    getlist();
                 },
                 error: function (err) {
                     if (err.status == 422) {
@@ -173,9 +174,21 @@ $(function () {
                             var validator = $("#quickForm").validate();
                             var errors = {};
                             if(i == "unitkerja" || i == "unitkerja_label" || i == "anggaran" || i == "anggaran_label" || i == "no_jurnal" || i == "tanggal" || i == "keterangan" || i == "jenis_transaksi" || i == "coa" || i == "coa_label" || i == "deskripsi" || i == "jenisbayar" || i == "jenisbayar_label" || i == "nim" || i == "kode_va" || i == "fheader" || i == "debet" || i == "credit"){
-                                errors["transaksi"] = error[0];
+                                errors["transaksi"] += error[0];
                             }else{
                                 errors[i] = error[0];
+                            }
+                            if(errors["transaksi"] != ""){
+                                $.toast({
+                                    text: errors["transaksi"],
+                                    heading: 'Status',
+                                    icon: 'Warning',
+                                    showHideTransition: 'fade',
+                                    allowToastClose: true,
+                                    hideAfter: 3000,
+                                    position: 'mid-center',
+                                    textAlign: 'left'
+                                });
                             }
                             validator.showErrors(errors);
                     });
@@ -725,7 +738,7 @@ function getdata(){
 function getlist(){
     cto_loading_show();
     $.ajax({
-        url: "/getlistjurnal",
+        url: app_url+"/getlistjurnal",
         type: "post",
         data: {
             _token: $("#quickForm input[name=_token]").val(),
