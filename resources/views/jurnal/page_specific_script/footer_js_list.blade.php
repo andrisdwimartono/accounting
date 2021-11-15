@@ -42,6 +42,7 @@
     <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
 <script>
+    var app_url = '{{ env('APP_URL') }}';
     var editor;
     const anElement = AutoNumeric.multiple('.cakautonumeric-float', {
         decimalCharacter : ',',
@@ -96,9 +97,9 @@ $(function () {
             var ajaxRequest;
             ajaxRequest = $.ajax({
                 @if($page_data["page_method_name"] == "Update")
-                url: "/update{{$page_data["page_data_urlname"]}}/{{$page_data["id"]}}",
+                url: app_url+"/update{{$page_data["page_data_urlname"]}}/{{$page_data["id"]}}",
                 @else
-                url: "/store{{$page_data["page_data_urlname"]}}",
+                url: app_url+"/store{{$page_data["page_data_urlname"]}}",
                 @endif
                 type: "post",
                 data: values,
@@ -174,7 +175,7 @@ var fields = $("#quickForm").serialize();
 
 $("#unitkerja").select2({
     ajax: {
-        url: "/getlinks{{$page_data["page_data_urlname"]}}",
+        url: app_url+"/getlinks{{$page_data["page_data_urlname"]}}",
         type: "post",
         dataType: "json",
         data: function(params) {
@@ -200,7 +201,7 @@ $("#unitkerja").select2({
 
 $("#unitkerja").select2({
     ajax: {
-        url: "/getlinks{{$page_data["page_data_urlname"]}}",
+        url: app_url+"/getlinks{{$page_data["page_data_urlname"]}}",
         type: "post",
         dataType: "json",
         data: function(params) {
@@ -226,7 +227,7 @@ $("#unitkerja").select2({
 
 $("#anggaran").select2({
     ajax: {
-        url: "/getlinks{{$page_data["page_data_urlname"]}}",
+        url: app_url+"/getlinks{{$page_data["page_data_urlname"]}}",
         type: "post",
         dataType: "json",
         data: function(params) {
@@ -252,7 +253,7 @@ $("#anggaran").select2({
 
 $("#coa").select2({
     ajax: {
-        url: "/getlinks{{$page_data["page_data_urlname"]}}",
+        url: app_url+"/getlinks{{$page_data["page_data_urlname"]}}",
         type: "post",
         dataType: "json",
         data: function(params) {
@@ -278,7 +279,7 @@ $("#coa").select2({
 
 $("#jenisbayar").select2({
     ajax: {
-        url: "/getlinks{{$page_data["page_data_urlname"]}}",
+        url: app_url+"/getlinks{{$page_data["page_data_urlname"]}}",
         type: "post",
         dataType: "json",
         data: function(params) {
@@ -468,7 +469,7 @@ $(document).ready(function() {
 function getdata(){
     cto_loading_show();
     $.ajax({
-        url: "/getdata{{$page_data["page_data_urlname"]}}",
+        url: app_url+"/getdata{{$page_data["page_data_urlname"]}}",
         type: "post",
         data: {
             id: {{$page_data["id"]}},

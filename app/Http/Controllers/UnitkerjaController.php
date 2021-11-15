@@ -216,6 +216,7 @@ class UnitkerjaController extends Controller
 
             array_push($dt, array($unitkerja->id, $unitkerja->unitkerja_code, $unitkerja->unitkerja_name, $act));
     }
+    
         $output = array(
             "draw" => intval($request->draw),
             "recordsTotal" => Unitkerja::get()->count(),

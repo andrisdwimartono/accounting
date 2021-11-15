@@ -34,6 +34,7 @@
     <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
 <script>
+    var app_url = '{{ env('APP_URL') }}';
     var editor;
     const anElement = AutoNumeric.multiple('.cakautonumeric-float', {
         decimalCharacter : ',',
@@ -212,7 +213,7 @@ var fields = $("#quickForm").serialize();
 
 $("#unitkerja").select2({
     ajax: {
-        url: "/getlinksjurnal",
+        url: app_url+"/getlinksjurnal",
         type: "post",
         dataType: "json",
         data: function(params) {
@@ -238,7 +239,7 @@ $("#unitkerja").select2({
 
 $("#unitkerja").select2({
     ajax: {
-        url: "/getlinksjurnal",
+        url: app_url+"/getlinksjurnal",
         type: "post",
         dataType: "json",
         data: function(params) {
@@ -264,7 +265,7 @@ $("#unitkerja").select2({
 
 $("#anggaran").select2({
     ajax: {
-        url: "/getlinksjurnal",
+        url: app_url+"/getlinksjurnal",
         type: "post",
         dataType: "json",
         data: function(params) {
@@ -290,7 +291,7 @@ $("#anggaran").select2({
 
 $("#coa").select2({
     ajax: {
-        url: "/getlinksjurnal",
+        url: app_url+"/getlinksjurnal",
         type: "post",
         dataType: "json",
         data: function(params) {
@@ -316,7 +317,7 @@ $("#coa").select2({
 
 $("#jenisbayar").select2({
     ajax: {
-        url: "/getlinksjurnal",
+        url: app_url+"/getlinksjurnal",
         type: "post",
         dataType: "json",
         data: function(params) {
@@ -461,7 +462,7 @@ $(document).ready(function() {
     
     $(".addnewrowselect").select2({
         ajax: {
-            url: "/getlinksjurnal",
+            url: app_url+"/getlinksjurnal",
             type: "post",
             dataType: "json",
             data: function(params) {
@@ -564,7 +565,7 @@ $(document).ready(function() {
 
         $("#coa_"+rowlen+"").select2({
             ajax: {
-                url: "/getlinksjurnal",
+                url: app_url+"/getlinksjurnal",
                 type: "post",
                 dataType: "json",
                 data: function(params) {
@@ -633,7 +634,7 @@ $(document).ready(function() {
 function getdata(){
     cto_loading_show();
     $.ajax({
-        url: "/getdatajurnal",
+        url: app_url+"/getdatajurnal",
         type: "post",
         data: {
             id: $("#id_jurnal").val(),

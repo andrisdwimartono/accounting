@@ -34,6 +34,7 @@
     <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
 <script>
+    var app_url = '{{ env('APP_URL') }}';
     var editor;
     const anElement = AutoNumeric.multiple('.cakautonumeric-float', {
         decimalCharacter : ',',
