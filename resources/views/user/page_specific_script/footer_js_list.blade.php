@@ -28,6 +28,7 @@
 
 <script>
   $(function () {
+    var app_url = '{{ env('APP_URL') }}';
     $("#example1").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false,
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
@@ -76,7 +77,7 @@
           "pageLength": 20,
           "order": [[ 1, "asc" ]],
           "ajax" : {
-          url:"/getlist{{$page_data["page_data_urlname"]}}",
+          url:"{{ env('APP_URL') }}/getlist{{$page_data["page_data_urlname"]}}",
           type:"POST",
           data:{
             _token: $("input[name=_token]").val()
@@ -122,7 +123,7 @@
           'type': "POST",
           'global': false,
           'dataType': 'json',
-          'url': "/delete{{$page_data["page_data_urlname"]}}",
+          'url': "{{ env('APP_URL') }}/delete{{$page_data["page_data_urlname"]}}",
           'data': { 'id':  id, '_token': $("input[name=_token]").val()},
           'success': function (data) {
             cto_loading_hide();

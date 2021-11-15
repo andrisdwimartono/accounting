@@ -123,7 +123,7 @@
           "pageLength": 2000,
           "order": [[ 1, "asc" ]],
           "ajax" : {
-          url: app_url+"/getlistcoa",
+          url: "{{ env('APP_URL') }}/getlistcoa",
           type:"POST",
           data:{
             _token: $("input[name=_token]").val(),
@@ -282,7 +282,7 @@
           'type': "POST",
           'global': false,
           'dataType': 'json',
-          'url': app_url+"/deletecoa",
+          'url': "{{ env('APP_URL') }}/deletecoa",
           'data': { 'id':  id, '_token': $("input[name=_token]").val()},
           'success': function (data) {
             cto_loading_hide();
@@ -338,9 +338,9 @@
   var field_arr = ["id", "coa_code", "coa_name", "level_coa", "coa", "coa_label", "category", "category_label", "fheader", "factive"];
   cto_loading_show();
 
-  var urlaction = app_url+"/updatecoa/"+val_arr[0];
+  var urlaction = "{{ env('APP_URL') }}/updatecoa/"+val_arr[0];
   if(action == 'create'){
-    urlaction = app_url+"/storecoa";
+    urlaction = "{{ env('APP_URL') }}/storecoa";
   }
 
   var values = "_token="+$("input[name=_token]").val();
@@ -412,9 +412,9 @@ $(function () {
             var ajaxRequest;
             ajaxRequest = $.ajax({
                 @if($page_data["page_method_name"] == "Update")
-                url: app_url+"/updatecoa/{{$page_data["id"]}}",
+                url: "{{ env('APP_URL') }}/updatecoa/{{$page_data["id"]}}",
                 @else
-                url: app_url+"/storecoa",
+                url: "{{ env('APP_URL') }}/storecoa",
                 @endif
                 type: "post",
                 data: values,
@@ -467,7 +467,7 @@ $("#category").on("change", function() {
 var fields = $("#quickForm").serialize();
 
 $.ajax({
-    url: app_url+"/getoptionscoa",
+    url: "{{ env('APP_URL') }}/getoptionscoa",
     type: "post",
     data: {
         fieldname: "category",
@@ -495,7 +495,7 @@ $.ajax({
 
 $("#coa").select2({
     ajax: {
-        url: app_url+"/getlinkscoa",
+        url: "{{ env('APP_URL') }}/getlinkscoa",
         type: "post",
         dataType: "json",
         data: function(params) {
@@ -600,7 +600,7 @@ $(document).ready(function() {
 function getdata(){
     cto_loading_show();
     $.ajax({
-        url: app_url+"/getdatacoa",
+        url: "{{ env('APP_URL') }}/getdatacoa",
         type: "post",
         data: {
             id: {{$page_data["id"]}},

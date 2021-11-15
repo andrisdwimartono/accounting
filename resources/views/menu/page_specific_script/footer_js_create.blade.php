@@ -15,6 +15,7 @@
     
 <script>
     //variabel editor untuk datatables
+    var app_url = '{{ env('APP_URL') }}';
     var editor; 
     $(function () {
         //Date picker
@@ -42,9 +43,9 @@
                 var ajaxRequest;
                 ajaxRequest= $.ajax({
                     @if($page_data["page_method_name"] == "Update")
-                    url: "/update{{$page_data["page_data_urlname"]}}/{{$page_data["id"]}}",
+                    url: "{{ env('APP_URL') }}/update{{$page_data["page_data_urlname"]}}/{{$page_data["id"]}}",
                     @else
-                    url: "/store{{$page_data["page_data_urlname"]}}",
+                    url: "{{ env('APP_URL') }}/store{{$page_data["page_data_urlname"]}}",
                     @endif
                     type: "post",
                     data: values,
@@ -222,7 +223,7 @@
         @if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")
         cto_loading_show();
         $.ajax({
-            url: "/getdata{{$page_data["page_data_urlname"]}}",
+            url: "{{ env('APP_URL') }}/getdata{{$page_data["page_data_urlname"]}}",
             type: "post",
             data: {
                 id: {{$page_data["id"]}},

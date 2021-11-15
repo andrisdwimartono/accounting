@@ -13,7 +13,7 @@
     <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
 <script>
-    
+    var app_url = '{{ env('APP_URL') }}';
     //variabel editor untuk datatables
     var editor; 
     $(function () {
@@ -33,7 +33,7 @@
                 var values = $('#quickForm').serialize();
                 var ajaxRequest;
                 ajaxRequest= $.ajax({
-                    url: "/updateassignmenu{{$page_data["page_data_urlname"]}}/{{$page_data["id"]}}",
+                    url: "{{ env('APP_URL') }}/updateassignmenu{{$page_data["page_data_urlname"]}}/{{$page_data["id"]}}",
                     type: "post",
                     data: values,
                     success: function(data){
@@ -73,7 +73,7 @@
         });
 
         $.ajax({
-            url: "/getoptions{{$page_data["page_data_urlname"]}}",
+            url: "{{ env('APP_URL') }}/getoptions{{$page_data["page_data_urlname"]}}",
             type: "post",
             data: {
                 fieldname: "role",
@@ -145,7 +145,7 @@
         @if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")
         cto_loading_show();
         $.ajax({
-            url: "/getdataassignmenu{{$page_data["page_data_urlname"]}}",
+            url: "{{ env('APP_URL') }}/getdataassignmenu{{$page_data["page_data_urlname"]}}",
             type: "post",
             data: {
                 id: {{$page_data["id"]}},
@@ -161,7 +161,7 @@
                 $("#role").on("change", function() {
                     $("#role_label").val($('#role option:selected').text());
                     $.ajax({
-                        url: "/getdataassignmenu{{$page_data["page_data_urlname"]}}role",
+                        url: "{{ env('APP_URL') }}/getdataassignmenu{{$page_data["page_data_urlname"]}}role",
                         type: "post",
                         data: {
                             role: $('#quickForm select[name=role]').val(),

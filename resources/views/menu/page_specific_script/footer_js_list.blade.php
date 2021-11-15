@@ -10,6 +10,7 @@
 <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
 
 <script>
+  var app_url = '{{ env('APP_URL') }}';
   $(function () {
     $("#example1").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false,
@@ -33,7 +34,7 @@
 	    "pagingType": "full_numbers",
       "order" : [],
       "ajax" : {
-        url:"/getlist{{$page_data["page_data_urlname"]}}",
+        url:"{{ env('APP_URL') }}/getlist{{$page_data["page_data_urlname"]}}",
         type:"POST",
         data:{
           _token: $("input[name=_token]").val()
@@ -55,7 +56,7 @@
           'type': "POST",
           'global': false,
           'dataType': 'json',
-          'url': "/delete{{$page_data["page_data_urlname"]}}",
+          'url': "{{ env('APP_URL') }}/delete{{$page_data["page_data_urlname"]}}",
           'data': { 'id':  id, '_token': $("input[name=_token]").val()},
           'success': function (data) {
             cto_loading_hide();

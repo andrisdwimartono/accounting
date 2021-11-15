@@ -26,6 +26,7 @@
     <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
 <script>
+    var app_url = '{{ env('APP_URL') }}';
     var editor;
 
 $(function () {
@@ -40,9 +41,9 @@ $(function () {
             var ajaxRequest;
             ajaxRequest = $.ajax({
                 @if($page_data["page_method_name"] == "Update")
-                url: "/update{{$page_data["page_data_urlname"]}}/{{$page_data["id"]}}",
+                url: "{{ env('APP_URL') }}/update{{$page_data["page_data_urlname"]}}/{{$page_data["id"]}}",
                 @else
-                url: "/store{{$page_data["page_data_urlname"]}}",
+                url: "{{ env('APP_URL') }}/store{{$page_data["page_data_urlname"]}}",
                 @endif
                 type: "post",
                 data: values,
@@ -151,7 +152,7 @@ $(document).ready(function() {
 function getdata(){
     cto_loading_show();
     $.ajax({
-        url: "/getdata{{$page_data["page_data_urlname"]}}",
+        url: "{{ env('APP_URL') }}/getdata{{$page_data["page_data_urlname"]}}",
         type: "post",
         data: {
             id: {{$page_data["id"]}},
@@ -274,7 +275,7 @@ $("#btn_photo_profile").on('click', function(){
             form_data.append("_token", $("#quickForm input[name=_token]").val());
             form_data.append("menname", "photo_profile");
             $.ajax({
-                url:"/uploadfileuser",
+                url:"{{ env('APP_URL') }}/uploadfileuser",
                 method:"POST",
                 data: form_data,
                 contentType: false,

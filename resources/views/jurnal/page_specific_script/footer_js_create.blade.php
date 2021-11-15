@@ -136,9 +136,9 @@ $(function () {
             var values = $("#quickForm").serialize();
 
             var ajaxRequest;
-            var urlpage = app_url+"/storejurnal";
+            var urlpage = "{{ env('APP_URL') }}/storejurnal";
             if($("#is_edit").val() == 1){
-                urlpage = app_url+"/updatejurnal/"+$("#id_jurnal").val();
+                urlpage = "{{ env('APP_URL') }}/updatejurnal/"+$("#id_jurnal").val();
             }
             ajaxRequest = $.ajax({
                 url: urlpage,
@@ -229,7 +229,7 @@ var fields = $("#quickForm").serialize();
 
 $("#unitkerja").select2({
     ajax: {
-        url: app_url+"/getlinksjurnal",
+        url: "{{ env('APP_URL') }}/getlinksjurnal",
         type: "post",
         dataType: "json",
         data: function(params) {
@@ -255,7 +255,7 @@ $("#unitkerja").select2({
 
 $("#unitkerja").select2({
     ajax: {
-        url: app_url+"/getlinksjurnal",
+        url: "{{ env('APP_URL') }}/getlinksjurnal",
         type: "post",
         dataType: "json",
         data: function(params) {
@@ -281,7 +281,7 @@ $("#unitkerja").select2({
 
 $("#anggaran").select2({
     ajax: {
-        url: app_url+"/getlinksjurnal",
+        url: "{{ env('APP_URL') }}/getlinksjurnal",
         type: "post",
         dataType: "json",
         data: function(params) {
@@ -307,7 +307,7 @@ $("#anggaran").select2({
 
 $("#coa").select2({
     ajax: {
-        url: app_url+"/getlinksjurnal",
+        url: "{{ env('APP_URL') }}/getlinksjurnal",
         type: "post",
         dataType: "json",
         data: function(params) {
@@ -333,7 +333,7 @@ $("#coa").select2({
 
 $("#jenisbayar").select2({
     ajax: {
-        url: app_url+"/getlinksjurnal",
+        url: "{{ env('APP_URL') }}/getlinksjurnal",
         type: "post",
         dataType: "json",
         data: function(params) {
@@ -478,7 +478,7 @@ $(document).ready(function() {
     
     $(".addnewrowselect").select2({
         ajax: {
-            url: app_url+"/getlinksjurnal",
+            url: "{{ env('APP_URL') }}/getlinksjurnal",
             type: "post",
             dataType: "json",
             data: function(params) {
@@ -581,7 +581,7 @@ $(document).ready(function() {
 
         $("#coa_"+rowlen+"").select2({
             ajax: {
-                url: app_url+"/getlinksjurnal",
+                url: "{{ env('APP_URL') }}/getlinksjurnal",
                 type: "post",
                 dataType: "json",
                 data: function(params) {
@@ -650,7 +650,7 @@ $(document).ready(function() {
 function getdata(){
     cto_loading_show();
     $.ajax({
-        url: app_url+"/getdatajurnal",
+        url: "{{ env('APP_URL') }}/getdatajurnal",
         type: "post",
         data: {
             id: $("#id_jurnal").val(),
@@ -738,7 +738,7 @@ function getdata(){
 function getlist(){
     cto_loading_show();
     $.ajax({
-        url: app_url+"/getlistjurnal",
+        url: "{{ env('APP_URL') }}/getlistjurnal",
         type: "post",
         data: {
             _token: $("#quickForm input[name=_token]").val(),
