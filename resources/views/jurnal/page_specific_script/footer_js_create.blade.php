@@ -80,6 +80,9 @@ $(function () {
                 $("#caktable1_message").html("");
                 $("#caktable1_message").addClass("d-none");
             }
+
+            var unitkerja = $("#unitkerja").val();
+            var unitkerja_label = $("#unitkerja_label").val();
             $("#caktable1 > tbody > tr").each(function(index, tr){
                 if(AutoNumeric.getNumber("#debet_"+$(tr).attr("row-seq")) > 0 && AutoNumeric.getNumber("#kredit_"+$(tr).attr("row-seq")) > 0){
                     $("#debet_"+$(tr).attr("row-seq")).addClass("border-danger");
@@ -92,8 +95,7 @@ $(function () {
                     return true;
                 }
                 
-                var unitkerja = $("#unitkerja").val();
-                var unitkerja_label = $("#unitkerja").text();
+                
                 var anggaran = 0;
                 var anggaran_label = $("#anggaran_label").val();
                 var tanggal = $("input[name=tanggal_jurnal]").val();
@@ -127,8 +129,9 @@ $(function () {
                 cttransaksi.push({"no_seq": index, "unitkerja": unitkerja, "unitkerja_label": unitkerja_label, "anggaran": anggaran, "anggaran_label": anggaran_label, "no_jurnal": "", "tanggal": tanggal, "keterangan": keterangan, "jenis_transaksi": "", "coa": coa, "coa_label": coa_label, "deskripsi": deskripsi, "jenisbayar": jenisbayar, "jenisbayar_label": jenisbayar_label, "nim": nim, "kode_va": kode_va, "fheader": fheader, "debet": debet, "credit": credit, "id": id});
             });
             
+            
             $("#transaksi").val(JSON.stringify(cttransaksi));
-            //$("#transaksi").val('[{"no_seq":0,"unitkerja":"2","unitkerja_label":"Kemahasiswaan","anggaran":0,"anggaran_label":"","no_jurnal":"","tanggal":"2021-11-15","keterangan":"","jenis_transaksi":"","coa":"613","coa_label":"1-01-02-001 Bank BSI Universitas", "deskripsi":"aa","jenisbayar":0,"jenisbayar_label":"","nim":"","kode_va":"","fheader":"","debet":1000,"credit":0,"id":"28"},{"no_seq":1,"unitkerja":"2","unitkerja_label":"Kemahasiswaan","anggaran":0,"anggaran_label":"","no_jurnal":"","tanggal":"2021-11-15","keterangan":"","jenis_transaksi":"","coa":"621","coa_label":"1-01-04-002 Piutang Amal Usaha Muhammadiyah (AUM)","deskripsi":"bb","jenisbayar":0,"jenisbayar_label":"","nim":"","kode_va":"","fheader":"","debet":0,"credit":2000,"id":"29"}]');
+            
             var id_jurnal = 0;
             var values = $("#quickForm").serialize();
 
@@ -671,7 +674,12 @@ function getdata(){
                         }
                     }
 
-                    var caktable1 = $("#caktable1");
+                    $("#caktable1 > tbody > tr").each(function(index){
+                        if(index <= 3){
+                            return true;
+                        }
+                        $(this).remove();
+                    });
                     for(var i = 0; i < data.data.transaksi.length; i++){
                         if(data.data.transaksi[i].no_seq > 3){
                             var trexist = $("#caktable1 > tbody > tr[row-seq="+(data.data.transaksi[i].no_seq+1)+"]").length;
@@ -693,16 +701,6 @@ function getdata(){
                         $("#caktable1 > tbody > tr[row-seq="+(data.data.transaksi[i].no_seq+1)+"]").find("td:eq(6)").text(data.data.transaksi[i].id);
                     }
                 }
-            // $("#cttransaksi").DataTable().clear().draw();
-            // if(data.data.transaksi.length > 0){
-            //     for(var i = 0; i < data.data.transaksi.length; i++){
-            //         var dttb = $('#cttransaksi').DataTable();
-            //         var child_table_data = [data.data.transaksi[i].no_seq, data.data.transaksi[i].unitkerja, data.data.transaksi[i].unitkerja_label, data.data.transaksi[i].anggaran, data.data.transaksi[i].anggaran_label, data.data.transaksi[i].no_jurnal, data.data.transaksi[i].tanggal, data.data.transaksi[i].keterangan, data.data.transaksi[i].jenis_transaksi, data.data.transaksi[i].coa, data.data.transaksi[i].coa_label, data.data.transaksi[i].deskripsi, data.data.transaksi[i].jenisbayar, data.data.transaksi[i].jenisbayar_label, data.data.transaksi[i].nim, data.data.transaksi[i].kode_va, data.data.transaksi[i].fheader, data.data.transaksi[i].debet, data.data.transaksi[i].credit, @if($page_data["page_method_name"] != "View") '<div class="row-show"><i class="fa fa-eye" style="color:blue;cursor: pointer;"></i></div>     <div class="row-delete"><i class="fa fa-trash" style="color:red;cursor: pointer;"></i></div>' @else '<div class="row-show"><i class="fa fa-eye" style="color:blue;cursor: pointer;"></i></div>' @endif, data.data.transaksi[i].id];
-            //         if(dttb.row.add(child_table_data).draw( false )){
-
-            //         }
-            //     }
-            // }
         cto_loading_hide();
     },
         error: function (err) {

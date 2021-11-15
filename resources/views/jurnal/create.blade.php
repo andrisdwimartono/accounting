@@ -119,7 +119,7 @@
                                     </tfoot>
                                 </table>
                                 <div class="text-danger col-sm-12" id="caktable1_message"></div>
-                                <input type="hidden" name="transaksi" class="form-control" id="transaksi" placeholder="Enter Menu Field">
+                                
                             </div>
                         </div>
                     @if($page_data["page_method_name"] != "View")
