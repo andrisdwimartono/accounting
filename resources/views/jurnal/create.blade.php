@@ -69,11 +69,11 @@
                         </div>
                         <div class="form-group m-0">
                             <div class="col-sm-12 row" id="forcaktable1">
-                                <table id="caktable1" class="table table-bordered">
+                                <table id="caktable1" class="table table-bordered" style="table-layout:fixed;">
                                     <thead class="bg-primary">
                                         <tr>
                                             <th class="column-hidden" scope="col">ID COA</th>
-                                            <th class="text-white text-center" scope="col" width="150px">Kode Rekening</th>
+                                            <th class="text-white text-center" scope="col" width="250px" style="overflow: hidden;">Kode Rekening</th>
                                             <th class="text-white text-center" scope="col">Deskripsi</th>
                                             <th class="text-white text-center" scope="col">Debet</th>
                                             <th class="text-white text-center" scope="col">Kredit</th>
