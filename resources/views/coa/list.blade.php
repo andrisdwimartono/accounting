@@ -50,6 +50,9 @@
                                     <li class="nav-item bg-success">
                                         <a id="tabpendapatan_lainnya" class="nav-link{{$page_data['category'] == 'pendapatan_lainnya'?' active':''}}" data-toggle="tab" href="/coa/pendapatan_lainnya/list"> Pendapatan Lainnya</a>
                                     </li>
+                                    <li class="nav-item bg-success">
+                                        <a id="tabplus" class="nav-link" data-toggle="tab" href="#" id="tabplus"> +</a>
+                                    </li>
                                 </ul>                                    
 
                                 <div class="table-responsive">

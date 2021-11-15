@@ -127,6 +127,7 @@ $(function () {
             });
             
             $("#transaksi").val(JSON.stringify(cttransaksi));
+            //$("#transaksi").val('[{"no_seq":0,"unitkerja":"2","unitkerja_label":"Kemahasiswaan","anggaran":0,"anggaran_label":"","no_jurnal":"","tanggal":"2021-11-15","keterangan":"","jenis_transaksi":"","coa":"613","coa_label":"1-01-02-001 Bank BSI Universitas", "deskripsi":"aa","jenisbayar":0,"jenisbayar_label":"","nim":"","kode_va":"","fheader":"","debet":1000,"credit":0,"id":"28"},{"no_seq":1,"unitkerja":"2","unitkerja_label":"Kemahasiswaan","anggaran":0,"anggaran_label":"","no_jurnal":"","tanggal":"2021-11-15","keterangan":"","jenis_transaksi":"","coa":"621","coa_label":"1-01-04-002 Piutang Amal Usaha Muhammadiyah (AUM)","deskripsi":"bb","jenisbayar":0,"jenisbayar_label":"","nim":"","kode_va":"","fheader":"","debet":0,"credit":2000,"id":"29"}]');
             var id_jurnal = 0;
             var values = $("#quickForm").serialize();
 
@@ -740,7 +741,7 @@ function getlist(){
             const dat = JSON.parse(data);
             for(var i = 0; i < dat.data.length; i++){
                 $("#caktable2").find('tbody')
-                    .append("<tr row-id=\""+dat.data[i][0]+"\" class=\"addnewrow2\">"
+                    .append("<tr row-id=\""+dat.data[i][0]+"\" class=\"addnewrow2\" style=\"cursor: pointer;\">"
                         +"<td class=\"column-hidden\">"+dat.data[i][0]+"</td>"
                         +"<td class=\"p-0\">"+dat.data[i][1]+"</td>"
                         +"<td class=\"p-0\">"+dat.data[i][2]+"</td>"

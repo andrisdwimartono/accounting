@@ -67,14 +67,14 @@
       language: { search: "" , searchPlaceholder: "Search..."},
       //"searching": false,
       buttons: [
-            {
-                text: "+",
-                className: "bg-success text-white m-0",
-                action: function ( e, dt, node, config ) {
-                  //window.location.href = "/create{{$page_data["page_data_urlname"]}}";
-                  $("#modal-add-new-coa").modal({'show': true});
-                }
-            },
+            // {
+            //     text: "+",
+            //     className: "bg-success text-white m-0",
+            //     action: function ( e, dt, node, config ) {
+            //       //window.location.href = "/create{{$page_data["page_data_urlname"]}}";
+            //       $("#modal-add-new-coa").modal({'show': true});
+            //     }
+            // },
         ],
           aoColumnDefs: [{
               aTargets: [1],
@@ -588,6 +588,10 @@ $(document).ready(function() {
     @if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")
     getdata();
     @endif
+
+    $("#tabplus").click(function(){
+      $("#modal-add-new-coa").modal({'show': true});
+    });
 } );
 
 @if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")

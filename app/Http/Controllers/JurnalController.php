@@ -57,7 +57,7 @@ class JurnalController extends Controller
             "no_jurnal" => "required|min:1|max:25",
             "tanggal_jurnal" => "required|date_format:Y-m-d",
             "keterangan" => "max:255",
-            "transaksi" => "required"
+            // "transaksi" => "required"
         ];
 
         $td["fieldsmessages"] = [
@@ -243,6 +243,7 @@ class JurnalController extends Controller
     {
         $page_data = $this->tabledesign();
         $rules_transaksi = $page_data["fieldsrules_transaksi"];
+        //$requests_transaksi = json_decode('[{"no_seq":0,"unitkerja":"2","unitkerja_label":"Kemahasiswaan","anggaran":0,"anggaran_label":"","no_jurnal":"","tanggal":"2021-11-15","keterangan":"","jenis_transaksi":"","coa":"613","coa_label":"1-01-02-001 Bank BSI Universitas", "deskripsi":"aa","jenisbayar":0,"jenisbayar_label":"","nim":"","kode_va":"","fheader":"","debet":1000,"credit":0,"id":"28"},{"no_seq":1,"unitkerja":"2","unitkerja_label":"Kemahasiswaan","anggaran":0,"anggaran_label":"","no_jurnal":"","tanggal":"2021-11-15","keterangan":"","jenis_transaksi":"","coa":"621","coa_label":"1-01-04-002 Piutang Amal Usaha Muhammadiyah (AUM)","deskripsi":"bb","jenisbayar":0,"jenisbayar_label":"","nim":"","kode_va":"","fheader":"","debet":0,"credit":2000,"id":"29"},{"no_seq":2,"unitkerja":"2","unitkerja_label":"Kemahasiswaan","anggaran":0,"anggaran_label":"","no_jurnal":"","tanggal":"2021-11-15","keterangan":"","jenis_transaksi":"","coa":"630","coa_label":"1-02-04-001 Meja ","deskripsi":"ccc","jenisbayar":0,"jenisbayar_label":"","nim":"","kode_va":"","fheader":"","debet":0,"credit":5000,"id":"30"},{"no_seq":3,"unitkerja":"2","unitkerja_label":"Kemahasiswaan","anggaran":0,"anggaran_label":"","no_jurnal":"","tanggal":"2021-11-15","keterangan":"","jenis_transaksi":"","coa":"645","coa_label":"4-01-04-001 Perusahaan A","deskripsi":"dd","jenisbayar":0,"jenisbayar_label":"","nim":"","kode_va":"","fheader":"","debet":4000,"credit":0,"id":"31"},{"no_seq":4,"unitkerja":"2","unitkerja_label":"Kemahasiswaan","anggaran":0,"anggaran_label":"","no_jurnal":"","tanggal":"2021-11-15","keterangan":"","jenis_transaksi":"","coa":"613","coa_label":"1-01-02-003 Bank BNI","deskripsi":"ee","jenisbayar":0,"jenisbayar_label":"","nim":"","kode_va":"","fheader":"","debet":2000,"credit":0,"id":"32"}]', true);
         $requests_transaksi = json_decode($request->transaksi, true);
         foreach($requests_transaksi as $ct_request){
             $child_tb_request = new \Illuminate\Http\Request();

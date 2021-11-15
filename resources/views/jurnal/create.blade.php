@@ -25,7 +25,7 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-header bg-primary">
-                                <h4 class="card-title text-white">Kode Rekening Akuntansi</h4>
+                                <h4 class="card-title text-white">Jurnal Umum</h4>
                             </div>
                             
                 <form id="quickForm" action="#">
@@ -43,9 +43,9 @@
                             </div>
                         </div>
                         <div class="form-group row m-0">
-                            <label class="col-sm-4 col-form-label" for="anggaran_label">Tipe Anggaran</label>
+                            <label class="col-sm-4 col-form-label" for="anggaran_label">Kode Anggaran</label>
                             <div class="col-sm-6 cakfield">
-                                <input type="text" name="anggaran_label" class="form-control form-control-sm" id="anggaran_label" placeholder="Enter Tipe Anggaran" @if($page_data["page_method_name"] == "View") readonly @endif>
+                                <input type="text" name="anggaran_label" class="form-control form-control-sm" id="anggaran_label" placeholder="Enter Kode Anggaran" @if($page_data["page_method_name"] == "View") readonly @endif>
                             </div>
                         </div>
                         <div class="form-group row m-0">
@@ -73,7 +73,7 @@
                                     <thead class="bg-primary">
                                         <tr>
                                             <th class="column-hidden" scope="col">ID COA</th>
-                                            <th class="text-white text-center" scope="col" width="150px">No. Rek. Transaksi</th>
+                                            <th class="text-white text-center" scope="col" width="150px">Kode Rekening</th>
                                             <th class="text-white text-center" scope="col">Deskripsi</th>
                                             <th class="text-white text-center" scope="col">Debet</th>
                                             <th class="text-white text-center" scope="col">Kredit</th>
@@ -96,9 +96,11 @@
                                         <tr class="p-0">
                                             <td class="column-hidden"></td>
                                             <td rowspan="2" class="text-center">
-                                                <button type="button" id="createnew" class="btn btn-primary">Baru</button>
-                                                <button type="button" class="btn btn-success" id="submit-form" @if($page_data["page_method_name"] == "View") readonly @endif>Simpan</button>
-                                                <button type="button" id="addrow" class="btn btn-primary">+row</button>
+                                                <div class="form-group row m-0 p-0">
+                                                    <button type="button" id="createnew" class="btn btn-primary">Baru</button>
+                                                    <button type="button" class="btn btn-success" id="submit-form" @if($page_data["page_method_name"] == "View") readonly @endif>Simpan</button>
+                                                    <button type="button" id="addrow" class="btn btn-primary">+row</button>
+                                                </div>
                                             </td>
                                             <td class="p-0 text-right">Total : </td>
                                             <td class="p-0" id="totaldebet"></td>
