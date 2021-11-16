@@ -12,6 +12,8 @@
     <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.js") }}"></script>
     <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.time.js") }}"></script>
     <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.date.js") }}"></script>
+    <script src="{{ asset ("/assets/cto/js/cakrudtemplate.js") }}"></script>
+    <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
     <!-- Pickdate -->
     <!-- <script src="{{ asset ("/assets/motaadmin/js/plugins-init/pickadate-init.js") }}"></script> -->
 
@@ -30,6 +32,8 @@
     <script src="{{ asset ("/assets/datatables/js/dataTables.bootstrap4.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/dataTables.rowReorder.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/dataTables.buttons.min.js") }}"></script> -->
+
+
     <script src="{{ asset ("/assets/cto/js/cakrudtemplate.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
