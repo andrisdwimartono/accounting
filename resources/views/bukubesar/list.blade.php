@@ -30,6 +30,17 @@
                                         <select name="coa" id="coa" class="form-control select2bs4staticBackdrop addnewrowselect" data-row="1" style="width: 100%;"></select>
                                         <input type="hidden" name="coa_code" id="coa_code">
                                     </div>
+
+                                    <label class="col-sm-4 col-form-label" for="coa">Kode Rekening</label>
+                                    <div class="col-sm-6 cakfield">
+                                        <div class="col-sm-6 cakfield">
+                                            <input name="tanggal_jurnal_from" class="datepicker-default form-control form-control-sm" id="datepicker" <?=$page_data["page_method_name"] == "View"?"readonly":""?>>
+                                        </div>
+                                        <label for="tanggal_jurnal_to" class="col-sm-1 col-form-label">s/d</label>
+                                        <div class="col-sm-6 cakfield">
+                                            <input name="tanggal_jurnal_to" class="datepicker-default form-control form-control-sm" id="datepicker" <?=$page_data["page_method_name"] == "View"?"readonly":""?>>
+                                        </div>
+                                    </div>                        
                                 </div>
 
                             </div>

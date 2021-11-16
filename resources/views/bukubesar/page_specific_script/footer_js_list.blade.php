@@ -1,31 +1,38 @@
 <!-- Required vendors -->
 <script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
-	<script src="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/js/bootstrap-select.min.js") }} "></script>
-    <script src="{{ asset ("/assets/motaadmin/vendor/chart.js/Chart.bundle.min.js") }}"></script>
+	<!-- <script src="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/js/bootstrap-select.min.js") }} "></script> -->
+  <script src="{{ asset ("/assets/motaadmin/vendor/chart.js/Chart.bundle.min.js") }}"></script>
     <script src="{{ asset ("/assets/motaadmin/js/custom.min.js") }}"></script>
 	<script src="{{ asset ("/assets/motaadmin/js/deznav-init.js") }}"></script>
 	<!-- Apex Chart -->
 	<script src="{{ asset ("/assets/motaadmin/vendor/apexchart/apexchart.js") }}"></script>
-    
+
+    <script src="{{ asset ("/assets/motaadmin/vendor/moment/moment.min.js") }}"></script>
+
+    <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.js") }}"></script>
+    <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.time.js") }}"></script>
+    <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.date.js") }}"></script>
+    <!-- Pickdate -->
+    <!-- <script src="{{ asset ("/assets/motaadmin/js/plugins-init/pickadate-init.js") }}"></script> -->
+
 	<!-- Svganimation scripts -->
     <script src="{{ asset ("/assets/motaadmin/vendor/svganimation/vivus.min.js") }}"></script>
     <script src="{{ asset ("/assets/motaadmin/vendor/svganimation/svg.animation.js") }}"></script>
 
-    <!-- Datatable -->
+    <script src="{{ asset ("/assets/node_modules/@popperjs/core/dist/umd/popper.min.js") }}"></script>
+    <!-- <script src="{{ asset ("/assets/node_modules/gijgo/js/gijgo.min.js") }}"></script> -->
+    <script src="{{ asset ("/assets/node_modules/jquery-toast-plugin/dist/jquery.toast.min.js") }}"></script>
+    <script src="{{ asset ("/assets/node_modules/autonumeric/dist/autoNumeric.min.js") }}"></script>
+    <script src="{{ asset ("/assets/bootstrap/dist/js/bootstrap.bundle.min.js") }}"></script>
+    <script src="{{ asset ("/assets/bower_components/jquery-validation/dist/jquery.validate.min.js") }}"></script>
+    <script src="{{ asset ("/assets/bower_components/select2/dist/js/select2.full.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/jquery.dataTables.min.js") }}"></script>
-    <script src="{{ asset ("/assets/motaadmin/js/plugins-init/datatables.init.js") }} "></script>
-
-<!-- <script src="{{ asset ("/assets/jquery/js/jquery-3.6.0.min.js") }}"></script> -->
-<script src="{{ asset ("/assets/node_modules/@popperjs/core/dist/umd/popper.min.js") }}"></script>
-<script src="{{ asset ("/assets/node_modules/jquery-toast-plugin/dist/jquery.toast.min.js") }}"></script>
-<script src="{{ asset ("/assets/bootstrap/dist/js/bootstrap.bundle.min.js") }}"></script>
-<script src="{{ asset ("/assets/bower_components/select2/dist/js/select2.full.min.js") }}"></script>
-
-<script src="{{ asset ("/assets/datatables/js/dataTables.bootstrap4.min.js") }}"></script>
-<script src="{{ asset ("/assets/datatables/js/dataTables.rowReorder.min.js") }}"></script>
-<script src="{{ asset ("/assets/datatables/js/dataTables.buttons.min.js") }}"></script>
-<script src="{{ asset ("/assets/cto/js/cakrudtemplate.js") }}"></script>
-<script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
+    <script src="{{ asset ("/assets/datatables/js/dataTables.bootstrap4.min.js") }}"></script>
+    <script src="{{ asset ("/assets/datatables/js/dataTables.rowReorder.min.js") }}"></script>
+    <script src="{{ asset ("/assets/datatables/js/dataTables.buttons.min.js") }}"></script>
+    <script src="{{ asset ("/assets/cto/js/cakrudtemplate.js") }}"></script>
+    <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
+    <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
 
 <script>
 
@@ -46,6 +53,16 @@
   });
 
   $(document).ready(function(){
+    $('input[name=tanggal_jurnal], input[name=tanggal_jurnal_from], input[name=tanggal_jurnal_to]').pickadate({
+        format: 'dd/mm/yyyy',
+        formatSubmit: 'yyyy-mm-dd',
+        hiddenName: true,
+        onStart: function(){
+            var date = new Date();
+                this.set('select', date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate(), { format: 'yyyy-mm-dd' });
+        }
+    });
+
 	  var table = null;
     var dataTable;
     fetch_data();
