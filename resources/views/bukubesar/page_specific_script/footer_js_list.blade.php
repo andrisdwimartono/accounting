@@ -114,6 +114,12 @@
               _token: $("input[name=_token]").val()
             },
           },
+          "columns" : {
+            data:"debet",
+            render: function(data){
+              return formatRupiah(data)
+            }
+          },
           "footerCallback": function ( row, data, start, end, display ) {
               var api = this.api(), data;
   
@@ -142,8 +148,8 @@
                   }, 0 );
   
               // Update footer
-              $( api.column( 4 ).footer() ).html(debet);
-              $( api.column( 5 ).footer() ).html(kredit);
+              $( api.column( 4 ).footer() ).html(formatRupiah(debet,"."));
+              $( api.column( 5 ).footer() ).html(formatRupiah(kredit,"."));
             }
         });
       cto_loading_hide();
