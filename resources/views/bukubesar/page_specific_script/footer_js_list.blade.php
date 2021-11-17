@@ -114,12 +114,6 @@
               _token: $("input[name=_token]").val()
             },
           },
-          "columns" : {
-            data:"debet",
-            render: function(data){
-              return formatRupiah(data)
-            }
-          },
           "footerCallback": function ( row, data, start, end, display ) {
               var api = this.api(), data;
   
