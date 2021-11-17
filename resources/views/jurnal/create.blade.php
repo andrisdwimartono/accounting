@@ -69,15 +69,15 @@
                         </div>
                         <div class="form-group m-0">
                             <div class="col-sm-12 row" id="forcaktable1">
-                                <table id="caktable1" class="table table-bordered" style="table-layout:fixed;">
+                                <table id="caktable1" class="table table-bordered" style="table-layout: fixed;">
                                     <thead class="bg-primary">
                                         <tr>
                                             <th class="column-hidden" scope="col">ID COA</th>
-                                            <th class="text-white text-center" scope="col" width="250px" style="overflow: hidden;">Kode Rekening</th>
-                                            <th class="text-white text-center" scope="col">Deskripsi</th>
-                                            <th class="text-white text-center" scope="col">Debet</th>
-                                            <th class="text-white text-center" scope="col">Kredit</th>
-                                            <th class="text-white text-center col-sm-1" scope="col">Act</th>
+                                            <th class="text-white text-center" scope="col" style="width: 40%; overflow: hidden;">Kode Rekening</th>
+                                            <th class="text-white text-center" scope="col" style="width: 15%;">Deskripsi</th>
+                                            <th class="text-white text-center" scope="col" style="width: 20%;">Debet</th>
+                                            <th class="text-white text-center" scope="col" style="width: 20%;">Kredit</th>
+                                            <th class="text-white text-center col-sm-1 pl-0 pr-0" scope="col" style="width: 5%;"></th>
                                             <th class="column-hidden" scope="col">ID</th>
                                         </tr>
                                     </thead>
