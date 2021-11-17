@@ -450,7 +450,7 @@ $("#quickModalForm_transaksi").validate({
 });
 $(document).ready(function() {
     getlist();
-    $("#no_jurnal_search, #countcaktable2").change(function(){
+    $("#no_jurnal_search, #tanggal_jurnal_from, #tanggal_jurnal_to").change(function(){
         getlist();
     });
 
@@ -619,7 +619,7 @@ $(document).ready(function() {
         $('#unitkerja').val(null).trigger('change');
         $("#anggaran_label").val("");
         $("#no_jurnal").val("JU#######");
-        $('#tanggal_jurnal').val("");
+        $('input[name=tanggal_jurnal]').val("");
         $('#coa_1').val(null).trigger('change');
         $('#deskripsi_1').val("");
         AutoNumeric.getAutoNumericElement('#debet_1').set(0);
@@ -743,10 +743,10 @@ function getlist(){
         data: {
             _token: $("#quickForm input[name=_token]").val(),
             start: 0,
-            length: $("#countcaktable2").val(),
+            // length: $("#countcaktable2").val(),
             no_jurnal_search: $("#no_jurnal_search").val(),
-            tanggal_jurnal_to: $("#tanggal_jurnal_to").val(),
-            tanggal_jurnal_from: $("#tanggal_jurnal_from").val()
+            tanggal_jurnal_to: $("input[name=tanggal_jurnal_to]").val(),
+            tanggal_jurnal_from: $("input[name=tanggal_jurnal_from]").val()
         },
         success: function(data){
             $("#caktable2").find('tbody').empty();

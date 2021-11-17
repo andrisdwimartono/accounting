@@ -138,7 +138,7 @@
                 </form>
                 <div class="form-group m-0">
                     <div class="col-sm-12 row bg-primary" id="forcaktablesearch2">
-                        <div class="col-sm-1 cakfield">
+                        <!-- <div class="col-sm-1 cakfield">
                             <select name="countcaktable2" id="countcaktable2" class="form-control form-control-sm bg-primary mt-1">
                                 <option value="10">10</option>
                                 <option value="20">20</option>
@@ -146,14 +146,14 @@
                                 <option value="50">50</option>
                                 <option value="100">100</option>
                             </select>
-                        </div>
+                        </div> -->
                         <label for="tanggal_jurnal_from" class="col-sm-1 col-form-label">Tgl</label>
                         <div class="col-sm-2 cakfield">
-                            <input name="tanggal_jurnal_from" class="datepicker-default form-control form-control-sm bg-primary mt-1" id="datepicker" <?=$page_data["page_method_name"] == "View"?"readonly":""?>>
+                            <input name="tanggal_jurnal_from" id="tanggal_jurnal_from" class="datepicker-default form-control form-control-sm bg-primary mt-1" id="datepicker" <?=$page_data["page_method_name"] == "View"?"readonly":""?>>
                         </div>
                         <label for="tanggal_jurnal_to" class="col-sm-1 col-form-label">s/d</label>
                         <div class="col-sm-2 cakfield">
-                            <input name="tanggal_jurnal_to" class="datepicker-default form-control form-control-sm bg-primary mt-1" id="datepicker" <?=$page_data["page_method_name"] == "View"?"readonly":""?>>
+                            <input name="tanggal_jurnal_to" id="tanggal_jurnal_to" class="datepicker-default form-control form-control-sm bg-primary mt-1" id="datepicker" <?=$page_data["page_method_name"] == "View"?"readonly":""?>>
                         </div>
                         <label class="col-sm-2 text-right col-form-label" for="no_jurnal_search">No Jurnal</label>
                         <div class="col-sm-3 cakfield">
