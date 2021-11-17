@@ -19,6 +19,7 @@ class BukuBesarController extends Controller
             "page_data_urlname" => "bukubesar",
             "fields" => [
                 "tanggal" => "text",
+                "coa_code" => "text",
                 "no_jurnal" => "link",
                 "deskripsi" => "text",
                 "debet" => "text",
@@ -47,7 +48,7 @@ class BukuBesarController extends Controller
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "Buku Besar";
         $page_data["footer_js_page_specific_script"] = ["bukubesar.page_specific_script.footer_js_list"];
-        $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_list"];
+        $page_data["header_js_page_specific_script"] = ["bukubesar.page_specific_script.header_js_list"];
         
         return view("bukubesar.list", ["page_data" => $page_data]);
     }
@@ -64,130 +65,31 @@ class BukuBesarController extends Controller
         $page_data["footer_js_page_specific_script"] = ["unitkerja.page_specific_script.footer_js_create"];
         $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_create"];
         
-        return view("unitkerja.create", ["page_data" => $page_data]);
+        return view("bukubesar.create", ["page_data" => $page_data]);
     }
 
-    /**
-    * Store a newly created resource in storage.
-    *
-    * @param \Illuminate\Http\Request $request
-    * @return \Illuminate\Http\Response
-    */
-    public function store(Request $request)
-    {
-        $page_data = $this->tabledesign();
-        $rules = $page_data["fieldsrules"];
-        $messages = $page_data["fieldsmessages"];
-        if($request->validate($rules, $messages)){
-            $id = Unitkerja::create([
-                "unitkerja_code"=> $request->unitkerja_code,
-                "unitkerja_name"=> $request->unitkerja_name,
-                "user_creator_id"=> Auth::user()->id
-            ])->id;
+   
 
-            return response()->json([
-                'status' => 201,
-                'message' => 'Created with id '.$id,
-                'data' => ['id' => $id]
-            ]);
-        }
-    }
-
-    /**
-    * Display the specified resource.
-    *
-    * @param int $id
-    * @return \Illuminate\Http\Response
-    */
-    public function show(Unitkerja $unitkerja)
-    {
-        $page_data = $this->tabledesign();
-        $page_data["page_method_name"] = "View";
-        $page_data["footer_js_page_specific_script"] = ["unitkerja.page_specific_script.footer_js_create"];
-        $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_create"];
-        
-        $page_data["id"] = $unitkerja->id;
-        return view("unitkerja.create", ["page_data" => $page_data]);
-    }
-
-    /**
-    * Show the form for editing the specified resource.
-    *
-    * @param int $id
-    * @return \Illuminate\Http\Response
-    */
-    public function edit(Unitkerja $unitkerja)
-    {
-        $page_data = $this->tabledesign();
-        $page_data["page_method_name"] = "Update";
-        $page_data["footer_js_page_specific_script"] = ["unitkerja.page_specific_script.footer_js_create"];
-        $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_create"];
-        
-        $page_data["id"] = $unitkerja->id;
-        return view("unitkerja.create", ["page_data" => $page_data]);
-    }
-
-    /**
-    * Update the specified resource in storage.
-    *
-    * @param \Illuminate\Http\Request $request
-    * @param int $id
-    * @return \Illuminate\Http\Response
-    */
-    public function update(Request $request, $id)
-    {
-        $page_data = $this->tabledesign();
-        $rules = $page_data["fieldsrules"];
-        $messages = $page_data["fieldsmessages"];
-        if($request->validate($rules, $messages)){
-            Unitkerja::where("id", $id)->update([
-                "unitkerja_code"=> $request->unitkerja_code,
-                "unitkerja_name"=> $request->unitkerja_name,
-                "user_updater_id"=> Auth::user()->id
-            ]);
-
-            return response()->json([
-                'status' => 201,
-                'message' => 'Id '.$id.' is updated',
-                'data' => ['id' => $id]
-            ]);
-        }
-}
-
-    /**
-    * Remove the specified resource from storage.
-    *
-    * @param int $id
-    * @return \Illuminate\Http\Response
-    */
-    public function destroy(Request $request)
-    {
-        if($request->ajax() || $request->wantsJson()){
-            $unitkerja = Unitkerja::whereId($request->id)->first();
-            if(!$unitkerja){
-                abort(404, "Data not found");
-            }
-            $results = array(
-                "status" => 417,
-                "message" => "Deleting failed"
-            );
-            if(Unitkerja::whereId($request->id)->forceDelete()){
-                $results = array(
-                    "status" => 204,
-                    "message" => "Deleted successfully"
-                );
-            }
-
-            return response()->json($results);
-        }
-    }
 
     public function get_list(Request $request)
     {
-        $list_column = array("id","tanggal", "no_jurnal", "deskripsi", "debet", "kredit");
+        $coa = null;
+        $list_column = array("id","tanggal", "coa_code", "no_jurnal", "deskripsi", "debet", "kredit");
         $keyword = null;
+        $startDate = null;
+        $endDate = null;
+        
         if(isset($request->search["value"])){
             $keyword = $request->search["value"];
+        }
+        if(isset($request->search["coa_code"])){
+            $coa = $request->search["coa_code"];
+        }
+        if(isset($request->search["startDate"])){
+            $startDate = $request->search["startDate"];
+        }
+        if(isset($request->search["endDate"])){
+            $endDate = $request->search["endDate"];
         }
 
         $orders = array("id", "ASC");
@@ -202,9 +104,29 @@ class BukuBesarController extends Controller
 
         $dt = array();
         $no = 0;
-        foreach(Transaction::where(function($q) use ($keyword) {
-            $q->where("tanggal", "LIKE", "%" . $keyword. "%")->orWhere("tanggal", "LIKE", "%" . $keyword. "%");
-        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "tanggal", "no_jurnal", "deskripsi", "debet", "credit"]) as $transaksi){
+        
+        foreach(Transaction::where(function($q) use ($keyword, $coa, $startDate, $endDate) {
+            // $q->where("deskripsi", "LIKE", "%" . $keyword. "%")
+            //   ->orWhere("no_jurnal", "LIKE", "%" . $keyword. "%");           
+            if(isset($coa)){
+                $q->where("coa", $coa);
+            }
+            if(isset($startDate)){
+                $q->where("tanggal", ">=", $startDate);
+            }
+            if(isset($endDate)){
+                $q->where("tanggal", "<=", $endDate);
+            }
+            if(isset($startDate) && isset($endDate)){
+                $q->where("tanggal", ">=", $startDate)
+                  ->where("tanggal", "<=", $endDate);
+            }
+
+        })->orderBy($orders[0], $orders[1])
+          ->offset($limit[0])
+          ->limit($limit[1])
+          ->get(["id", "tanggal", "no_jurnal", "deskripsi", "debet", "credit"]) as $transaksi
+        ){
             $no = $no+1;
             array_push($dt, array($no, $transaksi->tanggal, $transaksi->no_jurnal, $transaksi->deskripsi, $transaksi->debet, $transaksi->kredit));
         }
@@ -212,9 +134,13 @@ class BukuBesarController extends Controller
         $output = array(
             "draw" => intval($request->draw),
             "recordsTotal" => Transaction::get()->count(),
-            "recordsFiltered" => intval(Transaction::where(function($q) use ($keyword) {
-                $q->where("tanggal", "LIKE", "%" . $keyword. "%");
-                // ->orWhere("unitkerja_name", "LIKE", "%" . $keyword. "%");
+            "recordsFiltered" => intval(Transaction::where(function($q) use ($keyword, $coa) {
+                // $q->where("deskripsi", "LIKE", "%" . $keyword. "%")
+                //     ->orWhere("no_jurnal", "LIKE", "%" . $keyword. "%");
+                if(isset($coa)){
+                    $q->where("coa", $coa);
+                }
+                
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );

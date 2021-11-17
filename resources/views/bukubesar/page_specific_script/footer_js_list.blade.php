@@ -1,26 +1,30 @@
-<!-- Required vendors -->
-<script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
-	<!-- <script src="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/js/bootstrap-select.min.js") }} "></script> -->
+  <!-- Required vendors -->
+  <script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
+	<script src="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/js/bootstrap-select.min.js") }} "></script>
   <script src="{{ asset ("/assets/motaadmin/vendor/chart.js/Chart.bundle.min.js") }}"></script>
-    <script src="{{ asset ("/assets/motaadmin/js/custom.min.js") }}"></script>
+  <script src="{{ asset ("/assets/motaadmin/js/custom.min.js") }}"></script>
 	<script src="{{ asset ("/assets/motaadmin/js/deznav-init.js") }}"></script>
+
+  <script src="{{ asset ("/assets/motaadmin/vendor/chart.js/Chart.bundle.min.js") }}"></script>
+  <script src="{{ asset ("/assets/motaadmin/js/custom.min.js") }}"></script>
+  <script src="{{ asset ("/assets/motaadmin/js/deznav-init.js") }}"></script>
 	<!-- Apex Chart -->
 	<script src="{{ asset ("/assets/motaadmin/vendor/apexchart/apexchart.js") }}"></script>
 
-    <script src="{{ asset ("/assets/motaadmin/vendor/moment/moment.min.js") }}"></script>
+  <script src="{{ asset ("/assets/motaadmin/vendor/moment/moment.min.js") }}"></script>
 
-    <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.js") }}"></script>
-    <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.time.js") }}"></script>
-    <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.date.js") }}"></script>
-    <!-- Pickdate -->
-    <!-- <script src="{{ asset ("/assets/motaadmin/js/plugins-init/pickadate-init.js") }}"></script> -->
+  <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.js") }}"></script>
+  <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.time.js") }}"></script>
+  <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.date.js") }}"></script>
+  <!-- Pickdate -->
+  <!-- <script src="{{ asset ("/assets/motaadmin/js/plugins-init/pickadate-init.js") }}"></script> -->
 
 	<!-- Svganimation scripts -->
     <script src="{{ asset ("/assets/motaadmin/vendor/svganimation/vivus.min.js") }}"></script>
     <script src="{{ asset ("/assets/motaadmin/vendor/svganimation/svg.animation.js") }}"></script>
 
     <script src="{{ asset ("/assets/node_modules/@popperjs/core/dist/umd/popper.min.js") }}"></script>
-    <!-- <script src="{{ asset ("/assets/node_modules/gijgo/js/gijgo.min.js") }}"></script> -->
+    <script src="{{ asset ("/assets/node_modules/gijgo/js/gijgo.min.js") }}"></script>
     <script src="{{ asset ("/assets/node_modules/jquery-toast-plugin/dist/jquery.toast.min.js") }}"></script>
     <script src="{{ asset ("/assets/node_modules/autonumeric/dist/autoNumeric.min.js") }}"></script>
     <script src="{{ asset ("/assets/bootstrap/dist/js/bootstrap.bundle.min.js") }}"></script>
@@ -30,38 +34,51 @@
     <script src="{{ asset ("/assets/datatables/js/dataTables.bootstrap4.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/dataTables.rowReorder.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/dataTables.buttons.min.js") }}"></script>
+    <script src="{{ asset ("/assets/datatables/js/buttons.html5.min.js") }}"></script>
+    <script src="{{ asset ("/assets/datatables/js/pdfmake.min.js") }}"></script>
+    <script src="{{ asset ("/assets/datatables/js/buttons.print.min.js") }}"></script>
+    <script src="{{ asset ("/assets/datatables/js/vfs_fonts.js") }}"></script>
+    <script src="{{ asset ("/assets/datatables/js//jszip.min.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/cakrudtemplate.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
 
 <script>
 
-  $(function () {
+  $(document).ready(function(){
+
     $("#example1").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false,
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-    $('#example2').DataTable({
-      "paging": true,
-      "lengthChange": false,
-      "searching": false,
-      "ordering": true,
-      "info": true,
-      "autoWidth": false,
-      "responsive": true,
-    });
-  });
 
-  $(document).ready(function(){
-    $('input[name=tanggal_jurnal], input[name=tanggal_jurnal_from], input[name=tanggal_jurnal_to]').pickadate({
-        format: 'dd/mm/yyyy',
-        formatSubmit: 'yyyy-mm-dd',
-        hiddenName: true,
-        onStart: function(){
-            var date = new Date();
-                this.set('select', date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate(), { format: 'yyyy-mm-dd' });
-        }
-    });
+    var today = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+        $('#startDate').datepicker({
+            uiLibrary: 'bootstrap4',
+            format: 'dd/mm/yyyy',
+            formatSubmit: 'yyyy-mm-dd',
+            iconsLibrary: 'fontawesome',
+            maxDate: function () {
+                return $('#endDate').val();
+            },
+            onStart: function(){
+                var date = new Date();
+                    this.set('select', date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate(), { format: 'yyyy-mm-dd' });
+            }
+        });
+        $('#endDate').datepicker({
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            format: 'dd/mm/yyyy',
+            formatSubmit: 'yyyy-mm-dd',
+            minDate: function () {
+                return $('#startDate').val();
+            },
+            onStart: function(){
+                var date = new Date();
+                    this.set('select', date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate(), { format: 'yyyy-mm-dd' });
+            }
+        });
 
 	  var table = null;
     var dataTable;
@@ -76,17 +93,9 @@
       target.shift();
       $('#example1').DataTable().destroy();
       dataTable = $('#example1').DataTable({
-          buttons: [
-              {
-                  text: "+",
-                  className: "bg-success text-white m-0",
-                  action: function ( e, dt, node, config ) {
-                    window.location.href = "/create{{$page_data["page_data_urlname"]}}";
-                  }
-              },
-          ],
           "autoWidth": false,
           dom: 'Bfrtip',
+          "buttons": ["excel", "pdf", "print", "colvis"],
           "scrollX" : true,
           "processing" : true,
           "serverSide" : true,
@@ -97,13 +106,18 @@
             url:"/getlist{{$page_data["page_data_urlname"]}}",
             type:"POST",
             data:{
+              search : {
+                coa_code: $("#coa_code").val(),
+                startDate: formatDate($("#startDate").val()),
+                endDate: $("#endDate").val(),
+              },  
               _token: $("input[name=_token]").val()
             }
           }
         });
+      cto_loading_hide();
+      table = dataTable;
     }
-    cto_loading_hide();
-    table = dataTable;
 
     function convertCode(data){
       var val = "";
@@ -134,7 +148,16 @@
     };
 
     $("#coa").on("change", function() {
-        $("#coa_code").val($("#coa option:selected").val());
+      $("#coa_code").val($("#coa option:selected").val());
+      fetch_data();
+    });
+
+    $("#startDate").on("change", function() {
+      fetch_data();
+    });
+
+    $("#endDate").on("change", function() {
+      fetch_data();
     });
 
     $("#coa").select2({

@@ -43,3 +43,8 @@ $(document).ready(function () {
         $(".caksidemenu span").toggleClass("d-none");
     });
 });
+
+function formatDate(date) {
+    var converted = date.split("/").reverse().join('-');
+    return converted;
+}

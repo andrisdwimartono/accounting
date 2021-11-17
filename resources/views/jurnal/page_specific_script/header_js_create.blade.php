@@ -16,10 +16,10 @@
 
   <!-- hijgo for date dan datetime picker -->
   <!-- <link href="{{ asset ("/assets/node_modules/gijgo/css/gijgo.min.css") }}" rel="stylesheet" /> -->
-  <link href="{{ asset ("/assets/motaadmin/vendor/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css") }}" rel="stylesheet">
+  <!-- <link href="{{ asset ("/assets/motaadmin/vendor/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css") }}" rel="stylesheet"> -->
   <!-- Pick date -->
-  <link rel="stylesheet" href="{{ asset ("/assets/motaadmin/vendor/pickadate/themes/default.css") }}">
-  <link rel="stylesheet" href="{{ asset ("/assets/motaadmin/vendor/pickadate/themes/default.date.css") }}">
+  <!-- <link rel="stylesheet" href="{{ asset ("/assets/motaadmin/vendor/pickadate/themes/default.css") }}">
+  <link rel="stylesheet" href="{{ asset ("/assets/motaadmin/vendor/pickadate/themes/default.date.css") }}"> -->
 
   <!-- datatables
   <link href="{{ asset ("/assets/datatables/css/dataTables.bootstrap4.min.css") }}" rel="stylesheet" />
