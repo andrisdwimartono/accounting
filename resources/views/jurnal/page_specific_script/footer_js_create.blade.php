@@ -115,7 +115,8 @@ $(function () {
                     if(index == 0){
                         coa = $(td).text();
                     }else if(index == 1){
-                        coa_label = $(td).find("select").text();
+                        //coa_label = $(td).find("select").text();
+                        coa_label = "";
                     }else if(index == 2){
                         deskripsi = $(td).find("input").val();
                     }else if(index == 3){
@@ -525,7 +526,11 @@ $(document).ready(function() {
     });
 
     $("#addrow").click(function(){
-        var rowlen = parseInt($('#caktable1 > tbody > tr:last').attr('row-seq'))+1;
+        var rowlen = 0;
+        if($('#caktable1 > tbody > tr').length > 0){
+            rowlen = parseInt($('#caktable1 > tbody > tr:last').attr('row-seq'))+1;
+        }
+         
 
         var rowaddlen = 0;
         $("#caktable1").find('tbody')
@@ -688,11 +693,26 @@ function getdata(){
                     }
 
                     $("#caktable1 > tbody > tr").each(function(index){
-                        if(index <= 3){
+                        var row_index = parseInt($(this).attr("row-seq"));
+                        if(row_index == 1){
+                            $("#caktable1 > tbody > tr[row-seq="+row_index+"]").find("td:eq(0)").text("");
+                            $("select[name='coa_"+row_index+"']").empty();
+                            $("#caktable1 > tbody > tr[row-seq=1]").find("td:eq(0)").text("");
+
+                            $("input[name='deskripsi_"+row_index+"']").val("");
+
+                            // AutoNumeric.getAutoNumericElement('#debet_'+row_index).set(0);
+                            // AutoNumeric.getAutoNumericElement('#kredit_'+row_index).set(0);
+                            $("input[name='debet_"+row_index+"']").val("0");
+                            $("input[name='kredit_"+row_index+"']").val("0");
+                            $("#caktable1 > tbody > tr[row-seq="+row_index+"]").find("td:eq(6)").text("");
                             return true;
                         }
                         $(this).remove();
                     });
+                    $("#addrow").trigger("click");
+                    $("#addrow").trigger("click");
+                    $("#addrow").trigger("click");
                     for(var i = 0; i < data.data.transaksi.length; i++){
                         if(data.data.transaksi[i].no_seq > 3){
                             var trexist = $("#caktable1 > tbody > tr[row-seq="+(data.data.transaksi[i].no_seq+1)+"]").length;

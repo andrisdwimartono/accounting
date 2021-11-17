@@ -163,8 +163,9 @@ class JurnalController extends Controller
             Jurnal::where("id", $id)->update([
                 "no_jurnal"=> $no_jurnal
             ]);
-
+            
             foreach($requests_transaksi as $ct_request){
+                $coa = Coa::whereId($ct_request["coa"])->first();
                 Transaction::create([
                     "no_seq" => $ct_request["no_seq"],
                     "parent_id" => $id,
@@ -179,7 +180,7 @@ class JurnalController extends Controller
                     "keterangan"=> $ct_request["keterangan"],
                     "jenis_transaksi"=> $ct_request["jenis_transaksi"],
                     "coa"=> $ct_request["coa"],
-                    "coa_label"=> $ct_request["coa_label"],
+                    "coa_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_label,
                     "jenisbayar"=> $ct_request["jenisbayar"],
                     "jenisbayar_label"=> $ct_request["jenisbayar_label"],
                     "nim"=> $ct_request["nim"],
@@ -269,6 +270,7 @@ class JurnalController extends Controller
             $new_menu_field_ids = array();
             foreach($requests_transaksi as $ct_request){
                 if(isset($ct_request["id"]) && $ct_request["id"] != ""){
+                    $coa = Coa::whereId($ct_request["coa"])->first();
                     Transaction::where("id", $ct_request["id"])->update([
                         "no_seq" => $ct_request["no_seq"],
                         "parent_id" => $id,
@@ -283,7 +285,7 @@ class JurnalController extends Controller
                         "keterangan"=> $ct_request["keterangan"],
                         "jenis_transaksi"=> $ct_request["jenis_transaksi"],
                         "coa"=> $ct_request["coa"],
-                        "coa_label"=> $ct_request["coa_label"],
+                        "coa_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_label,
                         "jenisbayar"=> $ct_request["jenisbayar"],
                         "jenisbayar_label"=> $ct_request["jenisbayar_label"],
                         "nim"=> $ct_request["nim"],
@@ -292,6 +294,7 @@ class JurnalController extends Controller
                         "user_updater_id" => Auth::user()->id
                     ]);
                 }else{
+                    $coa = Coa::whereId($ct_request["coa"])->first();
                     $idct = Transaction::create([
                         "no_seq" => $ct_request["no_seq"],
                         "parent_id" => $id,
@@ -306,7 +309,7 @@ class JurnalController extends Controller
                         "keterangan"=> $ct_request["keterangan"],
                         "jenis_transaksi"=> $ct_request["jenis_transaksi"],
                         "coa"=> $ct_request["coa"],
-                        "coa_label"=> $ct_request["coa_label"],
+                        "coa_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_label,
                         "jenisbayar"=> $ct_request["jenisbayar"],
                         "jenisbayar_label"=> $ct_request["jenisbayar_label"],
                         "nim"=> $ct_request["nim"],
@@ -524,4 +527,23 @@ class JurnalController extends Controller
             return response()->json($results);
         }
     }
+
+    public function convertCode($data){
+        $val = "";
+        $array = str_split($data);
+        $i = 0;
+        foreach ($array as $char) {
+            if($i == 0){
+                $val = $val.$char."-";
+            }else if($i == 2 || $i == 4){
+                $val = $val.$char."-";
+            }else if($i > 4 && ($i-4)%3 == 0 && $i != strlen($data)-1){
+                $val = $val.$char."-";
+            }else{
+                $val = $val.$char;
+            }
+            $i++;
+        }
+        return $val;
+     }
 }
