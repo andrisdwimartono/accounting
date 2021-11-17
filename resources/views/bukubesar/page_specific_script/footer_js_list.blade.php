@@ -112,8 +112,39 @@
                 endDate: $("#endDate").val(),
               },  
               _token: $("input[name=_token]").val()
+            },
+          },
+          "footerCallback": function ( row, data, start, end, display ) {
+              var api = this.api(), data;
+  
+              // Remove the formatting to get integer data for summation
+              var intVal = function ( i ) {
+                  return typeof i === 'string' ?
+                      i.replace(/[\$,]/g, '')*1 :
+                      typeof i === 'number' ?
+                          i : 0;
+              };
+  
+              // Total over all pages
+              debet = api
+                  .column( 4 )
+                  .data()
+                  .reduce( function (a, b) {
+                      return intVal(a) + intVal(b);
+                  }, 0 );
+
+              // Total over all pages
+              kredit = api
+                  .column( 5 )
+                  .data()
+                  .reduce( function (a, b) {
+                      return intVal(a) + intVal(b);
+                  }, 0 );
+  
+              // Update footer
+              $( api.column( 4 ).footer() ).html(debet);
+              $( api.column( 5 ).footer() ).html(kredit);
             }
-          }
         });
       cto_loading_hide();
       table = dataTable;
