@@ -69,15 +69,15 @@
                         </div>
                         <div class="form-group m-0">
                             <div class="col-sm-12 row" id="forcaktable1">
-                                <table id="caktable1" class="table table-bordered" style="table-layout:fixed;">
+                                <table id="caktable1" class="table table-bordered" style="table-layout: fixed;">
                                     <thead class="bg-primary">
                                         <tr>
                                             <th class="column-hidden" scope="col">ID COA</th>
-                                            <th class="text-white text-center" scope="col" width="250px" style="overflow: hidden;">Kode Rekening</th>
-                                            <th class="text-white text-center" scope="col">Deskripsi</th>
-                                            <th class="text-white text-center" scope="col">Debet</th>
-                                            <th class="text-white text-center" scope="col">Kredit</th>
-                                            <th class="text-white text-center col-sm-1" scope="col">Act</th>
+                                            <th class="text-white text-center" scope="col" style="width: 40%; overflow: hidden;">Kode Rekening</th>
+                                            <th class="text-white text-center" scope="col" style="width: 15%;">Deskripsi</th>
+                                            <th class="text-white text-center" scope="col" style="width: 20%;">Debet</th>
+                                            <th class="text-white text-center" scope="col" style="width: 20%;">Kredit</th>
+                                            <th class="text-white text-center col-sm-1 pl-0 pr-0" scope="col" style="width: 5%;"></th>
                                             <th class="column-hidden" scope="col">ID</th>
                                         </tr>
                                     </thead>
@@ -138,7 +138,7 @@
                 </form>
                 <div class="form-group m-0">
                     <div class="col-sm-12 row bg-primary" id="forcaktablesearch2">
-                        <div class="col-sm-1 cakfield">
+                        <!-- <div class="col-sm-1 cakfield">
                             <select name="countcaktable2" id="countcaktable2" class="form-control form-control-sm bg-primary mt-1">
                                 <option value="10">10</option>
                                 <option value="20">20</option>
@@ -146,14 +146,14 @@
                                 <option value="50">50</option>
                                 <option value="100">100</option>
                             </select>
-                        </div>
+                        </div> -->
                         <label for="tanggal_jurnal_from" class="col-sm-1 col-form-label">Tgl</label>
                         <div class="col-sm-2 cakfield">
-                            <input name="tanggal_jurnal_from" class="datepicker-default form-control form-control-sm bg-primary mt-1" id="datepicker" <?=$page_data["page_method_name"] == "View"?"readonly":""?>>
+                            <input name="tanggal_jurnal_from" id="tanggal_jurnal_from" class="datepicker-default form-control form-control-sm bg-primary mt-1" id="datepicker" <?=$page_data["page_method_name"] == "View"?"readonly":""?>>
                         </div>
                         <label for="tanggal_jurnal_to" class="col-sm-1 col-form-label">s/d</label>
                         <div class="col-sm-2 cakfield">
-                            <input name="tanggal_jurnal_to" class="datepicker-default form-control form-control-sm bg-primary mt-1" id="datepicker" <?=$page_data["page_method_name"] == "View"?"readonly":""?>>
+                            <input name="tanggal_jurnal_to" id="tanggal_jurnal_to" class="datepicker-default form-control form-control-sm bg-primary mt-1" id="datepicker" <?=$page_data["page_method_name"] == "View"?"readonly":""?>>
                         </div>
                         <label class="col-sm-2 text-right col-form-label" for="no_jurnal_search">No Jurnal</label>
                         <div class="col-sm-3 cakfield">
