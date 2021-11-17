@@ -171,7 +171,7 @@
                                     <th class="text-black text-center" scope="col">Keterangan</th>
                                     <!-- <th class="text-black text-center" scope="col">Debet</th>
                                     <th class="text-black text-center" scope="col">Kredit</th> -->
-                                    <th class="text-black text-center col-sm-1" scope="col">Act</th>
+                                    <th class="column-hidden" scope="col">Act</th>
                                     <th class="column-hidden" scope="col">ID</th>
                                 </tr>
                             </thead>
