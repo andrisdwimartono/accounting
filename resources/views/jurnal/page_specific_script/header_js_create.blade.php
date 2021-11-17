@@ -57,11 +57,11 @@
       border: 1px solid #aaa; 
       height: 30px; 
       text-align: left; 
-      width: 100px; 
+      /* width: 100px;  */
     }
     td > span{
       display: inline-block;
-      width: 100%;
+      /* width: 100%; */
     }
     input:not([type=checkbox]), input:not([type=checkbox]):hover, input:not([type=checkbox])focus { 
       width: 100%; 

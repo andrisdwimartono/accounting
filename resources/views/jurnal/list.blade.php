@@ -15,15 +15,7 @@
             <th>Action</th>
         </tr>
         </thead>
-        <tfoot>
-        <tr>
-            <th>No</th>
-            <th>Unit Kerja</th>
-            <th>Nomor Jurnal</th>
-            <th>Tanggal Jurnal</th>
-            <th>Action</th>
-        </tr>
-        </tfoot>
+        <tfoot></tfoot>
     </table>
 
     <div class="modal fade" id="modal-delete" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">

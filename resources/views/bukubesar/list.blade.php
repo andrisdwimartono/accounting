@@ -51,19 +51,24 @@
                                     <table id="example1" class="table table-bordered table-striped">
                                         <thead class="bg-primary">
                                             <tr>
-                                                <th>No</th>
-                                                <th>Tanggal</th>
-                                                <th>No Jurnal</th>
-                                                <th>Deskripsi</th>
-                                                <th>Debet</th>
-                                                <th>Kredit</th>
+                                                <th class="col-md-1">No</th>
+                                                <th class="col-md-2">Tanggal</th>
+                                                <th class="col-md-2">No Jurnal</th>
+                                                <th class="col-md-3">Deskripsi</th>
+                                                <th class="col-md-2">Debet</th>
+                                                <th class="col-md-2">Kredit</th>
                                             </tr>
                                         </thead>
-                                        <tfoot align="right">
+                                        <tfoot id="jumlah">
                                             <tr>
                                                 <th></th><th></th><th></th><th></th><th></th><th></th>
                                             </tr>
                                         </tfoot>
+                                        <!-- <tfoot id="saldo">
+                                            <tr>
+                                                <th></th><th></th><th></th><th></th><th></th><th></th>
+                                            </tr>
+                                        </tfoot> -->
                                     </table>
                                 </div>
                             </div>
