@@ -128,7 +128,7 @@ class BukuBesarController extends Controller
           ->get(["id", "tanggal", "no_jurnal", "deskripsi", "debet", "credit"]) as $transaksi
         ){
             $no = $no+1;
-            array_push($dt, array($no, $transaksi->tanggal, $transaksi->no_jurnal, $transaksi->deskripsi, $transaksi->debet, $transaksi->kredit));
+            array_push($dt, array($no, $transaksi->tanggal, $transaksi->no_jurnal, $transaksi->deskripsi, $transaksi->debet, $transaksi->credit));
         }
     
         $output = array(
