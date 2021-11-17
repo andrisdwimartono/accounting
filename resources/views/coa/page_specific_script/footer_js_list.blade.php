@@ -33,7 +33,6 @@
   <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
 
 <script>
-  var app_url = '{{ env('APP_URL') }}';
 
   $("#tabaset").click(function(){
     window.location.href = "/coa/aset/list";
@@ -123,7 +122,7 @@
           "pageLength": 2000,
           "order": [[ 1, "asc" ]],
           "ajax" : {
-          url: "{{ env('APP_URL') }}/getlistcoa",
+          url: "/getlistcoa",
           type:"POST",
           data:{
             _token: $("input[name=_token]").val(),
@@ -282,7 +281,7 @@
           'type': "POST",
           'global': false,
           'dataType': 'json',
-          'url': "{{ env('APP_URL') }}/deletecoa",
+          'url': "/deletecoa",
           'data': { 'id':  id, '_token': $("input[name=_token]").val()},
           'success': function (data) {
             cto_loading_hide();
@@ -338,9 +337,9 @@
   var field_arr = ["id", "coa_code", "coa_name", "level_coa", "coa", "coa_label", "category", "category_label", "fheader", "factive"];
   cto_loading_show();
 
-  var urlaction = "{{ env('APP_URL') }}/updatecoa/"+val_arr[0];
+  var urlaction = "/updatecoa/"+val_arr[0];
   if(action == 'create'){
-    urlaction = "{{ env('APP_URL') }}/storecoa";
+    urlaction = "/storecoa";
   }
 
   var values = "_token="+$("input[name=_token]").val();
@@ -412,9 +411,9 @@ $(function () {
             var ajaxRequest;
             ajaxRequest = $.ajax({
                 @if($page_data["page_method_name"] == "Update")
-                url: "{{ env('APP_URL') }}/updatecoa/{{$page_data["id"]}}",
+                url: "/updatecoa/{{$page_data["id"]}}",
                 @else
-                url: "{{ env('APP_URL') }}/storecoa",
+                url: "/storecoa",
                 @endif
                 type: "post",
                 data: values,
@@ -467,7 +466,7 @@ $("#category").on("change", function() {
 var fields = $("#quickForm").serialize();
 
 $.ajax({
-    url: "{{ env('APP_URL') }}/getoptionscoa",
+    url: "/getoptionscoa",
     type: "post",
     data: {
         fieldname: "category",
@@ -477,7 +476,7 @@ $.ajax({
         for(var i = 0; i < data.length; i++){
             if(data[i].name){
                 var newState = new Option(data[i].label, data[i].name, true, false);
-                $("#category").append(newState).trigger("change");
+                $("#coa").append(newState).trigger("change");
             }
         }
     },
