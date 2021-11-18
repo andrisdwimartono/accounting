@@ -819,7 +819,7 @@ function getlist(){
                     $("#alasan_hapus_error").addClass("d-none");
                 }
                 if(deleting_jurnal(id_jurnal)){
-                    $(this).parent('tr').remove();
+                    getlist();
                     $("#modal-delete").modal('hide');
                 }
             });
@@ -1083,13 +1083,13 @@ function deleting_jurnal(id_jurnal){
         },
         success: function(data){
             if(data.status >= 200 && data.status <= 299){
-                id_jurnal = data.data.id;
                 $("#id_jurnal").val(0);
                 $("#is_edit").val(0);
                 $("#no_jurnal").val("");
                 
                 $.toast({
                     text: data.message,
+                    stack: 1,
                     heading: 'Status',
                     icon: 'success',
                     showHideTransition: 'fade',
@@ -1103,18 +1103,17 @@ function deleting_jurnal(id_jurnal){
             return true;
         },
         error: function (err) {
-            if (err.status == 422) {
-                $.toast({
-                    text: data.message,
-                    heading: 'Status',
-                    icon: 'danger',
-                    showHideTransition: 'fade',
-                    allowToastClose: true,
-                    hideAfter: 3000,
-                    position: 'mid-center',
-                    textAlign: 'left'
-                });
-            }
+            $.toast({
+                text: data.message,
+                stack: 1,
+                heading: 'Status',
+                icon: 'danger',
+                showHideTransition: 'fade',
+                allowToastClose: true,
+                hideAfter: 3000,
+                position: 'mid-center',
+                textAlign: 'left'
+            });
             cto_loading_hide();
             return false;
         }
