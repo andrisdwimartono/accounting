@@ -37,6 +37,7 @@
     var app_url = '{{ env('APP_URL') }}';
     var editor;
     const anElement = AutoNumeric.multiple('.cakautonumeric-float', {
+        currencySymbol : 'Rp ',
         decimalCharacter : ',',
         digitGroupSeparator : '.',
         minimumValue : 0,
@@ -543,8 +544,8 @@ $(document).ready(function() {
                 +"<td class=\"column-hidden\"></td>"
                 +"<td class=\"p-0\"><select name=\"coa_"+rowlen+"\" id=\"coa_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
                 +"<td class=\"p-0\"><input type=\"text\" name=\"deskripsi_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"deskripsi_"+rowlen+"\"></td>"
-                +"<td class=\"p-0\"><input type=\"text\" name=\"debet_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float\" id=\"debet_"+rowlen+"\" placeholder=\"Enter Debet\"></td>"
-                +"<td class=\"p-0\"><input type=\"text\" name=\"kredit_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float\" id=\"kredit_"+rowlen+"\" placeholder=\"Enter Kredit\"></td>"
+                +"<td class=\"p-0\"><input type=\"text\" name=\"debet_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"debet_"+rowlen+"\" placeholder=\"Enter Debet\"></td>"
+                +"<td class=\"p-0\"><input type=\"text\" name=\"kredit_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"kredit_"+rowlen+"\" placeholder=\"Enter Kredit\"></td>"
                 +"<td class=\"p-0 text-center\"><button id=\"row_delete_"+rowlen+"\" class=\"bg-white border-0\"><i class=\"text-danger fas fa-minus-circle row-delete\" style=\"cursor: pointer;\"></i></button></td>"
                 +"<td class=\"column-hidden\"></td>"
             +"</tr>");
@@ -564,6 +565,7 @@ $(document).ready(function() {
         });
 
         var debets = new AutoNumeric("#debet_"+rowlen, {
+            currencySymbol : 'Rp ',
             decimalCharacter : ',',
             digitGroupSeparator : '.',
             minimumValue : 0,
@@ -571,6 +573,7 @@ $(document).ready(function() {
             unformatOnSubmit : true
         });
         var kredits = new AutoNumeric("#kredit_"+rowlen, {
+            currencySymbol : 'Rp ',
             decimalCharacter : ',',
             digitGroupSeparator : '.',
             minimumValue : 0,
@@ -786,7 +789,7 @@ function getlist(){
                         +"<td class=\"p-0\">"+dat.data[i][2]+"</td>"
                         +"<td class=\"p-0\">"+dat.data[i][3]+"</td>"
                         // +"<td class=\"p-0\">"+dat.data[i][4]+"</td>"
-                        +"<td class=\"column-hidden p-0 text-center\"><button id=\"row_delete_"+dat.data[i][0]+"\" class=\"bg-white border-0\"><i class=\"text-danger fas fa-minus-circle row-delete\" style=\"cursor: pointer;\"></i></button></td>"
+                        +"<td class=\"p-0 text-center\"><button id=\"row_delete_"+dat.data[i][0]+"\" class=\"bg-white border-0\"><i class=\"text-danger fas fa-minus-circle row-delete\" style=\"cursor: pointer;\"></i></button></td>"
                         +"<td class=\"column-hidden\"></td>"
                     +"</tr>");
             }
@@ -1030,9 +1033,9 @@ function convertCode(data){
         totaldebet += AutoNumeric.getNumber("#debet_"+$(tr).attr("row-seq"));
         totalkredit += AutoNumeric.getNumber("#kredit_"+$(tr).attr("row-seq"));
      });
-     $("#totaldebet").text(totaldebet.toLocaleString('id'));
-     $("#totalkredit").text(totalkredit.toLocaleString('id'));
-     $("#totalselisih").text((totaldebet-totalkredit).toLocaleString('id'));
+     $("#totaldebet").text('Rp '+totaldebet.toLocaleString('id'));
+     $("#totalkredit").text('Rp '+totalkredit.toLocaleString('id'));
+     $("#totalselisih").text('Rp '+(totaldebet-totalkredit).toLocaleString('id'));
      if(totaldebet-totalkredit != 0){
         $("#totalselisih").addClass("border-danger");
         $("#totalselisih").addClass("text-danger");
