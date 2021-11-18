@@ -63,12 +63,10 @@
                                             <tr>
                                                 <th></th><th></th><th></th><th></th><th></th><th></th>
                                             </tr>
-                                        </tfoot>
-                                        <!-- <tfoot id="saldo">
                                             <tr>
                                                 <th></th><th></th><th></th><th></th><th></th><th></th>
                                             </tr>
-                                        </tfoot> -->
+                                        </tfoot>
                                     </table>
                                 </div>
                             </div>

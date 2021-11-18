@@ -123,12 +123,20 @@
               };
               debet = api.column( 4 ).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
               kredit = api.column( 5 ).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-  
+              saldo = debet-kredit
+              saldo_debet = "";
+              saldo_kredit = "";
+              if(saldo<0) saldo_debet = formatRupiah(saldo,".");
+              else saldo_kredit = formatRupiah(saldo,".");
+
               // Update footer
               console.log(api.column( 3 ).footer());
               $( api.column( 3 ).footer() ).html("JUMLAH");
               $( api.column( 4 ).footer() ).html(formatRupiah(debet,"."));
               $( api.column( 5 ).footer() ).html(formatRupiah(kredit,"."));
+              $( 'tr:eq(1) th:eq(3)', api.table().footer() ).html("SALDO");
+              $( 'tr:eq(1) th:eq(4)', api.table().footer() ).html(saldo_debet);
+              $( 'tr:eq(1) th:eq(5)', api.table().footer() ).html(saldo_kredit);
             },
             "columnDefs": [
               { 
