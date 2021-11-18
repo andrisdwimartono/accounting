@@ -86,8 +86,8 @@
                                             <td class="column-hidden"></td>
                                             <td class="p-0"><select name="coa_1" id="coa_1" class="form-control select2bs4staticBackdrop addnewrowselect" data-row="1" style="width: 100%;"></select></td>
                                             <td class="p-0"><input type="text" name="deskripsi_1" class="form-control form-control-sm" id="deskripsi_1"></td>
-                                            <td class="p-0"><input type="text" name="debet_1" value="0" class="form-control form-control-sm cakautonumeric cakautonumeric-float" id="debet_1" placeholder="Enter Debet"></td>
-                                            <td class="p-0"><input type="text" name="kredit_1" value="0" class="form-control form-control-sm cakautonumeric cakautonumeric-float" id="kredit_1" placeholder="Enter Kredit"></td>
+                                            <td class="p-0"><input type="text" name="debet_1" value="0" class="form-control form-control-sm cakautonumeric cakautonumeric-float text-right" id="debet_1" placeholder="Enter Debet"></td>
+                                            <td class="p-0"><input type="text" name="kredit_1" value="0" class="form-control form-control-sm cakautonumeric cakautonumeric-float text-right" id="kredit_1" placeholder="Enter Kredit"></td>
                                             <td class="p-0 text-center"><i class="text-danger fas fa-minus-circle row-delete" id="row_delete_1" style="cursor: pointer;"></i></td>
                                             <td class="column-hidden"></td>
                                         </tr>
@@ -103,15 +103,15 @@
                                                 </div>
                                             </td>
                                             <td class="p-0 text-right">Total : </td>
-                                            <td class="p-0" id="totaldebet"></td>
-                                            <td class="p-0" id="totalkredit"></td>
+                                            <td class="p-0 text-right" id="totaldebet"></td>
+                                            <td class="p-0 text-right" id="totalkredit"></td>
                                             <td class="p-0"></td>
                                             <td class="column-hidden"></td>
                                         </tr>
                                         <tr class="p-0">
                                             <td class="column-hidden"></td>
                                             <td class="p-0 text-right">Selisih : </td>
-                                            <td class="p-0" id="totalselisih"></td>
+                                            <td class="p-0 text-right" id="totalselisih"></td>
                                             <td class="p-0"></td>
                                             <td class="p-0"></td>
                                             <td class="column-hidden"></td>
@@ -171,7 +171,7 @@
                                     <th class="text-black text-center" scope="col">Keterangan</th>
                                     <!-- <th class="text-black text-center" scope="col">Debet</th>
                                     <th class="text-black text-center" scope="col">Kredit</th> -->
-                                    <th class="text-black text-center col-sm-1" scope="col">Act</th>
+                                    <th scope="col">Act</th>
                                     <th class="column-hidden" scope="col">ID</th>
                                 </tr>
                             </thead>

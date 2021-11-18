@@ -37,6 +37,7 @@
     var app_url = '{{ env('APP_URL') }}';
     var editor;
     const anElement = AutoNumeric.multiple('.cakautonumeric-float', {
+        currencySymbol : 'Rp ',
         decimalCharacter : ',',
         digitGroupSeparator : '.',
         minimumValue : 0,
@@ -71,7 +72,7 @@ $(function () {
             var quickForm = $("#quickForm");
             var cttransaksi = [];
             
-            if(parseFloat($("#totalselisih").text().replace(".", "").replace(",", ".")) != 0){
+            if(parseFloat($("#totalselisih").text().replace("Rp ", "").replace(".", "").replace(",", ".")) != 0){
                 $("#caktable1_message").html("Debet Kredit masih ada selisih!");
                 $("#caktable1_message").removeClass("d-none");
                 cto_loading_hide();
@@ -83,11 +84,13 @@ $(function () {
 
             var unitkerja = $("#unitkerja").val();
             var unitkerja_label = $("#unitkerja_label").val();
+            var stop_submit = false;
             $("#caktable1 > tbody > tr").each(function(index, tr){
-                if(AutoNumeric.getNumber("#debet_"+$(tr).attr("row-seq")) > 0 && AutoNumeric.getNumber("#kredit_"+$(tr).attr("row-seq")) > 0){
+                if((AutoNumeric.getNumber("#debet_"+$(tr).attr("row-seq")) > 0 && AutoNumeric.getNumber("#kredit_"+$(tr).attr("row-seq")) > 0) || (AutoNumeric.getNumber("#debet_"+$(tr).attr("row-seq")) <= 0 && AutoNumeric.getNumber("#kredit_"+$(tr).attr("row-seq")) <= 0 && $("#coa_"+$(tr).attr("row-seq")).val() != null)){
                     $("#debet_"+$(tr).attr("row-seq")).addClass("border-danger");
                     $("#kredit_"+$(tr).attr("row-seq")).addClass("border-danger");
                     cto_loading_hide();
+                    stop_submit = true;
                     return;
                 }
 
@@ -130,6 +133,9 @@ $(function () {
                 cttransaksi.push({"no_seq": index, "unitkerja": unitkerja, "unitkerja_label": unitkerja_label, "anggaran": anggaran, "anggaran_label": anggaran_label, "no_jurnal": "", "tanggal": tanggal, "keterangan": keterangan, "jenis_transaksi": "", "coa": coa, "coa_label": coa_label, "deskripsi": deskripsi, "jenisbayar": jenisbayar, "jenisbayar_label": jenisbayar_label, "nim": nim, "kode_va": kode_va, "fheader": fheader, "debet": debet, "credit": credit, "id": id});
             });
             
+            if(stop_submit){
+                return;
+            }
             
             $("#transaksi").val(JSON.stringify(cttransaksi));
             
@@ -538,8 +544,8 @@ $(document).ready(function() {
                 +"<td class=\"column-hidden\"></td>"
                 +"<td class=\"p-0\"><select name=\"coa_"+rowlen+"\" id=\"coa_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
                 +"<td class=\"p-0\"><input type=\"text\" name=\"deskripsi_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"deskripsi_"+rowlen+"\"></td>"
-                +"<td class=\"p-0\"><input type=\"text\" name=\"debet_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float\" id=\"debet_"+rowlen+"\" placeholder=\"Enter Debet\"></td>"
-                +"<td class=\"p-0\"><input type=\"text\" name=\"kredit_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float\" id=\"kredit_"+rowlen+"\" placeholder=\"Enter Kredit\"></td>"
+                +"<td class=\"p-0\"><input type=\"text\" name=\"debet_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"debet_"+rowlen+"\" placeholder=\"Enter Debet\"></td>"
+                +"<td class=\"p-0\"><input type=\"text\" name=\"kredit_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"kredit_"+rowlen+"\" placeholder=\"Enter Kredit\"></td>"
                 +"<td class=\"p-0 text-center\"><button id=\"row_delete_"+rowlen+"\" class=\"bg-white border-0\"><i class=\"text-danger fas fa-minus-circle row-delete\" style=\"cursor: pointer;\"></i></button></td>"
                 +"<td class=\"column-hidden\"></td>"
             +"</tr>");
@@ -559,6 +565,7 @@ $(document).ready(function() {
         });
 
         var debets = new AutoNumeric("#debet_"+rowlen, {
+            currencySymbol : 'Rp ',
             decimalCharacter : ',',
             digitGroupSeparator : '.',
             minimumValue : 0,
@@ -566,6 +573,7 @@ $(document).ready(function() {
             unformatOnSubmit : true
         });
         var kredits = new AutoNumeric("#kredit_"+rowlen, {
+            currencySymbol : 'Rp ',
             decimalCharacter : ',',
             digitGroupSeparator : '.',
             minimumValue : 0,
@@ -730,7 +738,9 @@ function getdata(){
                         $("input[name='deskripsi_"+(data.data.transaksi[i].no_seq+1)+"']").val(data.data.transaksi[i].deskripsi);
 
                         AutoNumeric.getAutoNumericElement('#debet_'+(data.data.transaksi[i].no_seq+1)).set(data.data.transaksi[i].debet);
+                        $("input[name='debet_"+(data.data.transaksi[i].no_seq+1)+"']").trigger("change");
                         AutoNumeric.getAutoNumericElement('#kredit_'+(data.data.transaksi[i].no_seq+1)).set(data.data.transaksi[i].credit);
+                        $("input[name='kredit_"+(data.data.transaksi[i].no_seq+1)+"']").trigger("change");
                         $("#caktable1 > tbody > tr[row-seq="+(data.data.transaksi[i].no_seq+1)+"]").find("td:eq(6)").text(data.data.transaksi[i].id);
                     }
                 }
@@ -1023,9 +1033,9 @@ function convertCode(data){
         totaldebet += AutoNumeric.getNumber("#debet_"+$(tr).attr("row-seq"));
         totalkredit += AutoNumeric.getNumber("#kredit_"+$(tr).attr("row-seq"));
      });
-     $("#totaldebet").text(totaldebet.toLocaleString('id'));
-     $("#totalkredit").text(totalkredit.toLocaleString('id'));
-     $("#totalselisih").text((totaldebet-totalkredit).toLocaleString('id'));
+     $("#totaldebet").text('Rp '+totaldebet.toLocaleString('id'));
+     $("#totalkredit").text('Rp '+totalkredit.toLocaleString('id'));
+     $("#totalselisih").text('Rp '+(totaldebet-totalkredit).toLocaleString('id'));
      if(totaldebet-totalkredit != 0){
         $("#totalselisih").addClass("border-danger");
         $("#totalselisih").addClass("text-danger");
