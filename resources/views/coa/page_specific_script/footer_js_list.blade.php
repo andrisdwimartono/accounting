@@ -274,6 +274,7 @@
       $("#modal-delete").modal({'show': true});
       var data = table.row( $(this).parents('tr') );
       var id = data.data()[0];
+      var $tr = $(this);
       $(".row-delete-confirmed").on('click', function(){
         cto_loading_show();
         $.ajax({
@@ -295,7 +296,9 @@
                 position: 'mid-center',
                 textAlign: 'left'
             });
-            fetch_data1();
+            //fetch_data1();
+            $($tr).parents('tr').remove()
+            cto_loading_hide();
           },
           'error': function (err) {    
             $.toast({
