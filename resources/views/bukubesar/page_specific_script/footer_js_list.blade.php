@@ -82,7 +82,6 @@
 
 	  var table = null;
     var dataTable;
-    fetch_data();
   
     function fetch_data(){
       cto_loading_show();
@@ -114,37 +113,38 @@
               _token: $("input[name=_token]").val()
             },
           },
+          
           "footerCallback": function ( row, data, start, end, display ) {
               var api = this.api(), data;
+              var api2 = this.api(), data;
   
-              // Remove the formatting to get integer data for summation
               var intVal = function ( i ) {
-                  return typeof i === 'string' ?
-                      i.replace(/[\$,]/g, '')*1 :
-                      typeof i === 'number' ?
-                          i : 0;
+                  return typeof i === 'string' ? i.replace(/[\$,]/g, '')*1 : typeof i === 'number' ?i : 0;
               };
-  
-              // Total over all pages
-              debet = api
-                  .column( 4 )
-                  .data()
-                  .reduce( function (a, b) {
-                      return intVal(a) + intVal(b);
-                  }, 0 );
-
-              // Total over all pages
-              kredit = api
-                  .column( 5 )
-                  .data()
-                  .reduce( function (a, b) {
-                      return intVal(a) + intVal(b);
-                  }, 0 );
+              debet = api.column( 4 ).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
+              kredit = api.column( 5 ).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
   
               // Update footer
+              console.log(api.column( 3 ).footer());
+              $( api.column( 3 ).footer() ).html("JUMLAH");
               $( api.column( 4 ).footer() ).html(formatRupiah(debet,"."));
               $( api.column( 5 ).footer() ).html(formatRupiah(kredit,"."));
-            }
+            },
+            "columnDefs": [
+              { 
+                "targets": 4,
+                "render":  function ( data, type, row, meta ) {
+                  return formatRupiah(row[4],".") ;
+                }
+              },
+              { 
+                "targets": 5,
+                "render":  function ( data, type, row, meta ) {
+                  return formatRupiah(row[5],".") ;
+                }
+              },
+              
+          ],
         });
       cto_loading_hide();
       table = dataTable;
