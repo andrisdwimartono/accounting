@@ -72,7 +72,7 @@ $(function () {
             var quickForm = $("#quickForm");
             var cttransaksi = [];
             
-            if(parseFloat($("#totalselisih").text().replace(".", "").replace(",", ".")) != 0){
+            if(parseFloat($("#totalselisih").text().replace("Rp ", "").replace(".", "").replace(",", ".")) != 0){
                 $("#caktable1_message").html("Debet Kredit masih ada selisih!");
                 $("#caktable1_message").removeClass("d-none");
                 cto_loading_hide();
