@@ -192,6 +192,29 @@
                         <input type="hidden" name="transaksi" class="form-control" id="transaksi" placeholder="Enter Menu Field">
                     </div>
                 </div>
+                <!-- Modal delete jurnal -->
+                <div class="modal fade" id="modal-delete" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title"><b>Warning!!</b></h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group row">
+                                    <textarea name="alasan_hapus" class="form-control m-2" id="alasan_hapus" placeholder="Tulis alasan menghapus jurnal"></textarea>
+                                    <span class="d-none text-danger m-2" id="alasan_hapus_error"></span>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger row-delete-confirmed">Hapus</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!-- Modal Transaksi -->
                 <div class="modal fade bd-example-modal-lg" id="staticBackdrop_transaksi" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" data-focus="false" role="dialog" aria-labelledby="staticBackdrop_transaksi_Label" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
