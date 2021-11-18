@@ -58,7 +58,7 @@
                         <div class="form-group row m-0">
                             <label for="tanggal_jurnal" class="col-sm-4 col-form-label">Tanggal Jurnal</label>
                             <div class="col-sm-6 cakfield">
-                                <input name="tanggal_jurnal" class="datepicker-default form-control form-control-sm" id="datepicker" <?=$page_data["page_method_name"] == "View"?"readonly":""?>>
+                                <input name="tanggal_jurnal" class="datepicker-default form-control form-control-sm tanggaljurnal1" id="datepicker" <?=$page_data["page_method_name"] == "View"?"readonly":""?>>
                             </div>
                         </div>
                         <div class="form-group row m-0 mb-1">

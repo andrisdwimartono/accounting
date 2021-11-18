@@ -53,9 +53,7 @@
     // anObject["debet"].settings.minimumValue = 0;
     // anObject["credit"].settings.minimumValue = 0;
 
-
-$(function () {
-    $('input[name=tanggal_jurnal], input[name=tanggal_jurnal_from], input[name=tanggal_jurnal_to]').pickadate({
+    var tanggal_jurnal_picker = $('input[name=tanggal_jurnal]').pickadate({
         format: 'dd/mm/yyyy',
         formatSubmit: 'yyyy-mm-dd',
         hiddenName: true,
@@ -64,7 +62,18 @@ $(function () {
                 this.set('select', date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate(), { format: 'yyyy-mm-dd' });
         }
     });
-    
+
+    $('input[name=tanggal_jurnal_from], input[name=tanggal_jurnal_to]').pickadate({
+        format: 'dd/mm/yyyy',
+        formatSubmit: 'yyyy-mm-dd',
+        hiddenName: true,
+        onStart: function(){
+            var date = new Date();
+                this.set('select', date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate(), { format: 'yyyy-mm-dd' });
+        }
+    });
+
+$(function () {
     $.validator.setDefaults({
         submitHandler: function (form, event) {
             event.preventDefault();
@@ -690,7 +699,7 @@ function getdata(){
                     }
                     $("select[name="+Object.keys(data.data.jurnal)[i]+"]").val(data.data.jurnal[Object.keys(data.data.jurnal)[i]]).change();
                 }
-                }
+            }
 
                 if(data.data.transaksi.length > 0){
                     var biggest_seq = 0;
@@ -722,6 +731,7 @@ function getdata(){
                     $("#addrow").trigger("click");
                     $("#addrow").trigger("click");
                     for(var i = 0; i < data.data.transaksi.length; i++){
+                        $("input[name=anggaran_label]").val(data.data.transaksi[i].anggaran_label);
                         if(data.data.transaksi[i].no_seq > 3){
                             var trexist = $("#caktable1 > tbody > tr[row-seq="+(data.data.transaksi[i].no_seq+1)+"]").length;
                             while(!trexist){
@@ -785,7 +795,7 @@ function getlist(){
                 $("#caktable2").find('tbody')
                     .append("<tr row-id=\""+dat.data[i][0]+"\" class=\"addnewrow2\" style=\"cursor: pointer;\">"
                         +"<td class=\"column-hidden\">"+dat.data[i][0]+"</td>"
-                        +"<td class=\"p-0\">"+dat.data[i][1]+"</td>"
+                        +"<td class=\"p-0\">"+dat.data[i][1].split("-")[2]+"/"+dat.data[i][1].split("-")[1]+"/"+dat.data[i][1].split("-")[0]+"</td>"
                         +"<td class=\"p-0\">"+dat.data[i][2]+"</td>"
                         +"<td class=\"p-0\">"+dat.data[i][3]+"</td>"
                         // +"<td class=\"p-0\">"+dat.data[i][4]+"</td>"
@@ -1118,5 +1128,9 @@ function deleting_jurnal(id_jurnal){
             return false;
         }
     });
+}
+
+function setDate(){
+    $tanggal_jurnal_picker.set();
 }
 </script>
