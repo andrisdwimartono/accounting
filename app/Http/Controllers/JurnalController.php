@@ -359,7 +359,12 @@ class JurnalController extends Controller
                 "status" => 417,
                 "message" => "Deleting failed"
             );
-            if(Jurnal::whereId($request->id)->forceDelete()){
+            if(Jurnal::where("id", $request->id)->update([
+                "alasan_hapus" => $request->alasan_hapus
+            ])){
+                Transaction::where("parent_id", $request->id)->update([
+                    "alasan_hapus" => $request->alasan_hapus
+                ]);
                 $results = array(
                     "status" => 204,
                     "message" => "Deleted successfully"
@@ -423,7 +428,7 @@ class JurnalController extends Controller
         $no = 0;
         foreach(Jurnal::where(function($q) use ($request) {
             $q->where("no_jurnal", "LIKE", "%" . $request->no_jurnal_search. "%");
-        })->whereBetween("tanggal_jurnal", [$request->tanggal_jurnal_from, $request->tanggal_jurnal_to])->orderBy("tanggal_jurnal", "asc")->get(["id", "keterangan", "no_jurnal", "tanggal_jurnal"]) as $jurnal){
+        })->whereNull("alasan_hapus")->whereBetween("tanggal_jurnal", [$request->tanggal_jurnal_from, $request->tanggal_jurnal_to])->orderBy("tanggal_jurnal", "asc")->get(["id", "keterangan", "no_jurnal", "tanggal_jurnal"]) as $jurnal){
             $no = $no+1;
             $act = '
             <a href="/jurnal/'.$jurnal->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>

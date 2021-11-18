@@ -35,6 +35,7 @@ class CreateTransactionsTable extends Migration
             $table->string('fheader')->nullable();
             $table->double('debet', 8, 0)->default(0);
             $table->double('credit', 8, 0)->default(0);
+            $table->string('alasan_hapus')->nullable();
             $table->integer('user_creator_id')->nullable();
             $table->integer('user_updater_id')->nullable();
             $table->timestamps();

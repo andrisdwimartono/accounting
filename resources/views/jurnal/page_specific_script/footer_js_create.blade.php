@@ -789,15 +789,42 @@ function getlist(){
                         +"<td class=\"p-0\">"+dat.data[i][2]+"</td>"
                         +"<td class=\"p-0\">"+dat.data[i][3]+"</td>"
                         // +"<td class=\"p-0\">"+dat.data[i][4]+"</td>"
-                        +"<td class=\"p-0 text-center\"><button id=\"row_delete_"+dat.data[i][0]+"\" class=\"bg-white border-0\"><i class=\"text-danger fas fa-minus-circle row-delete\" style=\"cursor: pointer;\"></i></button></td>"
+                        +"<td class=\"p-0 text-center\"><button id=\"row_delete_"+dat.data[i][0]+"\" type=\"button\" class=\"row-delete-jurnal bg-white border-0\"><i class=\"text-danger fas fa-minus-circle\" style=\"cursor: pointer;\"></i></button></td>"
                         +"<td class=\"column-hidden\"></td>"
                     +"</tr>");
             }
+            $(".row-delete-jurnal").click(function(){
+                $("#alasan_hapus").removeClass("border-danger");
+                $("#alasan_hapus_error").text("");
+                $("#alasan_hapus_error").addClass("d-none");
+                $("#modal-delete").modal({"show": true});
+            });
+
             $(".addnewrow2").click(function(){
                 $("#id_jurnal").val($(this).attr("row-id"));
                 $("#is_edit").val(1);
                 getdata();
             });
+
+            $(".row-delete-confirmed").click(function(){
+                var id_jurnal = $("#id_jurnal").val();
+                if($("#alasan_hapus").val() == ""){
+                    $("#alasan_hapus").addClass("border-danger");
+                    $("#alasan_hapus_error").text("Alasan harus diisi!");
+                    $("#alasan_hapus_error").removeClass("d-none");
+                    return;
+                }else{
+                    $("#alasan_hapus").removeClass("border-danger");
+                    $("#alasan_hapus_error").text("");
+                    $("#alasan_hapus_error").addClass("d-none");
+                }
+                if(deleting_jurnal(id_jurnal)){
+                    $(this).parent('tr').remove();
+                    $("#modal-delete").modal('hide');
+                }
+            });
+
+            
         cto_loading_hide();
     },
         error: function (err) {
@@ -1045,4 +1072,52 @@ function convertCode(data){
      }
  }
 
+function deleting_jurnal(id_jurnal){
+    return $.ajax({
+        url: "{{ env('APP_URL') }}/deletejurnal",
+        type: "post",
+        data: {
+            _token: $("input[name=_token]").val(),
+            id: id_jurnal,
+            alasan_hapus : $("#alasan_hapus").val()
+        },
+        success: function(data){
+            if(data.status >= 200 && data.status <= 299){
+                id_jurnal = data.data.id;
+                $("#id_jurnal").val(0);
+                $("#is_edit").val(0);
+                $("#no_jurnal").val("");
+                
+                $.toast({
+                    text: data.message,
+                    heading: 'Status',
+                    icon: 'success',
+                    showHideTransition: 'fade',
+                    allowToastClose: true,
+                    hideAfter: 3000,
+                    position: 'mid-center',
+                    textAlign: 'left'
+                });
+            }
+            cto_loading_hide();
+            return true;
+        },
+        error: function (err) {
+            if (err.status == 422) {
+                $.toast({
+                    text: data.message,
+                    heading: 'Status',
+                    icon: 'danger',
+                    showHideTransition: 'fade',
+                    allowToastClose: true,
+                    hideAfter: 3000,
+                    position: 'mid-center',
+                    textAlign: 'left'
+                });
+            }
+            cto_loading_hide();
+            return false;
+        }
+    });
+}
 </script>

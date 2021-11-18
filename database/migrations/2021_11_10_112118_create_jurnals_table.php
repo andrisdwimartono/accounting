@@ -20,6 +20,7 @@ class CreateJurnalsTable extends Migration
             $table->string('no_jurnal', 25);
             $table->date('tanggal_jurnal');
             $table->string('keterangan', 255)->nullable();
+            $table->integer('alasan_hapus')->nullable();
             $table->integer('user_creator_id')->nullable();
             $table->integer('user_updater_id')->nullable();
             $table->timestamps();
