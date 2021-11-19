@@ -235,7 +235,7 @@ class NeracasaldoController extends Controller
         $no = 0;
         foreach(Neracasaldo::where(function($q) use ($keyword) {
             $q->where("tahun_periode", "LIKE", "%" . $keyword. "%")->orWhere("bulan_periode", "LIKE", "%" . $keyword. "%")->orWhere("coa_label", "LIKE", "%" . $keyword. "%")->orWhere("jenisbayar_label", "LIKE", "%" . $keyword. "%");
-        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "tahun_periode", "bulan_periode", "coa_label", "jenisbayar_label"]) as $neracasaldo){
+        })->where("bulan_periode", $bulan_periode)->where("tahun_periode", $tahun_periode)->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "tahun_periode", "bulan_periode", "coa_label", "debet", "credit"]) as $neracasaldo){
             $no = $no+1;
             $act = '
             <a href="/neracasaldo/'.$neracasaldo->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
@@ -244,14 +244,14 @@ class NeracasaldoController extends Controller
 
             <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button>';
 
-            array_push($dt, array($neracasaldo->id, $neracasaldo->tahun_periode, $neracasaldo->bulan_periode, $neracasaldo->coa_label, $neracasaldo->jenisbayar_label, $act));
+            array_push($dt, array($neraca->id, $neraca->coa_label, $neraca->debet, $neraca->credit, $act));
     }
         $output = array(
             "draw" => intval($request->draw),
             "recordsTotal" => Neracasaldo::get()->count(),
             "recordsFiltered" => intval(Neracasaldo::where(function($q) use ($keyword) {
                 $q->where("tahun_periode", "LIKE", "%" . $keyword. "%")->orWhere("bulan_periode", "LIKE", "%" . $keyword. "%")->orWhere("coa_label", "LIKE", "%" . $keyword. "%")->orWhere("jenisbayar_label", "LIKE", "%" . $keyword. "%");
-            })->orderBy($orders[0], $orders[1])->get()->count()),
+            })->where("bulan_periode", $bulan_periode)->where("tahun_periode", $tahun_periode)->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
 
