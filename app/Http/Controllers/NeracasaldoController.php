@@ -221,6 +221,15 @@ class NeracasaldoController extends Controller
             $keyword = $request->search["value"];
         }
 
+        $bulan_periode = 1;
+        if(isset($request->search["bulan_periode"])){
+            $bulan_periode = $request->search["bulan_periode"];
+        }
+        $tahun_periode = 1;
+        if(isset($request->search["tahun_periode"])){
+            $tahun_periode = $request->search["tahun_periode"];
+        }
+
         $orders = array("id", "ASC");
         if(isset($request->order)){
             $orders = array($list_column[$request->order["0"]["column"]], $request->order["0"]["dir"]);
@@ -244,7 +253,7 @@ class NeracasaldoController extends Controller
 
             <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button>';
 
-            array_push($dt, array($neraca->id, $neraca->coa_label, $neraca->debet, $neraca->credit, $act));
+            array_push($dt, array($neracasaldo->id, $neracasaldo->coa_label, $neracasaldo->debet, $neracasaldo->credit, $act));
     }
         $output = array(
             "draw" => intval($request->draw),
