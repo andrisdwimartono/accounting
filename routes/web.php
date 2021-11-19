@@ -77,6 +77,28 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/getlistbukubesar', 'App\Http\Controllers\BukuBesarController@get_list');
     Route::post('/getlinksbukubesar', 'App\Http\Controllers\BukuBesarController@getlinks');
 
+    Route::get('/neracasaldo', 'App\Http\Controllers\NeracasaldoController@index')->name('neracasaldo');
+    Route::post('/getlistneracasaldo', 'App\Http\Controllers\NeracasaldoController@get_list');
+    Route::get('/neracasaldo/{neracasaldo}', 'App\Http\Controllers\NeracasaldoController@show');
+    Route::get('/createneracasaldo', 'App\Http\Controllers\NeracasaldoController@create');
+    Route::post('/storeneracasaldo', 'App\Http\Controllers\NeracasaldoController@store');
+    Route::get('/neracasaldo/{neracasaldo}/edit', 'App\Http\Controllers\NeracasaldoController@edit');
+    Route::post('/getdataneracasaldo', 'App\Http\Controllers\NeracasaldoController@getdata');
+    Route::post('/updateneracasaldo/{neracasaldo}', 'App\Http\Controllers\NeracasaldoController@update');
+    Route::post('/deleteneracasaldo', 'App\Http\Controllers\NeracasaldoController@destroy');
+    Route::post('/getlinksneracasaldo', 'App\Http\Controllers\NeracasaldoController@getlinks');
+    
+    Route::get('/neraca', 'App\Http\Controllers\NeracaController@index')->name('neraca');
+    Route::post('/getlistneraca', 'App\Http\Controllers\NeracaController@get_list');
+    Route::get('/neraca/{neraca}', 'App\Http\Controllers\NeracaController@show');
+    Route::get('/createneraca', 'App\Http\Controllers\NeracaController@create');
+    Route::post('/storeneraca', 'App\Http\Controllers\NeracaController@store');
+    Route::get('/neraca/{neraca}/edit', 'App\Http\Controllers\NeracaController@edit');
+    Route::post('/getdataneraca', 'App\Http\Controllers\NeracaController@getdata');
+    Route::post('/updateneraca/{neraca}', 'App\Http\Controllers\NeracaController@update');
+    Route::post('/deleteneraca', 'App\Http\Controllers\NeracaController@destroy');
+    Route::post('/getlinksneraca', 'App\Http\Controllers\NeracaController@getlinks');
+
     Route::middleware(['checkauth'])->group(function () {
         
         
