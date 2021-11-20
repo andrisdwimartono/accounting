@@ -53,27 +53,17 @@
     // anObject["debet"].settings.minimumValue = 0;
     // anObject["credit"].settings.minimumValue = 0;
 
-    var tanggal_jurnal_picker = $('input[name=tanggal_jurnal]').pickadate({
-        format: 'dd/mm/yyyy',
-        formatSubmit: 'yyyy-mm-dd',
-        hiddenName: true,
-        onStart: function(){
-            var date = new Date();
-                this.set('select', date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate(), { format: 'yyyy-mm-dd' });
-        }
-    });
-
-    $('input[name=tanggal_jurnal_from], input[name=tanggal_jurnal_to]').pickadate({
-        format: 'dd/mm/yyyy',
-        formatSubmit: 'yyyy-mm-dd',
-        hiddenName: true,
-        onStart: function(){
-            var date = new Date();
-                this.set('select', date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate(), { format: 'yyyy-mm-dd' });
-        }
-    });
-
 $(function () {
+    $('input[name=tanggal_jurnal], input[name=tanggal_jurnal_from], input[name=tanggal_jurnal_to]').pickadate({
+        format: 'dd/mm/yyyy',
+        formatSubmit: 'yyyy-mm-dd',
+        //hiddenName: true,
+        onStart: function(){
+            var date = new Date();
+                this.set('select', date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate(), { format: 'yyyy-mm-dd' });
+        }
+    });
+
     $.validator.setDefaults({
         submitHandler: function (form, event) {
             event.preventDefault();
@@ -110,7 +100,7 @@ $(function () {
                 
                 var anggaran = 0;
                 var anggaran_label = $("#anggaran_label").val();
-                var tanggal = $("input[name=tanggal_jurnal]").val();
+                //var tanggal = $("input[name=tanggal_jurnal]").val();
                 var coa = 0;
                 var coa_label = "";
                 var keterangan = "";
@@ -139,7 +129,7 @@ $(function () {
                         id = $(td).text();
                     }
                 });
-                cttransaksi.push({"no_seq": index, "unitkerja": unitkerja, "unitkerja_label": unitkerja_label, "anggaran": anggaran, "anggaran_label": anggaran_label, "no_jurnal": "", "tanggal": tanggal, "keterangan": keterangan, "jenis_transaksi": "", "coa": coa, "coa_label": coa_label, "deskripsi": deskripsi, "jenisbayar": jenisbayar, "jenisbayar_label": jenisbayar_label, "nim": nim, "kode_va": kode_va, "fheader": fheader, "debet": debet, "credit": credit, "id": id});
+                cttransaksi.push({"no_seq": index, "unitkerja": unitkerja, "unitkerja_label": unitkerja_label, "anggaran": anggaran, "anggaran_label": anggaran_label, "no_jurnal": "", "keterangan": keterangan, "jenis_transaksi": "", "coa": coa, "coa_label": coa_label, "deskripsi": deskripsi, "jenisbayar": jenisbayar, "jenisbayar_label": jenisbayar_label, "nim": nim, "kode_va": kode_va, "fheader": fheader, "debet": debet, "credit": credit, "id": id});
             });
             
             if(stop_submit){
@@ -149,7 +139,15 @@ $(function () {
             $("#transaksi").val(JSON.stringify(cttransaksi));
             
             var id_jurnal = 0;
-            var values = $("#quickForm").serialize();
+            var values = $("#quickForm").serializeArray();
+            for (index = 0; index < values.length; ++index) {
+                if (values[index].name == "tanggal_jurnal") {
+                    values[index].value = $("input[name=tanggal_jurnal]").val().split("/")[2]+"-"+ $("input[name=tanggal_jurnal]").val().split("/")[1]+"-"+ $("input[name=tanggal_jurnal]").val().split("/")[0];
+                    break;
+                }
+            }
+
+            values = jQuery.param(values);
 
             var ajaxRequest;
             var urlpage = "{{ env('APP_URL') }}/storejurnal";
@@ -470,6 +468,17 @@ $(document).ready(function() {
         getlist();
     });
 
+    $("#column_no_jurnal").click(function(){
+        if($(this).attr("data-ordering") == "desc"){
+            $(this).attr("data-ordering", "asc");
+            $("#logo_column_no_jurnal").text("↟");
+        }else{
+            $(this).attr("data-ordering", "desc");
+            $("#logo_column_no_jurnal").text("↡");
+        }
+        getlist();
+    });
+
     $(document).keydown(function(event) {
         if((event.ctrlKey || event.metaKey) && event.which == 66) {
             $("#addrow").trigger("click");
@@ -689,6 +698,8 @@ function getdata(){
                 }else{
                     if(["ewfsdfsafdsafasdfasdferad"].includes(Object.keys(data.data.jurnal)[i])){
                         $("input[name="+Object.keys(data.data.jurnal)[i]+"]").prop("checked", data.data.jurnal[Object.keys(data.data.jurnal)[i]]);
+                    }else if(Object.keys(data.data.jurnal)[i] == "tanggal_jurnal"){
+                        $("input[name=tanggal_jurnal]").val(data.data.jurnal["tanggal_jurnal"].split("-")[2]+"/"+data.data.jurnal["tanggal_jurnal"].split("-")[1]+"/"+data.data.jurnal["tanggal_jurnal"].split("-")[0]);
                     }else{
                         try{
                             anObject[Object.keys(data.data.jurnal)[i]].set(data.data.jurnal[Object.keys(data.data.jurnal)[i]]);
@@ -785,8 +796,9 @@ function getlist(){
             start: 0,
             // length: $("#countcaktable2").val(),
             no_jurnal_search: $("#no_jurnal_search").val(),
-            tanggal_jurnal_to: $("input[name=tanggal_jurnal_to]").val(),
-            tanggal_jurnal_from: $("input[name=tanggal_jurnal_from]").val()
+            tanggal_jurnal_to: $("input[name=tanggal_jurnal_to]").val().split("/")[2]+"-"+ $("input[name=tanggal_jurnal_to]").val().split("/")[1]+"-"+ $("input[name=tanggal_jurnal_to]").val().split("/")[0],
+            tanggal_jurnal_from: $("input[name=tanggal_jurnal_from]").val().split("/")[2]+"-"+$("input[name=tanggal_jurnal_from]").val().split("/")[1]+"-"+$("input[name=tanggal_jurnal_from]").val().split("/")[0],
+            ordering: $("#column_no_jurnal").attr("data-ordering")
         },
         success: function(data){
             $("#caktable2").find('tbody').empty();
@@ -1128,9 +1140,5 @@ function deleting_jurnal(id_jurnal){
             return false;
         }
     });
-}
-
-function setDate(){
-    $tanggal_jurnal_picker.set();
 }
 </script>

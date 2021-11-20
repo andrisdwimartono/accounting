@@ -166,7 +166,7 @@
                                 <tr>
                                     <th class="text-black text-center column-hidden" scope="col">ID</th>
                                     <th class="text-black text-center" scope="col">Tanggal</th>
-                                    <th class="text-black text-center" scope="col">No Jurnal</th>
+                                    <th class="text-black text-center" scope="col" id="column_no_jurnal" data-ordering="desc">No Jurnal<b><span id="logo_column_no_jurnal" class="ml-2">↡</span></b></th>
                                     <!-- <th class="text-black text-center" scope="col">No Rek. Akuntansi</th> -->
                                     <th class="text-black text-center" scope="col">Keterangan</th>
                                     <!-- <th class="text-black text-center" scope="col">Debet</th>
