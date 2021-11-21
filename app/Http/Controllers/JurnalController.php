@@ -11,6 +11,8 @@ use App\Models\Transaction;
 use App\Models\Anggaran;
 use App\Models\Coa;
 use App\Models\Jenisbayar;
+use App\Models\Neracasaldo;
+use App\Models\Neraca;
 
 class JurnalController extends Controller
 {
@@ -166,7 +168,7 @@ class JurnalController extends Controller
             
             foreach($requests_transaksi as $ct_request){
                 $coa = Coa::where("id", $ct_request["coa"])->first();
-                Transaction::create([
+                $idct = Transaction::create([
                     "no_seq" => $ct_request["no_seq"],
                     "parent_id" => $id,
                     "deskripsi"=> $ct_request["deskripsi"],
@@ -188,7 +190,8 @@ class JurnalController extends Controller
                     "fheader"=> $ct_request["fheader"],
                     "no_jurnal"=> $no_jurnal,
                     "user_creator_id" => Auth::user()->id
-                ]);
+                ])->id;
+                $this->summerizeJournal("store", $idct);
             }
 
             return response()->json([
@@ -244,7 +247,6 @@ class JurnalController extends Controller
     {
         $page_data = $this->tabledesign();
         $rules_transaksi = $page_data["fieldsrules_transaksi"];
-        //$requests_transaksi = json_decode('[{"no_seq":0,"unitkerja":"2","unitkerja_label":"Kemahasiswaan","anggaran":0,"anggaran_label":"","no_jurnal":"","tanggal":"2021-11-15","keterangan":"","jenis_transaksi":"","coa":"613","coa_label":"1-01-02-001 Bank BSI Universitas", "deskripsi":"aa","jenisbayar":0,"jenisbayar_label":"","nim":"","kode_va":"","fheader":"","debet":1000,"credit":0,"id":"28"},{"no_seq":1,"unitkerja":"2","unitkerja_label":"Kemahasiswaan","anggaran":0,"anggaran_label":"","no_jurnal":"","tanggal":"2021-11-15","keterangan":"","jenis_transaksi":"","coa":"621","coa_label":"1-01-04-002 Piutang Amal Usaha Muhammadiyah (AUM)","deskripsi":"bb","jenisbayar":0,"jenisbayar_label":"","nim":"","kode_va":"","fheader":"","debet":0,"credit":2000,"id":"29"},{"no_seq":2,"unitkerja":"2","unitkerja_label":"Kemahasiswaan","anggaran":0,"anggaran_label":"","no_jurnal":"","tanggal":"2021-11-15","keterangan":"","jenis_transaksi":"","coa":"630","coa_label":"1-02-04-001 Meja ","deskripsi":"ccc","jenisbayar":0,"jenisbayar_label":"","nim":"","kode_va":"","fheader":"","debet":0,"credit":5000,"id":"30"},{"no_seq":3,"unitkerja":"2","unitkerja_label":"Kemahasiswaan","anggaran":0,"anggaran_label":"","no_jurnal":"","tanggal":"2021-11-15","keterangan":"","jenis_transaksi":"","coa":"645","coa_label":"4-01-04-001 Perusahaan A","deskripsi":"dd","jenisbayar":0,"jenisbayar_label":"","nim":"","kode_va":"","fheader":"","debet":4000,"credit":0,"id":"31"},{"no_seq":4,"unitkerja":"2","unitkerja_label":"Kemahasiswaan","anggaran":0,"anggaran_label":"","no_jurnal":"","tanggal":"2021-11-15","keterangan":"","jenis_transaksi":"","coa":"613","coa_label":"1-01-02-003 Bank BNI","deskripsi":"ee","jenisbayar":0,"jenisbayar_label":"","nim":"","kode_va":"","fheader":"","debet":2000,"credit":0,"id":"32"}]', true);
         $requests_transaksi = json_decode($request->transaksi, true);
         foreach($requests_transaksi as $ct_request){
             $child_tb_request = new \Illuminate\Http\Request();
@@ -271,6 +273,7 @@ class JurnalController extends Controller
             foreach($requests_transaksi as $ct_request){
                 if(isset($ct_request["id"]) && $ct_request["id"] != ""){
                     $coa = Coa::where("id", $ct_request["coa"])->first();
+                    $this->summerizeJournal("updatefirst", $ct_request["id"]);
                     Transaction::where("id", $ct_request["id"])->update([
                         "no_seq" => $ct_request["no_seq"],
                         "parent_id" => $id,
@@ -293,6 +296,7 @@ class JurnalController extends Controller
                         "fheader"=> $ct_request["fheader"],
                         "user_updater_id" => Auth::user()->id
                     ]);
+                    $this->summerizeJournal("updatelast", $ct_request["id"]);
                 }else{
                     $coa = Coa::where("id", $ct_request["coa"])->first();
                     $idct = Transaction::create([
@@ -319,6 +323,7 @@ class JurnalController extends Controller
                         "user_creator_id" => Auth::user()->id
                     ])->id;
                     array_push($new_menu_field_ids, $idct);
+                    $this->summerizeJournal("store", $idct);
                 }
             }
 
@@ -330,6 +335,7 @@ class JurnalController extends Controller
                         }
                     }
                     if(!$is_still_exist){
+                        $this->summerizeJournal("delete", $ch->id);
                         Transaction::whereId($ch->id)->delete();
                     }
                 }
@@ -367,6 +373,9 @@ class JurnalController extends Controller
                     "alasan_hapus" => $request->alasan_hapus,
                     "isdeleted" => "on"
                 ]);
+                foreach(Transaction::where("parent_id", $request->id)->get() as $trans){
+                    $this->summerizeJournal("delete", $trans->id);
+                }
                 $results = array(
                     "status" => 204,
                     "message" => "Deleted successfully"
@@ -552,5 +561,68 @@ class JurnalController extends Controller
             $i++;
         }
         return $val;
+     }
+
+     public function summerizeJournal($method, $id_transaction){
+        $transaction = Transaction::where("id", $id_transaction)->first();
+        $bulan = explode("-", $transaction->tanggal)[1];
+        $tahun = explode("-", $transaction->tanggal)[0];
+        if($method == "store" || $method == "updatelast"){
+            $neracasaldo = Neracasaldo::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->first();
+            if($neracasaldo){
+                Neracasaldo::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
+                    "debet" => $neracasaldo->debet+$transaction->debet,
+                    "credit" => $neracasaldo->credit+$transaction->credit,
+                ]);
+            }else{
+                Neracasaldo::create([
+                    "tahun_periode" => $tahun, 
+                    "bulan_periode" => $bulan, 
+                    "coa" => $transaction->coa, 
+                    "coa_label" => $transaction->coa_label, 
+                    "debet" => $transaction->debet, 
+                    "credit" => $transaction->credit, 
+                    "user_creator_id" => Auth::user()->id,
+                    "jenisbayar" => 0,
+                    "jenisbayar_label" => ""
+                ]);
+            }
+
+            $neraca = Neraca::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->first();
+            if($neraca){
+                Neraca::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
+                    "debet" => $neraca->debet+$transaction->debet,
+                    "credit" => $neraca->credit+$transaction->credit,
+                ]);
+            }else{
+                Neraca::create([
+                    "tahun_periode" => $tahun, 
+                    "bulan_periode" => $bulan, 
+                    "coa" => $transaction->coa, 
+                    "coa_label" => $transaction->coa_label, 
+                    "debet" => $transaction->debet, 
+                    "credit" => $transaction->credit, 
+                    "user_creator_id" => Auth::user()->id
+                ]);
+            }
+        }elseif($method == "updatefirst" || $method == "delete"){
+            $neracasaldo = Neracasaldo::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->first();
+            if($neracasaldo){
+                Neracasaldo::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
+                    "debet" => $neracasaldo->debet-$transaction->debet,
+                    "credit" => $neracasaldo->credit-$transaction->credit,
+                    "user_updater_id" => Auth::user()->id
+                ]);
+            }
+
+            $neraca = Neraca::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->first();
+            if($neraca){
+                Neraca::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
+                    "debet" => $neraca->debet-$transaction->debet,
+                    "credit" => $neraca->credit-$transaction->credit,
+                    "user_updater_id" => Auth::user()->id
+                ]);
+            }
+        }
      }
 }

@@ -215,7 +215,7 @@ class NeracasaldoController extends Controller
 
     public function get_list(Request $request)
     {
-        $list_column = array("id", "tahun_periode", "bulan_periode", "coa_label", "jenisbayar_label", "id");
+        $list_column = array("id", "coa_label", "coa_label", "debet", "credit", "id");
         $keyword = null;
         if(isset($request->search["value"])){
             $keyword = $request->search["value"];
@@ -244,6 +244,8 @@ class NeracasaldoController extends Controller
         $no = 0;
         foreach(Neracasaldo::where(function($q) use ($keyword) {
             $q->where("tahun_periode", "LIKE", "%" . $keyword. "%")->orWhere("bulan_periode", "LIKE", "%" . $keyword. "%")->orWhere("coa_label", "LIKE", "%" . $keyword. "%")->orWhere("jenisbayar_label", "LIKE", "%" . $keyword. "%");
+        })->where(function($q) {
+            $q->where("debet", ">", 0)->orWhere("credit", ">", 0);
         })->where("bulan_periode", $bulan_periode)->where("tahun_periode", $tahun_periode)->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "tahun_periode", "bulan_periode", "coa_label", "debet", "credit"]) as $neracasaldo){
             $no = $no+1;
             $act = '
@@ -260,6 +262,8 @@ class NeracasaldoController extends Controller
             "recordsTotal" => Neracasaldo::get()->count(),
             "recordsFiltered" => intval(Neracasaldo::where(function($q) use ($keyword) {
                 $q->where("tahun_periode", "LIKE", "%" . $keyword. "%")->orWhere("bulan_periode", "LIKE", "%" . $keyword. "%")->orWhere("coa_label", "LIKE", "%" . $keyword. "%")->orWhere("jenisbayar_label", "LIKE", "%" . $keyword. "%");
+            })->where(function($q) {
+                $q->where("debet", ">", 0)->orWhere("credit", ">", 0);
             })->where("bulan_periode", $bulan_periode)->where("tahun_periode", $tahun_periode)->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );

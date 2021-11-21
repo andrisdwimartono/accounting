@@ -712,59 +712,49 @@ function getdata(){
                 }
             }
 
-                if(data.data.transaksi.length > 0){
-                    var biggest_seq = 0;
-                    for(var i = 0; i < data.data.transaksi.length; i++){
-                        if(data.data.transaksi[i].no_seq > biggest_seq){
-                            biggest_seq = data.data.transaksi[i].no_seq;
+            if(data.data.transaksi.length > 0){
+                $("#caktable1 > tbody > tr").each(function(index){
+                    var row_index = parseInt($(this).attr("row-seq"));
+                    if(row_index == 1){
+                        $("#caktable1 > tbody > tr[row-seq="+row_index+"]").find("td:eq(0)").text("");
+                        $("select[name='coa_"+row_index+"']").empty();
+                        $("#caktable1 > tbody > tr[row-seq=1]").find("td:eq(0)").text("");
+
+                        $("input[name='deskripsi_"+row_index+"']").val("");
+
+                        $("input[name='debet_"+row_index+"']").val("0");
+                        $("input[name='kredit_"+row_index+"']").val("0");
+                        $("#caktable1 > tbody > tr[row-seq="+row_index+"]").find("td:eq(6)").text("");
+                        return true;
+                    }
+                    $(this).remove();
+                });
+                $("#addrow").trigger("click");
+                $("#addrow").trigger("click");
+                $("#addrow").trigger("click");
+                for(var i = 0; i < data.data.transaksi.length; i++){
+                    $("input[name=anggaran_label]").val(data.data.transaksi[i].anggaran_label);
+                    if(data.data.transaksi[i].no_seq > 3){
+                        var trexist = $("#caktable1 > tbody > tr[row-seq="+(parseInt(data.data.transaksi[i].no_seq)+1)+"]").length;
+                        while(!trexist){
+                            $("#addrow").trigger("click");
+                            trexist = $("#caktable1 > tbody > tr[row-seq="+(parseInt(data.data.transaksi[i].no_seq)+1)+"]").length;
                         }
                     }
+                    $("#caktable1 > tbody").find("[row-seq="+(parseInt(data.data.transaksi[i].no_seq)+1)+"]").find("td:eq(0)").text(data.data.transaksi[i].coa);
+                    $("select[name='coa_"+(parseInt(data.data.transaksi[i].no_seq)+1)+"']").empty();
+                    var newState = new Option(data.data.transaksi[i].coa_label, data.data.transaksi[i].coa, true, false);
+                    $("#coa_"+(parseInt(data.data.transaksi[i].no_seq)+1)+"").append(newState).trigger('change');
 
-                    $("#caktable1 > tbody > tr").each(function(index){
-                        var row_index = parseInt($(this).attr("row-seq"));
-                        if(row_index == 1){
-                            $("#caktable1 > tbody > tr[row-seq="+row_index+"]").find("td:eq(0)").text("");
-                            $("select[name='coa_"+row_index+"']").empty();
-                            $("#caktable1 > tbody > tr[row-seq=1]").find("td:eq(0)").text("");
+                    $("input[name='deskripsi_"+(parseInt(data.data.transaksi[i].no_seq)+1)+"']").val(data.data.transaksi[i].deskripsi);
 
-                            $("input[name='deskripsi_"+row_index+"']").val("");
-
-                            // AutoNumeric.getAutoNumericElement('#debet_'+row_index).set(0);
-                            // AutoNumeric.getAutoNumericElement('#kredit_'+row_index).set(0);
-                            $("input[name='debet_"+row_index+"']").val("0");
-                            $("input[name='kredit_"+row_index+"']").val("0");
-                            $("#caktable1 > tbody > tr[row-seq="+row_index+"]").find("td:eq(6)").text("");
-                            return true;
-                        }
-                        $(this).remove();
-                    });
-                    $("#addrow").trigger("click");
-                    $("#addrow").trigger("click");
-                    $("#addrow").trigger("click");
-                    for(var i = 0; i < data.data.transaksi.length; i++){
-                        $("input[name=anggaran_label]").val(data.data.transaksi[i].anggaran_label);
-                        if(data.data.transaksi[i].no_seq > 3){
-                            var trexist = $("#caktable1 > tbody > tr[row-seq="+(data.data.transaksi[i].no_seq+1)+"]").length;
-                            while(!trexist){
-                                $("#addrow").trigger("click");
-                                trexist = $("#caktable1 > tbody > tr[row-seq="+(data.data.transaksi[i].no_seq+1)+"]").length;
-                            }
-                        }
-                        $("#caktable1 > tbody > tr[row-seq="+(data.data.transaksi[i].no_seq+1)+"]").find("td:eq(0)").text(data.data.transaksi[i].coa);
-                        $("select[name='coa_"+(data.data.transaksi[i].no_seq+1)+"']").empty();
-                        var newState = new Option(data.data.transaksi[i].coa_label, data.data.transaksi[i].coa, true, false);
-                        $("#coa_"+(data.data.transaksi[i].no_seq+1)+"").append(newState).trigger('change');
-                        $("#caktable1 > tbody > tr[row-seq=1]").find("td:eq(0)").text(data.data.transaksi[i].coa);
-
-                        $("input[name='deskripsi_"+(data.data.transaksi[i].no_seq+1)+"']").val(data.data.transaksi[i].deskripsi);
-
-                        AutoNumeric.getAutoNumericElement('#debet_'+(data.data.transaksi[i].no_seq+1)).set(data.data.transaksi[i].debet);
-                        $("input[name='debet_"+(data.data.transaksi[i].no_seq+1)+"']").trigger("change");
-                        AutoNumeric.getAutoNumericElement('#kredit_'+(data.data.transaksi[i].no_seq+1)).set(data.data.transaksi[i].credit);
-                        $("input[name='kredit_"+(data.data.transaksi[i].no_seq+1)+"']").trigger("change");
-                        $("#caktable1 > tbody > tr[row-seq="+(data.data.transaksi[i].no_seq+1)+"]").find("td:eq(6)").text(data.data.transaksi[i].id);
-                    }
+                    AutoNumeric.getAutoNumericElement('#debet_'+(parseInt(data.data.transaksi[i].no_seq)+1)).set(data.data.transaksi[i].debet);
+                    $("input[name='debet_"+(parseInt(data.data.transaksi[i].no_seq)+1)+"']").trigger("change");
+                    AutoNumeric.getAutoNumericElement('#kredit_'+(parseInt(data.data.transaksi[i].no_seq)+1)).set(data.data.transaksi[i].credit);
+                    $("input[name='kredit_"+(parseInt(data.data.transaksi[i].no_seq)+1)+"']").trigger("change");
+                    $("#caktable1 > tbody > tr[row-seq="+(parseInt(data.data.transaksi[i].no_seq)+1)+"]").find("td:eq(6)").text(data.data.transaksi[i].id);
                 }
+            }
         cto_loading_hide();
     },
         error: function (err) {
