@@ -20,6 +20,10 @@ class OpencloseperiodeController extends Controller
         $neracasaldos = $this->getLastNeracaSaldo($open_month, $open_year);
         foreach($neracasaldos as $neracasaldo){
             $coa = Coa::where("id", $neracasaldo->coa)->first();
+            $neracasaldoexist = Neracasaldo::where("coa", $neracasaldo->coa)->where("tahun_periode", $open_year)->where("bulan_periode", $open_month)->first();
+            if($neracasaldoexist){
+                continue;
+            }
             Neracasaldo::create([
                 "tahun_periode" => $open_year, 
                 "bulan_periode" => $open_month, 
@@ -36,6 +40,10 @@ class OpencloseperiodeController extends Controller
         $neracas = $this->getLastNeraca($open_month, $open_year);
         foreach($neracas as $neraca){
             $coa = Coa::where("id", $neraca->coa)->first();
+            $neracaexist = Neraca::where("coa", $neraca->coa)->where("tahun_periode", $open_year)->where("bulan_periode", $open_month)->first();
+            if($neracaexist){
+                continue;
+            }
             Neraca::create([
                 "tahun_periode" => $open_year, 
                 "bulan_periode" => $open_month, 
