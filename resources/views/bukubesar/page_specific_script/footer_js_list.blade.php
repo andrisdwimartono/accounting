@@ -37,6 +37,7 @@
     <script src="{{ asset ("/assets/datatables/js/buttons.html5.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/pdfmake.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/buttons.print.min.js") }}"></script>
+    <script src="{{ asset ("/assets/datatables/js/dataTables.fixedColumns.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/vfs_fonts.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js//jszip.min.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/cakrudtemplate.js") }}"></script>
@@ -47,10 +48,10 @@
 
   $(document).ready(function(){
 
-    $("#example1").DataTable({
+    $("#bukubesar").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false,
-      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+      "buttons": ["excel", "pdf", "print"]
+    }).buttons().container().appendTo('#bukubesar_wrapper .col-md-6:eq(0)');
 
     var today = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
         $('#startDate').datepicker({
@@ -84,14 +85,18 @@
     var dataTable;
   
     function fetch_data(){
+      var e = document.getElementById("coa");
+      coa = e.options[e.selectedIndex].text;
+      cat = coa.substring(0, coa.indexOf("-")); 
+
       cto_loading_show();
       var target = [];
-      $('#example1 thead tr th').each(function(i, obj) {
+      $('#bukubesar thead tr th').each(function(i, obj) {
           target.push(i);
       });
       target.shift();
-      $('#example1').DataTable().destroy();
-      dataTable = $('#example1').DataTable({
+      $('#bukubesar').DataTable().destroy();
+      dataTable = $('#bukubesar').DataTable({
           "autoWidth": false,
           dom: 'Bfrtip',
           "buttons": ["excel", "pdf", "print", "colvis"],
@@ -101,6 +106,7 @@
           "pagingType": "full_numbers",
           "pageLength": 20,
           "order": [[ 1, "asc" ]],
+          "fixedColumns": true,
           "ajax" : {
             url:"/getlist{{$page_data["page_data_urlname"]}}",
             type:"POST",
@@ -123,30 +129,43 @@
               };
               debet = api.column( 4 ).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
               kredit = api.column( 5 ).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-              saldo = debet-kredit
               saldo_debet = "";
               saldo_kredit = "";
-              if(saldo<0) saldo_debet = formatRupiah(saldo,".");
-              else saldo_kredit = formatRupiah(saldo,".");
+              
+              if(cat == 1 || cat == 5|| cat == 6){
+                saldo = debet-kredit
+                if(saldo<0) saldo_debet = formatRupiah(saldo,".");
+                else saldo_kredit = formatRupiah(saldo,".");
+              } else {
+                saldo = kredit-debet
+                if(saldo<0) saldo_kredit = formatRupiah(saldo,".");
+                else saldo_debit = formatRupiah(saldo,".");
+              }
+                
 
               // Update footer
               console.log(api.column( 3 ).footer());
               $( api.column( 3 ).footer() ).html("JUMLAH");
               $( api.column( 4 ).footer() ).html(formatRupiah(debet,"."));
               $( api.column( 5 ).footer() ).html(formatRupiah(kredit,"."));
-              $( 'tr:eq(1) th:eq(3)', api.table().footer() ).html("SALDO");
-              $( 'tr:eq(1) th:eq(4)', api.table().footer() ).html(saldo_debet);
-              $( 'tr:eq(1) th:eq(5)', api.table().footer() ).html(saldo_kredit);
+              $( 'tr:eq(1) td:eq(0)', api.table().footer() ).html("SALDO");
+              $( 'tr:eq(1) td:eq(1)', api.table().footer() ).html(saldo_debet);
+              $( 'tr:eq(1) td:eq(2)', api.table().footer() ).html(saldo_kredit);
             },
             "columnDefs": [
+              { "width": 30, "targets": 0 },
+              { "width": 50, "targets": 1 },
+              { "width": 50, "targets": 2 },
               { 
                 "targets": 4,
+                "width": 130,
                 "render":  function ( data, type, row, meta ) {
                   return formatRupiah(row[4],".") ;
                 }
               },
               { 
                 "targets": 5,
+                "width": 130,
                 "render":  function ( data, type, row, meta ) {
                   return formatRupiah(row[5],".") ;
                 }

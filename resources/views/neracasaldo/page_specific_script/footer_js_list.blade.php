@@ -39,6 +39,7 @@
     <script src="{{ asset ("/assets/datatables/js/buttons.print.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/vfs_fonts.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js//jszip.min.js") }}"></script>
+    <script src="{{ asset ("/assets/datatables/js/dataTables.fixedColumns.min.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/cakrudtemplate.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
@@ -46,10 +47,10 @@
 <script>
   $(document).ready(function(){
     
-    $("#example1").DataTable({
+    $("#neracasaldo").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false,
-      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+      "buttons": ["excel", "pdf", "print"]
+    }).buttons().container().appendTo('#neracasaldo_wrapper .col-md-6:eq(0)');
 
     var today = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
         $('#startDate').datepicker({
@@ -85,13 +86,12 @@
     function fetch_data(){
       cto_loading_show();
       var target = [];
-      $('#example1 thead tr th').each(function(i, obj) {
+      $('#neracasaldo thead tr th').each(function(i, obj) {
           target.push(i);
       });
       target.shift();
-      $('#example1').DataTable().destroy();
-      console.log($("#bulan_periode").val());
-      dataTable = $('#example1').DataTable({
+      $('#neracasaldo').DataTable().destroy();
+      dataTable = $('#neracasaldo').DataTable({
           "autoWidth": false,
           dom: 'Bfrtip',
           "buttons": ["excel", "pdf", "print", "colvis"],
@@ -132,13 +132,18 @@
               $( api.column( 2 ).footer() ).html("JUMLAH");
               $( api.column( 3 ).footer() ).html(formatRupiah(debet,"."));
               $( api.column( 4 ).footer() ).html(formatRupiah(kredit,"."));
-              $( 'tr:eq(1) th:eq(2)', api.table().footer() ).html("SALDO");
-              $( 'tr:eq(1) th:eq(3)', api.table().footer() ).html(saldo_debet);
-              $( 'tr:eq(1) th:eq(4)', api.table().footer() ).html(saldo_kredit);
+              $( 'tr:eq(1) td:eq(0)', api.table().footer() ).html("SALDO");
+              $( 'tr:eq(1) td:eq(1)', api.table().footer() ).html(saldo_debet);
+              $( 'tr:eq(1) td:eq(2)', api.table().footer() ).html(saldo_kredit);
             },
             "columnDefs": [
               { 
+                "targets": 0,
+                "width" : 20
+              },
+              { 
                 "targets": 1,
+                "width" : 60,
                 "render":  function ( data, type, row, meta ) {
                   return row[1].split(" ")[0] ;
                 }
@@ -151,12 +156,14 @@
               },
               { 
                 "targets": 3,
+                "width" : 130,
                 "render":  function ( data, type, row, meta ) {
                   return formatRupiah(row[2],".") ;
                 }
               },
               { 
                 "targets": 4,
+                "width" : 130,
                 "render":  function ( data, type, row, meta ) {
                   return formatRupiah(row[3],".") ;
                 }

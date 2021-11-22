@@ -28,7 +28,7 @@
                                 <div class="form-group row">
                                     <div class="col-sm-6 cakfield">
                                         Kode Rekening 
-                                        <select name="coa" id="coa" class="form-control select2bs4staticBackdrop addnewrowselect" data-row="1" style="width: 100%;"></select>
+                                        <select name="coa" id="coa" class="form-control select2bs4staticBackdrop" data-row="1" style="width: 100%;"></select>
                                         <input type="hidden" name="coa_code" id="coa_code">
                                     </div>
                                     <div class="col-sm-3 cakfield">
@@ -48,23 +48,23 @@
                                 <div class="table-responsive">
                                  
                                     
-                                    <table id="example1" class="table table-bordered table-striped">
+                                    <table id="bukubesar" class="dttables table table-bordered table-striped dataTable ">
                                         <thead class="bg-primary">
                                             <tr>
-                                                <th class="col-md-1">No</th>
-                                                <th class="col-md-2">Tanggal</th>
-                                                <th class="col-md-2">No Jurnal</th>
-                                                <th class="col-md-3">Deskripsi</th>
-                                                <th class="col-md-2">Debet</th>
-                                                <th class="col-md-2">Kredit</th>
+                                                <th>No</th>
+                                                <th>Tanggal</th>
+                                                <th>No Jurnal</th>
+                                                <th>Deskripsi</th>
+                                                <th>Debet</th>
+                                                <th>Kredit</th>
                                             </tr>
                                         </thead>
-                                        <tfoot id="jumlah">
+                                        <tfoot id="jumlah" class="dttables-footer table table-bordered table-striped dataTable">
                                             <tr>
-                                                <th></th><th></th><th></th><th></th><th></th><th></th>
+                                                <td colspan=4 class="right"></td><td></td><td></td>
                                             </tr>
                                             <tr>
-                                                <th></th><th></th><th></th><th></th><th></th><th></th>
+                                                <td colspan=4 class="right"></td><td></td><td></td>
                                             </tr>
                                         </tfoot>
                                     </table>

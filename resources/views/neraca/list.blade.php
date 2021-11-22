@@ -43,8 +43,7 @@
                                             <option value="12"<?=date("m")==12?" selected":""?>>Desember</option>
                                         </select>
                                     </div>                                            
-                                </div>
-                                <div class="form-group row">
+    
                                     <div class="col-sm-6 cakfield">
                                         Tahun Periode
                                         <select name="tahun_periode" id="tahun_periode" class="form-control select2bs4staticBackdrop" data-row="1" style="width: 100%;">
@@ -60,22 +59,22 @@
                                 <div class="table-responsive">
                                  
                                     
-                                    <table id="example1" class="table table-bordered table-striped">
+                                    <table id="neraca" class="dttables table table-bordered table-striped dataTable">
                                         <thead class="bg-primary">
                                             <tr>
-                                                <th class="col-md-1">No</th>
-                                                <th class="col-md-2">Kode Rekening</th>
-                                                <th class="col-md-4">Nama Rekening Akuntansi</th>
-                                                <th class="col-md-2">Debet</th>
-                                                <th class="col-md-2">Kredit</th>
+                                                <th>No</th>
+                                                <th>Kode Rek.</th>
+                                                <th>Nama Rekening Akuntansi</th>
+                                                <th>Debet</th>
+                                                <th>Kredit</th>
                                             </tr>
                                         </thead>
-                                        <tfoot id="jumlah">
+                                        <tfoot id="jumlah" class="dttables-footer table table-bordered table-striped dataTable">
                                             <tr>
-                                                <th></th><th></th><th></th><th></th><th></th>
+                                                <td colspan=3 class="right"></td><td></td><td></td>
                                             </tr>
                                             <tr>
-                                                <th></th><th></th><th></th><th></th><th></th>
+                                                <td colspan=3 class="right"></td><td></td><td></td>
                                             </tr>
                                         </tfoot>
                                     </table>
@@ -83,9 +82,6 @@
                             </div>
                         </div>
                     </div>
-					
-					
-					
                 </div>
             </div>
         </div>
