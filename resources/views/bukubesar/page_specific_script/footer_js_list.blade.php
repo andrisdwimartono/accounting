@@ -134,12 +134,12 @@
               
               if(cat == 1 || cat == 5|| cat == 6){
                 saldo = debet-kredit
-                if(saldo<0) saldo_debet = formatRupiah(saldo,".");
-                else saldo_kredit = formatRupiah(saldo,".");
+                if(saldo>0) saldo_kredit = formatRupiah(saldo,".");
+                else saldo_debet = formatRupiah(saldo,".");
               } else {
                 saldo = kredit-debet
-                if(saldo<0) saldo_kredit = formatRupiah(saldo,".");
-                else saldo_debit = formatRupiah(saldo,".");
+                if(saldo>0) saldo_debet = formatRupiah(saldo,".");
+                else saldo_kredit = formatRupiah(saldo,".");
               }
                 
 

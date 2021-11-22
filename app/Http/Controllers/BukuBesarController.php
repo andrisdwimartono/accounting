@@ -129,7 +129,7 @@ class BukuBesarController extends Controller
         ){
             $no = $no+1;
             $coa_label = $transaksi->coa_label;
-            array_push($dt, array($no, $transaksi->tanggal, $transaksi->no_jurnal, $transaksi->deskripsi, $transaksi->debet, $transaksi->credit));
+            array_push($dt, array($transaksi->id, $transaksi->tanggal, $transaksi->no_jurnal, $transaksi->deskripsi, $transaksi->debet, $transaksi->credit));
         }
     
         $output = array(

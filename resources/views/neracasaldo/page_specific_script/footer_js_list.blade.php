@@ -145,7 +145,7 @@
                 "targets": 1,
                 "width" : 60,
                 "render":  function ( data, type, row, meta ) {
-                  return convertCode(row[1].split(" ")[0]);
+                  return row[1].split(" ")[0];
                 }
               },
               { 
@@ -168,8 +168,7 @@
                   return formatRupiah(row[3],".") ;
                 }
               },
-              
-          ],
+            ],
         });
       cto_loading_hide();
       table = dataTable;

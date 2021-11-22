@@ -45,15 +45,8 @@
                                             <option value="11"<?=date("m")==11?" selected":""?>>November</option>
                                             <option value="12"<?=date("m")==12?" selected":""?>>Desember</option>
                                         </select>
-<<<<<<< HEAD
-                                    </div>                                            
-                               
-                                    <div class="col-sm-6 cakfield">
-                                        Tahun Periode
-=======
                                     </div>
                                     <div class="col-sm-3 cakfield">
->>>>>>> 7abaee131b7073029120c7a899420a91d855d326
                                         <select name="tahun_periode" id="tahun_periode" class="form-control select2bs4staticBackdrop" data-row="1" style="width: 100%;">
                                             <?php for($i = 2018; $i < ((int) date("Y"))+3; $i++){ ?>
                                                 <option value="<?=$i;?>"<?=date("Y")==$i?" selected":""?>><?=$i;?></option>
