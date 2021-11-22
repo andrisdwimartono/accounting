@@ -25,9 +25,12 @@
                         <div class="card">
                         @csrf
                             <div class="card-header bg-primary" style="display:block">
-                                <div class="form-group row">
-                                    <div class="col-sm-6 cakfield">
-                                        Bulan 
+                            <div class="form-group row m-0">
+                                    <label class="col-sm-3 col-form-label text-white">Bulan</label>
+                                    <label class="col-sm-3 col-form-label text-white">Tahun</label>
+                                </div>
+                                <div class="form-group row m-0">
+                                    <div class="col-sm-3 cakfield">
                                         <select name="bulan_periode" id="bulan_periode" class="form-control select2bs4staticBackdrop" data-row="1" style="width: 100%;">
                                             <option value="1"<?=date("m")==1?" selected":""?>>Januari</option>
                                             <option value="2"<?=date("m")==2?" selected":""?>>Februari</option>
@@ -42,16 +45,21 @@
                                             <option value="11"<?=date("m")==11?" selected":""?>>November</option>
                                             <option value="12"<?=date("m")==12?" selected":""?>>Desember</option>
                                         </select>
+<<<<<<< HEAD
                                     </div>                                            
                                
                                     <div class="col-sm-6 cakfield">
                                         Tahun Periode
+=======
+                                    </div>
+                                    <div class="col-sm-3 cakfield">
+>>>>>>> 7abaee131b7073029120c7a899420a91d855d326
                                         <select name="tahun_periode" id="tahun_periode" class="form-control select2bs4staticBackdrop" data-row="1" style="width: 100%;">
                                             <?php for($i = 2018; $i < ((int) date("Y"))+3; $i++){ ?>
                                                 <option value="<?=$i;?>"<?=date("Y")==$i?" selected":""?>><?=$i;?></option>
                                             <?php } ?>
                                         </select>
-                                    </div>                                            
+                                    </div>                                     
                                 </div>
                             </div>
                             <div class="card-body">                                
