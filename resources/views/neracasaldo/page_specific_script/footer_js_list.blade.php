@@ -140,7 +140,7 @@
               { 
                 "targets": 1,
                 "render":  function ( data, type, row, meta ) {
-                  return row[1].split(" ")[0] ;
+                  return convertCode(row[1].split(" ")[0]);
                 }
               },
               { 

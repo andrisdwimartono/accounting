@@ -565,43 +565,45 @@ class JurnalController extends Controller
 
      public function summerizeJournal($method, $id_transaction){
         $transaction = Transaction::where("id", $id_transaction)->first();
+        $coa = Coa::where("id", $transaction->coa)->first();
         $bulan = explode("-", $transaction->tanggal)[1];
         $tahun = explode("-", $transaction->tanggal)[0];
         if($method == "store" || $method == "updatelast"){
             $neracasaldo = Neracasaldo::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->first();
             if($neracasaldo){
                 Neracasaldo::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
-                    "debet" => $neracasaldo->debet+$transaction->debet,
-                    "credit" => $neracasaldo->credit+$transaction->credit,
+                    "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neracasaldo->debet+$transaction->debet-$transaction->credit:0,
+                    "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neracasaldo->credit+$transaction->credit-$transaction->debet:0,
                 ]);
             }else{
+                $lastneracasaldo = $this->getLastNeracaSaldo($bulan, $tahun, $coa->id);
                 Neracasaldo::create([
                     "tahun_periode" => $tahun, 
                     "bulan_periode" => $bulan, 
                     "coa" => $transaction->coa, 
-                    "coa_label" => $transaction->coa_label, 
-                    "debet" => $transaction->debet, 
-                    "credit" => $transaction->credit, 
+                    "coa_label" => $coa->coa_code." ".$coa->coa_name, 
+                    "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?($lastneracasaldo?$lastneracasaldo->debet:0)+$transaction->debet-$transaction->credit:0, 
+                    "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?($lastneracasaldo?$lastneracasaldo->credit:0)+$transaction->credit-$transaction->debet:0, 
                     "user_creator_id" => Auth::user()->id,
                     "jenisbayar" => 0,
                     "jenisbayar_label" => ""
                 ]);
             }
-
             $neraca = Neraca::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->first();
             if($neraca){
                 Neraca::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
-                    "debet" => $neraca->debet+$transaction->debet,
-                    "credit" => $neraca->credit+$transaction->credit,
+                    "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neraca->debet+$transaction->debet-$transaction->credit:0,
+                    "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neraca->credit+$transaction->credit-$transaction->debet:0,
                 ]);
             }else{
+                $lastneraca = $this->getLastNeraca($bulan, $tahun, $coa->id);
                 Neraca::create([
                     "tahun_periode" => $tahun, 
                     "bulan_periode" => $bulan, 
                     "coa" => $transaction->coa, 
-                    "coa_label" => $transaction->coa_label, 
-                    "debet" => $transaction->debet, 
-                    "credit" => $transaction->credit, 
+                    "coa_label" => $coa->coa_code." ".$coa->coa_name, 
+                    "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?($lastneraca?$lastneraca->debet:0)+$transaction->debet-$transaction->credit:0, 
+                    "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?($lastneraca?$lastneraca->credit:0)+$transaction->credit-$transaction->debet:0, 
                     "user_creator_id" => Auth::user()->id
                 ]);
             }
@@ -609,8 +611,8 @@ class JurnalController extends Controller
             $neracasaldo = Neracasaldo::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->first();
             if($neracasaldo){
                 Neracasaldo::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
-                    "debet" => $neracasaldo->debet-$transaction->debet,
-                    "credit" => $neracasaldo->credit-$transaction->credit,
+                    "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neracasaldo->debet-$transaction->debet+$transaction->credit:0,
+                    "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neracasaldo->credit-$transaction->credit+$transaction->debet:0,
                     "user_updater_id" => Auth::user()->id
                 ]);
             }
@@ -618,11 +620,63 @@ class JurnalController extends Controller
             $neraca = Neraca::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->first();
             if($neraca){
                 Neraca::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
-                    "debet" => $neraca->debet-$transaction->debet,
-                    "credit" => $neraca->credit-$transaction->credit,
+                    "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neraca->debet-$transaction->debet+$transaction->credit:0,
+                    "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neraca->credit-$transaction->credit+$transaction->debet:0,
                     "user_updater_id" => Auth::user()->id
                 ]);
             }
         }
-     }
+    }
+
+    public function getLastNeracaSaldo($current_month, $current_year, $coa_id){
+        $month = $current_month-1;
+        $year = $current_year;
+        if($current_month == 1){
+            $month = 12;
+            $year = $current_year-1;
+        }
+        $neracasaldo = Neracasaldo::where("coa", $coa_id)->where("bulan_periode", $month)->where("tahun_periode", $year)->orderBy("bulan_periode", "desc")->first();
+        return $neracasaldo;
+    }
+
+    public function getLastNeraca($current_month, $current_year, $coa_id){
+        $month = $current_month-1;
+        $year = $current_year;
+        if($current_month == 1){
+            $month = 12;
+            $year = $current_year-1;
+        }
+        $neraca = Neraca::where("coa", $coa_id)->where("bulan_periode", $month)->where("tahun_periode", $year)->orderBy("bulan_periode", "desc")->first();
+        return $neraca;
+    }
+
+    public function updateNextPeriodeNeracaSaldo($current_month, $current_year, $coa_id, $debet, $credit){
+        $year = $current_year;
+        $month = $current_month;
+        if($current_month == 1){
+            $year = $current_year-1;
+            $month = 12;
+        }
+        $exist = true;
+        while($exist){
+            $neracasaldo = Neracasaldo::where("coa", $coa_id)->where("bulan_periode", $month)->where("tahun_periode", $year)->orderBy("bulan_periode", "desc")->first();
+            $coa = Coa::where("id", $neracasaldo->coa)->first();
+            if($neracasaldo){
+                Neracasaldo::where("coa", $coa_id)->where("bulan_periode", $month)->where("tahun_periode", $year)->orderBy("bulan_periode", "desc")->update([
+                    "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neracasaldo->debet+debet-credit:0,
+                    "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neracasaldo->credit+credit-debet:0
+                ]);
+                if($month == 1){
+                    $year = $year-1;
+                    $month = 12;
+                }else{
+                    $year = $year;
+                    $month = $month-1;
+                }
+            }else{
+                $exist = false;
+            }
+        }
+        
+    }
 }

@@ -50,6 +50,10 @@ function formatDate(date) {
 }
 
 function formatRupiah(angka, prefix){
+    var negatif = "";
+    if(angka < 0){
+        negatif = "-";
+    }
     var number_string = angka.toString().replace(/[^,\d]/g, '').toString(),
     split   		= number_string.split(','),
     sisa     		= split[0].length % 3,
@@ -63,5 +67,5 @@ function formatRupiah(angka, prefix){
     }
 
     rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
-    return prefix == undefined ? rupiah : (rupiah ? '<span class="cak-rp">Rp </span><span class="cak-nom">' + rupiah : '</span>');
+    return prefix == undefined ? rupiah : (rupiah ? '<span class="cak-rp">Rp </span><span class="cak-nom">' + negatif+rupiah : '</span>');
 }
