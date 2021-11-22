@@ -1,5 +1,9 @@
 @extends("paging.main")
 
+<script>    
+  var menu="transaksi"
+</script>
+
 @section("content")
                 <form id="quickForm" action="#">
                 @csrf

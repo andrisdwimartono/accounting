@@ -248,5 +248,11 @@
           cache: true
       }
     });
+    
+    var menu = "laporan"
+    var submenu = "bukubesar"
   });
+
+
+
 </script>

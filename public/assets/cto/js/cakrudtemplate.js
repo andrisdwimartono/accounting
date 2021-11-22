@@ -69,3 +69,29 @@ function formatRupiah(angka, prefix){
     rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
     return prefix == undefined ? rupiah : (rupiah ? '<span class="cak-rp">Rp </span><span class="cak-nom">' + negatif+rupiah : '</span>');
 }
+
+
+  $("#cakmenu-dashboard").removeClass(" show active")
+  $("#cakmenu-master").removeClass(" show active")
+  $("#cakmenu-transaksi").removeClass(" show active")
+  $("#cakmenu-laporan").removeClass(" show active")
+  
+  $("#caknav-dashboard").removeClass(" active")
+  $("#caknav-master").removeClass(" active")
+  $("#caknav-transaksi").removeClass(" active")
+  $("#caknav-laporan").removeClass(" active")
+
+  console.log(menu)
+  if(menu=="dashboard") {
+    $("#caknav-dashboard").addClass("active");
+    $("#cakmenu-dashboard").addClass(" show active");
+  } else if(menu=="master") {
+    $("#caknav-master").addClass("active");
+    $("#cakmenu-master").addClass(" show active");
+  } else if (menu=="transaksi") {
+    $("#caknav-transaksi").addClass("active");
+    $("#cakmenu-transaksi").addClass(" show active");
+  } else if (menu=="laporan") {
+    $("#caknav-laporan").addClass("active");
+    $("#cakmenu-laporan").addClass(" show active");
+  }

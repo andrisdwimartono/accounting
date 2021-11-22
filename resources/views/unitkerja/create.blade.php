@@ -1,5 +1,10 @@
 @extends("paging.main")
 
+<script>    
+  var menu="master"
+</script>
+
+
 @section("content")
 <!--**********************************
             Content body start

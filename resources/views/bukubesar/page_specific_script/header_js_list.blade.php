@@ -74,3 +74,7 @@
         float: right;
     }
   </style>
+
+<script>    
+  var menu="laporan"
+</script>
