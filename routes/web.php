@@ -99,6 +99,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/deleteneraca', 'App\Http\Controllers\NeracaController@destroy');
     Route::post('/getlinksneraca', 'App\Http\Controllers\NeracaController@getlinks');
 
+    Route::get('/openperiode/{month}/{year}', 'App\Http\Controllers\OpencloseperiodeController@openperiode');
+
     Route::middleware(['checkauth'])->group(function () {
         
         
