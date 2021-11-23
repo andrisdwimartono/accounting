@@ -74,9 +74,6 @@
                                             <tr>
                                                 <td colspan=3 class="right"></td><td></td><td></td>
                                             </tr>
-                                            <tr>
-                                                <td colspan=3 class="right"></td><td></td><td></td>
-                                            </tr>
                                         </tfoot>
                                     </table>
                                 </div>

@@ -133,9 +133,9 @@
               $( api.column( 2 ).footer() ).html("JUMLAH");
               $( api.column( 3 ).footer() ).html(formatRupiah(debet,"."));
               $( api.column( 4 ).footer() ).html(formatRupiah(kredit,"."));
-              $( 'tr:eq(1) td:eq(0)', api.table().footer() ).html("SALDO");
-              $( 'tr:eq(1) td:eq(1)', api.table().footer() ).html(saldo_debet);
-              $( 'tr:eq(1) td:eq(2)', api.table().footer() ).html(saldo_kredit);
+              // $( 'tr:eq(1) td:eq(0)', api.table().footer() ).html("SALDO");
+              // $( 'tr:eq(1) td:eq(1)', api.table().footer() ).html(saldo_debet);
+              // $( 'tr:eq(1) td:eq(2)', api.table().footer() ).html(saldo_kredit);
             },
             "columnDefs": [
               { 
