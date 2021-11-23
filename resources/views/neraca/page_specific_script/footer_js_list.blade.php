@@ -125,14 +125,14 @@
               saldo = debet-kredit
               saldo_debet = "";
               saldo_kredit = "";
-              if(saldo<0) saldo_debet = formatRupiah(saldo,".");
-              else saldo_kredit = formatRupiah(saldo,".");
+              if(saldo<0) saldo_debet = formatRupiahWNegative(saldo,".");
+              else saldo_kredit = formatRupiahWNegative(saldo,".");
 
               // Update footer
-              $( api.column( 2 ).footer() ).html("JUMLAH");
-              $( api.column( 3 ).footer() ).html(formatRupiah(debet,"."));
-              $( api.column( 4 ).footer() ).html(formatRupiah(kredit,"."));
-              $( 'tr:eq(1) th:eq(2)', api.table().footer() ).html("SALDO");
+              $( api.column( 2 ).footer() ).addClass("text-right").html("JUMLAH");
+              $( api.column( 3 ).footer() ).html(formatRupiahWNegative(debet,"."));
+              $( api.column( 4 ).footer() ).html(formatRupiahWNegative(kredit,"."));
+              $( 'tr:eq(1) th:eq(2)', api.table().footer() ).addClass("text-right").html("SALDO");
               $( 'tr:eq(1) th:eq(3)', api.table().footer() ).html(saldo_debet);
               $( 'tr:eq(1) th:eq(4)', api.table().footer() ).html(saldo_kredit);
             },
@@ -152,13 +152,13 @@
               { 
                 "targets": 3,
                 "render":  function ( data, type, row, meta ) {
-                  return formatRupiah(row[2],".") ;
+                  return formatRupiahWNegative(row[2],".") ;
                 }
               },
               { 
                 "targets": 4,
                 "render":  function ( data, type, row, meta ) {
-                  return formatRupiah(row[3],".") ;
+                  return formatRupiahWNegative(row[3],".") ;
                 }
               },
               
