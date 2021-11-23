@@ -31,7 +31,6 @@
         z-index: 3051;
     }
     .dataTables_filter {
-      width: 20%;
       float: right;
       text-align: right;
     }
@@ -85,3 +84,7 @@
         float: right;
     }
   </style>
+
+<script>    
+  var menu="laporan"
+</script>

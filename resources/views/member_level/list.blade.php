@@ -1,3 +1,7 @@
+<script>    
+  var menu="master"
+</script>
+
 @extends('paging.main')
 
 @section('content')

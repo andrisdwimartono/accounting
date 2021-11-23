@@ -31,7 +31,6 @@
         z-index: 3051;
     }
     .dataTables_filter {
-      width: 20%;
       float: right;
       text-align: right;
     }
@@ -57,16 +56,6 @@
     .column-hidden{
       display:none;
     }
-    #example1 td { 
-      border: 1px solid #aaa; 
-      height: 30px; 
-      text-align: left; 
-      /* width: 100px;  */
-    }
-    #example1 td > span{
-      display: inline-block;
-      /* width: 100%; */
-    }
     input:not([type=checkbox]), input:not([type=checkbox]):hover, input:not([type=checkbox])focus { 
       width: 100%; 
       height: 30px; 
@@ -85,3 +74,7 @@
         float: right;
     }
   </style>
+
+<script>    
+  var menu="laporan"
+</script>

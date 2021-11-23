@@ -1,6 +1,13 @@
+<script>    
+  var menu="transaksi"
+</script>
+
 @extends("paging.main")
 
 @section("content")
+
+
+
 <!--**********************************
             Content body start
         ***********************************-->

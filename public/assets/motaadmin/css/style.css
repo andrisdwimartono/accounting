@@ -3674,7 +3674,8 @@ input[type="button"].btn-block {
   padding: 0.75rem 1.25rem;
   margin-bottom: 0;
   background-color: rgba(0, 0, 0, 0.03);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.125); }
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125); 
+  color: #fafafa;}
   .card-header:first-child {
     background: none !important;
     border-radius: calc(0.375rem - 1px) calc(0.375rem - 1px) 0 0 !important; }
@@ -26099,7 +26100,7 @@ table.dataTable.no-footer {
 .dataTables_scroll {
   padding: 1rem 0; }
   .dataTables_scrollFoot {
-    padding-top: 1rem; }
+    /*padding-top: 1rem;*/ }
 
 @media (max-width: 991.98px) {
   .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter {
@@ -28930,3 +28931,16 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
 
 /*# sourceMappingURL=style.css.map */
 
+
+.no-border{
+  border:none;
+}
+
+.dttables-footer {
+  font-size:10pt;
+  font-weight: bold;
+}
+
+.right {
+  text-align:right;
+}

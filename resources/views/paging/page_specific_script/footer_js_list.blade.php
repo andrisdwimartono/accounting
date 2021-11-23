@@ -27,6 +27,7 @@
 <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
 
 <script>
+  
   $(function () {
     $("#example1").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false,

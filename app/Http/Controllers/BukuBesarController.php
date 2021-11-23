@@ -125,22 +125,20 @@ class BukuBesarController extends Controller
         })->orderBy($orders[0], $orders[1])
           ->offset($limit[0])
           ->limit($limit[1])
-          ->get(["id", "tanggal", "no_jurnal", "deskripsi", "debet", "credit"]) as $transaksi
+          ->get(["id", "tanggal", "no_jurnal", "deskripsi", "debet", "credit","coa_label"]) as $transaksi
         ){
             $no = $no+1;
-            array_push($dt, array($no, $transaksi->tanggal, $transaksi->no_jurnal, $transaksi->deskripsi, $transaksi->debet, $transaksi->credit));
+            $coa_label = $transaksi->coa_label;
+            array_push($dt, array($transaksi->id, $transaksi->tanggal, $transaksi->no_jurnal, $transaksi->deskripsi, $transaksi->debet, $transaksi->credit));
         }
     
         $output = array(
             "draw" => intval($request->draw),
             "recordsTotal" => Transaction::get()->count(),
             "recordsFiltered" => intval(Transaction::where(function($q) use ($keyword, $coa) {
-                // $q->where("deskripsi", "LIKE", "%" . $keyword. "%")
-                //     ->orWhere("no_jurnal", "LIKE", "%" . $keyword. "%");
                 if(isset($coa)){
                     $q->where("coa", $coa);
                 }
-                
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );

@@ -12,7 +12,7 @@
 			</div>
 			<div class="fixed-content-body dz-scroll" id="DZ_W_Fixed_Contant">
 				<div class="tab-content" id="menu">
-					<div class="tab-pane chart-sidebar fade show active" id="cakmenu-dashboard" role="tabpanel"></div>
+					<div class="tab-pane chart-sidebar fade" id="cakmenu-dashboard" role="tabpanel"></div>
 					<div class="tab-pane fade" id="cakmenu-master" role="tabpanel">
 						<ul class="metismenu tab-nav-menu">
 							<li class="nav-label">Master</li>
@@ -61,7 +61,7 @@
 					<div class="tab-pane fade" id="cakmenu-laporan" role="tabpanel">
 						<ul class="metismenu tab-nav-menu">
 							<li class="nav-label">Laporan</li>
-							<li id="cakmenu-bukubesar"><a href="{{ env('APP_URL') }}/bukubesar">
+							<li id="cakmenu-bukubesar" class="active"><a href="{{ env('APP_URL') }}/bukubesar">
 									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="svg-main-icon">
 										<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
 											<rect x="0" y="0" width="24" height="24"/>
