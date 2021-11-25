@@ -20,7 +20,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::group(['prefix' => 'v1'], function () {
     Route::post('/login', 'App\Http\Controllers\UserController@login');
-    Route::post('/register', 'App\Http\Controllers\UserController@register');
-    Route::get('/logout', 'App\Http\Controllers\UserController@logout')->middleware('auth:api');
-    Route::post('/getdatauser', 'App\Http\Controllers\UserController@getdata')->middleware('auth:api');
+    // Route::post('/register', 'App\Http\Controllers\UserController@register');
+    Route::post('/getcoapendapatan', 'App\Http\Controllers\JurnalController@getcoa');
+    //Route::post('/storejurnal', 'App\Http\Controllers\JurnalController@store');
+
+    Route::post('/storependapatan', 'App\Http\Controllers\JurnalController@storependapatan');
 });

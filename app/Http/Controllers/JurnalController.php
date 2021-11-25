@@ -91,6 +91,35 @@ class JurnalController extends Controller
             "date_format" => "Format tidak sesuai di :attribute!!"
         ];
 
+        $td["fieldsrules_pendapatan"] = [
+            "kode_va" => "max:255",
+            "nim" => "max:255",
+            // "transaksi" => "required"
+        ];
+
+        $td["fieldsmessages_pendapatan"] = [
+            "required" => ":attribute harus diisi!!",
+            "min" => ":attribute minimal :min karakter!!",
+            "max" => ":attribute maksimal :max karakter!!",
+            "in" => "Tidak ada dalam pilihan :attribute!!",
+            "exists" => "Tidak ada dalam :attribute!!",
+            "date_format" => "Format tidak sesuai di :attribute!!"
+        ];
+
+        $td["fieldsrules_transaksi_pendapatan"] = [
+            "nominal" => "required|numeric",
+            "coa" => "required|exists:coas,id"
+        ];
+
+        $td["fieldsmessages_transaksi_pendapatan"] = [
+            "required" => ":attribute harus diisi!!",
+            "min" => ":attribute minimal :min karakter!!",
+            "max" => ":attribute maksimal :max karakter!!",
+            "in" => "Tidak ada dalam pilihan :attribute!!",
+            "exists" => "Tidak ada dalam :attribute!!",
+            "date_format" => "Format tidak sesuai di :attribute!!"
+        ];
+
         return $td;
     }
 
@@ -193,6 +222,113 @@ class JurnalController extends Controller
                 ])->id;
                 $this->summerizeJournal("store", $idct);
             }
+
+            return response()->json([
+                'status' => 201,
+                'message' => 'Buat Jurnal Berhasil '.$no_jurnal,
+                'data' => ['id' => $id, 'no_jurnal' => $no_jurnal]
+            ]);
+        }
+    }
+
+    public function storependapatan(Request $request)
+    {
+        $page_data = $this->tabledesign();
+        $rules_transaksi = $page_data["fieldsrules_transaksi_pendapatan"];
+        $requests_transaksi = json_decode($request->transaksi, true);
+        $total_nominal = 0;
+        $no_seq = -1;
+        foreach($requests_transaksi as $ct_request){
+            $no_seq++;
+            $child_tb_request = new \Illuminate\Http\Request();
+            $child_tb_request->replace($ct_request);
+            $ct_messages = array();
+            foreach($page_data["fieldsmessages_transaksi_pendapatan"] as $key => $value){
+                $ct_messages[$key] = "No ".$no_seq." ".$value;
+            }
+            $child_tb_request->validate($rules_transaksi, $ct_messages);
+            $total_nominal = $total_nominal+$ct_request["nominal"];
+        }
+
+        $rules = $page_data["fieldsrules_pendapatan"];
+        $messages = $page_data["fieldsmessages_pendapatan"];
+        $uk = Unitkerja::where("unitkerja_code", "110")->first();
+        $tgl = date('Y-m-d');
+        if($request->validate($rules, $messages)){
+            $id = Jurnal::create([
+                "unitkerja"=> $uk->id,
+                "unitkerja_label"=> $uk->unitkerja_name,
+                "no_jurnal"=> "JU########",
+                "tanggal_jurnal"=> $tgl,
+                "keterangan"=> $request->kode_va." ".$request->nim,
+                "user_creator_id"=> 2
+            ])->id;
+
+            $no_jurnal = "JU";
+            for($i = 0; $i < 7-strlen((string)$id); $i++){
+                $no_jurnal .= "0";
+            }
+            $no_jurnal .= $id;
+            Jurnal::where("id", $id)->update([
+                "no_jurnal"=> $no_jurnal
+            ]);
+            
+            $no_seq = -1;
+            foreach($requests_transaksi as $ct_request){
+                $coa = Coa::where("id", $ct_request["coa"])->first();
+                $no_seq++;
+                $idct = Transaction::create([
+                    "no_seq" => $no_seq,
+                    "parent_id" => $id,
+                    "deskripsi"=> "",
+                    "debet"=> 0,
+                    "credit"=> $ct_request["nominal"],
+                    "unitkerja"=> $uk->id,
+                    "unitkerja_label"=> $uk->unitkerja_name,
+                    "anggaran"=> 0,
+                    "anggaran_label"=> "",
+                    "tanggal"=> $tgl,
+                    "keterangan"=> $request->kode_va." ".$request->nim,
+                    "jenis_transaksi"=> 0,
+                    "coa"=> $ct_request["coa"],
+                    "coa_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,
+                    "jenisbayar"=> 0,
+                    "jenisbayar_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,
+                    "nim"=> $request->nim,
+                    "kode_va"=> $request->kode_va,
+                    "fheader"=> null,
+                    "no_jurnal"=> $no_jurnal,
+                    "user_creator_id" => 2
+                ])->id;
+                $this->summerizeJournal("store", $idct);
+            }
+
+            $coa = Coa::where("id", 612)->first();
+            $no_seq++;
+            $idct = Transaction::create([
+                "no_seq" => $no_seq,
+                "parent_id" => $id,
+                "deskripsi"=> "",
+                "debet"=> $total_nominal,
+                "credit"=> 0,
+                "unitkerja"=> $uk->id,
+                "unitkerja_label"=> $uk->unitkerja_name,
+                "anggaran"=> 0,
+                "anggaran_label"=> "",
+                "tanggal"=> $tgl,
+                "keterangan"=> $request->kode_va." ".$request->nim,
+                "jenis_transaksi"=> 0,
+                "coa"=> 612,
+                "coa_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,
+                "jenisbayar"=> 0,
+                "jenisbayar_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,
+                "nim"=> $request->nim,
+                "kode_va"=> $request->kode_va,
+                "fheader"=> null,
+                "no_jurnal"=> $no_jurnal,
+                "user_creator_id" => 2
+            ])->id;
+            $this->summerizeJournal("store", $idct);
 
             return response()->json([
                 'status' => 201,
@@ -544,6 +680,40 @@ class JurnalController extends Controller
         }
     }
 
+    public function getcoa(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()){
+            $page = $request->page;
+            $resultCount = 25;
+
+            $offset = ($page - 1) * $resultCount;
+
+            $lists = null;
+            $count = 0;
+            if($request->field == "coa"){
+                $lists = Coa::where(function($q) use ($request) {
+                    $q->where("coa_name", "LIKE", "%" . $request->term. "%")->orWhere("coa_code", "LIKE", "%" . $request->term. "%");
+                })->where("category", "pendapatan")->where("fheader", null)->orderBy("coa_code", "asc")->skip($offset)->take($resultCount)->get(["id", DB::raw("concat(concat(coa_code, ' '), coa_name) as text"), DB::raw("coa_name as description")]);
+                $count = Coa::count();
+            }
+
+            $endCount = $offset + $resultCount;
+            $morePages = $endCount > $count;
+
+            $results = array(
+                "results" => $lists,
+                "pagination" => array(
+                    "more" => $morePages
+                ),
+                "total_count" => $count,
+                "incomplete_results" =>$morePages,
+                "items" => $lists
+            );
+
+            return response()->json($results);
+        }
+    }
+
     public function convertCode($data){
         $val = "";
         $array = str_split($data);
@@ -584,7 +754,7 @@ class JurnalController extends Controller
                     "coa_label" => $coa->coa_code." ".$coa->coa_name, 
                     "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?($lastneracasaldo?$lastneracasaldo->debet:0)+$transaction->debet-$transaction->credit:0, 
                     "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?($lastneracasaldo?$lastneracasaldo->credit:0)+$transaction->credit-$transaction->debet:0, 
-                    "user_creator_id" => Auth::user()->id,
+                    "user_creator_id" => 2,
                     "jenisbayar" => 0,
                     "jenisbayar_label" => ""
                 ]);
@@ -607,7 +777,7 @@ class JurnalController extends Controller
                         "coa_label" => $coa_sur_def->coa_code." ".$coa_sur_def->coa_name, 
                         "debet" => 0, 
                         "credit" => ($lastneraca?$lastneraca->credit:0)+$transaction->credit-$transaction->debet, 
-                        "user_creator_id" => Auth::user()->id
+                        "user_creator_id" => 2
                     ]);
                 }
             }else{
@@ -626,7 +796,7 @@ class JurnalController extends Controller
                         "coa_label" => $coa->coa_code." ".$coa->coa_name, 
                         "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?($lastneraca?$lastneraca->debet:0)+$transaction->debet-$transaction->credit:0, 
                         "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?($lastneraca?$lastneraca->credit:0)+$transaction->credit-$transaction->debet:0, 
-                        "user_creator_id" => Auth::user()->id
+                        "user_creator_id" => 2
                     ]);
                 }
             }
@@ -636,7 +806,7 @@ class JurnalController extends Controller
                 Neracasaldo::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
                     "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neracasaldo->debet-$transaction->debet+$transaction->credit:0,
                     "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neracasaldo->credit-$transaction->credit+$transaction->debet:0,
-                    "user_updater_id" => Auth::user()->id
+                    "user_updater_id" => 2
                 ]);
             }
 
@@ -647,7 +817,7 @@ class JurnalController extends Controller
                     Neraca::where("coa", $coa_sur_def->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
                         "debet" => 0,
                         "credit" => $neraca->credit-$transaction->credit+$transaction->debet,
-                        "user_updater_id" => Auth::user()->id
+                        "user_updater_id" => 2
                     ]);
                 }
             }else{
@@ -656,7 +826,7 @@ class JurnalController extends Controller
                     Neraca::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
                         "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neraca->debet-$transaction->debet+$transaction->credit:0,
                         "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neraca->credit-$transaction->credit+$transaction->debet:0,
-                        "user_updater_id" => Auth::user()->id
+                        "user_updater_id" => 2
                     ]);
                 }
             }
