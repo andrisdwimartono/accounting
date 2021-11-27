@@ -76,6 +76,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/bukubesar', 'App\Http\Controllers\BukuBesarController@index')->name('bukubesar');
     Route::post('/getlistbukubesar', 'App\Http\Controllers\BukuBesarController@get_list');
     Route::post('/getlinksbukubesar', 'App\Http\Controllers\BukuBesarController@getlinks');
+    Route::post('/getsaldoawal', 'App\Http\Controllers\BukuBesarController@get_saldo_awal');
+    
 
     Route::get('/neracasaldo', 'App\Http\Controllers\NeracasaldoController@index')->name('neracasaldo');
     Route::post('/getlistneracasaldo', 'App\Http\Controllers\NeracasaldoController@get_list');
@@ -87,7 +89,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/updateneracasaldo/{neracasaldo}', 'App\Http\Controllers\NeracasaldoController@update');
     Route::post('/deleteneracasaldo', 'App\Http\Controllers\NeracasaldoController@destroy');
     Route::post('/getlinksneracasaldo', 'App\Http\Controllers\NeracasaldoController@getlinks');
-    
+   
     Route::get('/neraca', 'App\Http\Controllers\NeracaController@index')->name('neraca');
     Route::post('/getlistneraca', 'App\Http\Controllers\NeracaController@get_list');
     Route::get('/neraca/{neraca}', 'App\Http\Controllers\NeracaController@show');

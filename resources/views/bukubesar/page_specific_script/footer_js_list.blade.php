@@ -54,32 +54,6 @@
     }).buttons().container().appendTo('#bukubesar_wrapper .col-md-6:eq(0)');
 
     var today = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
-        $('#startDate').datepicker({
-            uiLibrary: 'bootstrap4',
-            format: 'dd/mm/yyyy',
-            formatSubmit: 'yyyy-mm-dd',
-            iconsLibrary: 'fontawesome',
-            maxDate: function () {
-                return $('#endDate').val();
-            },
-            onStart: function(){
-                var date = new Date();
-                    this.set('select', date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate(), { format: 'yyyy-mm-dd' });
-            }
-        });
-        $('#endDate').datepicker({
-            uiLibrary: 'bootstrap4',
-            iconsLibrary: 'fontawesome',
-            format: 'dd/mm/yyyy',
-            formatSubmit: 'yyyy-mm-dd',
-            minDate: function () {
-                return $('#startDate').val();
-            },
-            onStart: function(){
-                var date = new Date();
-                    this.set('select', date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate(), { format: 'yyyy-mm-dd' });
-            }
-        });
 
 	  var table = null;
     var dataTable;
@@ -112,10 +86,10 @@
             type:"POST",
             data:{
               search : {
-                coa_code: $("#coa_code").val(),
-                startDate: formatDate($("#startDate").val()),
-                endDate: formatDate($("#endDate").val()),
-              },  
+                coa_code: $("#coa").val(),
+                  bulan_periode: formatDate($("#bulan_periode").val()),
+                  tahun_periode: formatDate($("#tahun_periode").val()),
+              },
               _token: $("input[name=_token]").val()
             },
           },
@@ -144,13 +118,14 @@
                 
 
               // Update footer
-              console.log(api.column( 3 ).footer());
               $( api.column( 3 ).footer() ).html("JUMLAH");
               $( api.column( 4 ).footer() ).html(formatRupiah(debet,"."));
               $( api.column( 5 ).footer() ).html(formatRupiah(kredit,"."));
               $( 'tr:eq(1) td:eq(0)', api.table().footer() ).html("SALDO");
+              $( 'tr:eq(2) td:eq(0)', api.table().footer() ).html("SALDO AWAL");
               $( 'tr:eq(1) td:eq(1)', api.table().footer() ).html(saldo_debet);
               $( 'tr:eq(1) td:eq(2)', api.table().footer() ).html(saldo_kredit);
+              
             },
             "columnDefs": [
               { "width": 30, "targets": 0 },
@@ -193,6 +168,45 @@
       return val;
     }
 
+    function get_saldo_awal(){
+      $.ajax({
+        url: "/getsaldoawal",
+        type: "post",
+        dataType: "json",
+        data: {
+          coa: $("#coa").val(),
+          bulan_periode: formatDate($("#bulan_periode").val()),
+          tahun_periode: formatDate($("#tahun_periode").val()),
+          _token: $("input[name=_token]").val()
+        },
+        success: function (data, params) {
+         
+          saldo_debet = "";
+          saldo_kredit = "";
+            
+          if(typeof(data.data[0]) != "undefined"){
+            debet = data.data[0].total_debet;
+            kredit = data.data[0].total_credit;
+            saldo = 0;
+                
+            if(cat == 1 || cat == 5|| cat == 6){
+              saldo = debet-kredit
+              if(saldo>0) saldo_kredit = formatRupiah(saldo,".");
+              else saldo_debet = formatRupiah(saldo,".");
+            } else {
+              saldo = kredit-debet
+              if(saldo>0) saldo_debet = formatRupiah(saldo,".");
+              else saldo_kredit = formatRupiah(saldo,".");
+            }
+          }  
+          $( 'tr:eq(2) td:eq(1)', $('#bukubesar').dataTable().api().table().footer() ).html(saldo_debet);
+          $( 'tr:eq(2) td:eq(2)', $('#bukubesar').dataTable().api().table().footer() ).html(saldo_kredit);        
+        },
+
+        cache: true
+      })
+    }
+
 
     $("select").select2({
       placeholder: "Pilih satu",
@@ -206,17 +220,22 @@
     };
 
     $("#coa").on("change", function() {
-      $("#coa_code").val($("#coa option:selected").val());
       fetch_data();
+      get_saldo_awal();
     });
 
-    $("#startDate").on("change", function() {
+    $("#bulan_periode").on("change", function() {
       fetch_data();
+      get_saldo_awal();
     });
 
-    $("#endDate").on("change", function() {
+    $("#tahun_periode").on("change", function() {
       fetch_data();
+      get_saldo_awal();
     });
+
+    
+
 
     $("#coa").select2({
       ajax: {
@@ -231,7 +250,7 @@
                   _token: $("input[name=_token]").val()
               }
           },
-          processResults: function (data, params) {
+          results: function (data, params) {
                     params.page = params.page || 1;
                     for(var i = 0; i < data.items.length; i++){
                         var te = data.items[i].text.split(" ");
@@ -239,20 +258,19 @@
                         data.items[i].text = convertCode(te[0])+" "+text.replace(te[0]+" ", "");
                     }
                     return {
-                        results: data.items,
-                        pagination: {
-                            more: (params.page * 25) < data.total_count
-                        }
+                        results: data.items
                     };
             },
           cache: true
-      }
+      },
+      theme : "bootstrap4"
     });
     
     var menu = "laporan"
     var submenu = "bukubesar"
   });
 
+  
 
 
 </script>

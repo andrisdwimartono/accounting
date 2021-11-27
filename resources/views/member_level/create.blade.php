@@ -1,7 +1,7 @@
 @extends("paging.main")
 
 <script>    
-  var menu="transaksi"
+  var menu="master"
 </script>
 
 @section("content")

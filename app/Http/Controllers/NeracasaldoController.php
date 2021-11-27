@@ -277,6 +277,8 @@ class NeracasaldoController extends Controller
         echo json_encode($output);
     }
 
+    
+
     public function getdata(Request $request)
     {
         if($request->ajax() || $request->wantsJson()){
