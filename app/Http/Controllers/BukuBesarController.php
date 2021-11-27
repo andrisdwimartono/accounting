@@ -10,6 +10,7 @@ use App\Models\Transaction;
 use App\Models\Anggaran;
 use App\Models\Coa;
 use App\Models\Jenisbayar;
+use App\Models\Neracasaldo;
 
 class BukuBesarController extends Controller
 {
@@ -75,9 +76,8 @@ class BukuBesarController extends Controller
     {
         $coa = null;
         $list_column = array("id","tanggal", "coa_code", "no_jurnal", "deskripsi", "debet", "kredit");
+        
         $keyword = null;
-        $startDate = null;
-        $endDate = null;
         
         if(isset($request->search["value"])){
             $keyword = $request->search["value"];
@@ -85,12 +85,16 @@ class BukuBesarController extends Controller
         if(isset($request->search["coa_code"])){
             $coa = $request->search["coa_code"];
         }
-        if(isset($request->search["startDate"])){
-            $startDate = $request->search["startDate"];
+        $bulan_periode = 1;
+        if(isset($request->search["bulan_periode"])){
+            $bulan_periode = $request->search["bulan_periode"];
         }
-        if(isset($request->search["endDate"])){
-            $endDate = $request->search["endDate"];
+        $tahun_periode = 1;
+        if(isset($request->search["tahun_periode"])){
+            $tahun_periode = $request->search["tahun_periode"];
         }
+
+        // dd($bulan_periode, $tahun_periode);
 
         $orders = array("id", "ASC");
         if(isset($request->order)){
@@ -104,43 +108,64 @@ class BukuBesarController extends Controller
 
         $dt = array();
         $no = 0;
-        
-        foreach(Transaction::where(function($q) use ($keyword, $coa, $startDate, $endDate) {
-            // $q->where("deskripsi", "LIKE", "%" . $keyword. "%")
-            //   ->orWhere("no_jurnal", "LIKE", "%" . $keyword. "%");           
-            if(isset($coa)){
-                $q->where("coa", $coa);
-            }
-            if(isset($startDate)){
-                $q->where("tanggal", ">=", $startDate);
-            }
-            if(isset($endDate)){
-                $q->where("tanggal", "<=", $endDate);
-            }
-            if(isset($startDate) && isset($endDate)){
-                $q->where("tanggal", ">=", $startDate)
-                  ->where("tanggal", "<=", $endDate);
-            }
-
-        })->orderBy($orders[0], $orders[1])
+        foreach((Transaction::where("coa", $coa)
+        ->where(function($q) {
+            $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
+        })
+          ->whereMonth("tanggal", "=", $bulan_periode)
+          ->whereYear("tanggal", "=", $tahun_periode)
+          ->whereNull('isdeleted')
+          ->orderBy($orders[0], $orders[1])
           ->offset($limit[0])
           ->limit($limit[1])
-          ->get(["id", "tanggal", "no_jurnal", "deskripsi", "debet", "credit","coa_label"]) as $transaksi
-        ){
+          ->get(["id", "tanggal", "no_jurnal", "deskripsi", "debet", "credit"])) as $bukubesar){
             $no = $no+1;
-            $coa_label = $transaksi->coa_label;
-            array_push($dt, array($transaksi->id, $transaksi->tanggal, $transaksi->no_jurnal, $transaksi->deskripsi, $transaksi->debet, $transaksi->credit));
-        }
-    
+            array_push($dt, array($bukubesar->id, $bukubesar->tanggal, $bukubesar->no_jurnal, $bukubesar->deskripsi, $bukubesar->debet, $bukubesar->credit));
+    }
         $output = array(
             "draw" => intval($request->draw),
             "recordsTotal" => Transaction::get()->count(),
-            "recordsFiltered" => intval(Transaction::where(function($q) use ($keyword, $coa) {
-                if(isset($coa)){
-                    $q->where("coa", $coa);
-                }
-            })->orderBy($orders[0], $orders[1])->get()->count()),
+            "recordsFiltered" => intval(Transaction::where(function($q) use ($keyword) {
+                    $q->where("tanggal", "LIKE", "%" . $keyword. "%")->orWhere("no_jurnal", "LIKE", "%" . $keyword. "%")->orWhere("deskripsi", "LIKE", "%" . $keyword. "%");
+                })->where(function($q) {
+                    $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
+                })->where("coa", $coa)
+                ->whereMonth("tanggal", "=", $bulan_periode)
+                ->whereYear("tanggal", "=", $tahun_periode)
+                ->whereNull('isdeleted')
+                ->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
+        );
+
+        echo json_encode($output);
+    }
+
+    public function get_saldo_awal(Request $request)
+    {
+        $data = $request->all();
+        $coa = $data["coa"];
+        $bulan_periode = $data["bulan_periode"];
+        $tahun_periode = $data["tahun_periode"];
+        $neracasaldo = Neracasaldo::select(
+                DB::raw("SUM(debet) as total_debet"),
+                DB::raw("SUM(credit) as total_credit"),
+            )
+            ->where("coa", (int)$coa)
+            ->where(function($q) {
+                $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
+            })
+            ->where(function($q) use($bulan_periode, $tahun_periode){
+                $q->where(function($q) use ($bulan_periode, $tahun_periode){
+                    $q->where("bulan_periode", "<", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                })->orWhere(function($q) use ($bulan_periode, $tahun_periode){
+                    $q->where("tahun_periode", "<", $tahun_periode);
+                });
+            })
+            ->groupBy("tahun_periode")
+            ->get();
+
+        $output = array(
+            "data" => $neracasaldo
         );
 
         echo json_encode($output);

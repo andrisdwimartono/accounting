@@ -91,7 +91,6 @@
       });
       target.shift();
       $('#neraca').DataTable().destroy();
-      console.log($("#bulan_periode").val());
       dataTable = $('#neraca').DataTable({
           "autoWidth": false,
           dom: 'Bfrtip',
