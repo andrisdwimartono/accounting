@@ -237,7 +237,13 @@ class NeracaController extends Controller
             $q->where("tahun_periode", "LIKE", "%" . $keyword. "%")->orWhere("bulan_periode", "LIKE", "%" . $keyword. "%")->orWhere("coa_label", "LIKE", "%" . $keyword. "%");
         })->where(function($q) {
             $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
-        })->where("bulan_periode", $bulan_periode)->where("tahun_periode", $tahun_periode)->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "tahun_periode", "bulan_periode", "coa_label", "debet", "credit"]) as $neraca){
+        })->where(function($q) use($bulan_periode, $tahun_periode){
+            $q->where(function($q) use ($bulan_periode, $tahun_periode){
+                $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+            })->orWhere(function($q) use ($bulan_periode, $tahun_periode){
+                $q->where("tahun_periode", "<", $tahun_periode);
+            });
+        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->select([ "coa_label", DB::raw("SUM(debet) as debet"), DB::raw("SUM(credit) as credit")])->groupBy("coa_label")->get() as $neraca){
             $no = $no+1;
             $act = '
             <a href="/neraca/'.$neraca->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
@@ -246,7 +252,7 @@ class NeracaController extends Controller
 
             <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button>';
 
-            array_push($dt, array($neraca->id, $neraca->coa_label, $neraca->debet, $neraca->credit, $act));
+            array_push($dt, array($no, $neraca->coa_label, $neraca->debet, $neraca->credit, $act));
     }
         $output = array(
             "draw" => intval($request->draw),

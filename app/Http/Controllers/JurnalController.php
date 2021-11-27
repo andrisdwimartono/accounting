@@ -746,14 +746,13 @@ class JurnalController extends Controller
                     "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neracasaldo->credit+$transaction->credit-$transaction->debet:0,
                 ]);
             }else{
-                $lastneracasaldo = $this->getLastNeracaSaldo($bulan, $tahun, $coa->id);
                 Neracasaldo::create([
                     "tahun_periode" => $tahun, 
                     "bulan_periode" => $bulan, 
                     "coa" => $transaction->coa, 
                     "coa_label" => $coa->coa_code." ".$coa->coa_name, 
-                    "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?($lastneracasaldo?$lastneracasaldo->debet:0)+$transaction->debet-$transaction->credit:0, 
-                    "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?($lastneracasaldo?$lastneracasaldo->credit:0)+$transaction->credit-$transaction->debet:0, 
+                    "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$transaction->debet-$transaction->credit:0, 
+                    "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$transaction->credit-$transaction->debet:0, 
                     "user_creator_id" => 2,
                     "jenisbayar" => 0,
                     "jenisbayar_label" => ""
@@ -769,14 +768,13 @@ class JurnalController extends Controller
                         "credit" => $neraca->credit+$transaction->credit-$transaction->debet,
                     ]);
                 }else{
-                    $lastneraca = $this->getLastNeraca($bulan, $tahun, $coa_sur_def->id);
                     Neraca::create([
                         "tahun_periode" => $tahun, 
                         "bulan_periode" => $bulan, 
                         "coa" => $coa_sur_def->id, 
                         "coa_label" => $coa_sur_def->coa_code." ".$coa_sur_def->coa_name, 
                         "debet" => 0, 
-                        "credit" => ($lastneraca?$lastneraca->credit:0)+$transaction->credit-$transaction->debet, 
+                        "credit" => $transaction->credit-$transaction->debet, 
                         "user_creator_id" => 2
                     ]);
                 }
@@ -788,14 +786,13 @@ class JurnalController extends Controller
                         "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neraca->credit+$transaction->credit-$transaction->debet:0,
                     ]);
                 }else{
-                    $lastneraca = $this->getLastNeraca($bulan, $tahun, $coa->id);
                     Neraca::create([
                         "tahun_periode" => $tahun, 
                         "bulan_periode" => $bulan, 
                         "coa" => $transaction->coa, 
                         "coa_label" => $coa->coa_code." ".$coa->coa_name, 
-                        "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?($lastneraca?$lastneraca->debet:0)+$transaction->debet-$transaction->credit:0, 
-                        "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?($lastneraca?$lastneraca->credit:0)+$transaction->credit-$transaction->debet:0, 
+                        "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$transaction->debet-$transaction->credit:0, 
+                        "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$transaction->credit-$transaction->debet:0, 
                         "user_creator_id" => 2
                     ]);
                 }
@@ -831,57 +828,5 @@ class JurnalController extends Controller
                 }
             }
         }
-    }
-
-    public function getLastNeracaSaldo($current_month, $current_year, $coa_id){
-        $month = $current_month-1;
-        $year = $current_year;
-        if($current_month == 1){
-            $month = 12;
-            $year = $current_year-1;
-        }
-        $neracasaldo = Neracasaldo::where("coa", $coa_id)->where("bulan_periode", $month)->where("tahun_periode", $year)->orderBy("bulan_periode", "desc")->first();
-        return $neracasaldo;
-    }
-
-    public function getLastNeraca($current_month, $current_year, $coa_id){
-        $month = $current_month-1;
-        $year = $current_year;
-        if($current_month == 1){
-            $month = 12;
-            $year = $current_year-1;
-        }
-        $neraca = Neraca::where("coa", $coa_id)->where("bulan_periode", $month)->where("tahun_periode", $year)->orderBy("bulan_periode", "desc")->first();
-        return $neraca;
-    }
-
-    public function updateNextPeriodeNeracaSaldo($current_month, $current_year, $coa_id, $debet, $credit){
-        $year = $current_year;
-        $month = $current_month;
-        if($current_month == 1){
-            $year = $current_year-1;
-            $month = 12;
-        }
-        $exist = true;
-        while($exist){
-            $neracasaldo = Neracasaldo::where("coa", $coa_id)->where("bulan_periode", $month)->where("tahun_periode", $year)->orderBy("bulan_periode", "desc")->first();
-            $coa = Coa::where("id", $neracasaldo->coa)->first();
-            if($neracasaldo){
-                Neracasaldo::where("coa", $coa_id)->where("bulan_periode", $month)->where("tahun_periode", $year)->orderBy("bulan_periode", "desc")->update([
-                    "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neracasaldo->debet+debet-credit:0,
-                    "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neracasaldo->credit+credit-debet:0
-                ]);
-                if($month == 1){
-                    $year = $year-1;
-                    $month = 12;
-                }else{
-                    $year = $year;
-                    $month = $month-1;
-                }
-            }else{
-                $exist = false;
-            }
-        }
-        
     }
 }
