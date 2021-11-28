@@ -101,6 +101,17 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/deleteneraca', 'App\Http\Controllers\NeracaController@destroy');
     Route::post('/getlinksneraca', 'App\Http\Controllers\NeracaController@getlinks');
 
+    Route::get('/labarugi', 'App\Http\Controllers\LabarugiController@index')->name('labarugi');
+    Route::post('/getlistlabarugi', 'App\Http\Controllers\LabarugiController@get_list');
+    Route::get('/labarugi/{labarugi}', 'App\Http\Controllers\LabarugiController@show');
+    Route::get('/createlabarugi', 'App\Http\Controllers\LabarugiController@create');
+    Route::post('/storelabarugi', 'App\Http\Controllers\LabarugiController@store');
+    Route::get('/labarugi/{labarugi}/edit', 'App\Http\Controllers\LabarugiController@edit');
+    Route::post('/getdatalabarugi', 'App\Http\Controllers\LabarugiController@getdata');
+    Route::post('/updatelabarugi/{labarugi}', 'App\Http\Controllers\LabarugiController@update');
+    Route::post('/deletelabarugi', 'App\Http\Controllers\LabarugiController@destroy');
+    Route::post('/getlinkslabarugi', 'App\Http\Controllers\LabarugiController@getlinks');
+
     Route::get('/openperiode/{month}/{year}', 'App\Http\Controllers\OpencloseperiodeController@openperiode');
 
     Route::middleware(['checkauth'])->group(function () {

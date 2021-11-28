@@ -838,8 +838,8 @@ class JurnalController extends Controller
                 $labarugi = Labarugi::where("coa", $coa->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->first();
                 if($labarugi){
                     Labarugi::where("coa", $coa->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
-                        "debet" => 0,
-                        "credit" => $labarugi->credit-$transaction->credit+$transaction->debet,
+                        "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$labarugi->debet-$transaction->debet+$transaction->credit:0,
+                        "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$labarugi->credit-$transaction->credit+$transaction->debet:0,
                         "user_updater_id" => 2
                     ]);
                 }
