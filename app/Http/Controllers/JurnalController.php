@@ -109,7 +109,8 @@ class JurnalController extends Controller
 
         $td["fieldsrules_transaksi_pendapatan"] = [
             "nominal" => "required|numeric",
-            "coa" => "required|exists:coas,id"
+            "prodi" => "required|numeric",
+            "jenisbayar" => "required|numeric"
         ];
 
         $td["fieldsmessages_transaksi_pendapatan"] = [
@@ -248,6 +249,10 @@ class JurnalController extends Controller
                 $ct_messages[$key] = "No ".$no_seq." ".$value;
             }
             $child_tb_request->validate($rules_transaksi, $ct_messages);
+            $coa = Coa::where("prodi", $ct_request["prodi"])->where("jenisbayar", $ct_request["jenisbayar"])->first();
+            if(!$coa){
+                abort(404, "Prodi dan Jenis bayar tidak cocok dengan COA Pendapatan manapun");
+            }
             $total_nominal = $total_nominal+$ct_request["nominal"];
         }
 
@@ -276,7 +281,7 @@ class JurnalController extends Controller
             
             $no_seq = -1;
             foreach($requests_transaksi as $ct_request){
-                $coa = Coa::where("id", $ct_request["coa"])->first();
+                $coa = Coa::where("prodi", $ct_request["prodi"])->where("jenisbayar", $ct_request["jenisbayar"])->first();
                 $no_seq++;
                 $idct = Transaction::create([
                     "no_seq" => $no_seq,
@@ -291,7 +296,7 @@ class JurnalController extends Controller
                     "tanggal"=> $tgl,
                     "keterangan"=> $request->kode_va." ".$request->nim,
                     "jenis_transaksi"=> 0,
-                    "coa"=> $ct_request["coa"],
+                    "coa"=> $coa->id,
                     "coa_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,
                     "jenisbayar"=> 0,
                     "jenisbayar_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,

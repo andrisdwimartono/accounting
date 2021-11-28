@@ -80,6 +80,9 @@
                                             <tr>
                                                 <td class="column-hidden"></td><td></td><td></td><td></td><td></td><td class="column-hidden"></td>
                                             </tr>
+                                            <tr>
+                                                <td class="column-hidden"></td><td></td><td></td><td></td><td></td><td class="column-hidden"></td>
+                                            </tr>
                                         </tfoot>
                                     </table>
                                 </div>
