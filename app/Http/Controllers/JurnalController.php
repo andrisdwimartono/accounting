@@ -13,6 +13,7 @@ use App\Models\Coa;
 use App\Models\Jenisbayar;
 use App\Models\Neracasaldo;
 use App\Models\Neraca;
+use App\Models\Labarugi;
 
 class JurnalController extends Controller
 {
@@ -778,6 +779,23 @@ class JurnalController extends Controller
                         "user_creator_id" => 2
                     ]);
                 }
+                $labarugi = Labarugi::where("coa", $coa->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->first();
+                if($labarugi){
+                    Labarugi::where("coa", $coa->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
+                        "debet" => in_array($coa->category, array("biaya", "biaya_lainnya"))?$labarugi->debet+$transaction->debet-$transaction->credit:0,
+                        "credit" => !in_array($coa->category, array("biaya", "biaya_lainnya"))?$labarugi->credit+$transaction->credit-$transaction->debet:0,
+                    ]);
+                }else{
+                    Labarugi::create([
+                        "tahun_periode" => $tahun, 
+                        "bulan_periode" => $bulan, 
+                        "coa" => $coa->id, 
+                        "coa_label" => $coa->coa_code." ".$coa->coa_name, 
+                        "debet" => in_array($coa->category, array("biaya", "biaya_lainnya"))?$transaction->debet-$transaction->credit:0, 
+                        "credit" => !in_array($coa->category, array("biaya", "biaya_lainnya"))?$transaction->credit-$transaction->debet:0,
+                        "user_creator_id" => 2
+                    ]);
+                }
             }else{
                 $neraca = Neraca::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->first();
                 if($neraca){
@@ -814,6 +832,14 @@ class JurnalController extends Controller
                     Neraca::where("coa", $coa_sur_def->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
                         "debet" => 0,
                         "credit" => $neraca->credit-$transaction->credit+$transaction->debet,
+                        "user_updater_id" => 2
+                    ]);
+                }
+                $labarugi = Labarugi::where("coa", $coa->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->first();
+                if($labarugi){
+                    Labarugi::where("coa", $coa->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
+                        "debet" => 0,
+                        "credit" => $labarugi->credit-$transaction->credit+$transaction->debet,
                         "user_updater_id" => 2
                     ]);
                 }
