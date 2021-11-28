@@ -258,7 +258,7 @@ class JurnalController extends Controller
 
         $rules = $page_data["fieldsrules_pendapatan"];
         $messages = $page_data["fieldsmessages_pendapatan"];
-        $uk = Unitkerja::where("unitkerja_code", "110")->first();
+        $uk = Unitkerja::where("unitkerja_code", "01")->first();
         $tgl = date('Y-m-d');
         if($request->validate($rules, $messages)){
             $id = Jurnal::create([
