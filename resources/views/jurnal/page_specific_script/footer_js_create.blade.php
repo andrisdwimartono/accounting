@@ -797,9 +797,9 @@ function getlist(){
                 $("#caktable2").find('tbody')
                     .append("<tr row-id=\""+dat.data[i][0]+"\" class=\"addnewrow2\" style=\"cursor: pointer;\">"
                         +"<td class=\"column-hidden\">"+dat.data[i][0]+"</td>"
-                        +"<td class=\"p-0\">"+dat.data[i][1].split("-")[2]+"/"+dat.data[i][1].split("-")[1]+"/"+dat.data[i][1].split("-")[0]+"</td>"
-                        +"<td class=\"p-0\">"+dat.data[i][2]+"</td>"
-                        +"<td class=\"p-0\">"+dat.data[i][3]+"</td>"
+                        +"<td class=\"p-1\">"+dat.data[i][1].split("-")[2]+"/"+dat.data[i][1].split("-")[1]+"/"+dat.data[i][1].split("-")[0]+"</td>"
+                        +"<td class=\"p-1\">"+dat.data[i][2]+"</td>"
+                        +"<td class=\"p-1\">"+dat.data[i][3]+"</td>"
                         // +"<td class=\"p-0\">"+dat.data[i][4]+"</td>"
                         +"<td class=\"p-0 text-center\"><button id=\"row_delete_"+dat.data[i][0]+"\" type=\"button\" class=\"row-delete-jurnal bg-white border-0\"><i class=\"text-danger fas fa-minus-circle\" style=\"cursor: pointer;\"></i></button></td>"
                         +"<td class=\"column-hidden\"></td>"
