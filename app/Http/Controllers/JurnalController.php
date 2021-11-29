@@ -261,7 +261,7 @@ class JurnalController extends Controller
         if(!$coa_exist){
             abort(404, "Prodi dan Jenis bayar tidak cocok dengan COA Pendapatan manapun");
         }
-        if($no_seq <= 0){
+        if($no_seq < 0){
             abort(404, "Tidak ada data transaksi");
         }
 
