@@ -245,15 +245,24 @@ class JurnalController extends Controller
             $child_tb_request = new \Illuminate\Http\Request();
             $child_tb_request->replace($ct_request);
             $ct_messages = array();
+            $coa_exist = true;
             foreach($page_data["fieldsmessages_transaksi_pendapatan"] as $key => $value){
                 $ct_messages[$key] = "No ".$no_seq." ".$value;
             }
             $child_tb_request->validate($rules_transaksi, $ct_messages);
             $coa = Coa::where("prodi", $ct_request["prodi"])->where("jenisbayar", $ct_request["jenisbayar"])->first();
             if(!$coa){
-                abort(404, "Prodi dan Jenis bayar tidak cocok dengan COA Pendapatan manapun");
+                $coa_exist = false;
+                
             }
             $total_nominal = $total_nominal+$ct_request["nominal"];
+        }
+
+        if(!$coa_exist){
+            abort(404, "Prodi dan Jenis bayar tidak cocok dengan COA Pendapatan manapun");
+        }
+        if($no_seq <= 0){
+            abort(404, "Tidak ada data transaksi");
         }
 
         $rules = $page_data["fieldsrules_pendapatan"];
