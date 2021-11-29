@@ -207,18 +207,10 @@ class NeracaController extends Controller
 
     public function get_list(Request $request)
     {
-        $list_column = array("id", "coa_label", "coa_label", "debet", "credit", "id");
+        $list_column = array("id", "coa_code", "coa_name", "level_coa", "fheader", "factive", "id");
         $keyword = null;
         if(isset($request->search["value"])){
             $keyword = $request->search["value"];
-        }
-        $bulan_periode = 1;
-        if(isset($request->search["bulan_periode"])){
-            $bulan_periode = $request->search["bulan_periode"];
-        }
-        $tahun_periode = 1;
-        if(isset($request->search["tahun_periode"])){
-            $tahun_periode = $request->search["tahun_periode"];
         }
 
         $orders = array("id", "ASC");
@@ -232,41 +224,138 @@ class NeracaController extends Controller
         }
 
         $dt = array();
-        $no = 0;
-        foreach(Neraca::where(function($q) use ($keyword) {
-            $q->where("tahun_periode", "LIKE", "%" . $keyword. "%")->orWhere("bulan_periode", "LIKE", "%" . $keyword. "%")->orWhere("coa_label", "LIKE", "%" . $keyword. "%");
-        })->where(function($q) {
-            $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
-        })->where(function($q) use($bulan_periode, $tahun_periode){
-            $q->where(function($q) use ($bulan_periode, $tahun_periode){
-                $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
-            })->orWhere(function($q) use ($bulan_periode, $tahun_periode){
-                $q->where("tahun_periode", "<", $tahun_periode);
-            });
-        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->select([ "coa_label", DB::raw("SUM(debet) as debet"), DB::raw("SUM(credit) as credit")])->groupBy("coa_label")->get() as $neraca){
-            $no = $no+1;
-            $act = '
-            <a href="/neraca/'.$neraca->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
-
-            <a href="/neraca/'.$neraca->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
-
-            <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button>';
-
-            array_push($dt, array($no, $neraca->coa_label, $neraca->debet, $neraca->credit, $act));
-    }
+        $this->get_list_data($dt, $request, $keyword, $limit, $orders, null);
+        
         $output = array(
             "draw" => intval($request->draw),
-            "recordsTotal" => Neraca::get()->count(),
-            "recordsFiltered" => intval(Neraca::where(function($q) use ($keyword) {
-                $q->where("tahun_periode", "LIKE", "%" . $keyword. "%")->orWhere("bulan_periode", "LIKE", "%" . $keyword. "%")->orWhere("coa_label", "LIKE", "%" . $keyword. "%");
-            })->where(function($q) {
-                $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
-            })->where("bulan_periode", $bulan_periode)->where("tahun_periode", $tahun_periode)->orderBy($orders[0], $orders[1])->get()->count()),
+            "recordsTotal" => Coa::get()->count(),
+            "recordsFiltered" => intval(Coa::where(function($q) use ($keyword, $request) {
+                $q->where("coa_code", "LIKE", "%" . $keyword. "%")->orWhere("coa_name", "LIKE", "%" . $keyword. "%")->orWhere("level_coa", "LIKE", "%" . $keyword. "%")->orWhere("fheader", "LIKE", "%" . $keyword. "%")->orWhere("factive", "LIKE", "%" . $keyword. "%");
+            })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
 
         echo json_encode($output);
     }
+
+    private function get_list_data(&$dt, $request, &$keyword, $limit, $orders, $parent_id = null){
+        $no = 0;
+        foreach(Coa::where(function($q) use (&$keyword, $request) {
+                $q->where("coa_code", "LIKE", "%" . $keyword. "%")->orWhere("coa_name", "LIKE", "%" . $keyword. "%")->orWhere("level_coa", "LIKE", "%" . $keyword. "%")->orWhere("fheader", "LIKE", "%" . $keyword. "%")->orWhere("factive", "LIKE", "%" . $keyword. "%");
+            })->where("factive", "on")->where("coa", $parent_id)->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "coa_code", "coa_name", "level_coa", "coa", "coa_label", "category", "category_label", "fheader", "factive"]) as $coa){
+                $no = $no+1;
+                $act = '';
+
+                $bulan_periode = 1;
+                if(isset($request->search["bulan_periode"])){
+                    $bulan_periode = $request->search["bulan_periode"];
+                }
+                $tahun_periode = 1;
+                if(isset($request->search["tahun_periode"])){
+                    $tahun_periode = $request->search["tahun_periode"];
+                }
+                $child_level = 1;
+                if(isset($request->search["child_level"])){
+                    $child_level = $request->search["child_level"];
+                }
+
+                if($coa->fheader != "on"){
+                    $neraca_val = Neraca::where("coa", $coa->id)->where("bulan_periode", $bulan_periode)->where("tahun_periode", $tahun_periode)->where(function($q) {
+                        $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
+                    })->first();
+                    if($neraca_val){
+                        array_push($dt, array($coa->id, $coa->coa_code." ".$coa->coa_name, $neraca_val->debet, $neraca_val->credit, $coa->level_coa, $coa->fheader, $act));
+                    }
+                }else{
+                    $dc = array(0, 0);
+                    $this->getAngka($dc, $coa->id, $bulan_periode, $tahun_periode);
+                    if($dc[0] != 0  || $dc[1] != 0)
+                        array_push($dt, array($coa->id, $coa->coa_code." ".$coa->coa_name, $dc[0], $dc[1], $coa->level_coa, $coa->fheader, $act));
+                }
+                if((int)$coa->level_coa <= $child_level){
+                    array_merge($dt, $this->get_list_data($dt, $request, $keyword, $limit, $orders, $coa->id));
+                }
+            
+        }
+        return $dt;
+    }
+
+    public function getAngka(&$dc, $parent_id, $bulan_periode, $tahun_periode){
+        foreach(Coa::where("factive", "on")->where("coa", $parent_id)->get(["id", "coa_code", "coa_name", "level_coa", "coa", "coa_label", "category", "category_label", "fheader", "factive"]) as $coa){
+            $labarugi_val = Neraca::where("coa", $coa->id)->where("bulan_periode", $bulan_periode)->where("tahun_periode", $tahun_periode)->where(function($q) {
+                $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
+            })->first();
+            if($labarugi_val){
+                $dc[0] = $dc[0]+$labarugi_val->debet;
+                $dc[1] = $dc[1]+$labarugi_val->credit;
+            }
+            $this->getAngka($dc, $coa->id, $bulan_periode, $tahun_periode);
+        }
+        return $dc;
+    }
+
+    // public function get_list(Request $request)
+    // {
+    //     $list_column = array("id", "coa_label", "coa_label", "debet", "credit", "id");
+    //     $keyword = null;
+    //     if(isset($request->search["value"])){
+    //         $keyword = $request->search["value"];
+    //     }
+    //     $bulan_periode = 1;
+    //     if(isset($request->search["bulan_periode"])){
+    //         $bulan_periode = $request->search["bulan_periode"];
+    //     }
+    //     $tahun_periode = 1;
+    //     if(isset($request->search["tahun_periode"])){
+    //         $tahun_periode = $request->search["tahun_periode"];
+    //     }
+
+    //     $orders = array("id", "ASC");
+    //     if(isset($request->order)){
+    //         $orders = array($list_column[$request->order["0"]["column"]], $request->order["0"]["dir"]);
+    //     }
+
+    //     $limit = null;
+    //     if(isset($request->length) && $request->length != -1){
+    //         $limit = array(intval($request->start), intval($request->length));
+    //     }
+
+    //     $dt = array();
+    //     $no = 0;
+    //     foreach(Neraca::where(function($q) use ($keyword) {
+    //         $q->where("tahun_periode", "LIKE", "%" . $keyword. "%")->orWhere("bulan_periode", "LIKE", "%" . $keyword. "%")->orWhere("coa_label", "LIKE", "%" . $keyword. "%");
+    //     })->where(function($q) {
+    //         $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
+    //     })->where(function($q) use($bulan_periode, $tahun_periode){
+    //         $q->where(function($q) use ($bulan_periode, $tahun_periode){
+    //             $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+    //         })->orWhere(function($q) use ($bulan_periode, $tahun_periode){
+    //             $q->where("tahun_periode", "<", $tahun_periode);
+    //         });
+    //     })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->select([ "coa_label", DB::raw("SUM(debet) as debet"), DB::raw("SUM(credit) as credit")])->groupBy("coa_label")->get() as $neraca){
+    //         $no = $no+1;
+    //         $act = '
+    //         <a href="/neraca/'.$neraca->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
+
+    //         <a href="/neraca/'.$neraca->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
+
+    //         <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button>';
+
+    //         array_push($dt, array($no, $neraca->coa_label, $neraca->debet, $neraca->credit, $act));
+    // }
+    //     $output = array(
+    //         "draw" => intval($request->draw),
+    //         "recordsTotal" => Neraca::get()->count(),
+    //         "recordsFiltered" => intval(Neraca::where(function($q) use ($keyword) {
+    //             $q->where("tahun_periode", "LIKE", "%" . $keyword. "%")->orWhere("bulan_periode", "LIKE", "%" . $keyword. "%")->orWhere("coa_label", "LIKE", "%" . $keyword. "%");
+    //         })->where(function($q) {
+    //             $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
+    //         })->where("bulan_periode", $bulan_periode)->where("tahun_periode", $tahun_periode)->orderBy($orders[0], $orders[1])->get()->count()),
+    //         "data" => $dt
+    //     );
+
+    //     echo json_encode($output);
+    // }
 
     public function getdata(Request $request)
     {

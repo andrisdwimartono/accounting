@@ -28,6 +28,7 @@
                                 <div class="form-group row m-0">
                                     <label class="col-sm-3 col-form-label text-white">Bulan</label>
                                     <label class="col-sm-3 col-form-label text-white">Tahun</label>
+                                    <label class="col-sm-3 col-form-label text-white">Level</label>
                                 </div>
                                 <div class="form-group row m-0">
                                     <div class="col-sm-3 cakfield">
@@ -52,7 +53,14 @@
                                                 <option value="<?=$i;?>"<?=date("Y")==$i?" selected":""?>><?=$i;?></option>
                                             <?php } ?>
                                         </select>
-                                    </div>                                     
+                                    </div>       
+                                    <div class="col-sm-3 cakfield">
+                                        <select name="child_level" id="child_level" class="form-control select2bs4staticBackdrop" data-row="1" style="width: 100%;">
+                                            <?php for($i = 0; $i < 4; $i++){ ?>
+                                                <option value="<?=$i;?>"><?=$i;?></option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>                              
                                 </div>
                             </div>
                             <div class="card-body">                                
@@ -60,16 +68,17 @@
                                     <table id="neraca" class="dttables table table-bordered table-striped dataTable">
                                         <thead class="bg-primary">
                                             <tr>
-                                                <th>No</th>
+                                                <th class="column-hidden">No</th>
                                                 <th>Kode Rek.</th>
                                                 <th>Nama Rekening Akuntansi</th>
                                                 <th>Debet</th>
                                                 <th>Kredit</th>
+                                                <th class="column-hidden">Level COA</th>
                                             </tr>
                                         </thead>
                                         <tfoot id="jumlah" class="dttables-footer table table-bordered table-striped dataTable">
                                             <tr>
-                                                <td colspan=3 class="right"></td><td></td><td></td>
+                                                <td></td><td></td><td class="right"></td><td></td><td></td>
                                             </tr>
                                         </tfoot>
                                     </table>

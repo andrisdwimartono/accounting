@@ -94,7 +94,7 @@
       dataTable = $('#labarugi').DataTable({
           "autoWidth": false,
           dom: 'Bfrtip',
-          "buttons": ["excel", "pdf", "print", "colvis"],
+          "buttons": ["excel", "pdf", "print"],
           "scrollX" : true,
           "processing" : true,
           "serverSide" : true,
@@ -140,7 +140,7 @@
               $( api.column( 2 ).footer() ).addClass("text-right").html("JUMLAH");
               $( api.column( 3 ).footer() ).html(formatRupiahWNegative(debet,"."));
               $( api.column( 4 ).footer() ).html(formatRupiahWNegative(kredit,"."));
-              $( 'tr:eq(1) td:eq(2)', api.table().footer() ).addClass("text-right").html(saldo>0?"SURPLUS":"DEVISIT");
+              $( 'tr:eq(1) td:eq(2)', api.table().footer() ).addClass("text-right").html(saldo>0?"SURPLUS":"DEFISIT");
               $( 'tr:eq(1) td:eq(3)', api.table().footer() ).html(saldo_debet);
               $( 'tr:eq(1) td:eq(4)', api.table().footer() ).html(saldo_kredit);
             },
@@ -158,7 +158,7 @@
                   return val;
                 },
                 createdCell: function (td, cellData, rowData, row, col) {
-                  var padd = ((parseInt(rowData[4])-1)*10)+"px";
+                  var padd = (10+(parseInt(rowData[4])-1)*12)+"px";
                   $(td).css('padding-left', padd);
                 }
               },
@@ -166,6 +166,10 @@
                 "targets": 2,
                 "render":  function ( data, type, row, meta ) {
                   return row[1].replace(row[1].split(" ")[0], "");
+                },
+                createdCell: function (td, cellData, rowData, row, col) {
+                  var padd = (10+(parseInt(rowData[4])-1)*12)+"px";
+                  $(td).css('padding-left', padd);
                 }
               },
               { 

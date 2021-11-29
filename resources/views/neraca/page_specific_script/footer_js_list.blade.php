@@ -107,7 +107,8 @@
             data:{
               search : {
                 bulan_periode: $("#bulan_periode").val(),
-                tahun_periode: $("#tahun_periode").val()
+                tahun_periode: $("#tahun_periode").val(),
+                child_level: $("#child_level").val(),
               },  
               _token: $("input[name=_token]").val()
             },
@@ -132,27 +133,33 @@
               $( api.column( 2 ).footer() ).html("JUMLAH");
               $( api.column( 3 ).footer() ).html(formatRupiahWNegative(debet,"."));
               $( api.column( 4 ).footer() ).html(formatRupiahWNegative(kredit,"."));
-              // $( 'tr:eq(1) td:eq(0)', api.table().footer() ).html("SALDO");
-              // $( 'tr:eq(1) td:eq(1)', api.table().footer() ).html(saldo_debet);
-              // $( 'tr:eq(1) td:eq(2)', api.table().footer() ).html(saldo_kredit);
             },
             "columnDefs": [
               { 
                 "targets": 0,
-                "width" : 10
+                "width" : 10,
+                "class" : "column-hidden"
               },
               { 
                 "targets": 1,
-                "width" : 60,
+                "width" : 120,
                 "render":  function ( data, type, row, meta ) {
                   var val = convertCode(row[1].split(" ")[0]);
                   return val;
+                },
+                createdCell: function (td, cellData, rowData, row, col) {
+                  var padd = (10+(parseInt(rowData[4])-1)*12)+"px";
+                  $(td).css('padding-left', padd);
                 }
               },
               { 
                 "targets": 2,
                 "render":  function ( data, type, row, meta ) {
                   return row[1].replace(row[1].split(" ")[0], "");
+                },
+                createdCell: function (td, cellData, rowData, row, col) {
+                  var padd = (10+(parseInt(rowData[4])-1)*12)+"px";
+                  $(td).css('padding-left', padd);
                 }
               },
               { 
@@ -169,6 +176,14 @@
                   return formatRupiahWNegative(row[3],".") ;
                 }
               },
+              { 
+                "targets": 5,
+                "width" : 130,
+                "class" : "column-hidden",
+                "render":  function ( data, type, row, meta ) {
+                  return row[4] ;
+                }
+              }
               
           ],
         });
@@ -211,6 +226,11 @@
     $("#tahun_periode").on("change", function() {
       fetch_data();
     });
+
+    $("#child_level").on("change", function() {
+      fetch_data();
+    });
+
 
     $("#coa").select2({
       ajax: {
