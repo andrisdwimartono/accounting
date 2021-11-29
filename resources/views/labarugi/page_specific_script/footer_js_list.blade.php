@@ -158,7 +158,7 @@
                   return val;
                 },
                 createdCell: function (td, cellData, rowData, row, col) {
-                  var padd = ((parseInt(rowData[4])-1)*10)+"px";
+                  var padd = (10+(parseInt(rowData[4])-1)*12)+"px";
                   $(td).css('padding-left', padd);
                 }
               },
@@ -166,6 +166,10 @@
                 "targets": 2,
                 "render":  function ( data, type, row, meta ) {
                   return row[1].replace(row[1].split(" ")[0], "");
+                },
+                createdCell: function (td, cellData, rowData, row, col) {
+                  var padd = (10+(parseInt(rowData[4])-1)*12)+"px";
+                  $(td).css('padding-left', padd);
                 }
               },
               { 
