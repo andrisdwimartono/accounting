@@ -14,6 +14,7 @@ use App\Models\Jenisbayar;
 use App\Models\Neracasaldo;
 use App\Models\Neraca;
 use App\Models\Labarugi;
+use App\Models\Bankva;
 
 class JurnalController extends Controller
 {
@@ -235,6 +236,10 @@ class JurnalController extends Controller
 
     public function storependapatan(Request $request)
     {
+        $bankva = Bankva::where("kode_va", $request->kode_va)->first();
+        if(!$bankva){
+            abort(404, "Kode Virtual Account tidak dikenali");
+        }
         $page_data = $this->tabledesign();
         $rules_transaksi = $page_data["fieldsrules_transaksi_pendapatan"];
         $requests_transaksi = json_decode($request->transaksi, true);
@@ -318,7 +323,7 @@ class JurnalController extends Controller
                 $this->summerizeJournal("store", $idct);
             }
 
-            $coa = Coa::where("id", 612)->first();
+            $coa = Coa::where("id", $bankva->coa)->first();
             $no_seq++;
             $idct = Transaction::create([
                 "no_seq" => $no_seq,

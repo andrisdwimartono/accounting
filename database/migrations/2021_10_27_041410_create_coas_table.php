@@ -24,6 +24,10 @@ class CreateCoasTable extends Migration
             $table->string('category_label', 255)->nullable();
             $table->string('fheader')->nullable();
             $table->string('factive')->nullable();
+            $table->integer('prodi')->nullable();
+            $table->string('prodi_label', 255)->nullable();
+            $table->integer('jenisbayar')->nullable();
+            $table->string('jenisbayar_label', 255)->nullable();
             $table->integer('user_creator_id')->nullable();
             $table->integer('user_updater_id')->nullable();
             $table->timestamps();
