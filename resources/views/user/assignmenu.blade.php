@@ -1,6 +1,26 @@
     @extends('paging.main')
 
     @section('content')
+    <!--**********************************
+            Content body start
+        ***********************************-->
+        <div class="content-body">
+            <div class="container-fluid">
+                <div class="row page-titles mx-0">
+                    <div class="col-sm-10 p-md-0">
+                        <div class="welcome-text">
+                            <!-- <h4>Hi, welcome back!</h4>
+                            <span>Element</span> -->
+                        </div>
+                    </div>
+                    <div class="col-sm-10 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="javascript:void(0)">Master</a></li>
+                            <li class="breadcrumb-item active"><a href="/user">User</a></li>
+                        </ol>
+                    </div>
+                </div>
+
         <div class="row">
           <!-- left column -->
           <div class="col-md-12">
@@ -46,7 +66,7 @@
                     <div class="form-group">
                       <div class="custom-control custom-switch">
                         <input type="checkbox" class="custom-control-input" id="menu_{{$menu_child->id}}" name="menu_{{$menu_child->id}}">
-                        <label class="custom-control-label" for="menu_{{$menu_child->id}}">{{$menu_child->menu_name}}</label>
+                        <label class="custom-control-label{{$menu_child->is_view=='on'?' font-weight-bold':''}}" for="menu_{{$menu_child->id}}">{{$menu_child->menu_name}}</label>
                       </div>
                     </div>
                     @endif
@@ -61,7 +81,7 @@
                       <div class="form-group">
                         <div class="custom-control custom-switch">
                           <input type="checkbox" class="custom-control-input" id="menu_{{$menu_child->id}}" name="menu_{{$menu_child->id}}">
-                          <label class="custom-control-label" for="menu_{{$menu_child->id}}">{{$menu_child->menu_name}}</label>
+                          <label class="custom-control-label{{$menu_child->is_view=='on'?' font-weight-bold':''}}" for="menu_{{$menu_child->id}}">{{$menu_child->menu_name}}</label>
                         </div>
                       </div>
                       @endif
@@ -89,4 +109,6 @@
         </div>
         <!-- /.row -->
       <!-- /.container-fluid -->
+      </div>
+      </div>
       @endsection

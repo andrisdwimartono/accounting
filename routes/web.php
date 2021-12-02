@@ -27,6 +27,16 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/user/editprofile', 'App\Http\Controllers\UserController@editprofile');
     Route::post('/updateprofile', 'App\Http\Controllers\UserController@updateprofile');
 
+    Route::get('/menu', 'App\Http\Controllers\MenuController@index')->name('menu');
+    Route::post('/getlistmenu', 'App\Http\Controllers\MenuController@get_list');
+    Route::get('/menu/{menu}', 'App\Http\Controllers\MenuController@show');
+    Route::get('/createmenu', 'App\Http\Controllers\MenuController@create');
+    Route::post('/storemenu', 'App\Http\Controllers\MenuController@store');
+    Route::get('/menu/{menu}/edit', 'App\Http\Controllers\MenuController@edit');
+    Route::post('/getdatamenu', 'App\Http\Controllers\MenuController@getdata');
+    Route::post('/updatemenu/{menu}', 'App\Http\Controllers\MenuController@update');
+    Route::post('/deletemenu', 'App\Http\Controllers\MenuController@destroy');
+
     Route::get('/user', 'App\Http\Controllers\UserController@index')->name('user');
     Route::post('/getlistuser', 'App\Http\Controllers\UserController@get_list');
     Route::get('/user/{user}', 'App\Http\Controllers\UserController@show');
@@ -38,6 +48,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/updateuser/{user}', 'App\Http\Controllers\UserController@update');
     Route::post('/deleteuser', 'App\Http\Controllers\UserController@destroy');
     Route::post('/uploadfileuser', 'App\Http\Controllers\UserController@storeUploadFile');
+    Route::get('/assignmenu/{user}/edit', 'App\Http\Controllers\UserController@assignmenu');
+    Route::post('/assignmenu/{user}', 'App\Http\Controllers\UserController@update_assignmenu');
+    Route::post('/getdataassignmenuuser', 'App\Http\Controllers\UserController@getdataassignmenuuser');
+    Route::post('/getdataassignmenuuserrole', 'App\Http\Controllers\UserController@getdataassignmenuuserrole');
+    Route::post('/updateassignmenuuser/{user}', 'App\Http\Controllers\UserController@updateassignmenu');
+    Route::get('/getusermenu', 'App\Http\Controllers\UserController@getUserMenu');
 
     Route::get('/unitkerja', 'App\Http\Controllers\UnitkerjaController@index')->name('unitkerja');
     Route::post('/getlistunitkerja', 'App\Http\Controllers\UnitkerjaController@get_list');
@@ -81,36 +97,12 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/neracasaldo', 'App\Http\Controllers\NeracasaldoController@index')->name('neracasaldo');
     Route::post('/getlistneracasaldo', 'App\Http\Controllers\NeracasaldoController@get_list');
-    Route::get('/neracasaldo/{neracasaldo}', 'App\Http\Controllers\NeracasaldoController@show');
-    Route::get('/createneracasaldo', 'App\Http\Controllers\NeracasaldoController@create');
-    Route::post('/storeneracasaldo', 'App\Http\Controllers\NeracasaldoController@store');
-    Route::get('/neracasaldo/{neracasaldo}/edit', 'App\Http\Controllers\NeracasaldoController@edit');
-    Route::post('/getdataneracasaldo', 'App\Http\Controllers\NeracasaldoController@getdata');
-    Route::post('/updateneracasaldo/{neracasaldo}', 'App\Http\Controllers\NeracasaldoController@update');
-    Route::post('/deleteneracasaldo', 'App\Http\Controllers\NeracasaldoController@destroy');
-    Route::post('/getlinksneracasaldo', 'App\Http\Controllers\NeracasaldoController@getlinks');
    
     Route::get('/neraca', 'App\Http\Controllers\NeracaController@index')->name('neraca');
     Route::post('/getlistneraca', 'App\Http\Controllers\NeracaController@get_list');
-    Route::get('/neraca/{neraca}', 'App\Http\Controllers\NeracaController@show');
-    Route::get('/createneraca', 'App\Http\Controllers\NeracaController@create');
-    Route::post('/storeneraca', 'App\Http\Controllers\NeracaController@store');
-    Route::get('/neraca/{neraca}/edit', 'App\Http\Controllers\NeracaController@edit');
-    Route::post('/getdataneraca', 'App\Http\Controllers\NeracaController@getdata');
-    Route::post('/updateneraca/{neraca}', 'App\Http\Controllers\NeracaController@update');
-    Route::post('/deleteneraca', 'App\Http\Controllers\NeracaController@destroy');
-    Route::post('/getlinksneraca', 'App\Http\Controllers\NeracaController@getlinks');
 
     Route::get('/labarugi', 'App\Http\Controllers\LabarugiController@index')->name('labarugi');
     Route::post('/getlistlabarugi', 'App\Http\Controllers\LabarugiController@get_list');
-    Route::get('/labarugi/{labarugi}', 'App\Http\Controllers\LabarugiController@show');
-    Route::get('/createlabarugi', 'App\Http\Controllers\LabarugiController@create');
-    Route::post('/storelabarugi', 'App\Http\Controllers\LabarugiController@store');
-    Route::get('/labarugi/{labarugi}/edit', 'App\Http\Controllers\LabarugiController@edit');
-    Route::post('/getdatalabarugi', 'App\Http\Controllers\LabarugiController@getdata');
-    Route::post('/updatelabarugi/{labarugi}', 'App\Http\Controllers\LabarugiController@update');
-    Route::post('/deletelabarugi', 'App\Http\Controllers\LabarugiController@destroy');
-    Route::post('/getlinkslabarugi', 'App\Http\Controllers\LabarugiController@getlinks');
 
     Route::get('/openperiode/{month}/{year}', 'App\Http\Controllers\OpencloseperiodeController@openperiode');
 

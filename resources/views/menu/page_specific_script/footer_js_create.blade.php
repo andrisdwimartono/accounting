@@ -1,4 +1,17 @@
-    <script src="{{ asset ("/assets/jquery/js/jquery-3.6.0.min.js") }}"></script>
+    <!-- Required vendors -->
+<script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
+	<script src="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/js/bootstrap-select.min.js") }} "></script>
+    <script src="{{ asset ("/assets/motaadmin/vendor/chart.js/Chart.bundle.min.js") }}"></script>
+    <script src="{{ asset ("/assets/motaadmin/js/custom.min.js") }}"></script>
+	<script src="{{ asset ("/assets/motaadmin/js/deznav-init.js") }}"></script>
+	<!-- Apex Chart -->
+	<script src="{{ asset ("/assets/motaadmin/vendor/apexchart/apexchart.js") }}"></script>
+    
+	<!-- Svganimation scripts -->
+    <script src="{{ asset ("/assets/motaadmin/vendor/svganimation/vivus.min.js") }}"></script>
+    <script src="{{ asset ("/assets/motaadmin/vendor/svganimation/svg.animation.js") }}"></script>
+
+    <!-- <script src="{{ asset ("/assets/jquery/js/jquery-3.6.0.min.js") }}"></script> -->
     <script src="{{ asset ("/assets/node_modules/@popperjs/core/dist/umd/popper.min.js") }}"></script>
     <script src="{{ asset ("/assets/node_modules/gijgo/js/gijgo.min.js") }}"></script>
     <script src="{{ asset ("/assets/node_modules/jquery-toast-plugin/dist/jquery.toast.min.js") }}"></script>
@@ -34,7 +47,7 @@
                 var ctt1_menu = [];
                 var table = $('#ctt1_menu').DataTable().rows().data();
                 for(var i = 0; i < table.length; i++){
-                    ctt1_menu.push({"ct1_m_sequence": table[i][0], "ct1_menu_name": table[i][1], "ct1_url": table[i][2], "ct1_menu_icon": table[i][3], "ct1_is_shown_at_side_menu": table[i][4], "id": table[i][table.columns().header().length-1]});
+                    ctt1_menu.push({"ct1_m_sequence": table[i][0], "ct1_menu_name": table[i][1], "ct1_url": table[i][2], "ct1_menu_icon": table[i][3], "ct1_is_shown_at_side_menu": table[i][4], "ct1_is_view": table[i][5], "ct1_mainmenu": table[i][6], "id": table[i][table.columns().header().length-1]});
                 }
                 $('#ct1_menu').val(JSON.stringify(ctt1_menu));
                 var id_{{$page_data["page_data_urlname"]}} = 0;
@@ -70,7 +83,7 @@
                             $.each(err.responseJSON.errors, function (i, error) {
                                 var validator = $("#quickForm").validate();
                                 var errors = {}
-                                if(i == "ct1_m_sequence" || i == "ct1_menu_name" || i == "ct1_url" || i == "ct1_menu_icon" || i == "ct1_is_shown_at_side_menu"){
+                                if(i == "ct1_m_sequence" || i == "ct1_menu_name" || i == "ct1_url" || i == "ct1_menu_icon" || i == "ct1_is_shown_at_side_menu" || i == "ct1_is_view" || i == "ct1_mainmenu"){
                                     errors["ct1_menu"] = error[0];
                                 }else{
                                     errors[i] = error[0];
@@ -244,7 +257,7 @@
                 
                 for(var i = 0; i < data.data.ct1_menu.length; i++){
                     var dttb = $('#ctt1_menu').DataTable();
-                    var child_table_data = [data.data.ct1_menu[i].m_sequence, data.data.ct1_menu[i].menu_name, data.data.ct1_menu[i].url, data.data.ct1_menu[i].menu_icon, data.data.ct1_menu[i].is_shown_at_side_menu, @if($page_data["page_method_name"] != "View") '<div class="row-show"><i class="fa fa-eye" style="color:blue;cursor: pointer;"></i></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="row-delete"><i class="fa fa-trash" style="color:red;cursor: pointer;"></i></div>' @else '<div class="row-show"><i class="fa fa-eye" style="color:blue;cursor: pointer;"></i></div>' @endif, data.data.ct1_menu[i].id];
+                    var child_table_data = [data.data.ct1_menu[i].m_sequence, data.data.ct1_menu[i].menu_name, data.data.ct1_menu[i].url, data.data.ct1_menu[i].menu_icon, data.data.ct1_menu[i].is_shown_at_side_menu, data.data.ct1_menu[i].is_view, data.data.ct1_menu[i].mainmenu, @if($page_data["page_method_name"] != "View") '<div class="row-show"><i class="fa fa-eye" style="color:blue;cursor: pointer;"></i></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="row-delete"><i class="fa fa-trash" style="color:red;cursor: pointer;"></i></div>' @else '<div class="row-show"><i class="fa fa-eye" style="color:blue;cursor: pointer;"></i></div>' @endif, data.data.ct1_menu[i].id];
                     if(dttb.row.add(child_table_data).draw( false )){
                         //$('#ctm1_menu').modal('hide');
                     }
@@ -275,6 +288,8 @@
         $("input[name='ct1_url']").val("");
         $("input[name='ct1_menu_icon']").val("");
         $("input[name='ct1_is_shown_at_side_menu']").prop('checked', false);
+        $("input[name='ct1_is_view']").prop('checked', false);
+        $("input[name='ct1_mainmenu']").val("");
 
         @if($page_data["page_method_name"] != "View")
         $("#"+childtablename+" .modal-footer").html('<button type="button" id="ctm1_menuAdd" class="btn btn-primary">Add Row</button>');
@@ -287,10 +302,12 @@
             var ct1_url = $("input[name='ct1_url']").val();
             var ct1_menu_icon = $("input[name='ct1_menu_icon']").val();
             var ct1_is_shown_at_side_menu = $("input[name='ct1_is_shown_at_side_menu']").prop('checked')?'on':null;
+            var ct1_is_view = $("input[name='ct1_is_view']").prop('checked')?'on':null;
+            var ct1_mainmenu = $("input[name='ct1_mainmenu']").val();
             // if($("input[name='ct1_is_shown_at_side_menu']").prop('checked')){
             //     ct1_is_shown_at_side_menu = 1;
             // }
-            var child_table_data = [no+1, ct1_menu_name, ct1_url, ct1_menu_icon, ct1_is_shown_at_side_menu, '<div class="row-show"><i class="fa fa-eye" style="color:blue;cursor: pointer;"></i></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="row-delete"><i class="fa fa-trash" style="color:red;cursor: pointer;"></i></div>', null];
+            var child_table_data = [no+1, ct1_menu_name, ct1_url, ct1_menu_icon, ct1_is_shown_at_side_menu, ct1_is_view, ct1_mainmenu, '<div class="row-show"><i class="fa fa-eye" style="color:blue;cursor: pointer;"></i></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="row-delete"><i class="fa fa-trash" style="color:red;cursor: pointer;"></i></div>', null];
             if(dttb.row.add(child_table_data).draw( false )){
                 $('#ctm1_menu').modal('hide');
             }
@@ -302,6 +319,8 @@
         $("input[name='ct1_url']").val(data.data()[2]);
         $("input[name='ct1_menu_icon']").val(data.data()[3]);
         $("input[name='ct1_is_shown_at_side_menu']").prop('checked', data.data()[4]);
+        $("input[name='ct1_is_view']").prop('checked', data.data()[5]);
+        $("input[name='ct1_mainmenu']").val(data.data()[6]);
         // if(data.data()[4] == 1){
         //     $("input[name='ct1_is_shown_at_side_menu']").prop('checked', true);
         // }
@@ -317,6 +336,8 @@
             temp[2] = $("input[name='ct1_url']").val();
             temp[3] = $("input[name='ct1_menu_icon']").val();
             temp[4] = $("input[name='ct1_is_shown_at_side_menu']").prop('checked')?'on':null;
+            temp[5] = $("input[name='ct1_is_view']").prop('checked')?'on':null;
+            temp[6] = $("input[name='ct1_mainmenu']").val();
             // if($("input[name='ct1_is_shown_at_side_menu']").prop('checked')){
             //     temp[4] = 1;
             // }

@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use App\Models\User;
+use App\Models\User_menu;
+use App\Models\User_role_menu;
+use App\Models\Menu;
 use Validator;
 use Hash;
 use Session;
@@ -338,6 +341,179 @@ class UserController extends Controller
             ]);
         }
         return response()->json(['error'=>$validator->errors()->all()]);
+    }
+
+    public function assignmenu(User $user)
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "Update";
+        $page_data["footer_js_page_specific_script"] = ["user.page_specific_script.assignmenu_footer_js_create"];
+        $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_create"];
+        
+        $page_data["id"] = $user->id;
+        $menus = Menu::orderBy("mp_sequence", "ASC")->orderBy("m_sequence", "ASC")->get();
+        return view('user.assignmenu', ['page_data' => $page_data, 'menus' => $menus]);
+    }
+
+    public function getdataassignmenuuser(Request $request)
+    {
+       if($request->ajax() || $request->wantsJson()){
+            $user_menus = User_menu::whereUserId($request->id)->get();
+            $user = User::whereId($request->id)->first();
+            if(!$user){
+                abort(404, "Data not found");
+            }
+
+            $results = array(
+                "status" => 201,
+                "message" => "Data available",
+                "data" => [
+                    "user_menus" => $user_menus,
+                    "user" => $user
+                ]
+            );
+
+            return response()->json($results);
+        }
+    }
+
+    public function getdataassignmenuuserrole(Request $request)
+    {
+       if($request->ajax() || $request->wantsJson()){
+            $user_menus = User_role_menu::whereRole($request->role)->get();
+            if(!$user_menus){
+                abort(404, "Data not found");
+            }
+
+            $results = array(
+                "status" => 201,
+                "message" => "Data available",
+                "data" => [
+                    "user_menus" => $user_menus
+                ]
+            );
+
+            return response()->json($results);
+        }
+    }
+
+    public function updateassignmenu(Request $request, $id)
+    {
+        $page_data = $this->tabledesign();
+        
+        User::whereId($id)->update([
+            "role" => $request["role"],
+            "role_label" => $request["role_label"]
+        ]);
+        
+        foreach(Menu::whereNull("is_group_menu")->get() as $menu){
+            if(User_menu::where("user_id", $id)->where("menu_id", $menu->id)->first()){
+                User_menu::where("user_id", $id)->where("menu_id", $menu->id)->update([
+                    "is_granted" => $request["menu_".$menu->id],
+                    "mp_sequence" => $menu->mp_sequence,
+                    "m_sequence" => $menu->m_sequence,
+                    "menu_name" => $menu->menu_name,
+                    "url" => $menu->url,
+                    "menu_icon" => $menu->menu_icon,
+                    "parent_id" => $menu->parent_id,
+                    "is_group_menu" => $menu->is_group_menu,
+                    "is_shown_at_side_menu" => $menu->is_shown_at_side_menu,
+                    "is_view" => $menu->is_view,
+                    "mainmenu" => $menu->mainmenu,
+                ]);
+            }else{
+                User_menu::create([
+                    "user_id" => $id,
+                    "menu_id" => $menu->id,
+                    "is_granted" => $request["menu_".$menu->id],
+                    "mp_sequence" => $menu->mp_sequence,
+                    "m_sequence" => $menu->m_sequence,
+                    "menu_name" => $menu->menu_name,
+                    "url" => $menu->url,
+                    "menu_icon" => $menu->menu_icon,
+                    "parent_id" => $menu->parent_id,
+                    "is_group_menu" => $menu->is_group_menu,
+                    "is_shown_at_side_menu" => $menu->is_shown_at_side_menu,
+                    "is_view" => $menu->is_view,
+                    "mainmenu" => $menu->mainmenu,
+                ]);
+            }
+        }
+
+        foreach(Menu::whereNotNull("is_group_menu")->get() as $menu){
+            if(User_menu::where("user_id", $id)->where("is_granted", 'on')->where("parent_id", $menu->id)->first()){
+                if(User_menu::where("user_id", $id)->where("menu_id", $menu->id)->first()){
+                    User_menu::where("user_id", $id)->where("menu_id", $menu->id)->update([
+                        "is_granted" => 'on',
+                        "mp_sequence" => $menu->mp_sequence,
+                        "m_sequence" => $menu->m_sequence,
+                        "menu_name" => $menu->menu_name,
+                        "url" => $menu->url,
+                        "menu_icon" => $menu->menu_icon,
+                        "parent_id" => null,
+                        "is_group_menu" => 'on',
+                        "is_shown_at_side_menu" => $menu->is_shown_at_side_menu,
+                        "is_view" => $menu->is_view,
+                        "mainmenu" => $menu->mainmenu,
+                    ]);
+                }else{
+                    User_menu::create([
+                        "user_id" => $id,
+                        "menu_id" => $menu->id,
+                        "is_granted" => 'on',
+                        "mp_sequence" => $menu->mp_sequence,
+                        "m_sequence" => $menu->m_sequence,
+                        "menu_name" => $menu->menu_name,
+                        "url" => $menu->url,
+                        "menu_icon" => $menu->menu_icon,
+                        "parent_id" => null,
+                        "is_group_menu" => 'on',
+                        "is_shown_at_side_menu" => $menu->is_shown_at_side_menu,
+                        "is_view" => $menu->is_view,
+                        "mainmenu" => $menu->mainmenu,
+                    ]);
+                }
+            }else{
+                if(User_menu::where("user_id", $id)->where("menu_id", $menu->id)->first()){
+                    User_menu::where("user_id", $id)->where("menu_id", $menu->id)->update([
+                        "is_granted" => null,
+                        "mp_sequence" => $menu->mp_sequence,
+                        "m_sequence" => $menu->m_sequence,
+                        "menu_name" => $menu->menu_name,
+                        "url" => $menu->url,
+                        "menu_icon" => $menu->menu_icon,
+                        "parent_id" => null,
+                        "is_group_menu" => 'on',
+                        "is_shown_at_side_menu" => $menu->is_shown_at_side_menu,
+                        "is_view" => $menu->is_view,
+                        "mainmenu" => $menu->mainmenu,
+                    ]);
+                }else{
+                    User_menu::create([
+                        "user_id" => $id,
+                        "menu_id" => $menu->id,
+                        "is_granted" => null,
+                        "mp_sequence" => $menu->mp_sequence,
+                        "m_sequence" => $menu->m_sequence,
+                        "menu_name" => $menu->menu_name,
+                        "url" => $menu->url,
+                        "menu_icon" => $menu->menu_icon,
+                        "parent_id" => null,
+                        "is_group_menu" => 'on',
+                        "is_shown_at_side_menu" => $menu->is_shown_at_side_menu,
+                        "is_view" => $menu->is_view,
+                        "mainmenu" => $menu->mainmenu,
+                    ]);
+                }
+            }
+        }
+            
+        return response()->json([
+            'status' => 201,
+            'message' => 'ID '.$id.' successfully updated',
+            'data' => ['id' => $id]
+        ]);
+        
     }
 
     public function editprofile()
