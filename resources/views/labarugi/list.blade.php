@@ -56,9 +56,8 @@
                                     </div>
                                     <div class="col-sm-3 cakfield">
                                         <select name="child_level" id="child_level" class="form-control select2bs4staticBackdrop" data-row="1" style="width: 100%;">
-                                            <?php for($i = 0; $i < 8; $i++){ ?>
-                                                <option value="<?=$i;?>"><?=$i;?></option>
-                                            <?php } ?>
+                                            <option value="0">Header</option>
+                                            <option value="10">Detail</option>
                                         </select>
                                     </div>
                                 </div>

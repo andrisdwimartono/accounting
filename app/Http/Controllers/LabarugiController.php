@@ -296,7 +296,48 @@ class LabarugiController extends Controller
         }
 
         $dt = array();
-        $this->get_list_data($dt, $request, $keyword, $limit, $orders, null);
+        if($keyword){
+            $no = 0;
+        foreach(Coa::where(function($q) use ($keyword, $request) {
+                $q->where("coa_code", "LIKE", "%" . $keyword. "%")->orWhere("coa_name", "LIKE", "%" . $keyword. "%")->orWhere("level_coa", "LIKE", "%" . $keyword. "%")->orWhere("fheader", "LIKE", "%" . $keyword. "%")->orWhere("factive", "LIKE", "%" . $keyword. "%");
+                })->where("factive", "on")->whereIn("category", ["pendapatan", "biaya", "biaya_lainnya", "pendapatan_lainnya"])->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "coa_code", "coa_name", "level_coa", "coa", "coa_label", "category", "category_label", "fheader", "factive"]) as $coa){
+                    $no = $no+1;
+                    $act = '';
+
+                    if($coa->fheader == 'on'){
+                        $act .= '<button type="button" class="row-add-child"> <i class="fas fa-plus text-info"></i> </button>';
+                    }
+                    
+                    $bulan_periode = 1;
+                    if(isset($request->search["bulan_periode"])){
+                        $bulan_periode = $request->search["bulan_periode"];
+                    }
+                    $tahun_periode = 1;
+                    if(isset($request->search["tahun_periode"])){
+                        $tahun_periode = $request->search["tahun_periode"];
+                    }
+                    $child_level = 1;
+                    if(isset($request->search["child_level"])){
+                        $child_level = $request->search["child_level"];
+                    }
+
+                    if($coa->fheader != "on"){
+                        $labarugi_val = Labarugi::where("coa", $coa->id)->where("bulan_periode", $bulan_periode)->where("tahun_periode", $tahun_periode)->where(function($q) {
+                            $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
+                        })->first();
+                        if($labarugi_val){
+                            array_push($dt, array($coa->id, $coa->coa_code." ".$coa->coa_name, $labarugi_val->debet, $labarugi_val->credit, $coa->level_coa, $coa->fheader, $act));
+                        }
+                    }else{
+                        $dc = array(0, 0);
+                        $this->getAngka($dc, $coa->id, $bulan_periode, $tahun_periode);
+                        if($dc[0] != 0  || $dc[1] != 0)
+                            array_push($dt, array($coa->id, $coa->coa_code." ".$coa->coa_name, $dc[0], $dc[1], $coa->level_coa, $coa->fheader, $act));
+                    }
+                }
+        }else{
+            $this->get_list_data($dt, $request, $keyword, $limit, $orders, null);
+        }
         
         $output = array(
             "draw" => intval($request->draw),
