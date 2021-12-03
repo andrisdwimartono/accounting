@@ -617,5 +617,25 @@ class UserController extends Controller
             'message' => 'Unable to Logout'
             ]);
         }
-     }
+    }
+
+    public function getUserMenu(){
+        if(Auth::user()){
+            $user_menus = User_menu::whereUserId(Auth::user()->id)->where("is_granted", "on")->where("is_shown_at_side_menu", "on")->orderBy("mp_sequence", "ASC")->orderBy("m_sequence", "ASC")->get();
+            
+            if(!$user_menus){
+                abort(404, "Data not found");
+            }
+
+            $results = array(
+                "status" => 201,
+                "message" => "Data available",
+                "data" => [
+                    "user_menus" => $user_menus
+                ]
+            );
+
+            return response()->json($results);
+        }
+    }
 }

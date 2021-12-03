@@ -16,18 +16,18 @@
 					<div class="tab-pane fade" id="cakmenu-master" role="tabpanel">
 						<ul class="metismenu tab-nav-menu">
 							<li class="nav-label">Master</li>
-							<li id="cakmenu-user"><a href="{{ env('APP_URL') }}/user">
+							<li class="d-none" id="cakmenu-user"><a href="{{ env('APP_URL') }}/user">
 									<svg id="icon-apps" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
 									User
 								</a>
 							</li>
-							<li id="cakmenu-unitkerja">
+							<li class="d-none" id="cakmenu-unitkerja">
 								<a href="{{ env('APP_URL') }}/unitkerja">									
 									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24"/><rect fill="#000000" x="4" y="4" width="7" height="7" rx="1.5"/><path d="M5.5,13 L9.5,13 C10.3284271,13 11,13.6715729 11,14.5 L11,18.5 C11,19.3284271 10.3284271,20 9.5,20 L5.5,20 C4.67157288,20 4,19.3284271 4,18.5 L4,14.5 C4,13.6715729 4.67157288,13 5.5,13 Z M14.5,4 L18.5,4 C19.3284271,4 20,4.67157288 20,5.5 L20,9.5 C20,10.3284271 19.3284271,11 18.5,11 L14.5,11 C13.6715729,11 13,10.3284271 13,9.5 L13,5.5 C13,4.67157288 13.6715729,4 14.5,4 Z M14.5,13 L18.5,13 C19.3284271,13 20,13.6715729 20,14.5 L20,18.5 C20,19.3284271 19.3284271,20 18.5,20 L14.5,20 C13.6715729,20 13,19.3284271 13,18.5 L13,14.5 C13,13.6715729 13.6715729,13 14.5,13 Z" fill="#000000" opacity="0.3"/></g></svg>
 									Unit Kerja
 								</a>
 							</li>
-							<li id="cakmenu-coa"><a href="{{ env('APP_URL') }}/coa/aset/list">
+							<li class="d-none" id="cakmenu-coa"><a href="{{ env('APP_URL') }}/coa/aset/list">
 							<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="svg-main-icon">
 								<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
 									<rect x="0" y="0" width="24" height="24"/>
@@ -44,7 +44,7 @@
 					<div class="tab-pane fade" id="cakmenu-transaksi" role="tabpanel">
 						<ul class="metismenu tab-nav-menu">
 							<li class="nav-label">Jurnal</li>
-							<li id="cakmenu-jurnal"><a href="{{ env('APP_URL') }}/createjurnal">
+							<li class="d-none" id="cakmenu-jurnal"><a href="{{ env('APP_URL') }}/createjurnal">
 									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="svg-main-icon">
 										<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
 											<rect x="0" y="0" width="24" height="24"/>
@@ -61,7 +61,7 @@
 					<div class="tab-pane fade" id="cakmenu-laporan" role="tabpanel">
 						<ul class="metismenu tab-nav-menu">
 							<li class="nav-label">Laporan</li>
-							<li id="cakmenu-bukubesar" class="active"><a href="{{ env('APP_URL') }}/bukubesar">
+							<li class="d-none" id="cakmenu-bukubesar" class="active"><a href="{{ env('APP_URL') }}/bukubesar">
 									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="svg-main-icon">
 										<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
 											<rect x="0" y="0" width="24" height="24"/>
@@ -72,7 +72,7 @@
 									Buku Besar
 								</a>
 							</li>
-							<li id="cakmenu-neracasaldo"><a href="{{ env('APP_URL') }}/neracasaldo">
+							<li class="d-none" id="cakmenu-neracasaldo"><a href="{{ env('APP_URL') }}/neracasaldo">
 									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="svg-main-icon">
 										<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
 											<rect x="0" y="0" width="24" height="24"/>
@@ -83,7 +83,7 @@
 									Neraca Saldo
 								</a>
 							</li>
-							<li id="cakmenu-neraca"><a href="{{ env('APP_URL') }}/neraca">
+							<li class="d-none" id="cakmenu-neraca"><a href="{{ env('APP_URL') }}/neraca">
 									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="svg-main-icon">
 										<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
 											<rect x="0" y="0" width="24" height="24"/>
@@ -94,7 +94,7 @@
 									Neraca
 								</a>
 							</li>
-							<li id="cakmenu-labarugi"><a href="{{ env('APP_URL') }}/labarugi">
+							<li class="d-none" id="cakmenu-labarugi"><a href="{{ env('APP_URL') }}/labarugi">
 									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="svg-main-icon">
 										<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
 											<rect x="0" y="0" width="24" height="24"/>
