@@ -20,7 +20,7 @@ Route::post('login', [AuthController::class, 'login']);
 Route::get('register', [AuthController::class, 'showFormRegister'])->name('register');
 Route::post('register', [AuthController::class, 'register']);
  
-Route::group(['middleware' => 'auth'], function () {
+Route::group(['middleware' => 'checkauth'], function () {
     Route::get('home', [HomeController::class, 'index'])->name('home');
     Route::get('test', [HomeController::class, 'test'])->name('test');
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
