@@ -223,15 +223,49 @@ class NeracaController extends Controller
             $limit = array(intval($request->start), intval($request->length));
         }
 
+        $bulan_periode = 1;
+        if(isset($request->search["bulan_periode"])){
+            $bulan_periode = $request->search["bulan_periode"];
+        }
+        $tahun_periode = 1;
+        if(isset($request->search["tahun_periode"])){
+            $tahun_periode = $request->search["tahun_periode"];
+        }
+        $child_level = 1;
+        if(isset($request->search["child_level"])){
+            $child_level = $request->search["child_level"];
+        }
+
         $dt = array();
-        $this->get_list_data($dt, $request, $keyword, $limit, $orders, null);
+        $no = 0;
+        foreach(Coa::find(1)->join('neracas', 'neracas.coa', '=', 'coas.id')
+        ->whereIn('category',['aset','hutang','modal'])
+        ->where(function($q) use ($keyword) {
+            $q->where("neracas.tahun_periode", "LIKE", "%" . $keyword. "%")->orWhere("neracas.bulan_periode", "LIKE", "%" . $keyword. "%")->orWhere("coas.coa_name", "LIKE", "%" . $keyword. "%");
+        })->where(function($q) {
+            $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
+        })->where(function($q) use($bulan_periode, $tahun_periode){
+            $q->where(function($q) use ($bulan_periode, $tahun_periode){
+                $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+            })->orWhere(function($q) use ($bulan_periode, $tahun_periode){
+                $q->where("tahun_periode", "<", $tahun_periode);
+            });
+        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->select([ "coas.coa_name", "coas.coa_code", DB::raw("SUM(debet) as debet"), DB::raw("SUM(credit) as credit")])->groupBy(["coas.coa_name","coas.coa_code"])->get() as $neraca){
+            $no = $no+1;
+            $act = '
+            <a href="/neraca/'.$neraca->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
+
+            <a href="/neraca/'.$neraca->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
+
+            <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button>';
+
+            array_push($dt, array($no, $neraca->coa_code, $neraca->coa_name, $neraca->debet, $neraca->credit, $act));
+        }
         
         $output = array(
             "draw" => intval($request->draw),
             "recordsTotal" => Coa::get()->count(),
-            "recordsFiltered" => intval(Coa::where(function($q) use ($keyword, $request) {
-                $q->where("coa_code", "LIKE", "%" . $keyword. "%")->orWhere("coa_name", "LIKE", "%" . $keyword. "%")->orWhere("level_coa", "LIKE", "%" . $keyword. "%")->orWhere("fheader", "LIKE", "%" . $keyword. "%")->orWhere("factive", "LIKE", "%" . $keyword. "%");
-            })->orderBy($orders[0], $orders[1])->get()->count()),
+            "recordsFiltered" => Coa::get()->count(),
             "data" => $dt
         );
 
