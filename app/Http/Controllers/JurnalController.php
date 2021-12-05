@@ -110,7 +110,7 @@ class JurnalController extends Controller
 
         $td["fieldsrules_transaksi_pendapatan"] = [
             "nominal" => "required|numeric",
-            "prodi" => "required|numeric",
+            "prodi" => "numeric",
             "jenisbayar" => "required|numeric"
         ];
 
@@ -255,7 +255,11 @@ class JurnalController extends Controller
                 $ct_messages[$key] = "No ".$no_seq." ".$value;
             }
             $child_tb_request->validate($rules_transaksi, $ct_messages);
-            $coa = Coa::where("prodi", $ct_request["prodi"])->where("jenisbayar", $ct_request["jenisbayar"])->first();
+            $coa = Coa::where(function($q) use($ct_request){
+                if($ct_request["prodi"]){
+                    $q->where("prodi", $ct_request["prodi"]);
+                }
+            })->where("jenisbayar", $ct_request["jenisbayar"])->first();
             if(!$coa){
                 $coa_exist = false;
                 
@@ -295,7 +299,11 @@ class JurnalController extends Controller
             
             $no_seq = -1;
             foreach($requests_transaksi as $ct_request){
-                $coa = Coa::where("prodi", $ct_request["prodi"])->where("jenisbayar", $ct_request["jenisbayar"])->first();
+                $coa = Coa::where(function($q) use($ct_request){
+                    if($ct_request["prodi"]){
+                        $q->where("prodi", $ct_request["prodi"]);
+                    }
+                })->where("jenisbayar", $ct_request["jenisbayar"])->first();
                 $no_seq++;
                 $idct = Transaction::create([
                     "no_seq" => $no_seq,
