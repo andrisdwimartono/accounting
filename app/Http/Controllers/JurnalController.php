@@ -258,6 +258,8 @@ class JurnalController extends Controller
             $coa = Coa::where(function($q) use($ct_request){
                 if($ct_request["prodi"]){
                     $q->where("prodi", $ct_request["prodi"]);
+                }else{
+                    $q->whereNull("prodi");
                 }
             })->where("jenisbayar", $ct_request["jenisbayar"])->first();
             if(!$coa){
@@ -302,6 +304,8 @@ class JurnalController extends Controller
                 $coa = Coa::where(function($q) use($ct_request){
                     if($ct_request["prodi"]){
                         $q->where("prodi", $ct_request["prodi"]);
+                    }else{
+                        $q->whereNull("prodi");
                     }
                 })->where("jenisbayar", $ct_request["jenisbayar"])->first();
                 $no_seq++;
