@@ -121,8 +121,15 @@
               var intVal = function ( i ) {
                   return typeof i === 'string' ? i.replace(/[\$,]/g, '')*1 : typeof i === 'number' ?i : 0;
               };
-              debet = api.column( 2 ).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-              kredit = api.column( 3 ).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
+              debet = 0;
+              kredit = 0;
+              for(var i = 0; i < data.length; i++){
+                if(data[i][4] == 1){
+                  debet = debet+intVal(data[i][2]);
+                  kredit = kredit+intVal(data[i][3]);
+                }
+              }
+
               saldo = debet-kredit
               saldo_debet = "";
               saldo_kredit = "";
@@ -142,10 +149,16 @@
               },
               { 
                 "targets": 1,
-                "width" : 120,
+                "width" : 220,
                 "render":  function ( data, type, row, meta ) {
-                  var val = convertCode(row[1].split(" ")[0]);
-                  return val;
+                  var code = ""
+                  var name = row[1].substring(row[1].indexOf(' ') + 1);
+                  if(row[4]!="1"){
+                    code = convertCode(row[1].split(" ")[0]);
+                  } else {
+                    name = "<span class='coa-header'>" + name.toUpperCase() + "</span>"
+                  }
+                  return "<span class='coa-code'>" + code +"</span>  "+ name;
                 },
                 createdCell: function (td, cellData, rowData, row, col) {
                   var padd = (10+(parseInt(rowData[4])-1)*12)+"px";
@@ -154,13 +167,14 @@
               },
               { 
                 "targets": 2,
-                "render":  function ( data, type, row, meta ) {
-                  return row[1].replace(row[1].split(" ")[0], "");
-                },
-                createdCell: function (td, cellData, rowData, row, col) {
-                  var padd = (10+(parseInt(rowData[4])-1)*12)+"px";
-                  $(td).css('padding-left', padd);
-                }
+                "class" : "column-hidden"
+                // "render":  function ( data, type, row, meta ) {
+                //   return row[1].replace(row[1].split(" ")[0], "");
+                // },
+                // createdCell: function (td, cellData, rowData, row, col) {
+                //   var padd = (10+(parseInt(rowData[4])-1)*12)+"px";
+                //   $(td).css('padding-left', padd);
+                // }
               },
               { 
                 "targets": 3,

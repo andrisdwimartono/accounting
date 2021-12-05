@@ -21,6 +21,11 @@ class Coa extends Model
         return $this->hasMany(static::class, 'coa')->orderBy('coa_code', 'asc');
     }
 
+    public function neracas()
+    {
+        return $this->hasMany('App\Models\Neraca','coa','id');
+    }
+
     function getCoa(){
         return $this->hasOne('App\Models\Coa')->orderBy('no_seq', 'ASC');
     }

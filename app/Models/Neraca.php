@@ -14,4 +14,9 @@ class Neraca extends Model
     function getCoa(){
         return $this->hasOne('App\Models\Coa')->orderBy('no_seq', 'ASC');
     }
+
+    public function coas()
+    {
+        return $this->belongsTo('App\Models\Coa');
+    }
 }

@@ -73,7 +73,12 @@
     .cak-nom{
         float: right;
     }
-    
+    .coa-header{
+      font-weight: bold;
+    }
+    .coa-code{
+      color : #919191;
+    }
   </style>
 
   <script>    
