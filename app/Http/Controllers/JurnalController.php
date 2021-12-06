@@ -156,6 +156,17 @@ class JurnalController extends Controller
         return view("jurnal.create", ["page_data" => $page_data]);
     }
 
+    public function createsaldoawal()
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "Create";
+        $page_data["page_job"] = "Saldo Awal";
+        $page_data["footer_js_page_specific_script"] = ["jurnal.page_specific_script.footer_js_create"];
+        $page_data["header_js_page_specific_script"] = ["jurnal.page_specific_script.header_js_create"];
+        
+        return view("jurnal.create", ["page_data" => $page_data]);
+    }
+
     /**
     * Store a newly created resource in storage.
     *

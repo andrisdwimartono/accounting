@@ -463,6 +463,7 @@ $("#quickModalForm_transaksi").validate({
 
 });
 $(document).ready(function() {
+    //<?=isset($page_data["page_job"])?" ".$page_data["page_job"]:""?>
     getlist();
     $("#no_jurnal_search, #tanggal_jurnal_from, #tanggal_jurnal_to").change(function(){
         getlist();
@@ -640,9 +641,14 @@ $(document).ready(function() {
                 cache: true
             }
         });
-    });
 
-    
+        <?php if(isset($page_data["page_job"]) && $page_data["page_job"] == "Saldo Awal"){ ?>
+            $("input[name=deskripsi_1]").val("Saldo Awal");
+            $("input[name=deskripsi_1]").prop("readonly", true);
+            $("input[name=deskripsi_"+rowlen+"]").val("Saldo Awal");
+            $("input[name=deskripsi_"+rowlen+"]").prop("readonly", true);
+        <?php } ?>
+    });    
     
     $("#createnew").click(function(){
         $("#id_jurnal").val(0);

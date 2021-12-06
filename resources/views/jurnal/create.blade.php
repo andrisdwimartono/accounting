@@ -32,7 +32,7 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-header bg-primary">
-                                <h4 class="card-title text-white">Jurnal Umum</h4>
+                                <h4 class="card-title text-white">Jurnal Umum<?=isset($page_data["page_job"])?" ".$page_data["page_job"]:""?></h4>
                             </div>
                             
                 <form id="quickForm" action="#">

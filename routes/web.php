@@ -82,6 +82,7 @@ Route::group(['middleware' => 'checkauth'], function () {
     Route::post('/getlistjurnal', 'App\Http\Controllers\JurnalController@get_list');
     Route::get('/jurnal/{jurnal}', 'App\Http\Controllers\JurnalController@show');
     Route::get('/createjurnal', 'App\Http\Controllers\JurnalController@create');
+    Route::get('/createsaldoawal', 'App\Http\Controllers\JurnalController@createsaldoawal');
     Route::post('/storejurnal', 'App\Http\Controllers\JurnalController@store');
     Route::get('/jurnal/{jurnal}/edit', 'App\Http\Controllers\JurnalController@edit');
     Route::post('/getdatajurnal', 'App\Http\Controllers\JurnalController@getdata');
