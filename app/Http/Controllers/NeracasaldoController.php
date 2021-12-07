@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Neracasaldo;
 use App\Models\Coa;
 use App\Models\Jenisbayar;
+use App\Models\Globalsetting;
 
 class NeracasaldoController extends Controller
 {
@@ -242,16 +243,25 @@ class NeracasaldoController extends Controller
 
         $dt = array();
         $no = 0;
+        $yearopen = Globalsetting::where("id", 1)->first();
         foreach(Neracasaldo::where(function($q) use ($keyword) {
             $q->where("tahun_periode", "LIKE", "%" . $keyword. "%")->orWhere("bulan_periode", "LIKE", "%" . $keyword. "%")->orWhere("coa_label", "LIKE", "%" . $keyword. "%")->orWhere("jenisbayar_label", "LIKE", "%" . $keyword. "%");
         })->where(function($q) {
             $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
-        })->where(function($q) use($bulan_periode, $tahun_periode){
-            $q->where(function($q) use ($bulan_periode, $tahun_periode){
-                $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
-            })->orWhere(function($q) use ($bulan_periode, $tahun_periode){
-                $q->where("tahun_periode", "<", $tahun_periode);
-            });
+        })->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
+            if($bulan_periode >= $yearopen->bulan_tutup_tahun){
+                //only one year
+                $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                    $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                });
+            }else{
+                //cross year
+                $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                    $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                })->orWhere(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                    $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("tahun_periode", $tahun_periode-1);
+                });
+            }
         })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->select([ "coa_label", DB::raw("SUM(debet) as debet"), DB::raw("SUM(credit) as credit")])->groupBy("coa_label")->get() as $neracasaldo){
             $no = $no+1;
             $act = '';

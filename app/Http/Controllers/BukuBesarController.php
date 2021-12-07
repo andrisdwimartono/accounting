@@ -11,6 +11,7 @@ use App\Models\Anggaran;
 use App\Models\Coa;
 use App\Models\Jenisbayar;
 use App\Models\Neracasaldo;
+use App\Models\Globalsetting;
 
 class BukuBesarController extends Controller
 {
@@ -146,6 +147,7 @@ class BukuBesarController extends Controller
         $coa = $data["coa"];
         $bulan_periode = $data["bulan_periode"];
         $tahun_periode = $data["tahun_periode"];
+        $yearopen = Globalsetting::where("id", 1)->first();
         $neracasaldo = Neracasaldo::select(
                 DB::raw("SUM(debet) as total_debet"),
                 DB::raw("SUM(credit) as total_credit"),
@@ -154,12 +156,20 @@ class BukuBesarController extends Controller
             ->where(function($q) {
                 $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
             })
-            ->where(function($q) use($bulan_periode, $tahun_periode){
-                $q->where(function($q) use ($bulan_periode, $tahun_periode){
-                    $q->where("bulan_periode", "<", $bulan_periode)->where("tahun_periode", $tahun_periode);
-                })->orWhere(function($q) use ($bulan_periode, $tahun_periode){
-                    $q->where("tahun_periode", "<", $tahun_periode);
-                });
+            ->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
+                if($bulan_periode >= $yearopen->bulan_tutup_tahun){
+                    //only one year
+                    $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    });
+                }else{
+                    //cross year
+                    $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", "<", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    })->orWhere(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("tahun_periode", $tahun_periode-1);
+                    });
+                }
             })
             ->groupBy("tahun_periode")
             ->get();
