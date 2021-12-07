@@ -15,6 +15,8 @@ class CreateBankvasTable extends Migration
     {
         Schema::create('bankvas', function (Blueprint $table) {
             $table->id();
+            $table->integer("parent_id")->nullable();
+            $table->integer("no_seq")->nullable();
             $table->string("kode_va", 255);
             $table->integer('coa');
             $table->string('coa_label', 255)->nullable();
