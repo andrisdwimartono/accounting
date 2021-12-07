@@ -15,6 +15,7 @@ use App\Models\Neracasaldo;
 use App\Models\Neraca;
 use App\Models\Labarugi;
 use App\Models\Bankva;
+use App\Models\Opencloseperiode;
 
 class JurnalController extends Controller
 {
@@ -176,6 +177,7 @@ class JurnalController extends Controller
     public function store(Request $request)
     {
         $page_data = $this->tabledesign();
+        $this->checkOpenPeriode($request->tanggal_jurnal);
         $rules_transaksi = $page_data["fieldsrules_transaksi"];
         $requests_transaksi = json_decode($request->transaksi, true);
         foreach($requests_transaksi as $ct_request){
@@ -247,6 +249,8 @@ class JurnalController extends Controller
 
     public function storependapatan(Request $request)
     {
+        $tgl = date('Y-m-d');
+        $this->checkOpenPeriode($tgl);
         $bankva = Bankva::where("kode_va", $request->kode_va)->first();
         if(!$bankva){
             abort(404, "Kode Virtual Account tidak dikenali");
@@ -290,7 +294,6 @@ class JurnalController extends Controller
         $rules = $page_data["fieldsrules_pendapatan"];
         $messages = $page_data["fieldsmessages_pendapatan"];
         $uk = Unitkerja::where("unitkerja_code", "01")->first();
-        $tgl = date('Y-m-d');
         if($request->validate($rules, $messages)){
             $id = Jurnal::create([
                 "unitkerja"=> $uk->id,
@@ -424,6 +427,9 @@ class JurnalController extends Controller
     */
     public function update(Request $request, $id)
     {
+        $this->checkOpenPeriode($request->tanggal_jurnal);
+        $jr = Jurnal::where("id", $id)->first();
+        $this->checkOpenPeriode($jr->tanggal_jurnal);
         $page_data = $this->tabledesign();
         $rules_transaksi = $page_data["fieldsrules_transaksi"];
         $requests_transaksi = json_decode($request->transaksi, true);
@@ -895,6 +901,15 @@ class JurnalController extends Controller
                     ]);
                 }
             }
+        }
+    }
+
+    public function checkOpenPeriode($date){
+        $opencloseperiode = Opencloseperiode::orderBy("id", "desc")->first();
+        if($opencloseperiode->bulan_open == explode("-", $date)[1] && $opencloseperiode->tahun_open == explode("-", $date)[0]){
+            return true;
+        }else{
+            abort(403, "Periode buka hanya ".$opencloseperiode->bulan_open_label." ".$opencloseperiode->tahun_open);
         }
     }
 }

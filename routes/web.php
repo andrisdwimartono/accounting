@@ -120,7 +120,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getoptionsglobalsetting', 'App\Http\Controllers\GlobalsettingController@getoptions');
         Route::post('/getlinksglobalsetting', 'App\Http\Controllers\GlobalsettingController@getlinks');
         Route::post('/uploadfileglobalsetting', 'App\Http\Controllers\GlobalsettingController@storeUploadFile');    
-
+        Route::get('/getglobalsetting', 'App\Http\Controllers\GlobalsettingController@getglobalsetting');
+        
         //Route::get('/openperiode/{month}/{year}', 'App\Http\Controllers\OpencloseperiodeController@openperiode');
         Route::get('/opencloseperiode', 'App\Http\Controllers\OpencloseperiodeController@index')->name('opencloseperiode');
         Route::post('/getlistopencloseperiode', 'App\Http\Controllers\OpencloseperiodeController@get_list');
@@ -132,6 +133,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/updateopencloseperiode/{opencloseperiode}', 'App\Http\Controllers\OpencloseperiodeController@update');
         Route::post('/deleteopencloseperiode', 'App\Http\Controllers\OpencloseperiodeController@destroy');
         Route::post('/getoptionsopencloseperiode', 'App\Http\Controllers\OpencloseperiodeController@getoptions');
+
+        
     });
 });
 

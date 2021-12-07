@@ -430,4 +430,23 @@ class GlobalsettingController extends Controller
         }
         return response()->json(['error'=>$validator->errors()->all()]);
     }
+
+    public function getglobalsetting(Request $request){
+        if($request->ajax() || $request->wantsJson()){
+            $globalsetting = Globalsetting::orderBy("id", "asc")->first();
+            if(!$globalsetting){
+                abort(404, "Data not found");
+            }
+
+            $results = array(
+                "status" => 201,
+                "message" => "Data available",
+                "data" => [
+                    "globalsetting" => $globalsetting
+                ]
+            );
+
+            return response()->json($results);
+        }
+    }
 }

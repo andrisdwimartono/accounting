@@ -39,11 +39,19 @@ $(document).ready(function () {
         }
     });
 
-    $('#sidebarCollapse').on("click", function () {
-        $("#sidebar").toggleClass("active");
-        $(".caksidemenu span").toggleClass("d-none");
+    $.ajax({
+      url: "/getglobalsetting",
+      type: "get",
+      success: function(data){
+        $(".logo-abbr").attr("src", "/logo_instansi/"+data.data.globalsetting.logo_instansi);
+      },
+      error: function (err) {
+          console.log(err);
+      }
     });
 });
+
+
 
 function formatDate(date) {
     var converted = date.split("/").reverse().join('-');

@@ -205,13 +205,24 @@ $(function () {
                                 });
                             }
                             validator.showErrors(errors);
-                    });
+                        });
+                    }else{
+                        $.toast({
+                            text: err.responseJSON.message,
+                            heading: err.responseJSON.statusText,
+                            icon: 'Warning',
+                            showHideTransition: 'fade',
+                            allowToastClose: true,
+                            hideAfter: 3000,
+                            position: 'mid-center',
+                            textAlign: 'left'
+                        });
+                    }
+                    cto_loading_hide();
                 }
-                cto_loading_hide();
-            }
-        });
-    }
-});
+            });
+        }
+    });
 
 $("select").select2({
     placeholder: "Pilih satu",
