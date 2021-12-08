@@ -70,9 +70,9 @@ $(function () {
                             });
                     }
                     cto_loading_hide();
-                    @if($page_data["page_method_name"] == "Update")
+                    
                     getdata();
-                    @endif
+                    
                 },
                 error: function (err) {
                     if (err.status == 422) {
@@ -162,19 +162,15 @@ $("#quickForm").validate({
 
 });
 $(document).ready(function() {
-    @if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")
     getdata();
-    @endif
 } );
 
-@if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")
 function getdata(){
     cto_loading_show();
     $.ajax({
         url: "/getdata{{$page_data["page_data_urlname"]}}",
         type: "post",
         data: {
-            id: {{$page_data["id"]}},
             _token: $("#quickForm input[name=_token]").val()
         },
         success: function(data){
@@ -222,5 +218,4 @@ function getdata(){
         }
     });
 }
-    @endif
 </script>

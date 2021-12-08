@@ -254,7 +254,7 @@ class OpencloseperiodeController extends Controller
     public function getdata(Request $request)
     {
         if($request->ajax() || $request->wantsJson()){
-            $opencloseperiode = Opencloseperiode::whereId($request->id)->first();
+            $opencloseperiode = Opencloseperiode::orderBy("id", "desc")->first();
             if(!$opencloseperiode){
                 abort(404, "Data not found");
             }
