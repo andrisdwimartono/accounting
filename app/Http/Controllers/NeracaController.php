@@ -241,12 +241,12 @@ class NeracaController extends Controller
         $dt = array();
         $no = 0;
         foreach(Coa::find(1)
-        ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader", DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")])//"neracas.debet", "neracas.credit"])//DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")])
+        ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader", DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")]) //"neracas.debet", "neracas.credit"])//DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")])
         ->leftJoin('neracas', 'coas.id', '=', 'neracas.coa')
         ->whereIn('coas.category',['aset','hutang','modal'])
         ->where(function($q){
             $q->where(function($q){
-                $q->where("neracas.debet",">",0)->orWhere("neracas.credit",">",0);
+                $q->where("neracas.debet","!=",0)->orWhere("neracas.credit","!=",0);
             })
             ->orWhere(function($q){
                 $q->where("coas.fheader","on");
@@ -262,20 +262,22 @@ class NeracaController extends Controller
             })
             ->orWhere(function($q){
                 $q->whereNull("bulan_periode");
-            });
-            
+            });  
         })
         ->groupBy(["coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader"])
         ->orderBy("coas.level_coa", "desc")
           ->get() as $neraca){
+            
             $no = $no+1;
             $dt[$neraca->id] = array($neraca->id, $neraca->coa_code, $neraca->coa_name, $neraca->debet, $neraca->credit, $neraca->coa, $neraca->level_coa, $neraca->fheader);
         }
+        
 
         // get nominal
         $iter = array_filter($dt, function ($dt) {
-            return ($dt[3] > 0) || ($dt[4] > 0) && ($dt[7] != "on");
+            return ($dt[3] != 0) || ($dt[4] != 0) && ($dt[7] != "on");
         });
+        
         // sum nominal to header
         foreach($iter as $key => $item){
             $d = $item;
@@ -289,12 +291,11 @@ class NeracaController extends Controller
         }
         // remove null value
         $dt = array_filter($dt, function ($dt) {
-            return ($dt[3] > 0) || ($dt[4] > 0);
+            return ($dt[3] != 0) || ($dt[4] != 0);
             // return $dt;
         });
         // leveling
         $dt = array_filter($dt, function ($dt) use ($child_level) {
-            // var_dump($child_level);
             return ((int)$dt[6] <= (int)$child_level+1);
         });
         // sort by code
@@ -305,8 +306,8 @@ class NeracaController extends Controller
         
         $output = array(
             "draw" => intval($request->draw),
-            "recordsTotal" => Coa::get()->count(),
-            "recordsFiltered" => Coa::get()->count(),
+            "recordsTotal" => 0,
+            "recordsFiltered" => 0,
             "data" => $dt
         );
 
