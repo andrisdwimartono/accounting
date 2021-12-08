@@ -207,6 +207,8 @@ class NeracaController extends Controller
 
     public function get_list(Request $request)
     {
+        $maxLevel = Coa::max('level_coa');
+
         $list_column = array("id", "coa_code", "coa_name", "level_coa", "fheader", "factive", "id");
         $keyword = null;
         if(isset($request->search["value"])){
@@ -238,29 +240,68 @@ class NeracaController extends Controller
 
         $dt = array();
         $no = 0;
-        foreach(Coa::find(1)->join('neracas', 'neracas.coa', '=', 'coas.id')
-        ->whereIn('category',['aset','hutang','modal'])
-        ->where(function($q) use ($keyword) {
-            $q->where("neracas.tahun_periode", "LIKE", "%" . $keyword. "%")->orWhere("neracas.bulan_periode", "LIKE", "%" . $keyword. "%")->orWhere("coas.coa_name", "LIKE", "%" . $keyword. "%");
-        })->where(function($q) {
-            $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
-        })->where(function($q) use($bulan_periode, $tahun_periode){
-            $q->where(function($q) use ($bulan_periode, $tahun_periode){
-                $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
-            })->orWhere(function($q) use ($bulan_periode, $tahun_periode){
-                $q->where("tahun_periode", "<", $tahun_periode);
+        foreach(Coa::find(1)
+        ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader", DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")])//"neracas.debet", "neracas.credit"])//DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")])
+        ->leftJoin('neracas', 'coas.id', '=', 'neracas.coa')
+        ->whereIn('coas.category',['aset','hutang','modal'])
+        ->where(function($q){
+            $q->where(function($q){
+                $q->where("neracas.debet",">",0)->orWhere("neracas.credit",">",0);
+            })
+            ->orWhere(function($q){
+                $q->where("coas.fheader","on");
+            });  
+        })
+        ->where(function($q) use($bulan_periode, $tahun_periode){
+            $q->where(function($q) use($bulan_periode, $tahun_periode){
+                $q->where(function($q) use ($bulan_periode, $tahun_periode){
+                    $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                })->orWhere(function($q) use ($bulan_periode, $tahun_periode){
+                    $q->where("tahun_periode", "<", $tahun_periode);
+                });
+            })
+            ->orWhere(function($q){
+                $q->whereNull("bulan_periode");
             });
-        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->select([ "coas.coa_name", "coas.coa_code", DB::raw("SUM(debet) as debet"), DB::raw("SUM(credit) as credit")])->groupBy(["coas.coa_name","coas.coa_code"])->get() as $neraca){
+            
+        })
+        ->groupBy(["coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader"])
+        ->orderBy("coas.level_coa", "desc")
+          ->get() as $neraca){
             $no = $no+1;
-            $act = '
-            <a href="/neraca/'.$neraca->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
-
-            <a href="/neraca/'.$neraca->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
-
-            <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button>';
-
-            array_push($dt, array($no, $neraca->coa_code, $neraca->coa_name, $neraca->debet, $neraca->credit, $act));
+            $dt[$neraca->id] = array($neraca->id, $neraca->coa_code, $neraca->coa_name, $neraca->debet, $neraca->credit, $neraca->coa, $neraca->level_coa, $neraca->fheader);
         }
+
+        // get nominal
+        $iter = array_filter($dt, function ($dt) {
+            return ($dt[3] > 0) || ($dt[4] > 0) && ($dt[7] != "on");
+        });
+        // sum nominal to header
+        foreach($iter as $key => $item){
+            $d = $item;
+            $deb = $item[3];
+            $cre = $item[4];
+            for($i=$d[6] ; $i>1 ; $i--){
+                $dt[$d[5]][3] = (int) $dt[$d[5]][3] + $deb;
+                $dt[$d[5]][4] = (int) $dt[$d[5]][4] + $cre;
+                $d = $dt[$d[5]];
+            }
+        }
+        // remove null value
+        $dt = array_filter($dt, function ($dt) {
+            return ($dt[3] > 0) || ($dt[4] > 0);
+            // return $dt;
+        });
+        // leveling
+        $dt = array_filter($dt, function ($dt) use ($child_level) {
+            // var_dump($child_level);
+            return ((int)$dt[6] <= (int)$child_level+1);
+        });
+        // sort by code
+        $columns = array_column($dt, 1);
+        array_multisort($columns, SORT_ASC, $dt);
+        // convert array
+        $dt = array_values($dt);
         
         $output = array(
             "draw" => intval($request->draw),
