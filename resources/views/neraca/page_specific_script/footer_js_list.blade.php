@@ -112,7 +112,12 @@
               },  
               _token: $("input[name=_token]").val()
             },
+            "dataSrc": function ( json ) {
+              console.log(json);
+              return json.data;
+            }
           },
+          
           
           "footerCallback": function ( row, data, start, end, display ) {
               var api = this.api(), data;
@@ -124,9 +129,9 @@
               debet = 0;
               kredit = 0;
               for(var i = 0; i < data.length; i++){
-                if(data[i][4] == 1){
-                  debet = debet+intVal(data[i][2]);
-                  kredit = kredit+intVal(data[i][3]);
+                if(data[i][6] == 1){ // if level_coa < 1
+                  debet = debet+intVal(data[i][3]);
+                  kredit = kredit+intVal(data[i][4]);
                 }
               }
 
@@ -137,7 +142,7 @@
               else saldo_kredit = formatRupiahWNegative(saldo,".");
 
               // Update footer
-              $( api.column( 2 ).footer() ).html("JUMLAH");
+              $( api.column( 1 ).footer() ).html("JUMLAH");
               $( api.column( 3 ).footer() ).html(formatRupiahWNegative(debet,"."));
               $( api.column( 4 ).footer() ).html(formatRupiahWNegative(kredit,"."));
             },
@@ -152,7 +157,7 @@
                 "width" : 220,
                 "render":  function ( data, type, row, meta ) {
                   var code = ""
-                  var name = row[1].substring(row[1].indexOf(' ') + 1);
+                  var name = row[2];
                   if(row[4]!="1"){
                     code = convertCode(row[1].split(" ")[0]);
                   } else {
@@ -161,48 +166,49 @@
                   return "<span class='coa-code'>" + code +"</span>  "+ name;
                 },
                 createdCell: function (td, cellData, rowData, row, col) {
-                  var padd = (10+(parseInt(rowData[4])-1)*12)+"px";
+                  var padd = (10+(parseInt(rowData[6])-1)*12)+"px";
                   $(td).css('padding-left', padd);
                 }
               },
               { 
                 "targets": 2,
                 "class" : "column-hidden"
-                // "render":  function ( data, type, row, meta ) {
-                //   return row[1].replace(row[1].split(" ")[0], "");
-                // },
-                // createdCell: function (td, cellData, rowData, row, col) {
-                //   var padd = (10+(parseInt(rowData[4])-1)*12)+"px";
-                //   $(td).css('padding-left', padd);
-                // }
               },
               { 
                 "targets": 3,
                 "width" : 130,
                 "render":  function ( data, type, row, meta ) {
-                  return formatRupiahWNegative(row[2],".") ;
+                  
+                    return formatRupiahWNegative(row[3],".") ;
+                  
                 }
               },
               { 
                 "targets": 4,
                 "width" : 130,
                 "render":  function ( data, type, row, meta ) {
-                  return formatRupiahWNegative(row[3],".") ;
+                  
+                    return formatRupiahWNegative(row[4],".") ;
+                  
                 }
               },
               { 
                 "targets": 5,
-                "width" : 130,
                 "class" : "column-hidden",
-                "render":  function ( data, type, row, meta ) {
-                  return row[4] ;
-                }
+              },
+              { 
+                "targets": 6,
+                "class" : "column-hidden",
+              },
+              { 
+                "targets": 7,
+                "class" : "column-hidden",
               }
               
           ],
         });
       cto_loading_hide();
-      table = dataTable;
+      table = dataTable
     }
 
     function convertCode(data){
