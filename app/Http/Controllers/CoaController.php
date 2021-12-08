@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Coa;
+use App\Models\Globalsetting;
 
 class CoaController extends Controller
 {
@@ -379,6 +380,7 @@ class CoaController extends Controller
     }
 
     public function print(Request $request){
-        return view("coa.print", ["data" => $request]);
+        $page_data = $this->tabledesign();
+        return view("coa.print", ["page_data" => $page_data, "data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first()]);
     }
 }

@@ -18,17 +18,22 @@
         <div class="container">
         <div class="row">
                 <div class="col-sm-10 text-center">
-                    <h1>Universitas Muhammadiyah Sidoarjo</h1>
-                    <h3>Laporan </h3>
+                    <h2>Universitas Muhammadiyah Sidoarjo</h2>
+                    <h4>Laporan Kode Rekening Akuntansi</h4>
+                    <?php foreach($page_data["fieldsoptions"]["category"] as $cat){ 
+                        if($cat["name"] == $data->category_filter){
+                        ?>
+                    <h5>Untuk Kategori <?=$cat["label"]?></h5>
+                    <?php } } ?>
                 </div>
-                <div class="col-sm-2">
-                    Logo
+                <div class="col-sm-2 align-middle">
+                    <img class="logo-abbr" src="" width="100px">
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-12">
-                    <table class="table">
-                        <thead class="bg-dark text-white text-center font-weight-bold">
+                    <table class="table table-bordered">
+                        <thead class="bg-secondary text-white text-center font-weight-bold">
                             <tr>
                                 <td scope="col">Kode</td>
                                 <td scope="col">Nama</td>
@@ -45,6 +50,16 @@
         <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
 
         <script>
+            $.ajax({
+                url: "/getglobalsetting",
+                type: "get",
+                success: function(data){
+                    $(".logo-abbr").attr("src", "/logo_instansi/"+data.data.globalsetting.logo_instansi);
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
             cto_loading_show();
             $.ajax({
                 url: "/getlistcoa",
@@ -52,12 +67,13 @@
                 data: $("#formprint").serialize(),
                 success: function(data){
                     var list_data = JSON.parse(data);
-                    console.log(list_data);
                     for(var i = 0; i < list_data.data.length; i++){
                         var row = "<tr>";
-                        var padd = ((parseInt(list_data.data[i][3])-1)*10)+"px";
-                        row += "<td style=\"padding-left: "+padd+"\">"+convertCode(list_data.data[i][1])+"</td>";
-                        row += "<td>"+list_data.data[i][2]+"</td>";
+                        var padd = 10+((parseInt(list_data.data[i][3])-1)*10)+"px";
+                        var val = list_data.data[i][8] == "on"?"<span><b>"+convertCode(list_data.data[i][1])+"</b></span>":"<span>"+convertCode(list_data.data[i][1])+"</span>";
+                        row += "<td style=\"padding-left: "+padd+"\">"+val+"</td>";
+                        val = list_data.data[i][8] == "on"?"<span><b>"+list_data.data[i][2]+"</b></span>":"<span>"+list_data.data[i][2]+"</span>";
+                        row += "<td>"+val+"</td>";
                         row += "</tr>";
                         $("#table_body").append(row);
                     }
