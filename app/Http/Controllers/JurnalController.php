@@ -543,6 +543,7 @@ class JurnalController extends Controller
     {
         if($request->ajax() || $request->wantsJson()){
             $jurnal = Jurnal::whereId($request->id)->first();
+            $this->checkOpenPeriode($jurnal->tanggal_jurnal);
             if(!$jurnal){
                 abort(404, "Data not found");
             }

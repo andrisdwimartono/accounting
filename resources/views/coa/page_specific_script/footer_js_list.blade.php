@@ -76,6 +76,23 @@
             //       $("#modal-add-new-coa").modal({'show': true});
             //     }
             // },
+
+            {
+                text: "<i class=\"fas fa-print\"></i>",
+                className: "mt-2",
+                action: function ( e, dt, node, config ) {
+                  var url = '/printcoa';
+                  var form = $('<form action="' + url + '" method="post">' +
+                    '<input type="hidden" name="_token" value="'+$("input[name=_token]").val()+'" />' +
+                    '<input type="hidden" name="category_filter" value="{{$page_data['category']}}" />' +
+                    '<input type="hidden" name="search[value]" value="'+$('.dataTables_filter input').val()+'" />' +
+                    '<input type="hidden" name="start" value="0" />' +
+                    '<input type="hidden" name="length" value="2000" />' +
+                    '</form>');
+                  $('body').append(form);
+                  form.submit();
+                }
+            },
         ],
           aoColumnDefs: [{
               aTargets: [1],

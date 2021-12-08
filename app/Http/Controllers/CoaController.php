@@ -377,4 +377,8 @@ class CoaController extends Controller
             return response()->json($results);
         }
     }
+
+    public function print(Request $request){
+        return view("coa.print", ["data" => $request]);
+    }
 }
