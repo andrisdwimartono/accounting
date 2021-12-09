@@ -95,7 +95,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getlinksjurnal', 'App\Http\Controllers\JurnalController@getlinks');
         Route::get('/createjurnalbkm', 'App\Http\Controllers\JurnalController@createbkm');
         Route::get('/createjurnalbkk', 'App\Http\Controllers\JurnalController@createbkk');
-
+        Route::post('/storejurnalbkmk', 'App\Http\Controllers\JurnalController@storebkmk');
+        Route::post('/getdatajurnal_bkmk', 'App\Http\Controllers\JurnalController@getdata_bkmk');
+        Route::post('/getlistjurnal_bkmk', 'App\Http\Controllers\JurnalController@get_list_bkmk');
+        Route::post('/updatejurnalbkmk/{jurnal}', 'App\Http\Controllers\JurnalController@update_bkmk');
+        
         Route::get('/bukubesar', 'App\Http\Controllers\BukuBesarController@index')->name('bukubesar');
         Route::post('/getlistbukubesar', 'App\Http\Controllers\BukuBesarController@get_list');
         Route::post('/getlinksbukubesar', 'App\Http\Controllers\BukuBesarController@getlinks');

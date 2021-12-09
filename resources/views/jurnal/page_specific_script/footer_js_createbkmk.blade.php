@@ -308,7 +308,7 @@ $("#anggaran").select2({
     }
 });
 
-$("#coa").select2({
+$("#bank_kas").select2({
     ajax: {
         url: "{{ env('APP_URL') }}/getlinksjurnal",
         type: "post",
@@ -676,16 +676,17 @@ $(document).ready(function() {
 function getdata(){
     cto_loading_show();
     $.ajax({
-        url: "{{ env('APP_URL') }}/getdatajurnal",
+        url: "{{ env('APP_URL') }}/getdatajurnal_bkmk",
         type: "post",
         data: {
             id: $("#id_jurnal").val(),
             //id: 4,
-            _token: $("#quickForm input[name=_token]").val()
+            _token: $("#quickForm input[name=_token]").val(),
+            jurnal_type: $("#jurnal_type").val()
         },
         success: function(data){
             for(var i = 0; i < Object.keys(data.data.jurnal).length; i++){
-                if(Object.keys(data.data.jurnal)[i] == "unitkerja"){
+                if(Object.keys(data.data.jurnal)[i] == "unitkerja" || Object.keys(data.data.jurnal)[i] == "bank_kas"){
                     if(data.data.jurnal[Object.keys(data.data.jurnal)[i]]){
                         var newState = new Option(data.data.jurnal[Object.keys(data.data.jurnal)[i]+"_label"], data.data.jurnal[Object.keys(data.data.jurnal)[i]], true, false);
                         $("#"+Object.keys(data.data.jurnal)[i]).append(newState).trigger("change");
@@ -727,7 +728,7 @@ function getdata(){
                 $("#addrow").trigger("click");
                 $("#addrow").trigger("click");
                 $("#addrow").trigger("click");
-                for(var i = 0; i < data.data.transaksi.length; i++){
+                for(var i = 0; i < data.data.transaksi.length-1; i++){
                     $("input[name=anggaran_label]").val(data.data.transaksi[i].anggaran_label);
                     if(data.data.transaksi[i].no_seq > 3){
                         var trexist = $("#caktable1 > tbody > tr[row-seq="+(parseInt(data.data.transaksi[i].no_seq)+1)+"]").length;
@@ -774,7 +775,7 @@ function getdata(){
 function getlist(){
     cto_loading_show();
     $.ajax({
-        url: "{{ env('APP_URL') }}/getlistjurnal",
+        url: "{{ env('APP_URL') }}/getlistjurnal_bkmk",
         type: "post",
         data: {
             _token: $("#quickForm input[name=_token]").val(),
@@ -783,7 +784,8 @@ function getlist(){
             no_jurnal_search: $("#no_jurnal_search").val(),
             tanggal_jurnal_to: $("input[name=tanggal_jurnal_to]").val().split("/")[2]+"-"+ $("input[name=tanggal_jurnal_to]").val().split("/")[1]+"-"+ $("input[name=tanggal_jurnal_to]").val().split("/")[0],
             tanggal_jurnal_from: $("input[name=tanggal_jurnal_from]").val().split("/")[2]+"-"+$("input[name=tanggal_jurnal_from]").val().split("/")[1]+"-"+$("input[name=tanggal_jurnal_from]").val().split("/")[0],
-            ordering: $("#column_no_jurnal").attr("data-ordering")
+            ordering: $("#column_no_jurnal").attr("data-ordering"),
+            jurnal_type: $("#jurnal_type").val(),
         },
         success: function(data){
             $("#caktable2").find('tbody').empty();
