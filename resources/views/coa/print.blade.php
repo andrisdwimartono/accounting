@@ -3,6 +3,18 @@
         <title>Print COA</title>
         <link rel="stylesheet" href="{{ asset ("/assets/bootstrap/dist/css/bootstrap.min.css") }}">
         <link href="{{ asset ("/assets/cto/css/cto_loadinganimation.min.css") }}" rel="stylesheet" />
+        <style>
+            @page {
+                size: A4;
+                margin: 0;
+            }
+            @media print {
+                html, body {
+                    width: 210mm;
+                    height: 297mm;
+                }
+            }
+        </style>
     </head>
     <body>
     <div id="cto_overlay" class="overlay">
@@ -35,8 +47,8 @@
                     <table class="table table-bordered">
                         <thead class="bg-secondary text-white text-center font-weight-bold">
                             <tr>
-                                <td scope="col">Kode</td>
-                                <td scope="col">Nama</td>
+                                <td scope="col" width="100px">Kode</td>
+                                <td scope="col" width="250px">Nama</td>
                             </tr>
                         </thead>
                         <tbody id="table_body"></tbody>

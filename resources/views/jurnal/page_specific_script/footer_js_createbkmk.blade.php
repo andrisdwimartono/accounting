@@ -71,15 +71,15 @@ $(function () {
             var quickForm = $("#quickForm");
             var cttransaksi = [];
             
-            if(parseFloat($("#totalselisih").text().replace("Rp ", "").replace(".", "").replace(",", ".")) != 0){
-                $("#caktable1_message").html("Debet Kredit masih ada selisih!");
-                $("#caktable1_message").removeClass("d-none");
-                cto_loading_hide();
-                return;
-            }else{
-                $("#caktable1_message").html("");
-                $("#caktable1_message").addClass("d-none");
-            }
+            // if(parseFloat($("#totalselisih").text().replace("Rp ", "").replace(".", "").replace(",", ".")) != 0){
+            //     $("#caktable1_message").html("Debet Kredit masih ada selisih!");
+            //     $("#caktable1_message").removeClass("d-none");
+            //     cto_loading_hide();
+            //     return;
+            // }else{
+            //     $("#caktable1_message").html("");
+            //     $("#caktable1_message").addClass("d-none");
+            // }
 
             var unitkerja = $("#unitkerja").val();
             var unitkerja_label = $("#unitkerja_label").val();
@@ -150,9 +150,9 @@ $(function () {
             values = jQuery.param(values);
 
             var ajaxRequest;
-            var urlpage = "{{ env('APP_URL') }}/storejurnal";
+            var urlpage = "{{ env('APP_URL') }}/storejurnalbkmk";
             if($("#is_edit").val() == 1){
-                urlpage = "{{ env('APP_URL') }}/updatejurnal/"+$("#id_jurnal").val();
+                urlpage = "{{ env('APP_URL') }}/updatejurnalbkmk/"+$("#id_jurnal").val();
             }
             ajaxRequest = $.ajax({
                 url: urlpage,
@@ -239,6 +239,10 @@ $("#unitkerja").on("change", function() {
     $("#unitkerja_label").val($("#unitkerja option:selected").text());
 });
 
+$("#bank_kas").on("change", function() {
+    $("#bank_kas_label").val($("#bank_kas option:selected").text());
+});
+
 $("#anggaran").on("change", function() {
     $("#anggaran_label").val($("#anggaran option:selected").text());
 });
@@ -251,32 +255,6 @@ $("#jenisbayar").on("change", function() {
     $("#jenisbayar_label").val($("#jenisbayar option:selected").text());
 });
 var fields = $("#quickForm").serialize();
-
-$("#unitkerja").select2({
-    ajax: {
-        url: "{{ env('APP_URL') }}/getlinksjurnal",
-        type: "post",
-        dataType: "json",
-        data: function(params) {
-            return {
-                term: params.term || "",
-                page: params.page,
-                field: "unitkerja",
-                _token: $("input[name=_token]").val()
-            }
-        },
-        processResults: function (data, params) {
-            params.page = params.page || 1;
-            return {
-                results: data.items,
-                pagination: {
-                more: (params.page * 25) < data.total_count
-                }
-            };
-        },
-        cache: true
-    }
-});
 
 $("#unitkerja").select2({
     ajax: {
@@ -666,7 +644,7 @@ $(document).ready(function() {
         $("#is_edit").val(0);
         $('#unitkerja').val(null).trigger('change');
         $("#anggaran_label").val("");
-        $("#no_jurnal").val("JU#######");
+        $("#no_jurnal").val("<?=$page_data["page_job"]?>#######");
         $('input[name=tanggal_jurnal]').val("");
         $('#coa_1').val(null).trigger('change');
         $('#deskripsi_1').val("");

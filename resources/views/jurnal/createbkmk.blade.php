@@ -58,7 +58,7 @@
                         <div class="form-group row m-0">
                             <label class="col-sm-4 col-form-label" for="no_jurnal">Nomor Jurnal</label>
                             <div class="col-sm-6 cakfield">
-                                <input type="text" name="no_jurnal" class="form-control form-control-sm" id="no_jurnal" placeholder="Enter Nomor Jurnal" value="JU#######" readonly>
+                                <input type="text" name="no_jurnal" class="form-control form-control-sm" id="no_jurnal" placeholder="Enter Nomor Jurnal" value="<?=$page_data["page_job"]?>#######" readonly>
                             </div>
                         </div>
                         
@@ -78,6 +78,7 @@
                             <label class="col-sm-4 col-form-label" for="bank_kas">Bank/Kas <?=$page_data["page_job"]=="BKM"?" Masuk":" Keluar"?></label>
                             <div class="col-sm-6 cakfield">
                                 <select name="bank_kas" id="bank_kas" class="form-control select2bs4staticBackdrop addnewrowselect" data-row="1" style="width: 100%;"></select>
+                                <input type="hidden" name="bank_kas_label" id="bank_kas_label">
                             </div>
                         </div>
                         <div class="form-group m-0">
