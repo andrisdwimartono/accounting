@@ -112,7 +112,7 @@ class JurnalController extends Controller
         $td["fieldsrules_transaksi_pendapatan"] = [
             "nominal" => "required|numeric",
             "prodi" => "numeric",
-            "jenisbayar" => "required|numeric"
+            "jenisbayar" => "required"
         ];
 
         $td["fieldsmessages_transaksi_pendapatan"] = [
@@ -166,6 +166,28 @@ class JurnalController extends Controller
         $page_data["header_js_page_specific_script"] = ["jurnal.page_specific_script.header_js_create"];
         
         return view("jurnal.create", ["page_data" => $page_data]);
+    }
+
+    public function createbkm()
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "Create";
+        $page_data["page_job"] = "BKM";
+        $page_data["footer_js_page_specific_script"] = ["jurnal.page_specific_script.footer_js_createbkmk"];
+        $page_data["header_js_page_specific_script"] = ["jurnal.page_specific_script.header_js_createbkmk"];
+        
+        return view("jurnal.createbkmk", ["page_data" => $page_data]);
+    }
+
+    public function createbkk()
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "Create";
+        $page_data["page_job"] = "BKK";
+        $page_data["footer_js_page_specific_script"] = ["jurnal.page_specific_script.footer_js_createbkmk"];
+        $page_data["header_js_page_specific_script"] = ["jurnal.page_specific_script.header_js_createbkmk"];
+        
+        return view("jurnal.createbkmk", ["page_data" => $page_data]);
     }
 
     /**
@@ -276,7 +298,7 @@ class JurnalController extends Controller
                 }else{
                     $q->whereNull("prodi");
                 }
-            })->where("jenisbayar", $ct_request["jenisbayar"])->first();
+            })->where("kode_jenisbayar", $ct_request["jenisbayar"])->first();
             if(!$coa){
                 $coa_exist = false;
                 
@@ -321,7 +343,7 @@ class JurnalController extends Controller
                     }else{
                         $q->whereNull("prodi");
                     }
-                })->where("jenisbayar", $ct_request["jenisbayar"])->first();
+                })->where("kode_jenisbayar", $ct_request["jenisbayar"])->first();
                 $no_seq++;
                 $idct = Transaction::create([
                     "no_seq" => $no_seq,
@@ -338,8 +360,8 @@ class JurnalController extends Controller
                     "jenis_transaksi"=> 0,
                     "coa"=> $coa->id,
                     "coa_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,
-                    "jenisbayar"=> 0,
-                    "jenisbayar_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,
+                    "jenisbayar"=> $coa->jenisbayar,
+                    "jenisbayar_label"=> $coa->jenisbayar_label,
                     "nim"=> $request->nim,
                     "kode_va"=> $request->kode_va,
                     "fheader"=> null,
@@ -366,8 +388,8 @@ class JurnalController extends Controller
                 "jenis_transaksi"=> 0,
                 "coa"=> 612,
                 "coa_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,
-                "jenisbayar"=> 0,
-                "jenisbayar_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,
+                "jenisbayar"=> $coa->jenisbayar,
+                "jenisbayar_label"=> $coa->jenisbayar_label,
                 "nim"=> $request->nim,
                 "kode_va"=> $request->kode_va,
                 "fheader"=> null,

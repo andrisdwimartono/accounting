@@ -93,6 +93,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/updatejurnal/{jurnal}', 'App\Http\Controllers\JurnalController@update');
         Route::post('/deletejurnal', 'App\Http\Controllers\JurnalController@destroy');
         Route::post('/getlinksjurnal', 'App\Http\Controllers\JurnalController@getlinks');
+        Route::get('/createjurnalbkm', 'App\Http\Controllers\JurnalController@createbkm');
+        Route::get('/createjurnalbkk', 'App\Http\Controllers\JurnalController@createbkk');
 
         Route::get('/bukubesar', 'App\Http\Controllers\BukuBesarController@index')->name('bukubesar');
         Route::post('/getlistbukubesar', 'App\Http\Controllers\BukuBesarController@get_list');
