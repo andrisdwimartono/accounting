@@ -25,4 +25,10 @@ Route::group(['prefix' => 'v1'], function () {
     //Route::post('/storejurnal', 'App\Http\Controllers\JurnalController@store');
 
     Route::post('/storependapatan', 'App\Http\Controllers\JurnalController@storependapatan');
+    Route::post('/updatependapatan', 'App\Http\Controllers\JurnalController@updatependapatan');
+    Route::post('/storepencairandana', 'App\Http\Controllers\JurnalController@storepencairandana');
+    Route::post('/updatepencairandana', 'App\Http\Controllers\JurnalController@updatepencairandana');
+
+    Route::post('/storepjkpencairandana', 'App\Http\Controllers\JurnalController@storepjkpencairandana');
+    Route::post('/updatepjkpencairandana', 'App\Http\Controllers\JurnalController@updatepjkpencairandana');
 });

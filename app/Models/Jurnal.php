@@ -9,7 +9,7 @@ class Jurnal extends Model
 {
     use HasFactory;
     protected $table = 'jurnals';
-    protected $fillable = ['unitkerja', 'unitkerja_label', 'no_jurnal', 'tanggal_jurnal', 'keterangan', 'alasan_hapus', 'isdeleted', 'user_creator_id', 'user_updater_id', 'updated_at'];
+    protected $fillable = ['unitkerja', 'unitkerja_label', 'no_jurnal', 'tanggal_jurnal', 'keterangan', 'alasan_hapus', 'isdeleted', 'clientreff', 'apitype', 'idjurnalreference', 'no_jurnalreference', 'user_creator_id', 'user_updater_id', 'updated_at'];
 
     function getUnitkerja(){
         return $this->hasOne('App\Models\Unitkerja')->orderBy('no_seq', 'ASC');
