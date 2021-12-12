@@ -122,7 +122,7 @@
               $( api.column( 4 ).footer() ).html(formatRupiah(debet,"."));
               $( api.column( 5 ).footer() ).html(formatRupiah(kredit,"."));
               $( 'tr:eq(1) td:eq(0)', api.table().footer() ).html("SALDO");
-              $( 'tr:eq(2) td:eq(0)', api.table().footer() ).html("SALDO AWAL");
+              // $( 'tr:eq(2) td:eq(0)', api.table().footer() ).html("SALDO AWAL");
               $( 'tr:eq(1) td:eq(1)', api.table().footer() ).html(saldo_debet);
               $( 'tr:eq(1) td:eq(2)', api.table().footer() ).html(saldo_kredit);
               
@@ -221,21 +221,18 @@
 
     $("#coa").on("change", function() {
       fetch_data();
-      get_saldo_awal();
+      // get_saldo_awal();
     });
 
     $("#bulan_periode").on("change", function() {
       fetch_data();
-      get_saldo_awal();
+      // get_saldo_awal();
     });
 
     $("#tahun_periode").on("change", function() {
       fetch_data();
-      get_saldo_awal();
+      // get_saldo_awal();
     });
-
-    
-
 
     $("#coa").select2({
       ajax: {

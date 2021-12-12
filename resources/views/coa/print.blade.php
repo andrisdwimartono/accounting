@@ -14,6 +14,9 @@
                     height: 297mm;
                 }
             }
+            .page-break {
+                page-break-after: always;
+            }
         </style>
     </head>
     <body>
@@ -26,6 +29,7 @@
             <input type="hidden" name="search[value]" value="<?=$data->search["value"]?>" />
             <input type="hidden" name="start" value="<?=$data->start?>" />
             <input type="hidden" name="length" value="<?=$data->length?>" />
+            
         </form>
         <div class="container">
         <div class="row">
@@ -51,7 +55,15 @@
                                 <td scope="col" width="250px">Nama</td>
                             </tr>
                         </thead>
-                        <tbody id="table_body"></tbody>
+                        <tbody id="table_body">
+                            @foreach($coa['data'] as $c)
+                            <tr>
+                                <td scope="col" width="100px">{{$c[1]}}</td>
+                                <td scope="col" width="250px">{{$c[2]}}</td>
+                            </tr>
+                            <div class="page-break"></div>
+                            @endforeach
+                        </tbody>
                     </table>
                 </div>
             </div>

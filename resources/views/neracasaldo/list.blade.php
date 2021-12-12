@@ -72,7 +72,7 @@
                                         </thead>
                                         <tfoot id="jumlah" class="dttables-footer table table-bordered table-striped dataTable">
                                             <tr>
-                                                <td colspan=3 class="right"></td><td></td><td></td>
+                                                <td colspan=3 class="right" style="border-width: 0px 1px 0px 0px;"></td><td></td><td></td>
                                             </tr>
                                         </tfoot>
                                     </table>
