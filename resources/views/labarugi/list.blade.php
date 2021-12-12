@@ -77,10 +77,20 @@
                                         </thead>
                                         <tfoot id="jumlah" class="dttables-footer table table-bordered table-striped dataTable">
                                             <tr>
-                                                <td class="column-hidden"></td><td></td><td></td><td></td><td></td><td class="column-hidden"></td>
+                                                <td class="column-hidden"></td>
+                                                <td  style="border-width: 0px;"></td>
+                                                <td  style="border-width: 0px 1px 0px 0px;"></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td class="column-hidden"></td>
                                             </tr>
                                             <tr>
-                                                <td class="column-hidden"></td><td></td><td></td><td></td><td></td><td class="column-hidden"></td>
+                                                <td class="column-hidden"></td>
+                                                <td style="border-width: 0px"></td>
+                                                <td style="border-width: 0px 1px 0px 0px;"></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td class="column-hidden"></td>
                                             </tr>
                                         </tfoot>
                                     </table>

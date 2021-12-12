@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Coa;
 use App\Models\Globalsetting;
+use PDF;
 
 class CoaController extends Controller
 {
@@ -381,6 +382,63 @@ class CoaController extends Controller
 
     public function print(Request $request){
         $page_data = $this->tabledesign();
-        return view("coa.print", ["page_data" => $page_data, "data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first()]);
+
+        $list_column = array("id", "coa_code", "coa_name", "level_coa", "fheader", "factive", "id");
+        $keyword = null;
+        if(isset($request->search["value"])){
+            $keyword = $request->search["value"];
+        }
+
+        $orders = array("id", "ASC");
+        if(isset($request->order)){
+            $orders = array($list_column[$request->order["0"]["column"]], $request->order["0"]["dir"]);
+        }
+
+        $limit = null;
+        if(isset($request->length) && $request->length != -1){
+            $limit = array(intval($request->start), intval($request->length));
+        }
+
+        $dt = array();
+        if($keyword){
+            $no = 0;
+        foreach(Coa::where(function($q) use ($keyword, $request) {
+                $q->where("coa_code", "LIKE", "%" . $keyword. "%")->orWhere("coa_name", "LIKE", "%" . $keyword. "%")->orWhere("level_coa", "LIKE", "%" . $keyword. "%")->orWhere("fheader", "LIKE", "%" . $keyword. "%")->orWhere("factive", "LIKE", "%" . $keyword. "%");
+                    })->where("factive", "on")->where("category", $request->category_filter)->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "coa_code", "coa_name", "level_coa", "coa", "coa_label", "category", "category_label", "fheader", "factive"]) as $coa){
+                        $no = $no+1;
+                        $act = '
+                        <!--<a href="/coa/'.$coa->id.'" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-info"></i></a>
+
+                        <a href="/coa/'.$coa->id.'/edit" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-success"></i></a>-->
+
+                        <button type="button" class="row-delete"> <i class="fas fa-minus-circle text-danger"></i> </button>
+                        
+                        <!--
+                        <button type="button" class="row-update-line"> <i class="fas fa-edit text-success"></i> </button>-->
+                        ';
+
+                        if($coa->fheader == 'on'){
+                            $act .= '<button type="button" class="row-add-child"> <i class="fas fa-plus text-info"></i> </button>';
+                        }
+
+                    array_push($dt, array($coa->id, $coa->coa_code, $coa->coa_name, $coa->level_coa, $coa->coa, $coa->coa_label, $coa->category, $coa->category_label, $coa->fheader, $coa->factive, $act));
+                }
+        }else{
+            $this->get_list_data($dt, $request, $keyword, $limit, $orders, null);
+        }
+        
+        $output = array(
+            "draw" => intval($request->draw),
+            "recordsTotal" => Coa::get()->count(),
+            "recordsFiltered" => intval(Coa::where(function($q) use ($keyword, $request) {
+                $q->where("coa_code", "LIKE", "%" . $keyword. "%")->orWhere("coa_name", "LIKE", "%" . $keyword. "%")->orWhere("level_coa", "LIKE", "%" . $keyword. "%")->orWhere("fheader", "LIKE", "%" . $keyword. "%")->orWhere("factive", "LIKE", "%" . $keyword. "%");
+            })->where("category", $request->category_filter)->orderBy($orders[0], $orders[1])->get()->count()),
+            "data" => $dt
+        );
+
+        $pdf = PDF::loadview("coa.print", ["coa" => $output,"page_data" => $page_data, "data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first()]);
+        return $pdf->stream('coa.pdf');
+        // return view("coa.print", ["page_data" => $page_data, "data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first()]);
     }
+
 }

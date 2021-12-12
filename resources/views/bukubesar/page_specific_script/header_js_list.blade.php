@@ -44,6 +44,16 @@
       padding-bottom: 1px;
     }
 
+    table.dataTable tfoot tr td {
+      font-size: 14px;
+      padding-top: 1px;
+      padding-bottom: 1px;
+    }
+
+    div.dataTables_scrollFoot>.dataTables_scrollFootInner>table{
+      border:none;
+    }
+
     .dataTables_wrapper .dataTables_paginate .paginate_button {
         padding : 0px;
         margin-left: 0px;

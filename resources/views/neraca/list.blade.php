@@ -76,9 +76,13 @@
                                                 <th class="column-hidden">Level COA</th>
                                             </tr>
                                         </thead>
-                                        <tfoot id="jumlah" class="dttables-footer table table-bordered table-striped dataTable">
+                                        <tfoot id="jumlah" class="dttables-footer table table-striped dataTable">
                                             <tr>
-                                                <td></td><td></td><td class="right"></td><td></td><td></td>
+                                                <td style="border-width: 0px 1px 0px 0px;"></td>
+                                                <td  class="right" style="border-width: 0px 1px 0px 0px;"></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
                                             </tr>
                                         </tfoot>
                                     </table>
