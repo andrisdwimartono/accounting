@@ -64,8 +64,8 @@
                             </div>
                             <div class="card-body">                                
                                 <div class="table-responsive">                                    
-                                    <table id="neraca" class="dttables table table-bordered table-striped dataTable">
-                                        <thead class="bg-primary">
+                                    <table id="neraca" class="display" style="width: 100%">
+                                        <thead >
                                             <tr>
                                                 <th class="column-hidden">No</th>
                                                 <th>Kode Rek.</th>
@@ -77,9 +77,9 @@
                                         </thead>
                                         <tfoot id="jumlah" class="dttables-footer table table-striped dataTable">
                                             <tr>
-                                                <td style="border-width: 0px 1px 0px 0px;"></td>
-                                                <td  class="right" style="border-width: 0px 1px 0px 0px;"></td>
-                                                <td></td>
+                                                <td style="border-width: 0px 0px 0px 0px;"></td>
+                                                <td style="border-width: 0px 0px 0px 0px;"></td>
+                                                <td class="right" style="border-width: 0px 1px 0px 0px;"></td>
                                                 <td></td>
                                                 <td></td>
                                             </tr>

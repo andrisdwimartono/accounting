@@ -16,9 +16,7 @@
   <link href="{{ asset ("/assets/node_modules/gijgo/css/gijgo.min.css") }}" rel="stylesheet" />
   
   <!-- datatables -->
-  <!-- <link href="{{ asset ("/assets/motaadmin//vendor/datatables/css/jquery.dataTables.min.css") }} " rel="stylesheet"> -->
-  <link href="{{ asset ("/assets/datatables/css/dataTables.bootstrap4.min.css") }}" rel="stylesheet" />
-  <link href="{{ asset ("/assets/datatables/css/rowReorder.dataTables.min.css") }}" rel="stylesheet" />
+  <link href="{{ asset ("/assets/motaadmin//vendor/datatables/css/jquery.dataTables.min.css") }} " rel="stylesheet">
   <link href="{{ asset ("/assets/datatables/css/buttons.dataTables.min.css") }}" rel="stylesheet" />
 
   <link href="{{ asset ("/assets/node_modules/jquery-toast-plugin/dist/jquery.toast.min.css") }}" rel="stylesheet" />
@@ -30,12 +28,15 @@
     .select2-dropdown{
         z-index: 3051;
     }
-    .dataTables_filter {
-      float: right;
-      text-align: right;
+    
+    #example1_processing{
+      z-index:1;
+      height:80px;
+      background:none;
     }
+
     table.dataTable thead tr th {
-      color:white;
+      background:#d2e1ff;
       text-align:center;
     }
     table.dataTable tbody tr td {
@@ -46,23 +47,19 @@
 
     table.dataTable tfoot tr td {
       font-size: 14px;
-      padding-top: 1px;
-      padding-bottom: 1px;
+      padding: 5px 10px !important;
+    }
+    
+    .column-hidden{
+      display:none;
+    }
+    td { 
+      height: 30px; 
+      text-align: left; 
+      width: 100px; 
+      color:#404040;
     }
 
-    div.dataTables_scrollFoot>.dataTables_scrollFootInner>table{
-      border:none;
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button {
-        padding : 0px;
-        margin-left: 0px;
-        display: inline;
-        border: 0px;
-    }
-    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-        border: 0px;
-    }
     .column-hidden{
       display:none;
     }

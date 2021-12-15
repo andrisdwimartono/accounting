@@ -31,8 +31,6 @@
     <script src="{{ asset ("/assets/bower_components/jquery-validation/dist/jquery.validate.min.js") }}"></script>
     <script src="{{ asset ("/assets/bower_components/select2/dist/js/select2.full.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/jquery.dataTables.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/dataTables.bootstrap4.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/dataTables.rowReorder.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/dataTables.buttons.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/dataTables.fixedColumns.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/buttons.html5.min.js") }}"></script>
@@ -142,28 +140,25 @@
               else saldo_kredit = formatRupiahWNegative(saldo,".");
 
               // Update footer
-              $( api.column( 1 ).footer() ).html("JUMLAH");
+              $( api.column( 2 ).footer() ).html("JUMLAH");
               $( api.column( 3 ).footer() ).html(formatRupiahWNegative(debet,"."));
               $( api.column( 4 ).footer() ).html(formatRupiahWNegative(kredit,"."));
             },
             "columnDefs": [
               { 
                 "targets": 0,
-                "width" : 10,
                 "class" : "column-hidden"
               },
               { 
                 "targets": 1,
-                "width" : 220,
+                "width" : 150,
                 "render":  function ( data, type, row, meta ) {
-                  var code = ""
-                  var name = row[2];
-                  if(row[4]!="1"){
-                    code = convertCode(row[1].split(" ")[0]);
+                  var code = convertCode(row[1].split(" ")[0]);
+                  if(row[7]=='on'){
+                    return "<b>"+code+"</b>";
                   } else {
-                    name = "<span class='coa-header'>" + name.toUpperCase() + "</span>"
+                    return code;
                   }
-                  return "<span class='coa-code'>" + code +"</span>  "+ name;
                 },
                 createdCell: function (td, cellData, rowData, row, col) {
                   var padd = (10+(parseInt(rowData[6])-1)*12)+"px";
@@ -172,24 +167,48 @@
               },
               { 
                 "targets": 2,
-                "class" : "column-hidden"
+                "width" : 250,
+                "render":  function ( data, type, row, meta ) {
+                  if(row[7]=='on'){
+                    return "<b>"+row[2]+"</b>";
+                  } else {
+                    return row[2];
+                  }
+                },
+                createdCell: function (td, cellData, rowData, row, col) {
+                  var padd = (10+(parseInt(rowData[6])-1)*12)+"px";
+                  $(td).css('padding-left', padd);
+                }
               },
               { 
                 "targets": 3,
                 "width" : 130,
                 "render":  function ( data, type, row, meta ) {
-                  
+                  if($("#child_level").val() == 1){
+                    if(row[7]!='on'){
+                      return formatRupiahWNegative(row[3],".") ;
+                    } else {
+                      return "";
+                    }
+                  } else {
                     return formatRupiahWNegative(row[3],".") ;
-                  
+                  }
+                          
                 }
               },
               { 
                 "targets": 4,
                 "width" : 130,
                 "render":  function ( data, type, row, meta ) {
-                  
+                  if($("#child_level").val() == 1){
+                    if(row[7]!='on'){
+                      return formatRupiahWNegative(row[4],".") ;
+                    } else {
+                      return "";
+                    }
+                  } else {
                     return formatRupiahWNegative(row[4],".") ;
-                  
+                  }
                 }
               },
               { 
