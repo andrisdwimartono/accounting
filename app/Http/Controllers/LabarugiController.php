@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Labarugi;
 use App\Models\Coa;
 use App\Models\Jenisbayar;
+use App\Models\Globalsetting;
+use PDF;
 
 class LabarugiController extends Controller
 {
@@ -479,5 +481,96 @@ class LabarugiController extends Controller
 
             return response()->json($results);
         }
+    }
+
+    public function print(Request $request){
+        ini_set('max_execution_time', 300);
+        $page_data = $this->tabledesign();
+        $list_column = array("id", "coa_code", "coa_name", "level_coa", "fheader", "factive", "id");
+        $keyword = null;
+        if(isset($request->search["value"])){
+            $keyword = $request->search["value"];
+        }
+
+        $orders = array("id", "ASC");
+        if(isset($request->order)){
+            $orders = array($list_column[$request->order["0"]["column"]], $request->order["0"]["dir"]);
+        }
+
+        $limit = null;
+        if(isset($request->length) && $request->length != -1){
+            $limit = array(intval($request->start), intval($request->length));
+        }
+
+        $dt = array();
+        if($keyword){
+            $no = 0;
+        foreach(Coa::where(function($q) use ($keyword, $request) {
+                $q->where("coa_code", "LIKE", "%" . $keyword. "%")->orWhere("coa_name", "LIKE", "%" . $keyword. "%")->orWhere("level_coa", "LIKE", "%" . $keyword. "%")->orWhere("fheader", "LIKE", "%" . $keyword. "%")->orWhere("factive", "LIKE", "%" . $keyword. "%");
+                })->where("factive", "on")->whereIn("category", ["pendapatan", "biaya", "biaya_lainnya", "pendapatan_lainnya"])->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "coa_code", "coa_name", "level_coa", "coa", "coa_label", "category", "category_label", "fheader", "factive"]) as $coa){
+                    $no = $no+1;
+                    $act = '';
+
+                    if($coa->fheader == 'on'){
+                        $act .= '<button type="button" class="row-add-child"> <i class="fas fa-plus text-info"></i> </button>';
+                    }
+                    
+                    $bulan_periode = 1;
+                    if(isset($request->search["bulan_periode"])){
+                        $bulan_periode = $request->search["bulan_periode"];
+                    }
+                    $tahun_periode = 1;
+                    if(isset($request->search["tahun_periode"])){
+                        $tahun_periode = $request->search["tahun_periode"];
+                    }
+                    $child_level = 1;
+                    if(isset($request->search["child_level"])){
+                        $child_level = $request->search["child_level"];
+                    }
+
+                    if($coa->fheader != "on"){
+                        $labarugi_val = Labarugi::where("coa", $coa->id)->where("bulan_periode", $bulan_periode)->where("tahun_periode", $tahun_periode)->where(function($q) {
+                            $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
+                        })->first();
+                        if($labarugi_val){
+                            array_push($dt, array($coa->id, $coa->coa_code." ".$coa->coa_name, $labarugi_val->debet, $labarugi_val->credit, $coa->level_coa, $coa->fheader, $act));
+                        }
+                    }else{
+                        $dc = array(0, 0);
+                        $this->getAngka($dc, $coa->id, $bulan_periode, $tahun_periode);
+                        if($dc[0] != 0  || $dc[1] != 0)
+                            array_push($dt, array($coa->id, $coa->coa_code." ".$coa->coa_name, $dc[0], $dc[1], $coa->level_coa, $coa->fheader, $act));
+                    }
+                }
+        }else{
+            $this->get_list_data($dt, $request, $keyword, $limit, $orders, null);
+        }
+        
+        $output = array(
+            "draw" => intval($request->draw),
+            "recordsTotal" => Coa::get()->count(),
+            "recordsFiltered" => intval(Coa::where(function($q) use ($keyword, $request) {
+                $q->where("coa_code", "LIKE", "%" . $keyword. "%")->orWhere("coa_name", "LIKE", "%" . $keyword. "%")->orWhere("level_coa", "LIKE", "%" . $keyword. "%")->orWhere("fheader", "LIKE", "%" . $keyword. "%")->orWhere("factive", "LIKE", "%" . $keyword. "%");
+            })->whereIn("category", ["pendapatan", "biaya", "biaya_lainnya", "pendapatan_lainnya"])->orderBy($orders[0], $orders[1])->get()->count()),
+            "data" => $dt
+        );
+
+        $pdf = PDF::loadview("labarugi.print", ["labarugi" => $output,"page_data" => $page_data, "data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first(), "bulan_periode" => $request->search["bulan_periode"]?$request->search["bulan_periode"]:0, "tahun_periode" => $request->search["tahun_periode"]?$request->search["tahun_periode"]:0]);
+        $pdf->getDomPDF();
+        $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
+        return $pdf->stream('labarugi.pdf');
+    }
+
+    public function convertCode($data, $level){
+        $val = substr($data,0,1) . "-" . substr($data,1,2) . "-" . substr($data,3,2) . "-" . substr($data,5);
+        $padd = (((int) $level-1)*20);
+        $html = "<span style='padding-left:".strval($padd)."px'>".$val."</span>";        
+        return $html;
+    }
+
+    public function tab($data, $level){
+        $padd = (((int) $level-1)*20);
+        $html = "<span style='padding-left:".strval($padd)."px'>".$data."</span>";        
+        return $html;
     }
 }

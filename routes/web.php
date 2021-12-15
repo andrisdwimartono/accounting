@@ -117,6 +117,7 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::get('/labarugi', 'App\Http\Controllers\LabarugiController@index')->name('labarugi');
         Route::post('/getlistlabarugi', 'App\Http\Controllers\LabarugiController@get_list');
+        Route::post('/printlabarugi', 'App\Http\Controllers\LabarugiController@print');
 
         Route::get('/globalsetting', 'App\Http\Controllers\GlobalsettingController@index')->name('globalsetting');
         Route::post('/getlistglobalsetting', 'App\Http\Controllers\GlobalsettingController@get_list');
