@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Neraca;
 use App\Models\Coa;
+use App\Models\Globalsetting;
 
 class NeracaController extends Controller
 {
@@ -240,6 +241,7 @@ class NeracaController extends Controller
 
         $dt = array();
         $no = 0;
+        $yearopen = Globalsetting::where("id", 1)->first();
         foreach(Coa::find(1)
         ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader", DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")]) //"neracas.debet", "neracas.credit"])//DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")])
         ->leftJoin('neracas', 'coas.id', '=', 'neracas.coa')
@@ -252,15 +254,22 @@ class NeracaController extends Controller
                 $q->where("coas.fheader","on");
             });  
         })
-        ->where(function($q) use($bulan_periode, $tahun_periode){
-            $q->where(function($q) use($bulan_periode, $tahun_periode){
-                $q->where(function($q) use ($bulan_periode, $tahun_periode){
-                    $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
-                })->orWhere(function($q) use ($bulan_periode, $tahun_periode){
-                    $q->where("tahun_periode", "<", $tahun_periode);
+        ->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
+            // dd($yearopen);
+            if($bulan_periode >= $yearopen->bulan_tutup_tahun){
+                //only one year
+                $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                    $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
                 });
-            })
-            ->orWhere(function($q){
+            }else{
+                //cross year
+                $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                    $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                })->orWhere(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                    $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("tahun_periode", $tahun_periode-1);
+                });
+            }
+            $q->orWhere(function($q){
                 $q->whereNull("bulan_periode");
             });  
         })

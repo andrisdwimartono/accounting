@@ -20,8 +20,6 @@
 <script src="{{ asset ("/assets/node_modules/jquery-toast-plugin/dist/jquery.toast.min.js") }}"></script>
 <script src="{{ asset ("/assets/bootstrap/dist/js/bootstrap.bundle.min.js") }}"></script>
 
-<script src="{{ asset ("/assets/datatables/js/dataTables.bootstrap4.min.js") }}"></script>
-<script src="{{ asset ("/assets/datatables/js/dataTables.rowReorder.min.js") }}"></script>
 <script src="{{ asset ("/assets/datatables/js/dataTables.buttons.min.js") }}"></script>
 <script src="{{ asset ("/assets/cto/js/cakrudtemplate.js") }}"></script>
 <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
@@ -68,21 +66,15 @@
       language: { search: "" , searchPlaceholder: "Search..."},
       //"searching": false,
       buttons: [
-            // {
-            //     text: "+",
-            //     className: "bg-success text-white m-0",
-            //     action: function ( e, dt, node, config ) {
-            //       //window.location.href = "/createcoa";
-            //       $("#modal-add-new-coa").modal({'show': true});
-            //     }
-            // },
-
             {
-                text: "<i class=\"fas fa-print\"></i>",
-                className: "mt-2",
+                text: "Print PDF <span class='btn-icon-right'><i class='fa fa-file'></i></span>",
+                className: "btn btn-primary",
+                init: function(api, node, config) {
+                  $(node).removeClass('dt-button')
+                },
                 action: function ( e, dt, node, config ) {
                   var url = '/printcoa';
-                  var form = $('<form action="' + url + '" method="post">' +
+                  var form = $('<form action="' + url + '" target="_blank" method="post">' +
                     '<input type="hidden" name="_token" value="'+$("input[name=_token]").val()+'" />' +
                     '<input type="hidden" name="category_filter" value="{{$page_data['category']}}" />' +
                     '<input type="hidden" name="search[value]" value="'+$('.dataTables_filter input').val()+'" />' +
@@ -91,19 +83,22 @@
                     '</form>');
                   $('body').append(form);
                   form.submit();
-                }
+                },
             },
         ],
           aoColumnDefs: [{
               aTargets: [1],
-              mRender: function (data, type, full){
+              mRender: function (data, type, row){
                   data = data.toString();
                   var val = convertCode(data);
-                  return "<span>"+val+"</span>";
-                 
+                  if(row[8]=="on"){
+                    return "<b>"+val+"</b>"
+                  } else {
+                    return val;
+                  }                 
               },
               createdCell: function (td, cellData, rowData, row, col) {
-                var padd = ((parseInt(rowData[3])-1)*10)+"px";
+                var padd = (15+(parseInt(rowData[3])-1)*15)+"px";
                 $(td).css('padding-left', padd);
                 $(td).addClass('asset_value');
                 $(td).addClass('caktext');
@@ -113,15 +108,38 @@
             },
             {
               aTargets: [2],
-              mRender: function (data, type, full){
+              mRender: function (data, type, row){
                   data = data.toString();
-                  return "<span>"+data+"</span>";
+                  if(row[8]=="on"){
+                    return "<b>"+data+"</b>";
+                  } else {
+                    return data;
+                  }
+                  
               },
               createdCell: function (td, cellData, rowData, row, col) {
+                var padd = (15+(parseInt(rowData[3])-1)*15)+"px";
+                $(td).css('padding-left', padd);
                 $(td).addClass('asset_value');
                 $(td).addClass('caktext');
                 $(td).attr('data-id', rowData[0]);
               }
+            },
+            {
+              aTargets: [8],
+              className:"dt-body-center",
+              mRender: function (data, type, full){
+                if(data=="on"){
+                  return "<span class='badge light badge-success' style='width:50px'>ON</span>";
+                }  else {
+                  return "";
+                }
+                // return "<span>"+data+"</span>";
+              },
+            },
+            {
+              aTargets: [10],
+              className:"dt-body-center"
             },
             {
               aTargets: [0,3,4,5,6,7,9],
@@ -135,7 +153,7 @@
           "scrollX" : true,
           "processing" : true,
           "serverSide" : true,
-          "pagingType": "full_numbers",
+          "pagingType": "simple_numbers",
           "pageLength": 2000,
           "order": [[ 1, "asc" ]],
           "ajax" : {
@@ -218,7 +236,7 @@
         if(index == 0){
           $(this).html(id_coa);
         }else if(index == 1){
-          var padd = ((parseInt($($tr).find("td:eq(3)").text())-1)*10)+"px";
+          var padd = (15+(parseInt($($tr).find("td:eq(3)").text())-1)*15)+"px";
           $(this).css('padding-left', padd);
           $(this).addClass('asset_value');
           $(this).addClass('caktext');

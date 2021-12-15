@@ -9,8 +9,7 @@
                 <div class="row page-titles mx-0">
                     <div class="col-sm-6 p-md-0">
                         <div class="welcome-text">
-                            <!-- <h4>Hi, welcome back!</h4>
-                            <span>Element</span> -->
+                            <h4>Unit Kerja</h4>
                         </div>
                     </div>
                     <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
@@ -24,17 +23,17 @@
                 <div class="row">
                 <div class="col-12">
                         <div class="card">
-                            <div class="card-header bg-primary">
+                            <!-- <div class="card-header bg-primary">
                                 <h4 class="card-title text-white">Unit Kerja</h4>
-                            </div>
+                            </div> -->
                             <div class="card-body">
                                 <div class="table-responsive">
                                  @csrf
-                                    <table id="example1" class="table table-bordered table-striped">
-                                        <thead class="bg-primary">
+                                    <table id="example1" class="display" style="width: 100%">
+                                        <thead>
                                             <tr>
                                                 <th>No</th>
-                                                <th>Kode Unit Kerja</th>
+                                                <th>Kode</th>
                                                 <th>Nama Unit Kerja</th>
                                                 <th>Action</th>
                                             </tr>

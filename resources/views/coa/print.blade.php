@@ -1,13 +1,35 @@
 <html>
     <head>
+        <meta name="dompdf.view" content="FitV" />
         <title>Print COA</title>
-        <link rel="stylesheet" href="{{ asset ("/assets/bootstrap/dist/css/bootstrap.min.css") }}">
-        <link href="{{ asset ("/assets/cto/css/cto_loadinganimation.min.css") }}" rel="stylesheet" />
+        <link rel="stylesheet" href="{{ asset('public/assets/bootstrap/dist/css/bootstrap.min.css') }}" type="text/css" media="screen">
         <style>
             @page {
                 size: A4;
-                margin: 0;
+                margin: 200px 50px 100px;
             }
+
+            header {
+                position: fixed;
+                top: -160px;
+                height: 110px;
+                text-align: center;
+                line-height: 10px;
+            }
+
+            footer {
+                position: fixed; 
+                bottom: -60px; 
+                left: 0px; 
+                right: 0px;
+                height: 50px; 
+            }
+
+            main {
+                top:200px;
+                padding : 0px 25px;
+            }
+
             @media print {
                 html, body {
                     width: 210mm;
@@ -17,63 +39,98 @@
             .page-break {
                 page-break-after: always;
             }
+
+            h2 h3 h4{
+                font-family: Arial, Helvetica, sans-serif;
+            }
+
+            h4{
+                font-weight: normal;
+            }
+
+            .logo{
+                width:100%;
+                text-align:left;
+            }
+            .table{
+                width:100%;
+                border-collapse: collapse;
+            }
+
+            .table thead tr td{
+                font-weight:bold;
+                height:30px;
+                text-align: center;
+                background: #d7d7d7;
+            }
+
+            .table tbody tr td {
+                padding: 2px 10px;
+            }
+
         </style>
     </head>
     <body>
-    <div id="cto_overlay" class="overlay">
-      <div id="cto_mengecek"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i></div>
-    </div>
-        <form id="formprint">
-            @csrf
-            <input type="hidden" name="category_filter" value="<?=$data->category_filter?>" />
-            <input type="hidden" name="search[value]" value="<?=$data->search["value"]?>" />
-            <input type="hidden" name="start" value="<?=$data->start?>" />
-            <input type="hidden" name="length" value="<?=$data->length?>" />
-            
-        </form>
-        <div class="container">
-        <div class="row">
-                <div class="col-sm-10 text-center">
-                    <h2>Universitas Muhammadiyah Sidoarjo</h2>
-                    <h4>Laporan Kode Rekening Akuntansi</h4>
-                    <?php foreach($page_data["fieldsoptions"]["category"] as $cat){ 
-                        if($cat["name"] == $data->category_filter){
-                        ?>
-                    <h5>Untuk Kategori <?=$cat["label"]?></h5>
-                    <?php } } ?>
-                </div>
-                <div class="col-sm-2 align-middle">
-                    <img class="logo-abbr" src="" width="100px">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <table class="table table-bordered">
-                        <thead class="bg-secondary text-white text-center font-weight-bold">
-                            <tr>
-                                <td scope="col" width="100px">Kode</td>
-                                <td scope="col" width="250px">Nama</td>
-                            </tr>
-                        </thead>
-                        <tbody id="table_body">
-                            @foreach($coa['data'] as $c)
-                            <tr>
-                                <td scope="col" width="100px">{{$c[1]}}</td>
-                                <td scope="col" width="250px">{{$c[2]}}</td>
-                            </tr>
-                            <div class="page-break"></div>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        
-        <script src="{{ asset ("/assets/jquery/js/jquery-3.6.0.min.js") }}"></script>
-        <script src="{{ asset ("/assets/bootstrap/dist/js/bootstrap.bundle.min.js") }}"></script>
-        <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
+        <header>
+            <table>
+                <tr>
+                    <td width="6em"></td>
+                    <td width="30em" style="text-align:center">
+                        <h2>Universitas Muhammadiyah Sidoarjo</h2>
+                        <h3>Laporan Kode Rekening Akuntansi</h3>
+                        <?php foreach($page_data["fieldsoptions"]["category"] as $cat){ 
+                            if($cat["name"] == $data->category_filter){
+                            ?>
+                        <h4>Untuk Kategori <?=$cat["label"]?></h5>
+                        <?php } } ?>
+                    </td>
+                    <td width="6em">
+                        <img class='logo' src="{{ asset('/logo_instansi/'.$globalsetting->logo_instansi) }}" alt="UMSIDA">
+                    </td>
+                </tr>
+            </table>
+            <hr size=3>
+            <hr size=2.5 style="margin-top:-5px;">
+        </header>
 
-        <script>
+        <footer>
+        </footer>
+
+        <main>
+            <table class="table" border=1>
+                <thead>
+                    <tr>
+                        <td scope="col" width="100px">Kode</td>
+                        <td scope="col" width="250px">Nama</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($coa['data'] as $c)
+                    <tr>
+                        <td scope="col" width="100px">{!! $c[1] !!}</td>
+                        <td scope="col" width="250px">{!! $c[2] !!}</td>
+                    </tr>
+                    <!-- <div class="page-break"></div> -->
+                    @endforeach
+                </tbody>
+            </table>
+        </main>
+        <script type="text/php">
+        if ( isset($pdf) ) { 
+            $pdf->page_script('
+                if ($PAGE_COUNT > 1) {
+                    $font = $fontMetrics->get_font("Arial, Helvetica, sans-serif", "normal");
+                    $size = 12;
+                    $pageText = "Page " . $PAGE_NUM . " of " . $PAGE_COUNT;
+                    $y = 15;
+                    $x = 520;
+                    $pdf->text($x, $y, $pageText, $font, $size);
+                } 
+            ');
+        }
+        </script>
+
+        <script type="text/Javascript">
             $.ajax({
                 url: "/getglobalsetting",
                 type: "get",
@@ -116,7 +173,6 @@
                     //cto_loading_hide();
                 }
             });
-
             function convertCode(data){
                 var val = "";
                 for(var i = 0; i < data.length; i++){

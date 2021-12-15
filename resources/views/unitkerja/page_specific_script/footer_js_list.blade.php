@@ -20,8 +20,6 @@
 <script src="{{ asset ("/assets/node_modules/jquery-toast-plugin/dist/jquery.toast.min.js") }}"></script>
 <script src="{{ asset ("/assets/bootstrap/dist/js/bootstrap.bundle.min.js") }}"></script>
 
-<script src="{{ asset ("/assets/datatables/js/dataTables.bootstrap4.min.js") }}"></script>
-<script src="{{ asset ("/assets/datatables/js/dataTables.rowReorder.min.js") }}"></script>
 <script src="{{ asset ("/assets/datatables/js/dataTables.buttons.min.js") }}"></script>
 <script src="{{ asset ("/assets/cto/js/cakrudtemplate.js") }}"></script>
 <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
@@ -60,19 +58,41 @@
       //"searching": false,
       buttons: [
             {
-                text: "+",
-                className: "bg-success text-white m-0",
+                text: "Tambah Unit Kerja <span class='btn-icon-right'><i class='fa fa-plus'></i></span>",
+                className: "btn btn-primary",
+                init: function(api, node, config) {
+                  $(node).removeClass('dt-button')
+                },
                 action: function ( e, dt, node, config ) {
                   window.location.href = "/create{{$page_data["page_data_urlname"]}}";
                 }
             },
         ],
+        "columns": [
+        { "width": "5px" },
+        { "width": "5px" },
+        { "width": "550px" },
+        { "width": "20px" },
+        ],
+          "columnDefs": [
+              { 
+                "targets": 0,
+                "className":"dt-body-center",
+              },
+              { 
+                "targets": 1,
+                "className":"dt-body-center",
+              },{ 
+                "targets": 3,
+                "className":"dt-body-center",
+              },
+          ],
           "autoWidth": false,
           dom: 'Bfrtip',
           "scrollX" : true,
           "processing" : true,
           "serverSide" : true,
-          "pagingType": "full_numbers",
+          "pagingType": "simple_numbers",
           "pageLength": 20,
           "order": [[ 1, "asc" ]],
           "ajax" : {
@@ -85,14 +105,6 @@
    });
    cto_loading_hide();
    table = dataTable;
-  //  table.column(0).visible(false);
-  //  table.column(3).visible(false);
-  //  table.column(4).visible(false);
-  //  table.column(5).visible(false);
-  //  table.column(6).visible(false);
-  //  table.column(7).visible(false);
-  //  table.column(8).visible(false);
-  //  table.column(9).visible(false);
 
    var name = "";
    $('#example1 tbody').on('click', 'tr', function () {

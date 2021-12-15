@@ -12,11 +12,10 @@
         ***********************************-->
         <div class="content-body">
             <div class="container-fluid">
-                <!-- <div class="row page-titles mx-0">
+                <div class="row page-titles mx-0">
                     <div class="col-sm-6 p-md-0">
                         <div class="welcome-text">
-                            <h4>Hi, welcome back!</h4>
-                            <span>Element</span>
+                            <h4>Kode Rekening Akuntansi</h4>
                         </div>
                     </div>
                     <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
@@ -25,46 +24,46 @@
                             <li class="breadcrumb-item active"><a href="/coa">COA</a></li>
                         </ol>
                     </div>
-                </div> -->
+                </div>
                 <!-- row -->
                 <div class="row">
                 <div class="col-12">
                         <div class="card">
-                            <div class="card-header bg-primary">
-                                <h4 class="card-title text-white">Kode Rekening Akuntansi</h4>
-                            </div>
-                            <div class="card-body">
-                                <ul class="nav nav-tabs">
-                                    <li class="nav-item bg-success">
+                            <div class="card-header">
+                                <ul class="nav nav-pills mb-4 light">
+                                    <li class="nav-item">
                                         <a id="tabaset" class="nav-link{{$page_data['category'] == 'aset'?' active':''}}" data-toggle="tab" href="/coa/aset/list"> Aset</a>
                                     </li>
-                                    <li class="nav-item bg-success">
+                                    <li class="nav-item">
                                         <a id="tabhutang" class="nav-link{{$page_data['category'] == 'hutang'?' active':''}}" data-toggle="tab" href="/coa/hutang/list"> Hutang</a>
                                     </li>
-                                    <li class="nav-item bg-success">
+                                    <li class="nav-item">
                                         <a id="tabmodal" class="nav-link{{$page_data['category'] == 'modal'?' active':''}}" data-toggle="tab" href="/coa/modal/list"> Modal</a>
                                     </li>
-                                    <li class="nav-item bg-success">
+                                    <li class="nav-item">
                                         <a id="tabpendapatan" class="nav-link{{$page_data['category'] == 'pendapatan'?' active':''}}" data-toggle="tab" href="/coa/pendapatan/list"> Pendapatan</a>
                                     </li>
-                                    <li class="nav-item bg-success">
+                                    <li class="nav-item">
                                         <a id="tabbiaya" class="nav-link{{$page_data['category'] == 'biaya'?' active':''}}" data-toggle="tab" href="/coa/biaya/list"> Biaya</a>
                                     </li>
-                                    <li class="nav-item bg-success">
+                                    <li class="nav-item">
                                         <a id="tabbiaya_lainnya" class="nav-link{{$page_data['category'] == 'biaya_lainnya'?' active':''}}" data-toggle="tab" href="/coa/biaya_lainnya/list"> Biaya Lainnya</a>
                                     </li>
-                                    <li class="nav-item bg-success">
+                                    <li class="nav-item">
                                         <a id="tabpendapatan_lainnya" class="nav-link{{$page_data['category'] == 'pendapatan_lainnya'?' active':''}}" data-toggle="tab" href="/coa/pendapatan_lainnya/list"> Pendapatan Lainnya</a>
                                     </li>
-                                    <li class="nav-item bg-success">
+                                    <!-- <li class="nav-item">
                                         <a id="tabplus" class="nav-link" data-toggle="tab" href="#" id="tabplus"> +</a>
-                                    </li>
-                                </ul>                                    
-
+                                    </li> -->
+                                </ul>
+                        
+                            </div>
+                            <div class="card-body">
+                                
                                 <div class="table-responsive">
                                 @csrf
-                                <table id="example1" class="dttables table table-bordered table-striped" table-category="aset">
-                                    <thead class="bg-primary">
+                                <table id="example1" class="display" style="width: 100%" table-category="aset">
+                                    <thead>
                                         <tr>
                                             <th width="10px" class="column-hidden">No</th>
                                             <th width="100px">Kode</th>
