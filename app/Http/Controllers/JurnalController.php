@@ -734,7 +734,7 @@ class JurnalController extends Controller
             foreach(Transaction::whereParentId($id)->get() as $ch){
                     $is_still_exist = false;
                     foreach($requests_transaksi as $ct_request){
-                        if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
+                        if($ch->id == $ct_request["id"] || $ch->id == $request->id_bank_kas || in_array($ch->id, $new_menu_field_ids)){
                             $is_still_exist = true;
                         }
                     }
