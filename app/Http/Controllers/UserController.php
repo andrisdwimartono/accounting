@@ -243,14 +243,14 @@ class UserController extends Controller
         })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get($list_column) as $user){
             $no = $no+1;
             $act = '
-            <a href="/assignmenu/'.$user->id.'/edit" class="btn btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Assign Menus to this user"><i class="fas fa-bars text-white"></i></a>
+            <a href="/assignmenu/'.$user->id.'/edit" data-bs-toggle="tooltip" data-bs-placement="top" title="Assign Menus to this user"><i class="fas fa-bars text-success"></i></a>
 
-            <a href="/user/'.$user->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
+            <a href="/user/'.$user->id.'" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-primary"></i></a>
             
-            <a href="/user/'.$user->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
+            <a href="/user/'.$user->id.'/edit" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-warning"></i></a>
             
-            <button type="button" class="btn btn-danger row-delete">
-                <i class="fas fa-minus-circle text-white"></i>
+            <button type="button" class="btn row-delete">
+                <i class="fas fa-minus-circle text-danger"></i>
             </button>';
             //array_push($dt, array($no+$limit[0], $user->nama, $user->email, $act));
             array_push($dt, array($user->id, $user->name, $user->email, $act));

@@ -234,7 +234,7 @@ class JurnalController extends Controller
     {
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "Create";
-        $page_data["page_job"] = "BKM";
+        $page_data["page_job"] = "KM";
         $page_data["footer_js_page_specific_script"] = ["jurnal.page_specific_script.footer_js_createbkmk"];
         $page_data["header_js_page_specific_script"] = ["jurnal.page_specific_script.header_js_createbkmk"];
         
@@ -245,7 +245,29 @@ class JurnalController extends Controller
     {
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "Create";
-        $page_data["page_job"] = "BKK";
+        $page_data["page_job"] = "KK";
+        $page_data["footer_js_page_specific_script"] = ["jurnal.page_specific_script.footer_js_createbkmk"];
+        $page_data["header_js_page_specific_script"] = ["jurnal.page_specific_script.header_js_createbkmk"];
+        
+        return view("jurnal.createbkmk", ["page_data" => $page_data]);
+    }
+
+    public function createbbm()
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "Create";
+        $page_data["page_job"] = "BM";
+        $page_data["footer_js_page_specific_script"] = ["jurnal.page_specific_script.footer_js_createbkmk"];
+        $page_data["header_js_page_specific_script"] = ["jurnal.page_specific_script.header_js_createbkmk"];
+        
+        return view("jurnal.createbkmk", ["page_data" => $page_data]);
+    }
+
+    public function createbbk()
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "Create";
+        $page_data["page_job"] = "BK";
         $page_data["footer_js_page_specific_script"] = ["jurnal.page_specific_script.footer_js_createbkmk"];
         $page_data["header_js_page_specific_script"] = ["jurnal.page_specific_script.header_js_createbkmk"];
         
@@ -348,7 +370,7 @@ class JurnalController extends Controller
                 $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
             }
             $child_tb_request->validate($rules_transaksi, $ct_messages);
-            if($request->jurnal_type == "BKM"){
+            if($request->jurnal_type == "KM" || $request->jurnal_type == "BM"){
                 $total_nominal = $total_nominal+$ct_request["credit"];
             }else{
                 $total_nominal = $total_nominal+$ct_request["debet"];
@@ -409,8 +431,8 @@ class JurnalController extends Controller
                 "no_seq" => $no_seq,
                 "parent_id" => $id,
                 "deskripsi"=> "",
-                "debet"=> $request->jurnal_type=="BKM"?$total_nominal:0,
-                "credit"=> $request->jurnal_type=="BKK"?$total_nominal:0,
+                "debet"=> $request->jurnal_type=="KM"||$request->jurnal_type=="BM"?$total_nominal:0,
+                "credit"=> $request->jurnal_type=="KK"||$request->jurnal_type=="BK"?$total_nominal:0,
                 "unitkerja"=> $request->unitkerja,
                 "unitkerja_label"=> $request->unitkerja_label,
                 "anggaran"=> 0,
@@ -607,7 +629,7 @@ class JurnalController extends Controller
                 $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
             }
             $child_tb_request->validate($rules_transaksi, $ct_messages);
-            if($request->jurnal_type == "BKM"){
+            if($request->jurnal_type == "KM" || $request->jurnal_type == "BM"){
                 $total_nominal = $total_nominal+$ct_request["credit"];
             }else{
                 $total_nominal = $total_nominal+$ct_request["debet"];
@@ -689,8 +711,8 @@ class JurnalController extends Controller
                 "no_seq" => $no_seq,
                 "parent_id" => $id,
                 "deskripsi"=> "",
-                "debet"=> $request->jurnal_type=="BKM"?$total_nominal:0,
-                "credit"=> $request->jurnal_type=="BKK"?$total_nominal:0,
+                "debet"=> $request->jurnal_type=="KM"||$request->jurnal_type=="BM"?$total_nominal:0,
+                "credit"=> $request->jurnal_type=="KK"||$request->jurnal_type=="BK"?$total_nominal:0,
                 "unitkerja"=> $request->unitkerja,
                 "unitkerja_label"=> $request->unitkerja_label,
                 "anggaran"=> 0,

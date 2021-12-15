@@ -552,8 +552,8 @@ $(document).ready(function() {
                 +"<td class=\"column-hidden\"></td>"
                 +"<td class=\"p-0\"><select name=\"coa_"+rowlen+"\" id=\"coa_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
                 +"<td class=\"p-0\"><input type=\"text\" name=\"deskripsi_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"deskripsi_"+rowlen+"\"></td>"
-                +"<td class=\"p-0<?=$page_data["page_job"]=="BKM"?" column-hidden":""?>\"><input type=\"text\" name=\"debet_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"debet_"+rowlen+"\" placeholder=\"Enter Debet\"></td>"
-                +"<td class=\"p-0<?=$page_data["page_job"]=="BKK"?" column-hidden":""?>\"><input type=\"text\" name=\"kredit_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"kredit_"+rowlen+"\" placeholder=\"Enter Kredit\"></td>"
+                +"<td class=\"p-0<?=$page_data["page_job"]=="KM"||$page_data["page_job"]=="BM"?" column-hidden":""?>\"><input type=\"text\" name=\"debet_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"debet_"+rowlen+"\" placeholder=\"Enter Debet\"></td>"
+                +"<td class=\"p-0<?=$page_data["page_job"]=="KK"||$page_data["page_job"]=="BK"?" column-hidden":""?>\"><input type=\"text\" name=\"kredit_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"kredit_"+rowlen+"\" placeholder=\"Enter Kredit\"></td>"
                 +"<td class=\"p-0 text-center\"><button id=\"row_delete_"+rowlen+"\" class=\"bg-white border-0\"><i class=\"text-danger fas fa-minus-circle row-delete\" style=\"cursor: pointer;\"></i></button></td>"
                 +"<td class=\"column-hidden\"></td>"
             +"</tr>");
