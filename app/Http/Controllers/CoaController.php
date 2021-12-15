@@ -385,6 +385,7 @@ class CoaController extends Controller
     }
 
     public function print(Request $request){
+        ini_set('max_execution_time', 300);
         $page_data = $this->tabledesign();
 
         $list_column = array("id", "coa_code", "coa_name", "level_coa", "fheader", "factive", "id");

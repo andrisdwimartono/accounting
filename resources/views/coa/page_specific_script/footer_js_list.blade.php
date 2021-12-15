@@ -130,12 +130,17 @@
               className:"dt-body-center",
               mRender: function (data, type, full){
                 if(data=="on"){
-                  return "<span class='badge light badge-success' style='width:50px'>ON</span>";
+                  return "<span class='badge light badge-success' style='width:50px'>on</span>";
                 }  else {
-                  return "";
+                  return "<span class='badge' style='width:50px;hieght:50px'> </span>";
                 }
                 // return "<span>"+data+"</span>";
               },
+              createdCell: function (td, cellData, rowData, row, col) {
+                $(td).addClass('cakcheck');
+                $(td).addClass('fheader_column');
+                $(td).attr('data-id', rowData[0]);
+              }
             },
             {
               aTargets: [10],
@@ -196,6 +201,10 @@
 
    cto_loading_hide();
    table = dataTable;
+
+   $('#example1').on('click', '.add-row-cancel', function(event) {
+      $(this).parents('tr').remove();
+   });
 
    $('#example1').on('click', '.add-row-save', function(event) {
       event.stopPropagation();
@@ -289,6 +298,38 @@
           }
           $(this).parent().html('<span>'+value+'</span>');
           if(val != $(this).val()){
+            var tr = $e.parent();
+            var val_arr = [];
+            tr.find('td').each(function(index, value){
+              if(index == 1){
+                val_arr.push($(value).text().replace(/-/g, ''));
+              }else{
+                val_arr.push($(value).text());
+              }
+            });
+            submitform(val_arr);
+          }
+        });
+      }else if($e.hasClass("cakcheck")){
+        //cakcheck fheader_column
+        if($e.hasClass("fheader_column")){
+          $e.html('<label class="form-check-label"><input type="checkbox" name="add_new_header" tabindex="3"> Header?</label>');
+        }
+
+        var $newE = $e.find('input');
+        $newE.focus();
+        if(val == 'on'){
+          $newE.prop('checked', true);
+        }
+        $newE.on('blur', function() {
+          var value = $newE.is(":checked")?'on':null;
+          if(value == 'on'){
+            $(this).parent().html("<span class='badge light badge-success' style='width:50px'>on</span>");
+          }else{
+            $(this).parent().html("<span class='badge' style='width:50px;hieght:50px'> </span>");
+          }
+          
+          if(val != value){
             var tr = $e.parent();
             var val_arr = [];
             tr.find('td').each(function(index, value){
