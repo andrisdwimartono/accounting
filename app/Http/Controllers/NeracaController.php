@@ -304,9 +304,12 @@ class NeracaController extends Controller
             // return $dt;
         });
         // leveling
-        $dt = array_filter($dt, function ($dt) use ($child_level) {
-            return ((int)$dt[6] <= (int)$child_level+1);
-        });
+        if($child_level==0){
+            $dt = array_filter($dt, function ($dt) use ($child_level) {
+                return ((int)$dt[6] <= 1);
+            });
+        }
+        
         // sort by code
         $columns = array_column($dt, 1);
         array_multisort($columns, SORT_ASC, $dt);

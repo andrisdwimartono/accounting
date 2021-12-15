@@ -15,8 +15,6 @@
   
   <!-- datatables -->
   <link href="{{ asset ("/assets/motaadmin/vendor/datatables/css/jquery.dataTables.min.css") }} " rel="stylesheet">
-  <!-- <link href="{{ asset ("/assets/datatables/css/dataTables.bootstrap4.min.css") }}" rel="stylesheet" /> -->
-  <!-- <link href="{{ asset ("/assets/datatables/css/rowReorder.dataTables.min.css") }}" rel="stylesheet" /> -->
   <link href="{{ asset ("/assets/datatables/css/buttons.dataTables.min.css") }}" rel="stylesheet" />
 
   <link href="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/css/bootstrap-select.min.css") }}" rel="stylesheet">
@@ -32,11 +30,6 @@
     .select2-dropdown{
         z-index: 3051;
     }
-    /* .dataTables_filter {
-      width: 20%;
-      float: right;
-      text-align: right;
-    } */
 
     #example1_processing{
       z-index:1;
