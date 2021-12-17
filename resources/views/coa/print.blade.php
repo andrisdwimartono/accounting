@@ -84,6 +84,7 @@
                         <?php } } ?>
                     </td>
                     <td width="6em">
+                        {{$globalsetting->logo_instansi}}
                         <img class='logo' src="{{ public_path('/logo_instansi/'.$globalsetting->logo_instansi) }}" alt="UMSIDA">
                     </td>
                 </tr>
