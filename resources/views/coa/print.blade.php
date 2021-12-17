@@ -84,7 +84,7 @@
                         <?php } } ?>
                     </td>
                     <td width="6em">
-                        <img class='logo' src="{{ base_path() }}/public/logo_instansi/'.$globalsetting->logo_instansi" alt="UMSIDA">
+                        <img class='logo' src="{{ assets('logo_instansi/'.$globalsetting->logo_instansi) }}" alt="UMSIDA">
                     </td>
                 </tr>
             </table>
