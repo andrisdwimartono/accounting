@@ -86,6 +86,7 @@
                         {{ public_path('logo_instansi/'.$globalsetting->logo_instansi) }}
                     </td>
                     <td width="6em">
+                        <img class='logo' src="{{ asset('/logo_instansi/'.$globalsetting->logo_instansi) }}" alt="UMSIDA">
                     </td>
                 </tr>
             </table>
