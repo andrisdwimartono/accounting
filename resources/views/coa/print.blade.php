@@ -81,7 +81,7 @@
                             if($cat["name"] == $data->category_filter){
                             ?>
                         <h4>Untuk Kategori <?=$cat["label"]?></h5>
-                        <?php } } ?>
+                        <?php } } ?> 
                         {{ asset('/logo_instansi/'.$globalsetting->logo_instansi) }}
                         {{ public_path('logo_instansi/'.$globalsetting->logo_instansi) }}
                     </td>
