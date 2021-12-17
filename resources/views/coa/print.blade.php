@@ -82,9 +82,11 @@
                             ?>
                         <h4>Untuk Kategori <?=$cat["label"]?></h5>
                         <?php } } ?>
+                        {{ asset('/logo_instansi/'.$globalsetting->logo_instansi) }}
+                        {{ public_path('logo_instansi/'.$globalsetting->logo_instansi) }}
                     </td>
                     <td width="6em">
-                        <img class='logo' src="{{ assets('logo_instansi/'.$globalsetting->logo_instansi) }}" alt="UMSIDA">
+                        <img class='logo' src="{{ asset('logo_instansi/'.$globalsetting->logo_instansi) }}" alt="UMSIDA">
                     </td>
                 </tr>
             </table>
