@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Neraca;
 use App\Models\Coa;
 use App\Models\Globalsetting;
+use PDF;
 
 class NeracaController extends Controller
 {
@@ -208,24 +209,6 @@ class NeracaController extends Controller
 
     public function get_list(Request $request)
     {
-        $maxLevel = Coa::max('level_coa');
-
-        $list_column = array("id", "coa_code", "coa_name", "level_coa", "fheader", "factive", "id");
-        $keyword = null;
-        if(isset($request->search["value"])){
-            $keyword = $request->search["value"];
-        }
-
-        $orders = array("id", "ASC");
-        if(isset($request->order)){
-            $orders = array($list_column[$request->order["0"]["column"]], $request->order["0"]["dir"]);
-        }
-
-        $limit = null;
-        if(isset($request->length) && $request->length != -1){
-            $limit = array(intval($request->start), intval($request->length));
-        }
-
         $bulan_periode = 1;
         if(isset($request->search["bulan_periode"])){
             $bulan_periode = $request->search["bulan_periode"];
@@ -382,69 +365,6 @@ class NeracaController extends Controller
         return $dc;
     }
 
-    // public function get_list(Request $request)
-    // {
-    //     $list_column = array("id", "coa_label", "coa_label", "debet", "credit", "id");
-    //     $keyword = null;
-    //     if(isset($request->search["value"])){
-    //         $keyword = $request->search["value"];
-    //     }
-    //     $bulan_periode = 1;
-    //     if(isset($request->search["bulan_periode"])){
-    //         $bulan_periode = $request->search["bulan_periode"];
-    //     }
-    //     $tahun_periode = 1;
-    //     if(isset($request->search["tahun_periode"])){
-    //         $tahun_periode = $request->search["tahun_periode"];
-    //     }
-
-    //     $orders = array("id", "ASC");
-    //     if(isset($request->order)){
-    //         $orders = array($list_column[$request->order["0"]["column"]], $request->order["0"]["dir"]);
-    //     }
-
-    //     $limit = null;
-    //     if(isset($request->length) && $request->length != -1){
-    //         $limit = array(intval($request->start), intval($request->length));
-    //     }
-
-    //     $dt = array();
-    //     $no = 0;
-    //     foreach(Neraca::where(function($q) use ($keyword) {
-    //         $q->where("tahun_periode", "LIKE", "%" . $keyword. "%")->orWhere("bulan_periode", "LIKE", "%" . $keyword. "%")->orWhere("coa_label", "LIKE", "%" . $keyword. "%");
-    //     })->where(function($q) {
-    //         $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
-    //     })->where(function($q) use($bulan_periode, $tahun_periode){
-    //         $q->where(function($q) use ($bulan_periode, $tahun_periode){
-    //             $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
-    //         })->orWhere(function($q) use ($bulan_periode, $tahun_periode){
-    //             $q->where("tahun_periode", "<", $tahun_periode);
-    //         });
-    //     })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->select([ "coa_label", DB::raw("SUM(debet) as debet"), DB::raw("SUM(credit) as credit")])->groupBy("coa_label")->get() as $neraca){
-    //         $no = $no+1;
-    //         $act = '
-    //         <a href="/neraca/'.$neraca->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
-
-    //         <a href="/neraca/'.$neraca->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
-
-    //         <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button>';
-
-    //         array_push($dt, array($no, $neraca->coa_label, $neraca->debet, $neraca->credit, $act));
-    // }
-    //     $output = array(
-    //         "draw" => intval($request->draw),
-    //         "recordsTotal" => Neraca::get()->count(),
-    //         "recordsFiltered" => intval(Neraca::where(function($q) use ($keyword) {
-    //             $q->where("tahun_periode", "LIKE", "%" . $keyword. "%")->orWhere("bulan_periode", "LIKE", "%" . $keyword. "%")->orWhere("coa_label", "LIKE", "%" . $keyword. "%");
-    //         })->where(function($q) {
-    //             $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
-    //         })->where("bulan_periode", $bulan_periode)->where("tahun_periode", $tahun_periode)->orderBy($orders[0], $orders[1])->get()->count()),
-    //         "data" => $dt
-    //     );
-
-    //     echo json_encode($output);
-    // }
-
     public function getdata(Request $request)
     {
         if($request->ajax() || $request->wantsJson()){
@@ -508,5 +428,154 @@ class NeracaController extends Controller
 
             return response()->json($results);
         }
+    }
+
+    public function print(Request $request){
+        $bulan_periode = 1;
+        if(isset($request->search["bulan_periode"])){
+            $bulan_periode = $request->search["bulan_periode"];
+        }
+        $tahun_periode = 1;
+        if(isset($request->search["tahun_periode"])){
+            $tahun_periode = $request->search["tahun_periode"];
+        }
+        $child_level = 1;
+        if(isset($request->search["child_level"])){
+            $child_level = $request->search["child_level"];
+        }
+        
+        $dt = array();
+        $no = 0;
+        $yearopen = Globalsetting::where("id", 1)->first();
+        foreach(Coa::find(1)
+        ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader", DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")]) //"neracas.debet", "neracas.credit"])//DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")])
+        ->leftJoin('neracas', 'coas.id', '=', 'neracas.coa')
+        ->whereIn('coas.category',['aset','hutang','modal'])
+        ->where(function($q){
+            $q->where(function($q){
+                $q->where("neracas.debet","!=",0)->orWhere("neracas.credit","!=",0);
+            })
+            ->orWhere(function($q){
+                $q->where("coas.fheader","on");
+            });  
+        })
+        ->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
+            // dd($yearopen);
+            if($bulan_periode >= $yearopen->bulan_tutup_tahun){
+                //only one year
+                $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                    $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                });
+            }else{
+                //cross year
+                $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                    $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                })->orWhere(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                    $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("tahun_periode", $tahun_periode-1);
+                });
+            }
+            $q->orWhere(function($q){
+                $q->whereNull("bulan_periode");
+            });  
+        })
+        ->groupBy(["coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader"])
+        ->orderBy("coas.level_coa", "desc")
+          ->get() as $neraca){    
+            $no = $no+1;
+            $dt[$neraca->id] = array($neraca->id, $neraca->coa_code, $neraca->coa_name, $neraca->debet, $neraca->credit, $neraca->coa, $neraca->level_coa, $neraca->fheader);
+        }
+        
+
+        // get nominal
+        $iter = array_filter($dt, function ($dt) {
+            return ($dt[3] != 0) || ($dt[4] != 0) && ($dt[7] != "on");
+        });
+        
+        // sum nominal to header
+        foreach($iter as $key => $item){
+            $d = $item;
+            $deb = $item[3];
+            $cre = $item[4];
+            for($i=$d[6] ; $i>1 ; $i--){
+                $dt[$d[5]][3] = (int) $dt[$d[5]][3] + $deb;
+                $dt[$d[5]][4] = (int) $dt[$d[5]][4] + $cre;
+                $d = $dt[$d[5]];
+            }
+        }
+        // remove null value
+        $dt = array_filter($dt, function ($dt) {
+            return ($dt[3] != 0) || ($dt[4] != 0);
+            // return $dt;
+        });
+        // leveling
+        if($child_level==0){
+            $dt = array_filter($dt, function ($dt) use ($child_level) {
+                return ((int)$dt[6] <= 1);
+            });
+        }
+        
+        // sort by code
+        $columns = array_column($dt, 1);
+        array_multisort($columns, SORT_ASC, $dt);
+        // convert array
+        $dt = array_values($dt);
+        
+        // re-formatting
+        $deb_total = 0;
+        $cre_total = 0;
+        foreach($dt as $key => $data){
+            $dt[$key][1] = $this->convertCode($data[1], $data[6]);
+            if($child_level==1){
+                $dt[$key][3] = "<span style='float:left'>Rp</span><span  style='float:right'>".number_format($data[3],0,",",".")."</span>";
+                $dt[$key][4] = "<span style='float:left'>Rp</span><span  style='float:right'>".number_format($data[4],0,",",".")."</span>";
+                if($data[7]=="on"){
+                    $dt[$key][3] = "";
+                    $dt[$key][4] = "";
+                }    
+            } else {
+                $dt[$key][3] = "<span style='float:left'>Rp</span><span  style='float:right'>".number_format($data[3],0,",",".")."</span>";
+                $dt[$key][4] = "<span style='float:left'>Rp</span><span  style='float:right'>".number_format($data[4],0,",",".")."</span>";
+                if($data[7]!="on"){
+                    $dt[$key][3] = "";
+                    $dt[$key][4] = "";
+                }
+            }
+            
+            if($data[7]=="on"){
+                $dt[$key][1] = "<b>".$dt[$key][1]."</b>";
+                $dt[$key][2] = "<b>".$dt[$key][2]."</b>";
+            } else {
+                $deb_total += (int) $data[3];
+                $cre_total += (int) $data[4];
+            }
+        }
+
+        $output = array(
+            "draw" => intval($request->draw),
+            "recordsTotal" => 0,
+            "recordsFiltered" => 0,
+            "data" => $dt,
+            "deb" => number_format($deb_total,0,",","."),
+            "cre" => number_format($cre_total,0,",",".")
+        );
+
+
+        $pdf = PDF::loadview("neraca.print", ["neraca" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first()]);
+        $pdf->getDomPDF();
+        $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
+        return $pdf->stream('neraca.pdf');
+    }
+
+    public function convertCode($data, $level){
+        $val = substr($data,0,1) . "-" . substr($data,1,2) . "-" . substr($data,3,2) . "-" . substr($data,5);
+        $padd = (((int) $level-1)*20);
+        $html = "<span style='padding-left:".strval($padd)."px'>".$val."</span>";        
+        return $html;
+    }
+
+    public function tab($data, $level){
+        $padd = (((int) $level-1)*20);
+        $html = "<span style='padding-left:".strval($padd)."px'>".$data."</span>";        
+        return $html;
     }
 }

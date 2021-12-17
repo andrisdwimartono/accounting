@@ -53,6 +53,21 @@
     .column-hidden{
       display:none;
     }
+
+    .left{
+      float:left;
+      text-align : left;
+    }
+
+    .right{
+      float:right;
+      text-align : left;
+    }
+
+    .text-grey {
+      color : #000;
+    }
+
     td { 
       height: 30px; 
       text-align: left; 
@@ -85,6 +100,13 @@
     }
     .coa-code{
       color : #919191;
+    }
+    .card-header{
+      background : #f1f5ff;
+    }
+    .text-grey{
+      color : #8b8b8b;
+      padding : 10px 0px;
     }
   </style>
 

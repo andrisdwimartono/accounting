@@ -114,7 +114,8 @@ Route::group(['middleware' => 'auth'], function () {
     
         Route::get('/neraca', 'App\Http\Controllers\NeracaController@index')->name('neraca');
         Route::post('/getlistneraca', 'App\Http\Controllers\NeracaController@get_list');
-
+        Route::post('/neraca/print', 'App\Http\Controllers\NeracaController@print');
+        
         Route::get('/labarugi', 'App\Http\Controllers\LabarugiController@index')->name('labarugi');
         Route::post('/getlistlabarugi', 'App\Http\Controllers\LabarugiController@get_list');
         Route::post('/printlabarugi', 'App\Http\Controllers\LabarugiController@print');
