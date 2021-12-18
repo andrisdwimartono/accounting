@@ -430,7 +430,7 @@ class CoaController extends Controller
 
         $pdf = PDF::loadview("coa.print", ["coa" => $output,"page_data" => $page_data, "data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first()]);
         $pdf->getDomPDF();
-        $pdf->setOptions(["isPhpEnabled"=> true,'isHtml5ParserEnabled' => true]);
+        $pdf->setOptions(["isPhpEnabled"=> true,'isRemoteEnabled'=>true]);
         return $pdf->stream('coa.pdf');
     }
 
