@@ -30,16 +30,10 @@
     <script src="{{ asset ("/assets/bootstrap/dist/js/bootstrap.bundle.min.js") }}"></script>
     <script src="{{ asset ("/assets/bower_components/jquery-validation/dist/jquery.validate.min.js") }}"></script>
     <script src="{{ asset ("/assets/bower_components/select2/dist/js/select2.full.min.js") }}"></script>
+
     <script src="{{ asset ("/assets/datatables/js/jquery.dataTables.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/dataTables.bootstrap4.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/dataTables.rowReorder.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/dataTables.buttons.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/buttons.html5.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/pdfmake.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/buttons.print.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/vfs_fonts.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js//jszip.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/dataTables.fixedColumns.min.js") }}"></script>
+
     <script src="{{ asset ("/assets/cto/js/cakrudtemplate.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
@@ -49,8 +43,9 @@
     
     $("#neracasaldo").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false,
-      "buttons": ["excel", "pdf", "print"]
     }).buttons().container().appendTo('#neracasaldo_wrapper .col-md-6:eq(0)');
+
+    fetch_data();
 
     var today = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
         $('#startDate').datepicker({
@@ -93,8 +88,26 @@
       $('#neracasaldo').DataTable().destroy();
       dataTable = $('#neracasaldo').DataTable({
           "autoWidth": false,
-          dom: 'Bfrtip',
-          "buttons": ["excel", "pdf", "print", "colvis"],
+          dom: 'Brtip',
+          buttons: [
+                {
+                    text: "PDF <span class='btn-icon-right'><i class='fa fa-print'></i></span>",
+                    className: "btn btn-primary",
+                    init: function(api, node, config) {
+                      $(node).removeClass('dt-button')
+                    },
+                    action: function ( e, dt, node, config ) {
+                      var url = '/neracasaldo/print';
+                      var form = $('<form action="' + url + '" target="_blank" method="post">' +
+                        '<input type="hidden" name="_token" value="'+$("input[name=_token]").val()+'" />' +
+                        '<input type="hidden" name="search[bulan_periode]" value="'+$("#bulan_periode").val()+'" />' +
+                        '<input type="hidden" name="search[tahun_periode]" value="'+$("#tahun_periode").val()+'" />' +
+                        '</form>');
+                      $('body').append(form);
+                      form.submit();
+                    },
+                },
+            ],
           "scrollX" : true,
           "processing" : true,
           "serverSide" : true,
@@ -120,8 +133,17 @@
               var intVal = function ( i ) {
                   return typeof i === 'string' ? i.replace(/[\$,]/g, '')*1 : typeof i === 'number' ?i : 0;
               };
-              debet = api.column( 2 ).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-              kredit = api.column( 3 ).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
+              
+              debet = 0;
+              kredit = 0;
+
+              for(var i = 0; i < data.length; i++){
+                if(data[i][6] == 1){ // if level_coa < 1
+                  debet = debet+intVal(data[i][3]);
+                  kredit = kredit+intVal(data[i][4]);
+                }
+              }
+
               saldo = debet-kredit
               saldo_debet = "";
               saldo_kredit = "";
@@ -139,36 +161,73 @@
             "columnDefs": [
               { 
                 "targets": 0,
-                "width" : 20
+                "class" : "column-hidden"
               },
               { 
                 "targets": 1,
-                "width" : 60,
+                "width" : 150,
                 "render":  function ( data, type, row, meta ) {
-                  var val = convertCode(row[1].split(" ")[0]);
-                  return val;
+                  var code = convertCode(row[1].split(" ")[0]);
+                  if(row[7]=='on'){
+                    return "<b>"+code+"</b>";
+                  } else {
+                    return code;
+                  }
+                },
+                createdCell: function (td, cellData, rowData, row, col) {
+                  var padd = (10+(parseInt(rowData[6])-1)*12)+"px";
+                  $(td).css('padding-left', padd);
                 }
               },
               { 
                 "targets": 2,
+                "width" : 250,
                 "render":  function ( data, type, row, meta ) {
-                  return row[1].replace(row[1].split(" ")[0], "");
+                  if(row[7]=='on'){
+                    return "<b>"+row[2]+"</b>";
+                  } else {
+                    return row[2];
+                  }
+                },
+                createdCell: function (td, cellData, rowData, row, col) {
+                  var padd = (10+(parseInt(rowData[6])-1)*12)+"px";
+                  $(td).css('padding-left', padd);
                 }
               },
               { 
                 "targets": 3,
                 "width" : 130,
                 "render":  function ( data, type, row, meta ) {
-                  return formatRupiahWNegative(row[2],".") ;
+                  if(row[7]!='on'){
+                    return formatRupiahWNegative(row[3],".") ;
+                  } else {
+                    return "";
+                  }
                 }
               },
               { 
                 "targets": 4,
                 "width" : 130,
                 "render":  function ( data, type, row, meta ) {
-                  return formatRupiahWNegative(row[3],".") ;
+                    if(row[7]!='on'){
+                      return formatRupiahWNegative(row[4],".") ;
+                    } else {
+                      return "";
+                    }
                 }
               },
+              { 
+                "targets": 5,
+                "class" : "column-hidden",
+              },
+              { 
+                "targets": 6,
+                "class" : "column-hidden",
+              },
+              { 
+                "targets": 7,
+                "class" : "column-hidden",
+              }
             ],
         });
       cto_loading_hide();

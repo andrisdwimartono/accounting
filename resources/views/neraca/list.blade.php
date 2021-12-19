@@ -25,9 +25,7 @@
                         <div class="card">
                         @csrf
                             <div class="card-header" style="display:block">
-                                <div class="form-group row m-0">
-                                </div>
-                                <div class="form-group row m-0">
+                                <div class="form-group row m-0" style="height:40px;">
                                     <div class="col-sm-4">
                                         <div class="col-sm-3 left">
                                             <label class="text-grey">Bulan</label>
@@ -76,7 +74,7 @@
                             </div>
                             <div class="card-body">                                
                                 <div class="table-responsive">                                    
-                                    <table id="neraca" class="display" style="width: 100%">
+                                    <table id="neraca" class="display" style="width: 100%;">
                                         <thead >
                                             <tr>
                                                 <th class="column-hidden">No</th>
@@ -87,13 +85,13 @@
                                                 <th class="column-hidden">Level COA</th>
                                             </tr>
                                         </thead>
-                                        <tfoot id="jumlah" class="dttables-footer table table-striped dataTable">
+                                        <tfoot>
                                             <tr>
-                                                <td style="border-width: 0px 0px 0px 0px;"></td>
-                                                <td style="border-width: 0px 0px 0px 0px;"></td>
-                                                <td class="right" style="border-width: 0px 1px 0px 0px;"></td>
                                                 <td></td>
                                                 <td></td>
+                                                <td class="right total"></td>
+                                                <td class="total" style="border-top: 1px solid #000 !Important;"></td>
+                                                <td class="total" style="border-top: 1px solid #000 !Important;"></td>
                                             </tr>
                                         </tfoot>
                                     </table>

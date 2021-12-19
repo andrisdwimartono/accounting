@@ -2,6 +2,7 @@
     <head>
         <meta name="dompdf.view" content="FitV" />
         <title>Print COA</title>
+        <link rel="stylesheet" href="{{ asset('public/assets/bootstrap/dist/css/bootstrap.min.css') }}" type="text/css" media="screen">
         <style>
             @page {
                 size: A4;
@@ -67,6 +68,21 @@
                 padding: 2px 10px;
             }
 
+            .table tfoot tr td {
+                padding: 2px 10px;
+            }
+
+            .rp{
+                width:10px;
+                border-right:none;
+            }
+
+            .nom{
+                width:70px;
+                border-left:none;
+                text-align:right;
+            }
+
         </style>
     </head>
     <body>
@@ -76,15 +92,11 @@
                     <td width="6em"></td>
                     <td width="30em" style="text-align:center">
                         <h2>Universitas Muhammadiyah Sidoarjo</h2>
-                        <h3>Laporan Kode Rekening Akuntansi</h3>
-                        <?php foreach($page_data["fieldsoptions"]["category"] as $cat){ 
-                            if($cat["name"] == $data->category_filter){
-                            ?>
-                        <h4>Untuk Kategori <?=$cat["label"]?></h5>
-                        <?php } } ?> 
+                        <h3>Laporan Neraca Saldo</h3>
+                        <h4>Untuk Periode {{ $bulan }} {{ $tahun }}</h5>
                     </td>
                     <td width="6em">
-                        
+                        <img class='logo' src="{{ asset('/logo_instansi/'.$globalsetting->logo_instansi) }}" alt="UMSIDA">
                     </td>
                 </tr>
             </table>
@@ -96,22 +108,30 @@
         </footer>
 
         <main>
-            <table class="table" border=1>
-                <thead>
+        <table class="table" border=1>
+                <thead >
                     <tr>
-                        <td scope="col" width="100px">Kode</td>
-                        <td scope="col" width="250px">Nama</td>
+                        <td scope="col" width="100px">Rekening</th>
+                        <td scope="col" colspan=2 width="100px">Debet</th>
+                        <td scope="col" colspan=2 width="100px">Kredit</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($coa['data'] as $c)
+                    @foreach($neraca['data'] as $d)
                     <tr>
-                        <td scope="col" width="100px">{!! $c[1] !!}</td>
-                        <td scope="col" width="250px">{!! $c[2] !!}</td>
+                        <td scope="col" width="290px">{!! $d[1] !!} {!! $d[2] !!}</td>
+                        {!! $d[3] !!}
+                        {!! $d[4] !!}
                     </tr>
-                    <!-- <div class="page-break"></div> -->
                     @endforeach
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <td class="nom" style="border:none;"><b>JUMLAH</b></td>
+                        {!! $neraca['deb'] !!}
+                        {!! $neraca['cre'] !!}                        
+                    </tr>
+                </tfoot>
             </table>
         </main>
         <script type="text/php">

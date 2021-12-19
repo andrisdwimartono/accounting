@@ -30,14 +30,10 @@
     <script src="{{ asset ("/assets/bootstrap/dist/js/bootstrap.bundle.min.js") }}"></script>
     <script src="{{ asset ("/assets/bower_components/jquery-validation/dist/jquery.validate.min.js") }}"></script>
     <script src="{{ asset ("/assets/bower_components/select2/dist/js/select2.full.min.js") }}"></script>
+    
     <script src="{{ asset ("/assets/datatables/js/jquery.dataTables.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/dataTables.buttons.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/dataTables.fixedColumns.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/buttons.html5.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/pdfmake.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/buttons.print.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/vfs_fonts.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js//jszip.min.js") }}"></script>
+    
     <script src="{{ asset ("/assets/cto/js/cakrudtemplate.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
@@ -47,7 +43,6 @@
     
     $("#neraca").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false,
-      "buttons": ["excel", "pdf", "print"]
     }).buttons().container().appendTo('#neraca_wrapper .col-md-6:eq(0)');
 
     fetch_data();
@@ -96,7 +91,7 @@
           dom: 'Brtip',
           buttons: [
                 {
-                    text: "Print PDF <span class='btn-icon-right'><i class='fa fa-file'></i></span>",
+                    text: "PDF <span class='btn-icon-right'><i class='fa fa-print'></i></span>",
                     className: "btn btn-primary",
                     init: function(api, node, config) {
                       $(node).removeClass('dt-button')

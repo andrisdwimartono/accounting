@@ -1,6 +1,4 @@
-<link href="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/css/bootstrap-select.min.css") }}" rel="stylesheet">
-  <link href="{{ asset ("/assets/motaadmin/css/style.css") }}" rel="stylesheet">
-
+  
   <!-- Bootstrap CSS CDN -->
   <link rel="stylesheet" href="{{ asset ("/assets/bootstrap/dist/css/bootstrap.min.css") }}">
 
@@ -17,7 +15,9 @@
   
   <!-- datatables -->
   <link href="{{ asset ("/assets/motaadmin//vendor/datatables/css/jquery.dataTables.min.css") }} " rel="stylesheet">
-  <link href="{{ asset ("/assets/datatables/css/buttons.dataTables.min.css") }}" rel="stylesheet" />
+  
+  <link href="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/css/bootstrap-select.min.css") }}" rel="stylesheet">
+  <link href="{{ asset ("/assets/motaadmin/css/style.css") }}" rel="stylesheet">
 
   <link href="{{ asset ("/assets/node_modules/jquery-toast-plugin/dist/jquery.toast.min.css") }}" rel="stylesheet" />
   <link href="{{ asset ("/assets/cto/css/cto_loadinganimation.min.css") }}" rel="stylesheet" />
@@ -107,6 +107,10 @@
     .text-grey{
       color : #8b8b8b;
       padding : 10px 0px;
+    }
+
+    .total {
+      font-weight: bold;
     }
   </style>
 

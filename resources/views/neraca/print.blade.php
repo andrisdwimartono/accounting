@@ -68,12 +68,19 @@
                 padding: 2px 10px;
             }
 
-            .cak-rp{
-                left:0;
+            .table tfoot tr td {
+                padding: 2px 10px;
             }
 
-            .cak-nom{
-                right:0;
+            .rp{
+                width:10px;
+                border-right:none;
+            }
+
+            .nom{
+                width:70px;
+                border-left:none;
+                text-align:right;
             }
 
         </style>
@@ -85,8 +92,8 @@
                     <td width="6em"></td>
                     <td width="30em" style="text-align:center">
                         <h2>Universitas Muhammadiyah Sidoarjo</h2>
-                        <h3>Laporan Kode Rekening Akuntansi</h3>
-                        <h4>Untuk Kategori </h5>
+                        <h3>Laporan Neraca</h3>
+                        <h4>Untuk Periode {{ $bulan }} {{ $tahun }}</h5>
                     </td>
                     <td width="6em">
                         <img class='logo' src="{{ asset('/logo_instansi/'.$globalsetting->logo_instansi) }}" alt="UMSIDA">
@@ -105,24 +112,24 @@
                 <thead >
                     <tr>
                         <td scope="col" width="100px">Rekening</th>
-                        <td scope="col" width="100px">Debet</th>
-                        <td scope="col" width="100px">Kredit</th>
+                        <td scope="col" colspan=2 width="100px">Debet</th>
+                        <td scope="col" colspan=2 width="100px">Kredit</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($neraca['data'] as $d)
                     <tr>
                         <td scope="col" width="290px">{!! $d[1] !!} {!! $d[2] !!}</td>
-                        <td scope="col" width="60px">{!! $d[3] !!}</td>
-                        <td scope="col" width="60px">{!! $d[4] !!}</td>
+                        {!! $d[3] !!}
+                        {!! $d[4] !!}
                     </tr>
                     @endforeach
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td class="right" style="border-width: 0px 1px 0px 0px;"></td>
-                        <td>Rp{{ $neraca['deb'] }}</td>
-                        <td>Rp{{ $neraca['cre'] }}</td>                        
+                        <td class="nom" style="border:none;"><b>JUMLAH</b></td>
+                        {!! $neraca['deb'] !!}
+                        {!! $neraca['cre'] !!}                        
                     </tr>
                 </tfoot>
             </table>
