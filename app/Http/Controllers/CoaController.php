@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Coa;
 use App\Models\Globalsetting;
+use App\Models\Neracasaldo;
 use PDF;
 
 class CoaController extends Controller
@@ -216,14 +217,24 @@ class CoaController extends Controller
                 "status" => 417,
                 "message" => "Deleting failed"
             );
-            //if(Coa::whereId($request->id)->forceDelete()){
-            if(Coa::whereId($request->id)->update(array("factive" => null))){
-                $results = array(
-                    "status" => 204,
-                    "message" => "Deleted successfully"
-                );
+            $ns = Neracasaldo::where("coa", $request->id)->first();
+            
+            if(is_null($ns)){
+                if(Coa::whereId($request->id)->forceDelete()){
+                    $results = array(
+                        "status" => 204,
+                        "message" => "Deleted successfully"
+                    );
+                }
+            }else{
+                if(Coa::whereId($request->id)->update(array("factive" => null))){
+                    $results = array(
+                        "status" => 204,
+                        "message" => "Deleted successfully",
+                    );
+                }
             }
-
+            
             return response()->json($results);
         }
     }

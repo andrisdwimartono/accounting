@@ -61,6 +61,12 @@ $(function () {
         onStart: function(){
             var date = new Date();
                 this.set('select', date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate(), { format: 'yyyy-mm-dd' });
+        },
+        onOpen: function(){
+            var $input = $('.datepicker-default');
+            if ($input.hasClass('picker__input--target')) {
+                $input.pickadate().pickadate('picker').close(true);
+            }
         }
     });
 
