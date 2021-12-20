@@ -81,6 +81,7 @@
                             if($cat["name"] == $data->category_filter){
                             ?>
                         <h4>Untuk Kategori <?=$cat["label"]?></h5>
+                        <?= public_path().'\logo_instansi\logo_instansi1639985681.jpg' ?>
                         <?php } } ?> 
                     </td>
                     <td width="6em">
