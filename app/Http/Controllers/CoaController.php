@@ -439,7 +439,6 @@ class CoaController extends Controller
         );
 
         $gs = Globalsetting::where("id", 1)->first();
-
         $pdf = PDF::loadview("coa.print", ["coa" => $output,"page_data" => $page_data, "data" => $request, "globalsetting" => $gs]);
         $pdf->getDomPDF();
         $pdf->setOptions(["isPhpEnabled"=> true,'isRemoteEnabled'=>true]);
