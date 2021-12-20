@@ -72,12 +72,12 @@
                 padding: 2px 10px;
             }
 
-            .rp{
+            .rp {
                 width:10px;
                 border-right:none;
             }
 
-            .nom{
+            .nom {
                 width:70px;
                 border-left:none;
                 text-align:right;
@@ -92,7 +92,7 @@
                     <td width="6em"></td>
                     <td width="30em" style="text-align:center">
                         <h2>Universitas Muhammadiyah Sidoarjo</h2>
-                        <h3>Laporan Laba Rugi</h3>
+                        <h3>Laporan Neraca</h3>
                         <h4>Untuk Periode {{ $bulan }} {{ $tahun }}</h5>
                     </td>
                     <td width="6em">
@@ -111,30 +111,25 @@
         <table class="table" border=1>
                 <thead >
                     <tr>
-                        <td scope="col" width="100px">Rekening</th>
-                        <td scope="col" colspan=2 width="100px">Debet</th>
-                        <td scope="col" colspan=2 width="100px">Kredit</th>
+                        <td scope="col" width="100px">Tanggal</th>
+                        <td scope="col" width="100px">No. Jurnal</th>
+                        <td scope="col" width="100px">Keterangan</th>                        
+                        <!-- <td scope="col" colspan=2 width="100px">Debet</th>
+                        <td scope="col" colspan=2 width="100px">Kredit</th> -->
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($neraca['data'] as $d)
                     <tr>
-                        <td scope="col" width="290px">{!! $d[1] !!} {!! $d[2] !!}</td>
-                        {!! $d[3] !!}
-                        {!! $d[4] !!}
+                        <td scope="col" width="290px">{!! $d[1] !!}</td>
+                        <td scope="col" width="290px">{!! $d[2] !!}</td>
+                        <td scope="col" width="290px">{!! $d[3] !!}</td>
                     </tr>
                     @endforeach
                 </tbody>
                 <tfoot>
                     <tr>
                         <td class="nom" style="border:none;"><b>JUMLAH</b></td>
-                        {!! $neraca['deb'] !!}
-                        {!! $neraca['cre'] !!}                        
-                    </tr>
-                    <tr>
-                        <td class="nom" style="border:none;"><b>{{ $neraca['ket'] }}</b></td>
-                        {!! $neraca['sal_deb'] !!}
-                        {!! $neraca['sal_cre'] !!}                        
                     </tr>
                 </tfoot>
             </table>

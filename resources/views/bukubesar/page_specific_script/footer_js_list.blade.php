@@ -30,16 +30,10 @@
     <script src="{{ asset ("/assets/bootstrap/dist/js/bootstrap.bundle.min.js") }}"></script>
     <script src="{{ asset ("/assets/bower_components/jquery-validation/dist/jquery.validate.min.js") }}"></script>
     <script src="{{ asset ("/assets/bower_components/select2/dist/js/select2.full.min.js") }}"></script>
+    
     <script src="{{ asset ("/assets/datatables/js/jquery.dataTables.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/dataTables.bootstrap4.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/dataTables.rowReorder.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/dataTables.buttons.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/buttons.html5.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/pdfmake.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/buttons.print.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/dataTables.fixedColumns.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/vfs_fonts.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js//jszip.min.js") }}"></script>
+    
     <script src="{{ asset ("/assets/cto/js/cakrudtemplate.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
@@ -50,7 +44,6 @@
 
     $("#bukubesar").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false,
-      "buttons": ["excel", "pdf", "print"]
     }).buttons().container().appendTo('#bukubesar_wrapper .col-md-6:eq(0)');
 
     var today = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
@@ -73,7 +66,27 @@
       dataTable = $('#bukubesar').DataTable({
           "autoWidth": false,
           dom: 'Bfrtip',
-          "buttons": ["excel", "pdf", "print", "colvis"],
+          buttons: [
+                {
+                    text: "PDF <span class='btn-icon-right'><i class='fa fa-print'></i></span>",
+                    className: "btn btn-primary",
+                    init: function(api, node, config) {
+                      $(node).removeClass('dt-buttons')
+                      $(node).removeClass('dt-button')
+                    },
+                    action: function ( e, dt, node, config ) {
+                      var url = '/bukubesar/print';
+                      var form = $('<form action="' + url + '" target="_blank" method="post">' +
+                        '<input type="hidden" name="_token" value="'+$("input[name=_token]").val()+'" />' +
+                        '<input type="hidden" name="search[bulan_periode]" value="'+$("#bulan_periode").val()+'" />' +
+                        '<input type="hidden" name="search[tahun_periode]" value="'+$("#tahun_periode").val()+'" />' +
+                        '<input type="hidden" name="search[coa_code]" value="'+$("#coa").val()+'" />' +
+                        '</form>');
+                      $('body').append(form);
+                      form.submit();
+                    },
+                },
+            ],
           "scrollX" : true,
           "processing" : true,
           "serverSide" : true,
@@ -121,16 +134,29 @@
               $( api.column( 3 ).footer() ).html("JUMLAH");
               $( api.column( 4 ).footer() ).html(formatRupiah(debet,"."));
               $( api.column( 5 ).footer() ).html(formatRupiah(kredit,"."));
-              $( 'tr:eq(1) td:eq(0)', api.table().footer() ).html("SALDO");
-              // $( 'tr:eq(2) td:eq(0)', api.table().footer() ).html("SALDO AWAL");
-              $( 'tr:eq(1) td:eq(1)', api.table().footer() ).html(saldo_debet);
-              $( 'tr:eq(1) td:eq(2)', api.table().footer() ).html(saldo_kredit);
+              $( 'tr:eq(1) td:eq(3)', api.table().footer() ).html("SALDO");
+              $( 'tr:eq(1) td:eq(4)', api.table().footer() ).html(saldo_debet);
+              $( 'tr:eq(1) td:eq(5)', api.table().footer() ).html(saldo_kredit);
               
             },
             "columnDefs": [
-              { "width": 30, "targets": 0 },
-              { "width": 50, "targets": 1 },
-              { "width": 50, "targets": 2 },
+              { 
+                "targets": 0,
+                "class" : "column-hidden",
+                "width": 30, 
+              },
+              { 
+                "targets": 1,
+                "width": 50, 
+              },
+              { 
+                "targets": 2,
+                "width": 50, 
+              },
+              { 
+                "targets": 3,
+                "width": 250, 
+              },
               { 
                 "targets": 4,
                 "width": 130,

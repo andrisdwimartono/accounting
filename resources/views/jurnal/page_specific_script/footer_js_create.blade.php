@@ -491,6 +491,19 @@ $(document).ready(function() {
         getlist();
     });
 
+    $(".print").click(function(){
+        var url = '/jurnal/print';
+        var form = $('<form action="' + url + '" target="_blank" method="post">' +
+                      '<input type="hidden" name="_token" value="'+$("input[name=_token]").val()+'" />' +
+                      '<input type="hidden" name="search[tanggal_jurnal_from]" value="'+$("#tanggal_jurnal_from").val()+'" />' +
+                      '<input type="hidden" name="search[tanggal_jurnal_to]" value="'+$("#tanggal_jurnal_to").val()+'" />' +
+                      '<input type="hidden" name="search[no_jurnal_search]" value="'+$("#no_jurnal_search").val()+'" />' +
+                      '<input type="hidden" name="search[ordering]" value="'+$("#column_no_jurnal").attr("data-ordering")+'" />' +
+                      '</form>');
+                   $('body').append(form);
+                   form.submit();
+    });
+
     $(document).keydown(function(event) {
         if((event.ctrlKey || event.metaKey) && event.which == 66) {
             $("#addrow").trigger("click");

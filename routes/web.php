@@ -102,12 +102,13 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getdatajurnal_bkmk', 'App\Http\Controllers\JurnalController@getdata_bkmk');
         Route::post('/getlistjurnal_bkmk', 'App\Http\Controllers\JurnalController@get_list_bkmk');
         Route::post('/updatejurnalbkmk/{jurnal}', 'App\Http\Controllers\JurnalController@update_bkmk');
-        
+        Route::post('/jurnal/print', 'App\Http\Controllers\JurnalController@print');
+
         Route::get('/bukubesar', 'App\Http\Controllers\BukuBesarController@index')->name('bukubesar');
         Route::post('/getlistbukubesar', 'App\Http\Controllers\BukuBesarController@get_list');
         Route::post('/getlinksbukubesar', 'App\Http\Controllers\BukuBesarController@getlinks');
         Route::post('/getsaldoawal', 'App\Http\Controllers\BukuBesarController@get_saldo_awal');
-        
+        Route::post('/bukubesar/print', 'App\Http\Controllers\BukuBesarController@print');
 
         Route::get('/neracasaldo', 'App\Http\Controllers\NeracasaldoController@index')->name('neracasaldo');
         Route::post('/getlistneracasaldo', 'App\Http\Controllers\NeracasaldoController@get_list');
@@ -119,7 +120,7 @@ Route::group(['middleware' => 'auth'], function () {
         
         Route::get('/labarugi', 'App\Http\Controllers\LabarugiController@index')->name('labarugi');
         Route::post('/getlistlabarugi', 'App\Http\Controllers\LabarugiController@get_list');
-        Route::post('/printlabarugi', 'App\Http\Controllers\LabarugiController@print');
+        Route::post('/labarugi/print', 'App\Http\Controllers\LabarugiController@print');
 
         Route::get('/globalsetting', 'App\Http\Controllers\GlobalsettingController@index')->name('globalsetting');
         Route::post('/getlistglobalsetting', 'App\Http\Controllers\GlobalsettingController@get_list');

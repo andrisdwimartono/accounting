@@ -10,12 +10,14 @@ use App\Models\Unitkerja;
 use App\Models\Transaction;
 use App\Models\Anggaran;
 use App\Models\Coa;
+use App\Models\Globalsetting;
 use App\Models\Jenisbayar;
 use App\Models\Neracasaldo;
 use App\Models\Neraca;
 use App\Models\Labarugi;
 use App\Models\Bankva;
 use App\Models\Opencloseperiode;
+use PDF;
 
 class JurnalController extends Controller
 {
@@ -2258,4 +2260,40 @@ class JurnalController extends Controller
             abort(403, "Periode buka hanya ".$opencloseperiode->bulan_open_label." ".$opencloseperiode->tahun_open);
         }
     }
+
+    public function print(Request $request)
+    {
+        $list_column = array("id", "keterangan", "no_jurnal", "tanggal_jurnal", "id");
+        
+        $dt = array();
+        $no = 0;
+        foreach(Jurnal::where(function($q) use ($request) {
+            $q->where("no_jurnal", "LIKE", "%" . $request->no_jurnal_search. "%");
+        })->whereNull("isdeleted")->whereBetween("tanggal_jurnal", [$request->tanggal_jurnal_from, $request->tanggal_jurnal_to])->orderBy("no_jurnal", $request->ordering)->get(["id", "keterangan", "no_jurnal", "tanggal_jurnal"]) as $jurnal){
+            $no = $no+1;
+            $act = '
+            <a href="/jurnal/'.$jurnal->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
+
+            <a href="/jurnal/'.$jurnal->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
+
+            <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button>';
+
+            array_push($dt, array($jurnal->id, $jurnal->tanggal_jurnal, $jurnal->no_jurnal, $jurnal->keterangan, $act));
+        }
+        $output = array(
+            "draw" => intval($request->draw),
+            "recordsTotal" => Jurnal::get()->count(),
+            "recordsFiltered" => intval(Jurnal::where(function($q) use ($request) {
+                $q->where("no_jurnal", "LIKE", "%" . $request->no_jurnal_search. "%");
+            })->whereBetween("tanggal_jurnal", [$request->tanggal_jurnal_from, $request->tanggal_jurnal_to])->orderBy("tanggal_jurnal", "asc")->get()->count()),
+            "data" => $dt
+        );
+
+        $pdf = PDF::loadview("jurnal.print", ["jurnal" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first()]);
+        $pdf->getDomPDF();
+        $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
+        return $pdf->stream('jurnal.pdf');
+    }
 }
+
+    

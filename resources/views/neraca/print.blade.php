@@ -72,12 +72,12 @@
                 padding: 2px 10px;
             }
 
-            .rp{
+            .rp {
                 width:10px;
                 border-right:none;
             }
 
-            .nom{
+            .nom {
                 width:70px;
                 border-left:none;
                 text-align:right;

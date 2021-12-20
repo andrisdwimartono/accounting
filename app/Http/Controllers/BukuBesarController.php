@@ -12,6 +12,7 @@ use App\Models\Coa;
 use App\Models\Jenisbayar;
 use App\Models\Neracasaldo;
 use App\Models\Globalsetting;
+use PDF;
 
 class BukuBesarController extends Controller
 {
@@ -259,5 +260,114 @@ class BukuBesarController extends Controller
 
             return response()->json($results);
         }
+    }
+
+    public function print(Request $request)
+    {
+        $coa = null;
+        $list_column = array("id","tanggal", "coa_code", "no_jurnal", "deskripsi", "debet", "kredit");
+        
+        $keyword = null;
+        
+        if(isset($request->search["value"])){
+            $keyword = $request->search["value"];
+        }
+        if(isset($request->search["coa_code"])){
+            $coa = $request->search["coa_code"];
+        }
+        $bulan_periode = 1;
+        if(isset($request->search["bulan_periode"])){
+            $bulan_periode = $request->search["bulan_periode"];
+        }
+        $tahun_periode = 1;
+        if(isset($request->search["tahun_periode"])){
+            $tahun_periode = $request->search["tahun_periode"];
+        }
+
+        // dd($bulan_periode, $tahun_periode, $coa);
+
+        $dt = array();
+        $dc = "";
+        $no = 0;
+        $deb_total = 0;
+        $cre_total = 0;
+        $sal_deb = "";
+        $sal_cre = "";
+        $cat = $coa[0];
+
+        foreach((Coa::where("id", (int) $coa)->get()) as $coas){
+            $dc = $coas->coa_code ." - ". $coas->coa_name;
+        }
+
+        // $coa_master = Coa::where("id",$coa)->get();
+        // $dc = [$coa_master->coa_code,$coa_master->coa_name];
+
+        foreach((Transaction::where("coa", (int) $coa)
+          ->where(function($q) {
+                $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
+            })
+          ->whereMonth("tanggal", "=", $bulan_periode)
+          ->whereYear("tanggal", "=", $tahun_periode)
+          ->whereNull('isdeleted')
+          ->get(["id", "tanggal", "no_jurnal", "deskripsi", "debet", "credit"])) as $bukubesar){
+        
+            $no = $no+1;
+            $deb = "<td class='rp'>Rp</td><td class='nom'><b>".number_format($bukubesar->debet,0,",",".")."</td>";
+            $cre = "<td class='rp'>Rp</td><td class='nom'><b>".number_format($bukubesar->credit,0,",",".")."</td>";
+            array_push($dt, array($bukubesar->id, $bukubesar->tanggal, $bukubesar->no_jurnal, $bukubesar->deskripsi, $deb, $cre));
+            $deb_total += (int) $bukubesar->debet;
+            $cre_total += (int) $bukubesar->credit;
+        }
+
+        if($cat == 1 || $cat == 5|| $cat == 6){
+            $saldo = $deb_total-$cre_total;
+            if($saldo>0) $sal_cre = $saldo;
+            else $sal_deb = $saldo;
+          } else {
+            $saldo = $cre_total-$deb_total;
+            if($saldo>0) $sal_deb = $saldo;
+            else $sal_cre = $saldo;
+          }
+
+        // dd($sal_cre, $sal_deb);
+
+        $output = array(
+            "draw" => intval($request->draw),
+            "recordsTotal" => Transaction::where("coa", $coa)
+                                ->where(function($q) {
+                                    $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
+                                }),
+            "recordsFiltered" => 0,
+            "data" => $dt,
+            "deb" => "<td class='rp'>Rp</td><td class='nom'><b>".number_format($deb_total,0,",",".")."</b></td>",
+            "cre" => "<td class='rp'>Rp</td><td class='nom'><b>".number_format($cre_total,0,",",".")."</b></td>",
+            "sal_deb" => "<td class='rp'>Rp</td><td class='nom'><b>".number_format((int) $sal_deb,0,",",".")."</b></td>",
+            "sal_cre" => "<td class='rp'>Rp</td><td class='nom'><b>".number_format((int) $sal_cre,0,",",".")."</b></td>",
+        );
+
+        $pdf = PDF::loadview("bukubesar.print", ["bukubesar" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first(), "bulan" => $this->convertBulan($bulan_periode), "tahun" => $tahun_periode, "coa" => $dc]);
+        $pdf->getDomPDF();
+        $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
+        return $pdf->stream('bukubesar.pdf');
+    }
+
+    public function convertBulan($bulan){
+        $nmb = "";
+        switch(date("F", mktime(0, 0, 0, $bulan, 10)))
+        {
+            case 'January':     $nmb="Januari";     break; 
+            case 'February':    $nmb="Februari";    break; 
+            case 'March':       $nmb="Maret";       break; 
+            case 'April':       $nmb="April";       break; 
+            case 'May':         $nmb="Mei";         break; 
+            case 'June':        $nmb="Juni";        break; 
+            case 'July':        $nmb="Juli";        break;
+            case 'August':      $nmb="Agustus";     break;
+            case 'September':   $nmb="September";   break;
+            case 'October':     $nmb="Oktober";     break;
+            case 'November':    $nmb="November";    break;
+            case 'December':    $nmb="Desember";    break;
+        }
+        return $nmb;
     }
 }

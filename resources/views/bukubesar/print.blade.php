@@ -92,8 +92,9 @@
                     <td width="6em"></td>
                     <td width="30em" style="text-align:center">
                         <h2>Universitas Muhammadiyah Sidoarjo</h2>
-                        <h3>Laporan Laba Rugi</h3>
-                        <h4>Untuk Periode {{ $bulan }} {{ $tahun }}</h5>
+                        <h3>Laporan Buku Besar</h3>
+                        <h4>Untuk Kode Rekening {{ $coa }}</h4> 
+                        <h4>Periode {{ $bulan }} {{ $tahun }}</h5>
                     </td>
                     <td width="6em">
                         <img class='logo' src="{{ asset('/logo_instansi/'.$globalsetting->logo_instansi) }}" alt="UMSIDA">
@@ -101,40 +102,48 @@
                 </tr>
             </table>
             <hr size=3>
-            <hr size=2.5 style="margin-top:-5px;">
+            <hr size=2.5 style="margin-top:-5px; margin-bottom:20px;">
         </header>
 
         <footer>
         </footer>
 
         <main>
-        <table class="table" border=1>
+        <table class="table" border=1 style="margin:20px -50px">
                 <thead >
                     <tr>
-                        <td scope="col" width="100px">Rekening</th>
+                        <td scope="col" width="100px">Tanggal</th>
+                        <td scope="col" width="100px">No Jurnal</th>
+                        <td scope="col" width="200px">Deskripsi</th>
                         <td scope="col" colspan=2 width="100px">Debet</th>
                         <td scope="col" colspan=2 width="100px">Kredit</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($neraca['data'] as $d)
+                    @foreach($bukubesar['data'] as $d)
                     <tr>
-                        <td scope="col" width="290px">{!! $d[1] !!} {!! $d[2] !!}</td>
-                        {!! $d[3] !!}
+                        <td scope="col" width="100px">{!! $d[1] !!}</td>
+                        <td scope="col" width="100px">{!! $d[2] !!}</td>
+                        <td scope="col" width="200px">{!! $d[3] !!}</td>
                         {!! $d[4] !!}
+                        {!! $d[5] !!}
                     </tr>
                     @endforeach
                 </tbody>
                 <tfoot>
                     <tr>
+                        <td style="border:none;"></td>
+                        <td  style="border:none;"></td>
                         <td class="nom" style="border:none;"><b>JUMLAH</b></td>
-                        {!! $neraca['deb'] !!}
-                        {!! $neraca['cre'] !!}                        
+                        {!! $bukubesar['deb'] !!}
+                        {!! $bukubesar['cre'] !!}                        
                     </tr>
                     <tr>
-                        <td class="nom" style="border:none;"><b>{{ $neraca['ket'] }}</b></td>
-                        {!! $neraca['sal_deb'] !!}
-                        {!! $neraca['sal_cre'] !!}                        
+                        <td style="border:none;"></td>
+                        <td  style="border:none;"></td>
+                        <td class="nom" style="border:none;"><b>SALDO</b></td>
+                        {!! $bukubesar['sal_deb'] !!}
+                        {!! $bukubesar['sal_cre'] !!}                        
                     </tr>
                 </tfoot>
             </table>
