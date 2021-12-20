@@ -92,8 +92,8 @@
                     <td width="6em"></td>
                     <td width="30em" style="text-align:center">
                         <h2>Universitas Muhammadiyah Sidoarjo</h2>
-                        <h3>Laporan Neraca</h3>
-                        <h4>Untuk Periode {{ $bulan }} {{ $tahun }}</h5>
+                        <h3>Laporan Jurnal</h3>
+                        <h4>Untuk Tanggal {{ $tanggal }}</h5>
                     </td>
                     <td width="6em">
                         <img class='logo' src="{{ asset('/logo_instansi/'.$globalsetting->logo_instansi) }}" alt="UMSIDA">
@@ -111,27 +111,34 @@
         <table class="table" border=1>
                 <thead >
                     <tr>
-                        <td scope="col" width="100px">Tanggal</th>
-                        <td scope="col" width="100px">No. Jurnal</th>
-                        <td scope="col" width="100px">Keterangan</th>                        
+                        <td scope="col" width="50px">Tanggal</th>
+                        <td scope="col" width="50px">No. Jurnal</th>
+                        <td scope="col" width="80px">Kode Rek</th>
+                        <td scope="col" width="80px">Deskripsi</th>
+                        <td scope="col" width="80px">Debet</th>
+                        <td scope="col" width="80px">Kredit</th>                        
                         <!-- <td scope="col" colspan=2 width="100px">Debet</th>
                         <td scope="col" colspan=2 width="100px">Kredit</th> -->
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($neraca['data'] as $d)
+                    @foreach($jurnal['data'] as $d)
                     <tr>
-                        <td scope="col" width="290px">{!! $d[1] !!}</td>
-                        <td scope="col" width="290px">{!! $d[2] !!}</td>
-                        <td scope="col" width="290px">{!! $d[3] !!}</td>
+                        <td scope="col">{!! $d[1] !!}</td>
+                        <td scope="col">{!! $d[2] !!}</td>
+                        <td scope="col">{!! $d[3] !!}</td>
+                        <td scope="col">{!! $d[4] !!}</td>
+                        <td scope="col">{!! $d[5] !!}</td>
+                        <td scope="col">{!! $d[6] !!}</td>
                     </tr>
                     @endforeach
                 </tbody>
-                <tfoot>
+                <!-- <tfoot>
                     <tr>
                         <td class="nom" style="border:none;"><b>JUMLAH</b></td>
+                        <td></td><td></td>
                     </tr>
-                </tfoot>
+                </tfoot> -->
             </table>
         </main>
         <script type="text/php">

@@ -84,7 +84,7 @@
                         <?php } } ?> 
                     </td>
                     <td width="6em">
-                        
+                        <img src="http://103.139.25.136:8080/logo_instansi/logo_instansi1638889893.png">
                     </td>
                 </tr>
             </table>

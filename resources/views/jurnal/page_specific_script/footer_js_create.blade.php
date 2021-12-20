@@ -504,7 +504,7 @@ $(document).ready(function() {
                       '<input type="hidden" name="search[tanggal_jurnal_from]" value="'+$("#tanggal_jurnal_from").val()+'" />' +
                       '<input type="hidden" name="search[tanggal_jurnal_to]" value="'+$("#tanggal_jurnal_to").val()+'" />' +
                       '<input type="hidden" name="search[no_jurnal_search]" value="'+$("#no_jurnal_search").val()+'" />' +
-                      '<input type="hidden" name="search[ordering]" value="'+$("#column_no_jurnal").attr("data-ordering")+'" />' +
+                      '<input type="hidden" name="search[ordering]" value="'+$("#column_no_jurnal").attr("data-ordering")+'" />'+
                       '</form>');
                    $('body').append(form);
                    form.submit();
