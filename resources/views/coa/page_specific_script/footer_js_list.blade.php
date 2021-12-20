@@ -111,9 +111,9 @@
               mRender: function (data, type, row){
                   data = data.toString();
                   if(row[8]=="on"){
-                    return "<b>"+data+"</b>";
+                    return "<span><b>"+data+"</b></span>";
                   } else {
-                    return data;
+                    return "<span>"+data+"</span>";
                   }
                   
               },
@@ -273,6 +273,7 @@
     });
 
     $('#example1').on('click', 'span', function() {
+      console.log("click");
       var $e = $(this).parent();
       var id_td = $e.attr('data-id');
       var val = $(this).html();

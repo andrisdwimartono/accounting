@@ -147,7 +147,26 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/deleteopencloseperiode', 'App\Http\Controllers\OpencloseperiodeController@destroy');
         Route::post('/getoptionsopencloseperiode', 'App\Http\Controllers\OpencloseperiodeController@getoptions');
 
-        
+        Route::get('/fakultas', 'App\Http\Controllers\FakultasController@index')->name('fakultas');
+        Route::post('/getlistfakultas', 'App\Http\Controllers\FakultasController@get_list');
+        Route::get('/fakultas/{fakultas}', 'App\Http\Controllers\FakultasController@show');
+        Route::get('/createfakultas', 'App\Http\Controllers\FakultasController@create');
+        Route::post('/storefakultas', 'App\Http\Controllers\FakultasController@store');
+        Route::get('/fakultas/{fakultas}/edit', 'App\Http\Controllers\FakultasController@edit');
+        Route::post('/getdatafakultas', 'App\Http\Controllers\FakultasController@getdata');
+        Route::post('/updatefakultas/{fakultas}', 'App\Http\Controllers\FakultasController@update');
+        Route::post('/deletefakultas', 'App\Http\Controllers\FakultasController@destroy');
+
+        Route::get('/prodi', 'App\Http\Controllers\ProdiController@index')->name('prodi');
+        Route::post('/getlistprodi', 'App\Http\Controllers\ProdiController@get_list');
+        Route::get('/prodi/{prodi}', 'App\Http\Controllers\ProdiController@show');
+        Route::get('/createprodi', 'App\Http\Controllers\ProdiController@create');
+        Route::post('/storeprodi', 'App\Http\Controllers\ProdiController@store');
+        Route::get('/prodi/{prodi}/edit', 'App\Http\Controllers\ProdiController@edit');
+        Route::post('/getdataprodi', 'App\Http\Controllers\ProdiController@getdata');
+        Route::post('/updateprodi/{prodi}', 'App\Http\Controllers\ProdiController@update');
+        Route::post('/deleteprodi', 'App\Http\Controllers\ProdiController@destroy');
+        Route::post('/getlinksprodi', 'App\Http\Controllers\ProdiController@getlinks');
     });
 });
 
