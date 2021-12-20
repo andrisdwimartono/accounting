@@ -346,13 +346,13 @@ class BukuBesarController extends Controller
         );
 
         $gs = Globalsetting::where("id", 1)->first();
-        $image =  base_path() . '/public/logo_instansi/'.$gs->logo_instansi;
-        $type = pathinfo($image, PATHINFO_EXTENSION);
-        // $data = file_get_contents($image);
-        $data = "";
-        $dataUri = 'data:image/' . $type . ';base64,' . base64_encode($data);
+        // $image =  base_path() . '/public/logo_instansi/'.$gs->logo_instansi;
+        // $type = pathinfo($image, PATHINFO_EXTENSION);
+        // // $data = file_get_contents($image);
+        // $data = "";
+        // $dataUri = 'data:image/' . $type . ';base64,' . base64_encode($data);
 
-        $pdf = PDF::loadview("bukubesar.print", ["bukubesar" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first(), "bulan" => $this->convertBulan($bulan_periode), "tahun" => $tahun_periode, "coa" => $dc, "logo"=>$dataUri]);
+        $pdf = PDF::loadview("bukubesar.print", ["bukubesar" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first(), "bulan" => $this->convertBulan($bulan_periode), "tahun" => $tahun_periode, "coa" => $dc]);
         $pdf->getDomPDF();
         $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
         return $pdf->stream('bukubesar.pdf');
