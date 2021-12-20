@@ -96,7 +96,7 @@
                         <h4>Untuk Periode {{ $bulan }} {{ $tahun }}</h5>
                     </td>
                     <td width="6em">
-                        <<img class='logo' src="{{ $logo }}" alt="{{ $globalsetting->nama_instansi }}">
+                        <img class='logo' src="{{ $logo }}" alt="{{ $globalsetting->nama_instansi }}">
                     </td>
                 </tr>
             </table>
