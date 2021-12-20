@@ -2290,7 +2290,13 @@ class JurnalController extends Controller
             "data" => $dt
         );
 
-        $pdf = PDF::loadview("jurnal.print", ["jurnal" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first(), "tanggal" => $tanggal_jurnal]);
+        $gs = Globalsetting::where("id", 1)->first();
+        $image =  url('/logo_instansi/'.$gs->logo_instansi);
+        $type = pathinfo($image, PATHINFO_EXTENSION);
+        $data = file_get_contents($image);
+        $dataUri = 'data:image/' . $type . ';base64,' . base64_encode($data);
+
+        $pdf = PDF::loadview("jurnal.print", ["jurnal" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first(), "tanggal" => $tanggal_jurnal, "logo" => $dataUri]);
         $pdf->setPaper('A4', 'Landscape');
         $pdf->getDomPDF();
         $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
