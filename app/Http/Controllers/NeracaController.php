@@ -566,7 +566,7 @@ class NeracaController extends Controller
         );
 
         $gs = Globalsetting::where("id", 1)->first();
-        $image =  url('/logo_instansi/'.$gs->logo_instansi);
+        $image =  base_path() . '/public/logo_instansi/'.$gs->logo_instansi;
         $type = pathinfo($image, PATHINFO_EXTENSION);
         $data = file_get_contents($image);
         $dataUri = 'data:image/' . $type . ';base64,' . base64_encode($data);
