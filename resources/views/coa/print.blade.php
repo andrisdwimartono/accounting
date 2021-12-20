@@ -84,8 +84,8 @@
                         <?php } } ?> 
                     </td>
                     <td width="6em">
-                        <img class='logo' src="{{ public_path }}'.'/logo_instansi/'.$globalsetting->logo_instansi) }}" alt="UMSIDA">
-                        <img class='logo' src="{{ public_path }}'.'/logo_instansi/'.'logo_instansi1639985681.jpg') }}" alt="UMSIDA">
+                        <img class='logo' src="{{ public_path() }}'.'/logo_instansi/'.$globalsetting->logo_instansi) }}" alt="UMSIDA">
+                        <img class='logo' src="{{ public_path() }}'.'/logo_instansi/'.'logo_instansi1639985681.jpg') }}" alt="UMSIDA">
                         
                         <!-- <img src="http://103.139.25.136:8080/logo_instansi/logo_instansi1639985681.jpg"> -->
                     </td>
