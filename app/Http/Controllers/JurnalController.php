@@ -2275,8 +2275,10 @@ class JurnalController extends Controller
         ->get(["jurnals.id", "jurnals.no_jurnal", "jurnals.tanggal_jurnal", "transactions.coa_label", "transactions.deskripsi", "transactions.debet", "transactions.credit"]) as $jurnal){
             $no = $no+1;
             $tanggal = $jurnal->tanggal_jurnal;
+            $deb = "<td class='rp'>Rp</td><td class='nom'><b>".number_format($jurnal->debet,0,",",".")."</td>";
+            $cre = "<td class='rp'>Rp</td><td class='nom'><b>".number_format($jurnal->credit,0,",",".")."</td>";
             // $tanggal = $this->tgl_indo($jurnal->tanggal_jurnal,"-",2,1,0);        
-            array_push($dt, array($jurnal->id, $tanggal, $jurnal->no_jurnal, $jurnal->coa_label, $jurnal->deskripsi, $jurnal->debet, $jurnal->credit));
+            array_push($dt, array($jurnal->id, $tanggal, $jurnal->no_jurnal, $jurnal->coa_label, $jurnal->deskripsi, $deb, $cre));
         }
 
         $tanggal_jurnal = $this->tgl_indo($request->search['tanggal_jurnal_from'],"/",0,1,2). " - " . $this->tgl_indo($request->search['tanggal_jurnal_to'],"/",0,1,2);

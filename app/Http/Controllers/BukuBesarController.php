@@ -315,8 +315,8 @@ class BukuBesarController extends Controller
             $deb = "<td class='rp'>Rp</td><td class='nom'><b>".number_format($bukubesar->debet,0,",",".")."</td>";
             $cre = "<td class='rp'>Rp</td><td class='nom'><b>".number_format($bukubesar->credit,0,",",".")."</td>";
             array_push($dt, array($bukubesar->id, $bukubesar->tanggal, $bukubesar->no_jurnal, $bukubesar->deskripsi, $deb, $cre));
-            $deb_total += (int) $bukubesar->debet;
-            $cre_total += (int) $bukubesar->credit;
+            // $deb_total += (int) $bukubesar->debet;
+            // $cre_total += (int) $bukubesar->credit;
         }
 
         if($cat == 1 || $cat == 5|| $cat == 6){

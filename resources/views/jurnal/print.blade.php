@@ -5,7 +5,7 @@
         <link rel="stylesheet" href="{{ asset('public/assets/bootstrap/dist/css/bootstrap.min.css') }}" type="text/css" media="screen">
         <style>
             @page {
-                size: A4;
+                size: landscape;
                 margin: 200px 50px 100px;
             }
 
@@ -87,7 +87,7 @@
     </head>
     <body>
         <header>
-            <table>
+            <table style="width:58em">
                 <tr>
                     <td width="6em"></td>
                     <td width="30em" style="text-align:center">
@@ -100,7 +100,7 @@
                     </td>
                 </tr>
             </table>
-            <hr size=3>
+            <hr size=3 style="width:63em">
             <hr size=2.5 style="margin-top:-5px;">
         </header>
 
@@ -108,15 +108,15 @@
         </footer>
 
         <main>
-        <table class="table" border=1>
+        <table class="table" border=1 style="width:53em">
                 <thead >
                     <tr>
-                        <td scope="col" width="50px">Tanggal</th>
-                        <td scope="col" width="50px">No. Jurnal</th>
-                        <td scope="col" width="80px">Kode Rek</th>
+                        <td scope="col" width="80px">Tanggal</th>
+                        <td scope="col" width="10px">No. Jurnal</th>
+                        <td scope="col" width="250px">Kode Rek</th>
                         <td scope="col" width="80px">Deskripsi</th>
-                        <td scope="col" width="80px">Debet</th>
-                        <td scope="col" width="80px">Kredit</th>                        
+                        <td scope="col" colspan=2 width="30px">Debet</th>
+                        <td scope="col" colspan=2 width="30px">Kredit</th>                        
                         <!-- <td scope="col" colspan=2 width="100px">Debet</th>
                         <td scope="col" colspan=2 width="100px">Kredit</th> -->
                     </tr>
@@ -128,8 +128,8 @@
                         <td scope="col">{!! $d[2] !!}</td>
                         <td scope="col">{!! $d[3] !!}</td>
                         <td scope="col">{!! $d[4] !!}</td>
-                        <td scope="col">{!! $d[5] !!}</td>
-                        <td scope="col">{!! $d[6] !!}</td>
+                        {!! $d[5] !!}
+                        {!! $d[6] !!}
                     </tr>
                     @endforeach
                 </tbody>
