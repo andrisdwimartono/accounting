@@ -329,7 +329,7 @@ class BukuBesarController extends Controller
             else $sal_cre = $saldo;
           }
 
-        // dd($sal_cre, $sal_deb);
+        dd($sal_cre, $sal_deb);
 
         $output = array(
             "draw" => intval($request->draw),
