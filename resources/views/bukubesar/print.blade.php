@@ -86,7 +86,6 @@
         </style>
     </head>
     <body>
-        <?php dd($bulan);?>
         <header>
             <table>
                 <tr>
@@ -129,6 +128,7 @@
                         {!! $d[5] !!}
                     </tr>
                     @endforeach
+                    <?php dd($bulan);?>
                 </tbody>
                 <tfoot>
                     <tr>
