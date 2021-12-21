@@ -128,7 +128,7 @@
                         {!! $d[5] !!}
                     </tr>
                     @endforeach
-                    <?php dd($bulan);?>
+                    
                 </tbody>
                 <tfoot>
                     <tr>
@@ -146,6 +146,7 @@
                         {!! $bukubesar['sal_cre'] !!}                        
                     </tr>
                 </tfoot>
+                <?php dd($bulan);?>
             </table>
         </main>
         <script type="text/php">
