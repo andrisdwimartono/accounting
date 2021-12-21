@@ -86,6 +86,7 @@
         </style>
     </head>
     <body>
+        <?php dd($sal_cre, $sal_deb);?>
         <header>
             <table>
                 <tr>
