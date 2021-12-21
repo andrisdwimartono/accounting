@@ -315,8 +315,8 @@ class BukuBesarController extends Controller
             $deb = "<td class='rp'>Rp</td><td class='nom'><b>".number_format($bukubesar->debet,0,",",".")."</td>";
             $cre = "<td class='rp'>Rp</td><td class='nom'><b>".number_format($bukubesar->credit,0,",",".")."</td>";
             array_push($dt, array($bukubesar->id, $bukubesar->tanggal, $bukubesar->no_jurnal, $bukubesar->deskripsi, $deb, $cre));
-            // $deb_total += (int) $bukubesar->debet;
-            // $cre_total += (int) $bukubesar->credit;
+            $deb_total += (int) $bukubesar->debet;
+            $cre_total += (int) $bukubesar->credit;
         }
 
         if($cat == 1 || $cat == 5|| $cat == 6){
@@ -352,7 +352,7 @@ class BukuBesarController extends Controller
         $data = "";
         $dataUri = 'data:image/' . $type . ';base64,' . base64_encode($data);
 
-        $pdf = PDF::loadview("bukubesar.print", ["bukubesar" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first(), "bulan" => $this->convertBulan($bulan_periode), "tahun" => $tahun_periode, "coa" => $dc]);
+        $pdf = PDF::loadview("bukubesar.print", ["bukubesar" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first(), "bulan" => $this->convertBulan($bulan_periode), "tahun" => $tahun_periode, "coa" => $dc, "logo" => $dataUri]);
         $pdf->getDomPDF();
         $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
         return $pdf->stream('bukubesar.pdf');
