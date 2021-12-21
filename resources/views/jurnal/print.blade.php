@@ -1,11 +1,10 @@
 <html>
     <head>
         <meta name="dompdf.view" content="FitV" />
-        <title>Print COA</title>
-        <link rel="stylesheet" href="{{ asset('public/assets/bootstrap/dist/css/bootstrap.min.css') }}" type="text/css" media="screen">
+        <title>Print Jurnal</title>
         <style>
             @page {
-                size: A4;
+                size: landscape;
                 margin: 200px 50px 100px;
             }
 
@@ -87,20 +86,20 @@
     </head>
     <body>
         <header>
-            <table>
+            <table style="width:58em">
                 <tr>
                     <td width="6em"></td>
                     <td width="30em" style="text-align:center">
                         <h2>Universitas Muhammadiyah Sidoarjo</h2>
-                        <h3>Laporan Neraca</h3>
-                        <h4>Untuk Periode {{ $bulan }} {{ $tahun }}</h5>
+                        <h3>Laporan Jurnal</h3>
+                        <h4>Untuk Tanggal {{ $tanggal }}</h5>
                     </td>
                     <td width="6em">
-                        <img class='logo' src="{{ asset('/logo_instansi/'.$globalsetting->logo_instansi) }}" alt="UMSIDA">
+                    <img class='logo' src="{{ $logo }}" alt="{{ $globalsetting->nama_instansi }}">
                     </td>
                 </tr>
             </table>
-            <hr size=3>
+            <hr size=3 style="width:63em">
             <hr size=2.5 style="margin-top:-5px;">
         </header>
 
@@ -108,30 +107,37 @@
         </footer>
 
         <main>
-        <table class="table" border=1>
+        <table class="table" border=1 style="width:53em">
                 <thead >
                     <tr>
-                        <td scope="col" width="100px">Tanggal</th>
-                        <td scope="col" width="100px">No. Jurnal</th>
-                        <td scope="col" width="100px">Keterangan</th>                        
+                        <td scope="col" width="80px">Tanggal</th>
+                        <td scope="col" width="10px">No. Jurnal</th>
+                        <td scope="col" width="250px">Kode Rek</th>
+                        <td scope="col" width="80px">Deskripsi</th>
+                        <td scope="col" colspan=2 width="30px">Debet</th>
+                        <td scope="col" colspan=2 width="30px">Kredit</th>                        
                         <!-- <td scope="col" colspan=2 width="100px">Debet</th>
                         <td scope="col" colspan=2 width="100px">Kredit</th> -->
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($neraca['data'] as $d)
+                    @foreach($jurnal['data'] as $d)
                     <tr>
-                        <td scope="col" width="290px">{!! $d[1] !!}</td>
-                        <td scope="col" width="290px">{!! $d[2] !!}</td>
-                        <td scope="col" width="290px">{!! $d[3] !!}</td>
+                        <td scope="col">{!! $d[1] !!}</td>
+                        <td scope="col">{!! $d[2] !!}</td>
+                        <td scope="col">{!! $d[3] !!}</td>
+                        <td scope="col">{!! $d[4] !!}</td>
+                        {!! $d[5] !!}
+                        {!! $d[6] !!}
                     </tr>
                     @endforeach
                 </tbody>
-                <tfoot>
+                <!-- <tfoot>
                     <tr>
                         <td class="nom" style="border:none;"><b>JUMLAH</b></td>
+                        <td></td><td></td>
                     </tr>
-                </tfoot>
+                </tfoot> -->
             </table>
         </main>
         <script type="text/php">

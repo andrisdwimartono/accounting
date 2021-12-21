@@ -1,8 +1,7 @@
 <html>
     <head>
         <meta name="dompdf.view" content="FitV" />
-        <title>Print COA</title>
-        <link rel="stylesheet" href="{{ asset('public/assets/bootstrap/dist/css/bootstrap.min.css') }}" type="text/css" media="screen">
+        <title>Print Buku Besar</title>
         <style>
             @page {
                 size: A4;
@@ -97,7 +96,7 @@
                         <h4>Periode {{ $bulan }} {{ $tahun }}</h5>
                     </td>
                     <td width="6em">
-                        <img class='logo' src="{{ asset('/logo_instansi/'.$globalsetting->logo_instansi) }}" alt="UMSIDA">
+                        <img class='logo' src="{{ $logo }}" alt="{{ $globalsetting->nama_instansi }}">
                     </td>
                 </tr>
             </table>
@@ -129,6 +128,7 @@
                         {!! $d[5] !!}
                     </tr>
                     @endforeach
+                    
                 </tbody>
                 <tfoot>
                     <tr>
@@ -146,6 +146,7 @@
                         {!! $bukubesar['sal_cre'] !!}                        
                     </tr>
                 </tfoot>
+                
             </table>
         </main>
         <script type="text/php">
@@ -162,5 +163,6 @@
             ');
         }
         </script>
+        <?php //dd($bulan);?>
     </body>
 </html>

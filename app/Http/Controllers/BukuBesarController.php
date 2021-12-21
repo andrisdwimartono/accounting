@@ -329,8 +329,6 @@ class BukuBesarController extends Controller
             else $sal_cre = $saldo;
           }
 
-        // dd($sal_cre, $sal_deb);
-
         $output = array(
             "draw" => intval($request->draw),
             "recordsTotal" => Transaction::where("coa", $coa)
@@ -345,7 +343,15 @@ class BukuBesarController extends Controller
             "sal_cre" => "<td class='rp'>Rp</td><td class='nom'><b>".number_format((int) $sal_cre,0,",",".")."</b></td>",
         );
 
-        $pdf = PDF::loadview("bukubesar.print", ["bukubesar" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first(), "bulan" => $this->convertBulan($bulan_periode), "tahun" => $tahun_periode, "coa" => $dc]);
+        
+
+        $gs = Globalsetting::where("id", 1)->first();
+        $image =  base_path() . '/public/logo_instansi/'.$gs->logo_instansi;
+        $type = pathinfo($image, PATHINFO_EXTENSION);
+        $data = file_get_contents($image);
+        $dataUri = 'data:image/' . $type . ';base64,' . base64_encode($data);
+
+        $pdf = PDF::loadview("bukubesar.print", ["bukubesar" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first(), "bulan" => $this->convertBulan($bulan_periode), "tahun" => $tahun_periode, "coa" => $dc, "logo" => $dataUri]);
         $pdf->getDomPDF();
         $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
         return $pdf->stream('bukubesar.pdf');

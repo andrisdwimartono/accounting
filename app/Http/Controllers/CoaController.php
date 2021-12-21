@@ -439,12 +439,12 @@ class CoaController extends Controller
         );
 
         $gs = Globalsetting::where("id", 1)->first();
+        $image =  base_path() . '/public/logo_instansi/'.$gs->logo_instansi;
+        $type = pathinfo($image, PATHINFO_EXTENSION);
+        $data = file_get_contents($image);
+        $dataUri = 'data:image/' . $type . ';base64,' . base64_encode($data);
 
-        $path = 'logo_instansi/'.$gs->logo_instansi;
-        $type = pathinfo($path, PATHINFO_EXTENSION);
-        $data = file_get_contents($path);
-        $logo = 'data:image/' . $type . ';base64,' . base64_encode($data);
-        $pdf = PDF::loadview("coa.print", ["coa" => $output,"page_data" => $page_data, "data" => $request, "globalsetting" => $gs, "logo" => $logo]);
+        $pdf = PDF::loadview("coa.print", ["coa" => $output,"page_data" => $page_data, "data" => $request, "globalsetting" => $gs, "logo" => $dataUri]);
         $pdf->getDomPDF();
         $pdf->setOptions(["isPhpEnabled"=> true,'isRemoteEnabled'=>true]);
         return $pdf->stream('coa.pdf');

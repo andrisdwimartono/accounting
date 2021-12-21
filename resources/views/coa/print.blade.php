@@ -84,7 +84,7 @@
                         <?php } } ?> 
                     </td>
                     <td width="6em">
-                        
+                        <img class='logo' src="{{ $logo }}" alt="{{ $globalsetting->nama_instansi }}">
                     </td>
                 </tr>
             </table>
