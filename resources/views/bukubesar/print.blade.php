@@ -1,7 +1,7 @@
 <html>
     <head>
         <meta name="dompdf.view" content="FitV" />
-        <title>Print COA</title>
+        <title>Print Buku Besar</title>
         <style>
             @page {
                 size: A4;
@@ -96,6 +96,7 @@
                         <h4>Periode {{ $bulan }} {{ $tahun }}</h5>
                     </td>
                     <td width="6em">
+                        <img class='logo' src="{{ $logo }}" alt="{{ $globalsetting->nama_instansi }}">
                     </td>
                 </tr>
             </table>
