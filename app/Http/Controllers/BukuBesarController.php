@@ -329,8 +329,6 @@ class BukuBesarController extends Controller
             else $sal_cre = $saldo;
           }
 
-        dd($sal_cre, $sal_deb);
-
         $output = array(
             "draw" => intval($request->draw),
             "recordsTotal" => Transaction::where("coa", $coa)
@@ -344,6 +342,8 @@ class BukuBesarController extends Controller
             "sal_deb" => "<td class='rp'>Rp</td><td class='nom'><b>".number_format((int) $sal_deb,0,",",".")."</b></td>",
             "sal_cre" => "<td class='rp'>Rp</td><td class='nom'><b>".number_format((int) $sal_cre,0,",",".")."</b></td>",
         );
+
+        dd($sal_cre, $sal_deb);
 
         $gs = Globalsetting::where("id", 1)->first();
         // $image =  base_path() . '/public/logo_instansi/'.$gs->logo_instansi;
