@@ -86,7 +86,7 @@
         </style>
     </head>
     <body>
-        <?php dd($sal_cre, $sal_deb);?>
+        <?php dd($bulan);?>
         <header>
             <table>
                 <tr>
