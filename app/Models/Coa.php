@@ -9,7 +9,7 @@ class Coa extends Model
 {
     use HasFactory;
     protected $table = 'coas';
-    protected $fillable = ['coa_code', 'coa_name', 'level_coa', 'coa', 'coa_label', 'category', 'category_label', 'fheader', 'factive', 'user_creator_id', 'user_updater_id', 'updated_at'];
+    protected $fillable = ['coa_code', 'coa_name', 'level_coa', 'coa', 'coa_label', 'category', 'category_label', 'fheader', 'factive', 'prodi', 'prodi_label', 'jenisbayar', 'jenisbayar_label', 'kode_jenisbayar', 'jeniscoa', 'user_creator_id', 'user_updater_id', 'updated_at'];
 
     //each category might have one parent
     public function parent() {
