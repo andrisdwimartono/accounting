@@ -146,7 +146,7 @@
                         {!! $bukubesar['sal_cre'] !!}                        
                     </tr>
                 </tfoot>
-                <?php dd($bulan);?>
+                
             </table>
         </main>
         <script type="text/php">
@@ -163,5 +163,6 @@
             ');
         }
         </script>
+        <?php dd($bulan);?>
     </body>
 </html>
