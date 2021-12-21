@@ -343,7 +343,7 @@ class BukuBesarController extends Controller
             "sal_cre" => "<td class='rp'>Rp</td><td class='nom'><b>".number_format((int) $sal_cre,0,",",".")."</b></td>",
         );
 
-        dd($sal_cre, $sal_deb);
+        
 
         $gs = Globalsetting::where("id", 1)->first();
         // $image =  base_path() . '/public/logo_instansi/'.$gs->logo_instansi;
@@ -354,6 +354,7 @@ class BukuBesarController extends Controller
 
         $pdf = PDF::loadview("bukubesar.print", ["bukubesar" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first(), "bulan" => $this->convertBulan($bulan_periode), "tahun" => $tahun_periode, "coa" => $dc]);
         $pdf->getDomPDF();
+        dd($sal_cre, $sal_deb);
         $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
         return $pdf->stream('bukubesar.pdf');
     }
