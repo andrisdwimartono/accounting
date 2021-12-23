@@ -77,7 +77,7 @@
             }
 
             .nom{
-                width:70px;
+                width:100px;
                 border-left:none;
                 text-align:right;
             }
@@ -112,18 +112,18 @@
                 <thead >
                     <tr>
                         <td scope="col" width="100px">Tanggal</th>
-                        <td scope="col" width="100px">No Jurnal</th>
+                        <td scope="col" width="70px">No Jurnal</th>
                         <td scope="col" width="200px">Deskripsi</th>
-                        <td scope="col" colspan=2 width="100px">Debet</th>
-                        <td scope="col" colspan=2 width="100px">Kredit</th>
+                        <td scope="col" colspan=2>Debet</th>
+                        <td scope="col" colspan=2>Kredit</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($bukubesar['data'] as $d)
                     <tr>
-                        <td scope="col" width="100px">{!! $d[1] !!}</td>
-                        <td scope="col" width="100px">{!! $d[2] !!}</td>
-                        <td scope="col" width="200px">{!! $d[3] !!}</td>
+                        <td scope="col">{!! $d[1] !!}</td>
+                        <td scope="col">{!! $d[2] !!}</td>
+                        <td scope="col">{!! $d[3] !!}</td>
                         {!! $d[4] !!}
                         {!! $d[5] !!}
                     </tr>
