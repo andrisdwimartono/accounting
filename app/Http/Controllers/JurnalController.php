@@ -1248,8 +1248,9 @@ class JurnalController extends Controller
         }
     }
 
-    public function storependapatan(Request $request)
+    public function storependapatan(Request $req)
     {
+        $request = json_decode($req->getContent());
         $tgl = date('Y-m-d');
         $this->checkOpenPeriode($tgl);
         if(!isset($request->clientreff)){
@@ -1265,10 +1266,11 @@ class JurnalController extends Controller
         }
         $page_data = $this->tabledesign();
         $rules_transaksi = $page_data["fieldsrules_transaksi_pendapatan"];
-        $requests_transaksi = json_decode($request->transaksi, true);
+        $requests_transaksi = $request->transaksi;
         $total_nominal = 0;
         $no_seq = -1;
         foreach($requests_transaksi as $ct_request){
+            $ct_request = (array) $ct_request;
             $no_seq++;
             $child_tb_request = new \Illuminate\Http\Request();
             $child_tb_request->replace($ct_request);
@@ -1311,7 +1313,7 @@ class JurnalController extends Controller
         $rules = $page_data["fieldsrules_pendapatan"];
         $messages = $page_data["fieldsmessages_pendapatan"];
         $uk = Unitkerja::where("unitkerja_code", "01")->first();
-        if($request->validate($rules, $messages)){
+        if($req->validate($rules, $messages)){
             $id = Jurnal::create([
                 "unitkerja"=> $uk->id,
                 "unitkerja_label"=> $uk->unitkerja_name,
@@ -1334,6 +1336,7 @@ class JurnalController extends Controller
             
             $no_seq = -1;
             foreach($requests_transaksi as $ct_request){
+                $ct_request = (array) $ct_request;
                 $coa = Coa::where(function($q) use($ct_request){
                     if($ct_request["prodi"]){
                         $q->where("prodi", $ct_request["prodi"]);
@@ -1407,8 +1410,9 @@ class JurnalController extends Controller
         }
     }
 
-    public function updatependapatan(Request $request)
+    public function updatependapatan(Request $req)
     {
+        $request = json_decode($req->getContent());
         if(!isset($request->clientreff)){
             abort(401, "clientreff harus diisi!");
         }
@@ -1424,19 +1428,20 @@ class JurnalController extends Controller
         }
         $page_data = $this->tabledesign();
         $rules_transaksi = $page_data["fieldsrules_transaksi_pendapatan"];
-        $requests_transaksi = json_decode($request->transaksi, true);
+        $requests_transaksi = $request->transaksi;
         $total_nominal = 0;
         $no_seq = -1;
         $rules = $page_data["fieldsrules_pendapatan"];
         $messages = $page_data["fieldsmessages_pendapatan"];
         $uk = Unitkerja::where("unitkerja_code", "01")->first();
-        if($request->validate($rules, $messages)){
+        if($req->validate($rules, $messages)){
             Jurnal::where("id", $jr->id)->update([
                 "keterangan"=> $request->kode_va." ".$request->nim,
                 "user_updater_id"=> 2
             ]);
 
             foreach($requests_transaksi as $ct_request){
+                $ct_request = (array) $ct_request;
                 $no_seq++;
                 $child_tb_request = new \Illuminate\Http\Request();
                 $child_tb_request->replace($ct_request);
@@ -1485,6 +1490,7 @@ class JurnalController extends Controller
             
             $no_seq = -1;
             foreach($requests_transaksi as $ct_request){
+                $ct_request = (array) $ct_request;
                 $coa = Coa::where(function($q) use($ct_request){
                     if($ct_request["prodi"]){
                         $q->where("prodi", $ct_request["prodi"]);
@@ -1861,8 +1867,9 @@ class JurnalController extends Controller
         }
     }
 
-    public function storeaccrumhs(Request $request)
+    public function storeaccrumhs(Request $req)
     {
+        $request = json_decode($req->getContent());
         //nim, clientreff, nominal, prodi, jenisbayar
         $tgl = date('Y-m-d');
         $this->checkOpenPeriode($tgl);
@@ -1903,7 +1910,7 @@ class JurnalController extends Controller
         $rules = $page_data["fieldsrules_accrumhs"];
         $messages = $page_data["fieldsmessages_accrumhs"];
         $uk = Unitkerja::where("unitkerja_code", "01")->first();
-        if($request->validate($rules, $messages)){
+        if($req->validate($rules, $messages)){
             $id = Jurnal::create([
                 "unitkerja"=> $uk->id,
                 "unitkerja_label"=> $uk->unitkerja_name,
@@ -1997,8 +2004,9 @@ class JurnalController extends Controller
         }
     }
 
-    public function updateaccrumhs(Request $request)
+    public function updateaccrumhs(Request $req)
     {
+        $request = json_decode($req->getContent());
         if(!isset($request->clientreff)){
             abort(401, "clientreff harus diisi!");
         }
@@ -2037,7 +2045,7 @@ class JurnalController extends Controller
         $rules = $page_data["fieldsrules_accrumhs"];
         $messages = $page_data["fieldsmessages_accrumhs"];
         $uk = Unitkerja::where("unitkerja_code", "01")->first();
-        if($request->validate($rules, $messages)){
+        if($req->validate($rules, $messages)){
             Jurnal::where("id", $jr->id)->update([
                 "keterangan"=> $request->kode_va." ".$request->nim,
                 "user_updater_id"=> 2
@@ -2114,8 +2122,9 @@ class JurnalController extends Controller
         }
     }
 
-    public function storepelunassanaccrumhs(Request $request)
+    public function storepelunassanaccrumhs(Request $req)
     {
+        $request = json_decode($req->getContent());
         //clientreff, clientreff accru, bankva, nominal
         $tgl = date('Y-m-d');
         $this->checkOpenPeriode($tgl);
@@ -2139,7 +2148,7 @@ class JurnalController extends Controller
         $rules = $page_data["fieldsrules_pelunassanaccrumhs"];
         $messages = $page_data["fieldsmessages_pelunassanaccrumhs"];
         $uk = Unitkerja::where("unitkerja_code", "01")->first();
-        if($request->validate($rules, $messages)){
+        if($req->validate($rules, $messages)){
             $id = Jurnal::create([
                 "unitkerja"=> $uk->id,
                 "unitkerja_label"=> $uk->unitkerja_name,
@@ -2226,8 +2235,9 @@ class JurnalController extends Controller
         }
     }
 
-    public function updatepelunassanaccrumhs(Request $request)
+    public function updatepelunassanaccrumhs(Request $req)
     {
+        $request = json_decode($req->getContent());
         if(!isset($request->clientreff)){
             abort(401, "clientreff harus diisi!");
         }
@@ -2249,7 +2259,7 @@ class JurnalController extends Controller
         $rules = $page_data["fieldsrules_pelunassanaccrumhs"];
         $messages = $page_data["fieldsmessages_pelunassanaccrumhs"];
         $uk = Unitkerja::where("unitkerja_code", "01")->first();
-        if($request->validate($rules, $messages)){
+        if($req->validate($rules, $messages)){
             Jurnal::where("id", $jr->id)->update([
                 "keterangan"=> $request->kode_va." ".$jr_accru->nim,
                 "user_updater_id"=> 2
@@ -2620,8 +2630,9 @@ class JurnalController extends Controller
     //     }
     // }
 
-    public function storepencairandana(Request $request)
+    public function storepencairandana(Request $req)
     {
+        $request = json_decode($req->getContent());
         //clientreff, kode_bank, keterangan, nominal
         $tgl = date('Y-m-d');
         $this->checkOpenPeriode($tgl);
@@ -2630,7 +2641,7 @@ class JurnalController extends Controller
         $rules = $page_data["fieldsrules_pencairandana"];
         $messages = $page_data["fieldsmessages_pencairandana"];
         $uk = Unitkerja::where("unitkerja_code", "01")->first();
-        if($request->validate($rules, $messages)){
+        if($req->validate($rules, $messages)){
             $jr = Jurnal::where("clientreff", $request->clientreff)->whereNull("isdeleted")->first();
             if(!is_null($jr)){
                 abort(404, "Reff sudah ada!");
@@ -2725,8 +2736,9 @@ class JurnalController extends Controller
         }
     }
 
-    public function updatepencairandana(Request $request)
+    public function updatepencairandana(Request $req)
     {
+        $request = json_decode($req->getContent());
         if(!isset($request->clientreff)){
             abort(401, "clientreff harus diisi!");
         }
@@ -2741,7 +2753,7 @@ class JurnalController extends Controller
         $rules = $page_data["fieldsrules_pencairandana"];
         $messages = $page_data["fieldsmessages_pencairandana"];
         $uk = Unitkerja::where("unitkerja_code", "01")->first();
-        if($request->validate($rules, $messages)){
+        if($req->validate($rules, $messages)){
             $coa = Coa::where("kode_jenisbayar", $request->kode_bank)->whereNull("fheader")->where("factive", "on")->first();
             if(is_null($coa)){
                 abort(404, "Kode Bank tidak cocok dengan COA Pencairan Dana manapun");
@@ -2825,8 +2837,9 @@ class JurnalController extends Controller
     }
 
 
-    public function storepjkpencairandana(Request $request)
+    public function storepjkpencairandana(Request $req)
     {
+        $request = json_decode($req->getContent());
         //clientreff, clientreff pencairan, transaksi[nominal, jenisbayar]
         $tgl = date('Y-m-d');
         $this->checkOpenPeriode($tgl);
@@ -2845,10 +2858,11 @@ class JurnalController extends Controller
         
         $page_data = $this->tabledesign();
         $rules_transaksi = $page_data["fieldsrules_transaksi_pjkpencairandana"];
-        $requests_transaksi = json_decode($request->transaksi, true);
+        $requests_transaksi = $request->transaksi;
         $total_nominal = 0;
         $no_seq = -1;
         foreach($requests_transaksi as $ct_request){
+            $ct_request = (array) $ct_request;
             $no_seq++;
             $child_tb_request = new \Illuminate\Http\Request();
             $child_tb_request->replace($ct_request);
@@ -2875,7 +2889,7 @@ class JurnalController extends Controller
         $rules = $page_data["fieldsrules_pjkpencairandana"];
         $messages = $page_data["fieldsmessages_pjkpencairandana"];
         $uk = Unitkerja::where("unitkerja_code", "01")->first();
-        if($request->validate($rules, $messages)){
+        if($req->validate($rules, $messages)){
             $id = Jurnal::create([
                 "unitkerja"=> $uk->id,
                 "unitkerja_label"=> $uk->unitkerja_name,
@@ -2900,6 +2914,7 @@ class JurnalController extends Controller
             
             $no_seq = -1;
             foreach($requests_transaksi as $ct_request){
+                $ct_request = (array) $ct_request;
                 $coa = Coa::where("kode_jenisbayar", $ct_request["jenisbayar"])->whereNull("fheader")->where("factive", "on")->first();
                 $no_seq++;
                 $idct = Transaction::create([
@@ -2971,8 +2986,9 @@ class JurnalController extends Controller
         }
     }
 
-    public function updatepjkpencairandana(Request $request)
+    public function updatepjkpencairandana(Request $req)
     {
+        $request = json_decode($req->getContent());
         if(!isset($request->clientreff)){
             abort(401, "clientreff harus diisi!");
         }
@@ -2988,10 +3004,11 @@ class JurnalController extends Controller
         
         $page_data = $this->tabledesign();
         $rules_transaksi = $page_data["fieldsrules_transaksi_pjkpencairandana"];
-        $requests_transaksi = json_decode($request->transaksi, true);
+        $requests_transaksi = $request->transaksi;
         $total_nominal = 0;
         $no_seq = -1;
         foreach($requests_transaksi as $ct_request){
+            $ct_request = (array) $ct_request;
             $no_seq++;
             $child_tb_request = new \Illuminate\Http\Request();
             $child_tb_request->replace($ct_request);
@@ -3018,7 +3035,7 @@ class JurnalController extends Controller
         $rules = $page_data["fieldsrules_pjkpencairandana"];
         $messages = $page_data["fieldsmessages_pjkpencairandana"];
         $uk = Unitkerja::where("unitkerja_code", "01")->first();
-        if($request->validate($rules, $messages)){
+        if($req->validate($rules, $messages)){
             Jurnal::where("id", $jr->id)->update([
                 "user_updater_id"=> 2,
             ]);
@@ -3032,6 +3049,7 @@ class JurnalController extends Controller
             
             $no_seq = -1;
             foreach($requests_transaksi as $ct_request){
+                $ct_request = (array) $ct_request;
                 $coa = Coa::where("kode_jenisbayar", $ct_request["jenisbayar"])->whereNull("fheader")->where("factive", "on")->first();
                 $no_seq++;
                 $idct = Transaction::create([
