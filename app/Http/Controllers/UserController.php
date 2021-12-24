@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\User_menu;
 use App\Models\User_role_menu;
 use App\Models\Menu;
+use App\Models\Unitkerja;
 use Validator;
 use Hash;
 use Session;
@@ -40,6 +41,22 @@ class UserController extends Controller
         ];
 
         $td["fieldsmessages"] = [
+            "required" => ":attribute harus diisi!!",
+            "min" => ":attribute minimal :min karakter!!",
+            "max" => ":attribute maksimal :max karakter!!",
+            "in" => "Tidak ada dalam pilihan :attribute!!",
+            "exists" => "Tidak ada dalam :attribute!!",
+            "date_format" => "Format tidak sesuai di :attribute!!"
+        ];
+
+        $td["fieldsrules_update"] = [
+            "name" => "required|min:4|max:255",
+            "email" => "required|min:4|max:255",
+            "phone" => "required|min:4|max:20",
+            "password" => "min:5|max:100"
+        ];
+
+        $td["fieldsmessages_update"] = [
             "required" => ":attribute harus diisi!!",
             "min" => ":attribute minimal :min karakter!!",
             "max" => ":attribute maksimal :max karakter!!",
@@ -110,6 +127,8 @@ class UserController extends Controller
                 "phone"=> $request->phone,
                 "password"=> Hash::make($request->password),
                 "photo_profile"=> $request->photo_profile,
+                "unitkerja"=> $request->unitkerja,
+                "unitkerja_label"=> $request->unitkerja_label,
                 "user_creator_id"=> Auth::user()->id
             ])->id;
 
@@ -165,8 +184,8 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $page_data = $this->tabledesign();
-        $rules = $page_data["fieldsrules"];
-        $messages = $page_data["fieldsmessages"];
+        $rules = $page_data["fieldsrules_update"];
+        $messages = $page_data["fieldsmessages_update"];
         if($request->validate($rules, $messages)){
             User::where("id", $id)->update([
                 "name"=> $request->name,
@@ -174,6 +193,8 @@ class UserController extends Controller
                 "phone"=> $request->phone,
                 "password"=> Hash::make($request->password),
                 "photo_profile"=> $request->photo_profile,
+                "unitkerja"=> $request->unitkerja,
+                "unitkerja_label"=> $request->unitkerja_label,
                 "user_updater_id"=> Auth::user()->id
             ]);
 
@@ -301,7 +322,7 @@ class UserController extends Controller
 
     public function getlinks(Request $request)
     {
-        if ($request->ajax()){
+        if ($request->ajax() || $request->wantsJson()){
             $page = $request->page;
             $resultCount = 25;
 
@@ -309,7 +330,12 @@ class UserController extends Controller
 
             $lists = null;
             $count = 0;
-
+            if($request->field == "unitkerja"){
+                $lists = Unitkerja::where(function($q) use ($request) {
+                    $q->where("unitkerja_name", "LIKE", "%" . $request->term. "%");
+                })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("unitkerja_name as text")]);
+                $count = Unitkerja::count();
+            }
 
             $endCount = $offset + $resultCount;
             $morePages = $endCount > $count;

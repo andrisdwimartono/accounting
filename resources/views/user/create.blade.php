@@ -50,10 +50,21 @@
                                                 <input type="text" name="phone" class="form-control" id="phone" placeholder="Enter Phone" @if($page_data["page_method_name"] == "View") readonly @endif>
                                             </div>
                                         </div>
+                                        <?php if($page_data["page_method_name"] == "Create"){ ?>
                                         <div class="form-group row">
                                             <label class="col-sm-4 col-form-label" for="password">Password</label>
                                             <div class="col-sm-6">
                                                 <input type="password" name="password" class="form-control" id="password" placeholder="Enter Password" @if($page_data["page_method_name"] == "View") readonly @endif>
+                                            </div>
+                                        </div>
+                                        <?php } ?>
+                                        <div class="form-group row">
+                                            <label class="col-sm-4 col-form-label" for="unitkerja">Unit Kerja</label>
+                                            <div class="col-sm-6 cakfield">
+                                                <select name="unitkerja" id="unitkerja" class="form-control form-control-sm select2bs4" style="width: 100%;" @if($page_data["page_method_name"] == "View") readonly @endif>
+
+                                                </select>
+                                                <input type="hidden" name="unitkerja_label" id="unitkerja_label">
                                             </div>
                                         </div>
                                         <div class="form-group row">

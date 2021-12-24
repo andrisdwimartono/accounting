@@ -50,6 +50,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getoptionsuser', 'App\Http\Controllers\UserController@getoptions');
         Route::post('/updateuser/{user}', 'App\Http\Controllers\UserController@update');
         Route::post('/deleteuser', 'App\Http\Controllers\UserController@destroy');
+        Route::post('/getlinksuser', 'App\Http\Controllers\UserController@getlinks');
         Route::post('/uploadfileuser', 'App\Http\Controllers\UserController@storeUploadFile');
         Route::get('/assignmenu/{user}/edit', 'App\Http\Controllers\UserController@assignmenu');
         Route::post('/assignmenu/{user}', 'App\Http\Controllers\UserController@update_assignmenu');

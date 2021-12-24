@@ -1045,10 +1045,19 @@ class JurnalController extends Controller
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("anggaran_name as text")]);
                 $count = Anggaran::count();
             }elseif($request->field == "coa"){
-                $lists = Coa::where(function($q) use ($request) {
-                    $q->where("coa_name", "LIKE", "%" . $request->term. "%")->orWhere("coa_code", "LIKE", "%" . $request->term. "%");
-                })->where("fheader", null)->orderBy("coa_code", "asc")->skip($offset)->take($resultCount)->get(["id", DB::raw("concat(concat(coa_code, ' '), coa_name) as text"), DB::raw("coa_name as description")]);
-                $count = Coa::count();
+                if(isset($request->jurnal_type) && isset(Auth::user()->unitkerja)){
+                    $lists = Coa::where(function($q) use ($request) {
+                        $q->where("coa_name", "LIKE", "%" . $request->term. "%")->orWhere("coa_code", "LIKE", "%" . $request->term. "%");
+                    })->where("unitkerja", Auth::user()->unitkerja)->where("fheader", null)->orderBy("coa_code", "asc")->skip($offset)->take($resultCount)->get(["id", DB::raw("concat(concat(coa_code, ' '), coa_name) as text"), DB::raw("coa_name as description")]);
+                    $count = Coa::where(function($q) use ($request) {
+                        $q->where("coa_name", "LIKE", "%" . $request->term. "%")->orWhere("coa_code", "LIKE", "%" . $request->term. "%");
+                    })->where("unitkerja", Auth::user()->unitkerja)->where("fheader", null)->orderBy("coa_code", "asc")->skip($offset)->take($resultCount)->get(["id", DB::raw("concat(concat(coa_code, ' '), coa_name) as text"), DB::raw("coa_name as description")])->count();
+                }else{
+                    $lists = Coa::where(function($q) use ($request) {
+                        $q->where("coa_name", "LIKE", "%" . $request->term. "%")->orWhere("coa_code", "LIKE", "%" . $request->term. "%");
+                    })->where("fheader", null)->orderBy("coa_code", "asc")->skip($offset)->take($resultCount)->get(["id", DB::raw("concat(concat(coa_code, ' '), coa_name) as text"), DB::raw("coa_name as description")]);
+                    $count = Coa::count();
+                }
             }elseif($request->field == "jenisbayar"){
                 $lists = Jenisbayar::where(function($q) use ($request) {
                     $q->where("jenisbayar_name", "LIKE", "%" . $request->term. "%");

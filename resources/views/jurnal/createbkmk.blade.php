@@ -74,7 +74,7 @@
                         <div class="form-group row m-0 mb-1">
                             <label class="col-sm-4 col-form-label" for="bank_kas"><?=$page_data["page_job"]=="KM"?"Kas Masuk":($page_data["page_job"]=="KK"?"Kas Keluar":($page_data["page_job"]=="BM"?"Bank Masuk":"Bank Keluar"))?></label>
                             <div class="col-sm-6 cakfield">
-                                <select name="bank_kas" id="bank_kas" class="form-control select2bs4staticBackdrop addnewrowselect" data-row="1" style="width: 100%;"></select>
+                                <select name="bank_kas" id="bank_kas" class="form-control select2bs4staticBackdrop" data-row="1" style="width: 100%;"></select>
                                 <input type="hidden" name="bank_kas_label" id="bank_kas_label">
                                 <input type="hidden" name="id_bank_kas" id="id_bank_kas">
                             </div>
