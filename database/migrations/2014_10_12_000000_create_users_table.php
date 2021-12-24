@@ -25,6 +25,8 @@ class CreateUsersTable extends Migration
             $table->string('photo_profile')->nullable();
             $table->string('role')->nullable();
             $table->string('role_label')->nullable();
+            $table->integer('unitkerja')->nullable();
+            $table->string('unitkerja_label')->nullable();
             $table->integer('user_creator_id')->nullable();
             $table->integer('user_updater_id')->nullable();
             $table->timestamps();
