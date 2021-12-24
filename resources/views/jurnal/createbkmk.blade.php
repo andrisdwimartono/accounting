@@ -16,7 +16,7 @@
                 <div class="row page-titles mx-0">
                     <div class="col-sm-6 p-md-0">
                         <div class="welcome-text">
-                            <h4>Jurnal <?=$page_data["page_job"]=="KM"?"Kas Masuk":($page_data["page_job"]=="KK"?"Kas Keluar":($page_data["page_job"]=="BM"?"Bank Masuk":"Bank Keluar"))?></h4>
+                            <h4><?=$page_data["page_job"]=="KM"?"Kas Masuk":($page_data["page_job"]=="KK"?"Kas Keluar":($page_data["page_job"]=="BM"?"Bank Masuk":"Bank Keluar"))?></h4>
                         </div>
                     </div>
                     <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
