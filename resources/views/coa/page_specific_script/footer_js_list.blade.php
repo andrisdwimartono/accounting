@@ -92,10 +92,10 @@
                   data = data.toString();
                   var val = convertCode(data);
                   if(row[8]=="on"){
-                    return "<b>"+val+"</b>"
+                    return "<span class=\"font-weight-bold\">"+val+"</span>";
                   } else {
-                    return val;
-                  }                 
+                    return "<span>"+val+"</span>";
+                  }
               },
               createdCell: function (td, cellData, rowData, row, col) {
                 var padd = (15+(parseInt(rowData[3])-1)*15)+"px";
@@ -111,17 +111,39 @@
               mRender: function (data, type, row){
                   data = data.toString();
                   if(row[8]=="on"){
-                    return "<span><b>"+data+"</b></span>";
+                    return "<span class=\"font-weight-bold\">"+data+"</span>";
                   } else {
                     return "<span>"+data+"</span>";
                   }
-                  
               },
               createdCell: function (td, cellData, rowData, row, col) {
                 var padd = (15+(parseInt(rowData[3])-1)*15)+"px";
                 $(td).css('padding-left', padd);
                 $(td).addClass('asset_value');
                 $(td).addClass('caktext');
+                $(td).attr('data-id', rowData[0]);
+              }
+            },
+            {
+              aTargets: [10],
+              mRender: function (data, type, row){
+                if(data){
+                  data = data.toString();
+                  if(row[8]=="on"){
+                    return "<span class=\"font-weight-bold\">"+data+"</span>";
+                  } else {
+                    return "<span>"+data+"</span>";
+                  }
+                }else{
+                  return "<span class='badge' style='width:50px;hieght:50px'> </span>";
+                }
+              },
+              createdCell: function (td, cellData, rowData, row, col) {
+                var padd = (15+(parseInt(rowData[3])-1)*15)+"px";
+                $(td).css('padding-left', padd);
+                $(td).addClass('asset_value');
+                $(td).addClass('jenis_aktivitas_column');
+                $(td).addClass('cakdropdown');
                 $(td).attr('data-id', rowData[0]);
               }
             },
@@ -143,7 +165,7 @@
               }
             },
             {
-              aTargets: [10],
+              aTargets: [11],
               className:"dt-body-center"
             },
             {
@@ -273,7 +295,6 @@
     });
 
     $('#example1').on('click', 'span', function() {
-      console.log("click");
       var $e = $(this).parent();
       var id_td = $e.attr('data-id');
       var val = $(this).html();
@@ -329,6 +350,37 @@
           }else{
             $(this).parent().html("<span class='badge' style='width:50px;hieght:50px'> </span>");
           }
+          
+          if(val != value){
+            var tr = $e.parent();
+            var val_arr = [];
+            tr.find('td').each(function(index, value){
+              if(index == 1){
+                val_arr.push($(value).text().replace(/-/g, ''));
+              }else{
+                val_arr.push($(value).text());
+              }
+            });
+            submitform(val_arr);
+          }
+        });
+      }else if($e.hasClass("cakdropdown")){
+        //cakdropdown
+        if($e.hasClass("jenis_aktivitas_column")){
+          $e.html('<select class="custom-select"><option value="Aktivitas Operasi">Aktivitas Operasi</option><option value="Aktivitas Investasi">Aktivitas Investasi</option><option value="Aktivitas Pendanaan">Aktivitas Pendanaan</option></select>');
+        }
+
+        var $newE = $e.find('select');
+        $newE.focus();
+        console.log(val);
+        if(val == null){
+          $newE.val("Aktivitas Operasi");
+        }else{
+          $newE.val(val);
+        }
+        $newE.on('blur', function() {
+          var value = $newE.val();
+          $(this).parent().html("<span>"+value+"</span>");
           
           if(val != value){
             var tr = $e.parent();
@@ -414,7 +466,7 @@
  }
 
  function submitform(val_arr, action = 'update'){
-  var field_arr = ["id", "coa_code", "coa_name", "level_coa", "coa", "coa_label", "category", "category_label", "fheader", "factive"];
+  var field_arr = ["id", "coa_code", "coa_name", "level_coa", "coa", "coa_label", "category", "category_label", "fheader", "factive", "jenis_aktivitas"];
   cto_loading_show();
 
   var urlaction = "/updatecoa/"+val_arr[0];
