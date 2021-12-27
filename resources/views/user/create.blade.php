@@ -7,28 +7,23 @@
         ***********************************-->
         <div class="content-body">
             <div class="container-fluid">
-                <div class="row page-titles mx-0">
-                    <div class="col-sm-10 p-md-0">
+            <div class="row page-titles mx-0">
+                    <div class="col-sm-6 p-md-0">
                         <div class="welcome-text">
-                            <!-- <h4>Hi, welcome back!</h4>
-                            <span>Element</span> -->
+                            <h4>{{$page_data["page_data_name"]}}</h4>
                         </div>
                     </div>
-                    <div class="col-sm-10 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+                    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="javascript:void(0)">Master</a></li>
-                            <li class="breadcrumb-item active"><a href="/user">User</a></li>
+                            <li class="breadcrumb-item"><a href="javascript:void(0)">Laporan</a></li>
+                            <li class="breadcrumb-item active"><a href="">{{$page_data["page_data_name"]}}</a></li>
                         </ol>
                     </div>
                 </div>
                 <!-- row -->
                 <div class="row">
-                    <div class="col-sm-10">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4 class="card-title">User</h4>
-                            </div>    
-                
+                    <div class="col-sm-12">
+                        <div class="card">                
                             <form id="quickForm" action="#">
                             @csrf
                                 <div class="card-body">

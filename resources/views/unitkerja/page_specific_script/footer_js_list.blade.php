@@ -109,17 +109,6 @@
    var name = "";
    $('#example1 tbody').on('click', 'tr', function () {
         $(this).toggleClass('selected');
-        // $(this).toggleClass('editable');
-        // if($(this).hasClass('editable')){
-        //   if(!$(this).find("td:eq(1)").find('input').length){
-        //     name = $(this).find("td:eq(1)").text();
-        //   }
-        //   $(this).find("td:eq(1)").html("<input type='text' id='input-inline-name' value='"+name+"' style='width: 100%; box-sizing: border-box;'>");
-        //   $("#input-inline-name").focus();
-        // }else{
-        //   $(this).find("td:eq(1)").html(name);
-        // }
-        //showChildTable_transaction_detail("staticBackdrop_transaction_detail", table_transaction_detail.row( this ));
     });
   }
 
