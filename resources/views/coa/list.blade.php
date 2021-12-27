@@ -74,6 +74,7 @@
                                             <th width="10px" class="column-hidden">Kategori</th>
                                             <th width="10px">Head?</th>
                                             <th width="10px" class="column-hidden">Aktif?</th>
+                                            <th width="20px">Jenis Aktivitas</th>
                                             <th width="10px">Act</th>
                                         </tr>
                                     </thead>

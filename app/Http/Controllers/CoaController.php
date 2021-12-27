@@ -119,6 +119,7 @@ class CoaController extends Controller
                 "category_label"=> $request->category_label,
                 "fheader"=> isset($request->fheader)?$request->fheader:null,
                 "factive"=> isset($request->factive)?$request->factive:null,
+                "jenis_aktivitas" => $request->jenis_aktivitas,
                 "user_creator_id"=> Auth::user()->id
             ])->id;
 
@@ -189,6 +190,7 @@ class CoaController extends Controller
                 "category_label"=> $request->category_label,
                 "fheader"=> isset($request->fheader)?$request->fheader:null,
                 "factive"=> isset($request->factive)?$request->factive:null,
+                "jenis_aktivitas" => $request->jenis_aktivitas,
                 "user_updater_id"=> Auth::user()->id
             ]);
 
@@ -241,7 +243,7 @@ class CoaController extends Controller
 
     public function get_list(Request $request)
     {
-        $list_column = array("id", "coa_code", "coa_name", "level_coa", "fheader", "factive", "id");
+        $list_column = array("id", "coa_code", "coa_name", "level_coa", "fheader", "factive", "jenis_aktivitas", "id");
         $keyword = null;
         if(isset($request->search["value"])){
             $keyword = $request->search["value"];
@@ -262,7 +264,7 @@ class CoaController extends Controller
             $no = 0;
         foreach(Coa::where(function($q) use ($keyword, $request) {
                 $q->where("coa_code", "LIKE", "%" . $keyword. "%")->orWhere("coa_name", "LIKE", "%" . $keyword. "%")->orWhere("level_coa", "LIKE", "%" . $keyword. "%")->orWhere("fheader", "LIKE", "%" . $keyword. "%")->orWhere("factive", "LIKE", "%" . $keyword. "%");
-                    })->where("factive", "on")->where("category", $request->category_filter)->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "coa_code", "coa_name", "level_coa", "coa", "coa_label", "category", "category_label", "fheader", "factive"]) as $coa){
+                    })->where("factive", "on")->where("category", $request->category_filter)->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "coa_code", "coa_name", "level_coa", "coa", "coa_label", "category", "category_label", "fheader", "factive", "jenis_aktivitas"]) as $coa){
                         $no = $no+1;
                         $act = '
                         <!--<a href="/coa/'.$coa->id.'" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-info"></i></a>
@@ -279,7 +281,7 @@ class CoaController extends Controller
                             $act .= '<button type="button" class="row-add-child"> <i class="fas fa-plus text-info"></i> </button>';
                         }
 
-                    array_push($dt, array($coa->id, $coa->coa_code, $coa->coa_name, $coa->level_coa, $coa->coa, $coa->coa_label, $coa->category, $coa->category_label, $coa->fheader, $coa->factive, $act));
+                    array_push($dt, array($coa->id, $coa->coa_code, $coa->coa_name, $coa->level_coa, $coa->coa, $coa->coa_label, $coa->category, $coa->category_label, $coa->fheader, $coa->factive, $coa->jenis_aktivitas, $act));
                 }
         }else{
             $this->get_list_data($dt, $request, $keyword, $limit, $orders, null);
@@ -301,7 +303,7 @@ class CoaController extends Controller
         $no = 0;
         foreach(Coa::where(function($q) use (&$keyword, $request) {
                 $q->where("coa_code", "LIKE", "%" . $keyword. "%")->orWhere("coa_name", "LIKE", "%" . $keyword. "%")->orWhere("level_coa", "LIKE", "%" . $keyword. "%")->orWhere("fheader", "LIKE", "%" . $keyword. "%")->orWhere("factive", "LIKE", "%" . $keyword. "%");
-            })->where("factive", "on")->where("category", $request->category_filter)->where("coa", $parent_id)->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "coa_code", "coa_name", "level_coa", "coa", "coa_label", "category", "category_label", "fheader", "factive"]) as $coa){
+            })->where("factive", "on")->where("category", $request->category_filter)->where("coa", $parent_id)->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "coa_code", "coa_name", "level_coa", "coa", "coa_label", "category", "category_label", "fheader", "factive", "jenis_aktivitas"]) as $coa){
                 $no = $no+1;
                 $act = '
                 <!--<a href="/coa/'.$coa->id.'" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-info"></i></a>
@@ -322,7 +324,7 @@ class CoaController extends Controller
                     // $act .= '<button type="button" class="row-add-child"> <i class="fas fa-plus text-info"></i> </button>';
                 }
 
-            array_push($dt, array($coa->id, $coa->coa_code, $coa->coa_name, $coa->level_coa, $coa->coa, $coa->coa_label, $coa->category, $coa->category_label, $coa->fheader, $coa->factive, $act));
+            array_push($dt, array($coa->id, $coa->coa_code, $coa->coa_name, $coa->level_coa, $coa->coa, $coa->coa_label, $coa->category, $coa->category_label, $coa->fheader, $coa->factive, $coa->jenis_aktivitas, $act));
             
             array_merge($dt, $this->get_list_data($dt, $request, $keyword, $limit, $orders, $coa->id));
             
