@@ -209,11 +209,11 @@ class UnitkerjaController extends Controller
         })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unitkerja_code", "unitkerja_name"]) as $unitkerja){
             $no = $no+1;
             $act = '
-            <a href="/unitkerja/'.$unitkerja->id.'" class="btn btn-info shadow btn-xs sharp"><i class="fa fa-eye"></i></a>
+            <a href="/unitkerja/'.$unitkerja->id.'" class="btn btn-info shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fa fa-eye"></i></a>
 
-            <a href="/unitkerja/'.$unitkerja->id.'/edit" class="btn btn-warning shadow btn-xs sharp"><i class="fa fa-edit"></i></a>
+            <a href="/unitkerja/'.$unitkerja->id.'/edit" class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit User Data"><i class="fa fa-edit"></i></a>
 
-            <a class="row-delete btn btn-danger shadow btn-xs sharp"><i class="fa fa-trash"></i></a>';
+            <a class="row-delete btn btn-danger shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Delete User"><i class="fa fa-trash"></i></a>';
             
 
             array_push($dt, array($unitkerja->id, $unitkerja->unitkerja_code, $unitkerja->unitkerja_name, $act));

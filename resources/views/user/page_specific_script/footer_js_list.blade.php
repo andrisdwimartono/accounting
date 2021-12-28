@@ -1,38 +1,50 @@
-<!-- Required vendors -->
-<script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
+  <!-- Required vendors -->
+  <script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
 	<script src="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/js/bootstrap-select.min.js") }} "></script>
-    <script src="{{ asset ("/assets/motaadmin/vendor/chart.js/Chart.bundle.min.js") }}"></script>
-    <script src="{{ asset ("/assets/motaadmin/js/custom.min.js") }}"></script>
+  <script src="{{ asset ("/assets/motaadmin/vendor/chart.js/Chart.bundle.min.js") }}"></script>
+  <script src="{{ asset ("/assets/motaadmin/js/custom.min.js") }}"></script>
 	<script src="{{ asset ("/assets/motaadmin/js/deznav-init.js") }}"></script>
+
+  <script src="{{ asset ("/assets/motaadmin/vendor/chart.js/Chart.bundle.min.js") }}"></script>
+  <script src="{{ asset ("/assets/motaadmin/js/custom.min.js") }}"></script>
+  <script src="{{ asset ("/assets/motaadmin/js/deznav-init.js") }}"></script>
 	<!-- Apex Chart -->
 	<script src="{{ asset ("/assets/motaadmin/vendor/apexchart/apexchart.js") }}"></script>
-    
+
+  <script src="{{ asset ("/assets/motaadmin/vendor/moment/moment.min.js") }}"></script>
+
+  <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.js") }}"></script>
+  <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.time.js") }}"></script>
+  <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.date.js") }}"></script>
+  <!-- Pickdate -->
+  <!-- <script src="{{ asset ("/assets/motaadmin/js/plugins-init/pickadate-init.js") }}"></script> -->
+
 	<!-- Svganimation scripts -->
     <script src="{{ asset ("/assets/motaadmin/vendor/svganimation/vivus.min.js") }}"></script>
     <script src="{{ asset ("/assets/motaadmin/vendor/svganimation/svg.animation.js") }}"></script>
 
-    <!-- Datatable -->
+    <script src="{{ asset ("/assets/node_modules/@popperjs/core/dist/umd/popper.min.js") }}"></script>
+    <script src="{{ asset ("/assets/node_modules/gijgo/js/gijgo.min.js") }}"></script>
+    <script src="{{ asset ("/assets/node_modules/jquery-toast-plugin/dist/jquery.toast.min.js") }}"></script>
+    <script src="{{ asset ("/assets/node_modules/autonumeric/dist/autoNumeric.min.js") }}"></script>
+    <script src="{{ asset ("/assets/bootstrap/dist/js/bootstrap.bundle.min.js") }}"></script>
+    <script src="{{ asset ("/assets/bower_components/jquery-validation/dist/jquery.validate.min.js") }}"></script>
+    <script src="{{ asset ("/assets/bower_components/select2/dist/js/select2.full.min.js") }}"></script>
+    
     <script src="{{ asset ("/assets/datatables/js/jquery.dataTables.min.js") }}"></script>
-    <script src="{{ asset ("/assets/motaadmin/js/plugins-init/datatables.init.js") }} "></script>
-
-<!-- <script src="{{ asset ("/assets/jquery/js/jquery-3.6.0.min.js") }}"></script> -->
-<script src="{{ asset ("/assets/node_modules/@popperjs/core/dist/umd/popper.min.js") }}"></script>
-<script src="{{ asset ("/assets/node_modules/jquery-toast-plugin/dist/jquery.toast.min.js") }}"></script>
-<script src="{{ asset ("/assets/bootstrap/dist/js/bootstrap.bundle.min.js") }}"></script>
-
-<script src="{{ asset ("/assets/datatables/js/dataTables.bootstrap4.min.js") }}"></script>
-<script src="{{ asset ("/assets/datatables/js/dataTables.rowReorder.min.js") }}"></script>
-<script src="{{ asset ("/assets/datatables/js/dataTables.buttons.min.js") }}"></script>
-<script src="{{ asset ("/assets/cto/js/cakrudtemplate.js") }}"></script>
-<script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
+    <script src="{{ asset ("/assets/datatables/js/dataTables.buttons.min.js") }}"></script>
+    
+    <script src="{{ asset ("/assets/cto/js/cakrudtemplate.js") }}"></script>
+    <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
+    <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
 
 <script>
   $(function () {
-    var app_url = '{{ env('APP_URL') }}';
+    
     $("#example1").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false,
-      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    
     $('#example2').DataTable({
       "paging": true,
       "lengthChange": false,
@@ -57,12 +69,13 @@
     target.shift();
     $('#example1').DataTable().destroy();
     var dataTable = $('#example1').DataTable({
-      // language: { search: "" , searchPlaceholder: "Search..."},
-      //"searching": false,
       buttons: [
             {
-                text: "+",
-                className: "bg-success text-white m-0",
+                text: "Tambah User <span class='btn-icon-right'><i class='fa fa-plus'></i></span>",
+                className: "btn btn-primary",
+                init: function(api, node, config) {
+                  $(node).removeClass('dt-button')
+                },
                 action: function ( e, dt, node, config ) {
                   window.location.href = "/create{{$page_data["page_data_urlname"]}}";
                 }
@@ -86,29 +99,10 @@
    });
    cto_loading_hide();
    table = dataTable;
-  //  table.column(0).visible(false);
-  //  table.column(3).visible(false);
-  //  table.column(4).visible(false);
-  //  table.column(5).visible(false);
-  //  table.column(6).visible(false);
-  //  table.column(7).visible(false);
-  //  table.column(8).visible(false);
-  //  table.column(9).visible(false);
 
    var name = "";
    $('#example1 tbody').on('click', 'tr', function () {
         $(this).toggleClass('selected');
-        // $(this).toggleClass('editable');
-        // if($(this).hasClass('editable')){
-        //   if(!$(this).find("td:eq(1)").find('input').length){
-        //     name = $(this).find("td:eq(1)").text();
-        //   }
-        //   $(this).find("td:eq(1)").html("<input type='text' id='input-inline-name' value='"+name+"' style='width: 100%; box-sizing: border-box;'>");
-        //   $("#input-inline-name").focus();
-        // }else{
-        //   $(this).find("td:eq(1)").html(name);
-        // }
-        //showChildTable_transaction_detail("staticBackdrop_transaction_detail", table_transaction_detail.row( this ));
     });
   }
 

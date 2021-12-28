@@ -88,7 +88,7 @@ class UserController extends Controller
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "List";
         $page_data["footer_js_page_specific_script"] = ["user.page_specific_script.footer_js_list"];
-        $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_list"];
+        $page_data["header_js_page_specific_script"] = ["user.page_specific_script.header_js_list"];
         
         return view("user.list", ["page_data" => $page_data]);
     }
@@ -273,6 +273,17 @@ class UserController extends Controller
             <button type="button" class="btn row-delete">
                 <i class="fas fa-minus-circle text-danger"></i>
             </button>';
+
+            $act = '
+            <a href="/assignmenu/'.$user->id.'" class="btn btn-success shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="Assign Menus to this user"><i class="fa fa-bars"></i></a>
+            
+            <a href="/user/'.$user->id.'" class="btn btn-info shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fa fa-eye"></i></a>
+
+            <a href="/user/'.$user->id.'/edit" class="btn btn-warning shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit User Data"><i class="fa fa-edit"></i></a>
+
+            <a class="row-delete btn btn-danger shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete User"><i class="fa fa-trash" ></i></a>';
+            
+
             //array_push($dt, array($no+$limit[0], $user->nama, $user->email, $act));
             array_push($dt, array($user->id, $user->name, $user->email, $act));
         }

@@ -27,6 +27,9 @@ $(document).ready(function () {
           }else if(['bukubesar', 'neraca', 'neracasaldo', 'labarugi'].includes(current_url)){
             $("#caknav-laporan").addClass("active");
             $("#cakmenu-laporan").addClass(" show active");
+          }else if(['saldoawal','opencloseperiode','globalsetting'].includes(current_url)){
+            $("#caknav-settings").addClass("active");
+            $("#cakmenu-settings").addClass(" show active");
           }else{
             $("#caknav-dashboard").addClass("active");
             $("#cakmenu-dashboard").addClass(" show active");

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Globalsetting;
 use App\Models\Bankva;
 use App\Models\Coa;
+use Session;
 
 class GlobalsettingController extends Controller
 {
@@ -94,7 +95,7 @@ class GlobalsettingController extends Controller
         $page_data["footer_js_page_specific_script"] = ["paging.page_specific_script.footer_js_list"];
         $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_list"];
         
-        return view("globalsetting.list", ["page_data" => $page_data]);
+        return view("globalsetting.list", ["page_data" => $page_data, "globalsetting" => Globalsetting::where("id", 1)->first(), ]);
     }
 
     /**
@@ -111,7 +112,7 @@ class GlobalsettingController extends Controller
         
         $globalsetting = Globalsetting::first();
         $page_data["id"] = $globalsetting->id;
-        return view("globalsetting.create", ["page_data" => $page_data]);
+        return view("globalsetting.create", ["page_data" => $page_data, "globalsetting" => Globalsetting::where("id", 1)->first(), ]);
     }
 
     /**
@@ -179,7 +180,7 @@ class GlobalsettingController extends Controller
         $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_create"];
         
         $page_data["id"] = $globalsetting->id;
-        return view("globalsetting.create", ["page_data" => $page_data]);
+        return view("globalsetting.create", ["page_data" => $page_data, "globalsetting" => Globalsetting::where("id", 1)->first(), ]);
     }
 
     /**
@@ -196,7 +197,7 @@ class GlobalsettingController extends Controller
         $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_create"];
         
         $page_data["id"] = $globalsetting->id;
-        return view("globalsetting.create", ["page_data" => $page_data]);
+        return view("globalsetting.create", ["page_data" => $page_data, "globalsetting" => Globalsetting::where("id", 1)->first(), ]);
     }
 
     /**
@@ -231,6 +232,9 @@ class GlobalsettingController extends Controller
                 "bulan_tutup_tahun_label"=> $request->bulan_tutup_tahun_label,
                 "user_updater_id"=> Auth::user()->id
             ]);
+
+            Session::put('nama_instansi', $request->nama_instansi);
+            Session::put('logo_instansi',  $request->logo_instansi);
 
             $new_menu_field_ids = array();
             foreach($requests_ct1_bank_va as $ct_request){
