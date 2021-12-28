@@ -34,7 +34,7 @@
     <script src="{{ asset ("/assets/datatables/js/jquery.dataTables.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/dataTables.buttons.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/jquery.dataTables.colResize.js") }}"></script>
-    
+
     <script src="{{ asset ("/assets/cto/js/cakrudtemplate.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
@@ -123,7 +123,7 @@
               //console.log('...resizing...');
             },
             onResizeEnd: function(column, columns) {
-              //console.log('I have been resized!');
+              $('#neracasaldo').DataTable().draw();
             }
           },
           "processing" : true,

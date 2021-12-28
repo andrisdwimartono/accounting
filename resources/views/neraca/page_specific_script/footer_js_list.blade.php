@@ -124,7 +124,7 @@
               //console.log('...resizing...');
             },
             onResizeEnd: function(column, columns) {
-              //console.log('I have been resized!');
+              $('#neraca').DataTable().draw();
             }
           },
           "processing" : true,

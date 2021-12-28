@@ -99,7 +99,7 @@
               //console.log('...resizing...');
             },
             onResizeEnd: function(column, columns) {
-              //console.log('I have been resized!');
+              $('#user').DataTable().draw();
             }
           },
           "processing" : true,
