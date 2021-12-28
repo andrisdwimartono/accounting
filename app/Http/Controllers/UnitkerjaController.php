@@ -22,8 +22,8 @@ class UnitkerjaController extends Controller
         ];
 
         $td["fieldsrules"] = [
-            "unitkerja_code" => "required|min:1|max:5",
-            "unitkerja_name" => "required|min:2|max:255"
+            "unitkerja_code" => "required|min:1|max:5|unique:unitkerjas,unitkerja_code",
+            "unitkerja_name" => "required|min:2|max:255|unique:unitkerjas,unitkerja_name"
         ];
 
         $td["fieldsmessages"] = [
@@ -32,7 +32,8 @@ class UnitkerjaController extends Controller
             "max" => ":attribute maksimal :max karakter!!",
             "in" => "Tidak ada dalam pilihan :attribute!!",
             "exists" => "Tidak ada dalam :attribute!!",
-            "date_format" => "Format tidak sesuai di :attribute!!"
+            "date_format" => "Format tidak sesuai di :attribute!!",
+            "unique" => ":attribute sudah ada, harus unik!!"
         ];
 
         return $td;

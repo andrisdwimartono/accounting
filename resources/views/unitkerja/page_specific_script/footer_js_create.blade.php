@@ -66,6 +66,9 @@ $(function () {
                     @if($page_data["page_method_name"] == "Update")
                     getdata();
                     @endif
+                    @if($page_data["page_method_name"] == "Create")
+                    cleardata();
+                    @endif
                 },
                 error: function (err) {
                     if (err.status == 422) {
@@ -191,5 +194,12 @@ function getdata(){
         }
     });
 }
+    @endif
+
+    @if($page_data["page_method_name"] == "Create")
+    function cleardata(){
+        $("input[name=unitkerja_code]").val("");
+        $("input[name=unitkerja_name]").val("");
+    }
     @endif
 </script>

@@ -23,15 +23,12 @@
                 <div class="row">
                 <div class="col-12">
                         <div class="card">
-                            <div class="card-header bg-primary">
-                                <h4 class="card-title text-white">User</h4>
-                            </div>
                             <div class="card-body">
                                 <div class="table-responsive">
                                 @csrf
-                                    <table id="example1" class="display" style="min-width: 845px">
+                                    <table id="example1" class="display" style="width: 100%">
                                         <thead class="bg-primary">
-                                            <tr>
+                                            <tr class="p-6">
                                                 <th>No</th>
                                                 <th>Name</th>
                                                 <th>Email</th>

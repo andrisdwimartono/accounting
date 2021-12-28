@@ -1257,7 +1257,7 @@ class JurnalController extends Controller
         }
     }
 
-    public function storependapatan(Request $req)
+    public function storependapatanmulti(Request $req)
     {
         $request = json_decode($req->getContent());
         $tgl = date('Y-m-d');
@@ -1419,7 +1419,7 @@ class JurnalController extends Controller
         }
     }
 
-    public function updatependapatan(Request $req)
+    public function updatependapatanmulti(Request $req)
     {
         $request = json_decode($req->getContent());
         if(!isset($request->clientreff)){
@@ -1863,6 +1863,286 @@ class JurnalController extends Controller
                 "fheader"=> null,
                 "no_jurnal"=> $no_jurnal,
                 "apitype" => "apiaccrumhs",
+                "clientreff" => $request->clientreff,
+                "user_creator_id" => 2
+            ])->id;
+            $this->summerizeJournal("store", $idct);
+
+            return response()->json([
+                'status' => 201,
+                'message' => 'No Jurnal '.$no_jurnal." telah diupdate",
+                'data' => ['id' => $jr->id, 'no_jurnal' => $no_jurnal]
+            ]);
+        }
+    }
+
+    public function storependapatan(Request $req)
+    {
+        $request = json_decode($req->getContent());
+        $tgl = date('Y-m-d');
+        $this->checkOpenPeriode($tgl);
+        if(!isset($request->clientreff)){
+            abort(401, "clientreff harus diisi!");
+        }
+        $jr = Jurnal::where("clientreff", $request->clientreff)->whereNull("isdeleted")->first();
+        if(!is_null($jr)){
+            abort(404, "Reff sudah ada!");
+        }
+        $bankva = Bankva::where("kode_va", $request->kode_va)->first();
+        if(!$bankva){
+            abort(404, "Kode Virtual Account tidak dikenali");
+        }
+        $page_data = $this->tabledesign();
+        
+        $coa = Coa::where(function($q) use($request){
+            if($request->prodi){
+                $q->where("prodi", $request->prodi);
+            }else{
+                $q->whereNull("prodi");
+            }
+        })->where("kode_jenisbayar", $request->jenisbayar)->first();
+
+        $coa_exist = true;
+        if(!$coa){
+            $this->createCOA($request->jenisbayar, $request->prodi);
+            $coa = Coa::where(function($q) use($request){
+                if($request->prodi){
+                    $q->where("prodi", $request->prodi);
+                }else{
+                    $q->whereNull("prodi");
+                }
+            })->where("kode_jenisbayar", $request->jenisbayar)->first();
+            if(!$coa){
+                $coa_exist = false;
+            }
+        }
+        
+        if(!$coa_exist){
+            abort(404, "Prodi dan Jenis bayar tidak cocok dengan COA Pendapatan manapun");
+        }
+
+        $rules = $page_data["fieldsrules_pendapatan"];
+        $messages = $page_data["fieldsmessages_pendapatan"];
+        $uk = Unitkerja::where("unitkerja_code", "01")->first();
+        if($req->validate($rules, $messages)){
+            $id = Jurnal::create([
+                "unitkerja"=> $uk->id,
+                "unitkerja_label"=> $uk->unitkerja_name,
+                "no_jurnal"=> "JU########",
+                "tanggal_jurnal"=> $tgl,
+                "keterangan"=> $request->kode_va." ".$request->nim,
+                "apitype" => "apipendapatan",
+                "clientreff" => $request->clientreff,
+                "user_creator_id"=> 2
+            ])->id;
+
+            $no_jurnal = "JU";
+            for($i = 0; $i < 7-strlen((string)$id); $i++){
+                $no_jurnal .= "0";
+            }
+            $no_jurnal .= $id;
+            Jurnal::where("id", $id)->update([
+                "no_jurnal"=> $no_jurnal
+            ]);
+            
+            
+            $coa = Coa::where(function($q) use($request){
+                if($request->prodi){
+                    $q->where("prodi", $request->prodi);
+                }else{
+                    $q->whereNull("prodi");
+                }
+            })->where("kode_jenisbayar", $request->jenisbayar)->first();
+            $no_seq = 0;
+            $idct = Transaction::create([
+                "no_seq" => $no_seq,
+                "parent_id" => $id,
+                "deskripsi"=> "",
+                "debet"=> 0,
+                "credit"=> $request->nominal,
+                "unitkerja"=> $uk->id,
+                "unitkerja_label"=> $uk->unitkerja_name,
+                "anggaran"=> 0,
+                "anggaran_label"=> "",
+                "tanggal"=> $tgl,
+                "keterangan"=> $request->kode_va." ".$request->nim,
+                "jenis_transaksi"=> 0,
+                "coa"=> $coa->id,
+                "coa_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,
+                "jenisbayar"=> $coa->jenisbayar,
+                "jenisbayar_label"=> $coa->jenisbayar_label,
+                "nim"=> $request->nim,
+                "kode_va"=> $request->kode_va,
+                "fheader"=> null,
+                "no_jurnal"=> $no_jurnal,
+                "apitype" => "apipendapatan",
+                "clientreff" => $request->clientreff,
+                "user_creator_id" => 2
+            ])->id;
+            $this->summerizeJournal("store", $idct);
+            
+
+            $coa = Coa::where("id", $bankva->coa)->first();
+            $no_seq++;
+            $idct = Transaction::create([
+                "no_seq" => $no_seq,
+                "parent_id" => $id,
+                "deskripsi"=> "",
+                "debet"=> $request->nominal,
+                "credit"=> 0,
+                "unitkerja"=> $uk->id,
+                "unitkerja_label"=> $uk->unitkerja_name,
+                "anggaran"=> 0,
+                "anggaran_label"=> "",
+                "tanggal"=> $tgl,
+                "keterangan"=> $request->kode_va." ".$request->nim,
+                "jenis_transaksi"=> 0,
+                "coa"=> $coa->id,
+                "coa_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,
+                "jenisbayar"=> $coa->jenisbayar,
+                "jenisbayar_label"=> $coa->jenisbayar_label,
+                "nim"=> $request->nim,
+                "kode_va"=> $request->kode_va,
+                "fheader"=> null,
+                "no_jurnal"=> $no_jurnal,
+                "apitype" => "apipendapatan",
+                "clientreff" => $request->clientreff,
+                "user_creator_id" => 2
+            ])->id;
+            $this->summerizeJournal("store", $idct);
+
+            return response()->json([
+                'status' => 201,
+                'message' => 'Buat Jurnal Berhasil '.$no_jurnal,
+                'data' => ['id' => $id, 'no_jurnal' => $no_jurnal]
+            ]);
+        }
+    }
+
+    public function updatependapatan(Request $req)
+    {
+        $request = json_decode($req->getContent());
+        if(!isset($request->clientreff)){
+            abort(401, "clientreff harus diisi!");
+        }
+        $jr = Jurnal::where("clientreff", $request->clientreff)->whereNull("isdeleted")->where("apitype", "apipendapatan")->first();
+        if(is_null($jr)){
+            abort(404, "Reff yang akan di-update tidak ada!");
+        }
+        $this->checkOpenPeriode($jr->tanggal_jurnal);
+        
+        $bankva = Bankva::where("kode_va", $request->kode_va)->first();
+        if(!$bankva){
+            abort(404, "Kode Virtual Account tidak dikenali");
+        }
+        $page_data = $this->tabledesign();
+        
+        $no_seq = 0;
+        $rules = $page_data["fieldsrules_pendapatan"];
+        $messages = $page_data["fieldsmessages_pendapatan"];
+        $uk = Unitkerja::where("unitkerja_code", "01")->first();
+        if($req->validate($rules, $messages)){
+            Jurnal::where("id", $jr->id)->update([
+                "keterangan"=> $request->kode_va." ".$request->nim,
+                "user_updater_id"=> 2
+            ]);
+
+            
+            $coa_exist = true;
+            $coa = Coa::where(function($q) use($request){
+                if($request->prodi){
+                    $q->where("prodi", $request->prodi);
+                }else{
+                    $q->whereNull("prodi");
+                }
+            })->where("kode_jenisbayar", $request->jenisbayar)->first();
+            if(!$coa){
+                $this->createCOA($request->jenisbayar, $request->prodi);
+                $coa = Coa::where(function($q) use($request){
+                    if($request->prodi){
+                        $q->where("prodi", $request->prodi);
+                    }else{
+                        $q->whereNull("prodi");
+                    }
+                })->where("kode_jenisbayar", $request->jenisbayar)->first();
+                if(!$coa){
+                    $coa_exist = false;
+                }
+            }
+            
+
+            if(!$coa_exist){
+                abort(404, "Prodi dan Jenis bayar tidak cocok dengan COA Pendapatan manapun");
+            }
+
+            foreach(Transaction::whereParentId($jr->id)->get() as $ch){       
+                $this->summerizeJournal("delete", $ch->id);
+                Transaction::whereId($ch->id)->delete();
+            }
+            
+            $no_jurnal = $jr->no_jurnal;
+            
+            $no_seq = 0;
+            
+            $coa = Coa::where(function($q) use($request){
+                if($request->prodi){
+                    $q->where("prodi", $request->prodi);
+                }else{
+                    $q->whereNull("prodi");
+                }
+            })->where("kode_jenisbayar", $request->jenisbayar)->first();
+            $no_seq++;
+            $idct = Transaction::create([
+                "no_seq" => $no_seq,
+                "parent_id" => $jr->id,
+                "deskripsi"=> "",
+                "debet"=> 0,
+                "credit"=> $request->nominal,
+                "unitkerja"=> $uk->id,
+                "unitkerja_label"=> $uk->unitkerja_name,
+                "anggaran"=> 0,
+                "anggaran_label"=> "",
+                "tanggal"=> $jr->tanggal_jurnal,
+                "keterangan"=> $request->kode_va." ".$request->nim,
+                "jenis_transaksi"=> 0,
+                "coa"=> $coa->id,
+                "coa_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,
+                "jenisbayar"=> $coa->jenisbayar,
+                "jenisbayar_label"=> $coa->jenisbayar_label,
+                "nim"=> $request->nim,
+                "kode_va"=> $request->kode_va,
+                "fheader"=> null,
+                "no_jurnal"=> $no_jurnal,
+                "apitype" => "apipendapatan",
+                "clientreff" => $request->clientreff,
+                "user_creator_id" => 2
+            ])->id;
+            $this->summerizeJournal("store", $idct);
+
+            $coa = Coa::where("id", $bankva->coa)->first();
+            $no_seq++;
+            $idct = Transaction::create([
+                "no_seq" => $no_seq,
+                "parent_id" => $jr->id,
+                "deskripsi"=> "",
+                "debet"=> $request->nominal,
+                "credit"=> 0,
+                "unitkerja"=> $uk->id,
+                "unitkerja_label"=> $uk->unitkerja_name,
+                "anggaran"=> 0,
+                "anggaran_label"=> "",
+                "tanggal"=> $jr->tanggal_jurnal,
+                "keterangan"=> $request->kode_va." ".$request->nim,
+                "jenis_transaksi"=> 0,
+                "coa"=> $coa->id,
+                "coa_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,
+                "jenisbayar"=> $coa->jenisbayar,
+                "jenisbayar_label"=> $coa->jenisbayar_label,
+                "nim"=> $request->nim,
+                "kode_va"=> $request->kode_va,
+                "fheader"=> null,
+                "no_jurnal"=> $no_jurnal,
+                "apitype" => "apipendapatan",
                 "clientreff" => $request->clientreff,
                 "user_creator_id" => 2
             ])->id;
