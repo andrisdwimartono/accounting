@@ -15,7 +15,8 @@
   
   <!-- datatables -->
   <link href="{{ asset ("/assets/motaadmin//vendor/datatables/css/jquery.dataTables.min.css") }} " rel="stylesheet">
-  
+  <link href="{{ asset ("/assets/datatables/css/jquery.dataTables.colResize.css") }}" rel="stylesheet">
+
   <link href="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/css/bootstrap-select.min.css") }}" rel="stylesheet">
   <link href="{{ asset ("/assets/motaadmin/css/style.css") }}" rel="stylesheet">
 

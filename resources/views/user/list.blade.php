@@ -28,7 +28,7 @@
                                 @csrf
                                     <table id="example1" class="display" style="width: 100%">
                                         <thead class="bg-primary">
-                                            <tr class="p-6">
+                                            <tr>
                                                 <th>No</th>
                                                 <th>Name</th>
                                                 <th>Email</th>
