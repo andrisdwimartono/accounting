@@ -9,6 +9,7 @@ use Validator;
 use Hash;
 use Session;
 use App\Models\User;
+use App\Models\Globalsetting;
   
 class AuthController extends Controller
 {
@@ -51,6 +52,10 @@ class AuthController extends Controller
 
         if (Auth::check()) { // true sekalian session field di users nanti bisa dipanggil via Auth
             //Login Success
+            $globalsetting = Globalsetting::where("id", 1)->first();
+            Session::put('nama_instansi', $globalsetting['nama_instansi']);
+            Session::put('logo_instansi', $globalsetting['logo_instansi']);
+
             return redirect()->route('home');
             //return redirect()->back();
   

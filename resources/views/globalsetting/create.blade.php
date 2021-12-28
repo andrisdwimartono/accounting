@@ -13,20 +13,7 @@
         ***********************************-->
         <div class="content-body">
             <div class="container-fluid">
-                <!-- <div class="row page-titles mx-0">
-                    <div class="col-sm-10 p-md-0">
-                        <div class="welcome-text">
-                            <h4>Hi, welcome back!</h4>
-                            <span>Element</span>
-                        </div>
-                    </div>
-                    <div class="col-sm-10 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="javascript:void(0)">Master</a></li>
-                            <li class="breadcrumb-item active"><a href="/coa">COA</a></li>
-                        </ol>
-                    </div>
-                </div> -->
+                
                 <!-- row -->
                 <div class="row">
                     <div class="col-sm-12">

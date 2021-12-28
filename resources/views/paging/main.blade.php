@@ -19,9 +19,9 @@
     <meta property="og:image" content="https://motaadmin.dexignlab.com/xhtml/social-image.png" />
     <meta name="format-detection" content="telephone=no">
     
-    <link rel="icon" href="{{ asset ("/assets/motaadmin/images/favicon.png") }}">
-
-    <title>SIA UMSIDA | {{$page_data["page_method_name"]}} {{$page_data["page_data_name"]}}</title>
+    <link rel="icon" href="{{ asset ("/logo_instansi/". Session::get('logo_instansi')) }}">
+ 
+    <title>SIA {{ Session::get('nama_instansi') }} | {{$page_data["page_method_name"]}} {{$page_data["page_data_name"]}}</title>
   @if(isset($page_data["header_js_page_specific_script"]))
     @foreach($page_data["header_js_page_specific_script"] as $header_js_pss)
   @include($header_js_pss)
