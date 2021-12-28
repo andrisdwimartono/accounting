@@ -109,7 +109,6 @@
                     },
                 },
             ],
-          "scrollX" : true,
           "colResize": {
             isEnabled: true,
             hoverClass: 'dt-colresizable-hover',

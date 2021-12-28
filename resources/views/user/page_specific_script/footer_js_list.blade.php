@@ -85,7 +85,6 @@
         ],
           "autoWidth": false,
           dom: 'Bfrtip',
-          "scrollX" : true,
           "colResize": {
             isEnabled: true,
             hoverClass: 'dt-colresizable-hover',

@@ -88,7 +88,6 @@
                     },
                 },
             ],
-          "scrollX" : true,
           "colResize": {
             isEnabled: true,
             hoverClass: 'dt-colresizable-hover',
@@ -102,7 +101,7 @@
               //console.log('...resizing...');
             },
             onResizeEnd: function(column, columns) {
-              $('#neraca').DataTable().draw();
+              $('#bukubesar').DataTable().draw();
             }
           },
           "processing" : true,
