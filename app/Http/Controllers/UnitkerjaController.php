@@ -140,6 +140,8 @@ class UnitkerjaController extends Controller
     {
         $page_data = $this->tabledesign();
         $rules = $page_data["fieldsrules"];
+        $rules["unitkerja_code"] = $rules["unitkerja_code"].",".$id;
+        $rules["unitkerja_name"] = $rules["unitkerja_name"].",".$id;
         $messages = $page_data["fieldsmessages"];
         if($request->validate($rules, $messages)){
             Unitkerja::where("id", $id)->update([

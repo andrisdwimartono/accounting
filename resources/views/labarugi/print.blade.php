@@ -1,7 +1,7 @@
 <html>
     <head>
         <meta name="dompdf.view" content="FitV" />
-        <title>Print Laba Rugi</title>
+        <title>Print Laporan Penghasilan Komprehensif</title>
         <style>
             @page {
                 size: A4;

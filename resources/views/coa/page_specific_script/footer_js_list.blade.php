@@ -130,12 +130,16 @@
                 if(data != null && data != ""){
                   data = data.toString();
                   if(row[8]=="on"){
-                    return "<span class=\"font-weight-bold\">"+data+"</span>";
+                    return "";
                   } else {
-                    return "<span>"+data+"</span>";
+                    return "<span class='badge' style='display: inline-block; width:100%; height: 100%;'>"+data+"</span>";
                   }
                 }else{
-                  return "<span class='badge' style='width:50px;hieght:50px'> </span>";
+                  if(row[8]=="on"){
+                    return "";
+                  } else {
+                    return "<span class='badge' style='display: inline-block; width:100%; height: 100%;'> </span>";
+                  }
                 }
               },
               createdCell: function (td, cellData, rowData, row, col) {
@@ -211,6 +215,7 @@
             cols += '<td class="column-hidden">'+data[7]+'</td>';
             cols += '<td><label class="form-check-label"><input type="checkbox" name="add_new_header" tabindex="3"> Header?</label></td>';
             cols += '<td class="column-hidden">on</td>';
+            cols += '<td><select class="custom-select"><option value=""></option><option value="Aktivitas Operasi">Aktivitas Operasi</option><option value="Aktivitas Investasi">Aktivitas Investasi</option><option value="Aktivitas Pendanaan">Aktivitas Pendanaan</option></select></td>';
             cols += '<td><i class="add-row-save fas fa-check text-success" style="cursor: pointer;"></i> &nbsp;&nbsp;&nbsp;&nbsp;<i class="add-row-cancel fas fa-times text-danger" style="cursor: pointer;"></i></td>';
             newRow.append(cols);
             newRow.insertAfter($(this).parents().closest('tr'));
@@ -248,6 +253,9 @@
           }else{
             val_arr.push("");
           }
+        }else if(index == 10){
+          var $inp = $(this).find('select');
+          val_arr.push($inp.find(":selected").val());
         }else{
           val_arr.push($(value).text());
         }
@@ -273,6 +281,8 @@
           $(this).attr('data-id', id_coa);
           $(this).html("<span>"+convertCode($(this).find('input').val())+"</span>");
         }else if(index == 2){
+          var padd = (15+(parseInt($($tr).find("td:eq(3)").text())-1)*15)+"px";
+          $(this).css('padding-left', padd);
           $(this).addClass('asset_value');
           $(this).addClass('caktext');
           $(this).attr('data-id', id_coa);
@@ -284,6 +294,11 @@
             $(this).html("");
           }
         }else if(index == 10){
+          $(this).addClass('asset_value');
+          $(this).addClass('cakdropdown');
+          $(this).attr('data-id', id_coa);
+          $(this).html("<span class='badge' style='display: inline-block; width:100%; height: 100%;'>"+$($(this).find('select')).find(':selected').val()+"</span>");
+        }else if(index == 11){
           $(this).html('<button type="button" class="row-delete"> <i class="fas fa-minus-circle text-danger"></i> </button>');
           if($($tr).find("td:eq(8)").text() == "on"){
             $(this).append(' <button type="button" class="row-add-child"> <i class="fas fa-plus text-info"></i> </button>');
@@ -365,7 +380,7 @@
       }else if($e.hasClass("cakdropdown")){
         //cakdropdown
         if($e.hasClass("jenis_aktivitas_column")){
-          $e.html('<select class="custom-select"><option value="Aktivitas Operasi">Aktivitas Operasi</option><option value="Aktivitas Investasi">Aktivitas Investasi</option><option value="Aktivitas Pendanaan">Aktivitas Pendanaan</option></select>');
+          $e.html('<select class="custom-select"><option value=""></option><option value="Aktivitas Operasi">Aktivitas Operasi</option><option value="Aktivitas Investasi">Aktivitas Investasi</option><option value="Aktivitas Pendanaan">Aktivitas Pendanaan</option></select>');
         }
 
         var $newE = $e.find('select');
@@ -381,7 +396,7 @@
           if(value == null){
             value = "";
           }
-          $(this).parent().html("<span>"+value+"</span>");
+          $(this).parent().html("<span class='badge' style='display: inline-block; width:100%; height: 100%;'>"+value+"</span>");
           
           if(val != value){
             var tr = $e.parent();

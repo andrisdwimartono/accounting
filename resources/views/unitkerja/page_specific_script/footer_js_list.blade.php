@@ -74,19 +74,19 @@
         { "width": "550px" },
         { "width": "20px" },
         ],
-          "columnDefs": [
-              { 
-                "targets": 0,
-                "className":"dt-body-center",
+        aoColumnDefs: [{
+              aTargets: [1, 2],
+              mRender: function (data, type, row){
+                data = data.toString();
+                return "<span>"+data+"</span>";
               },
-              { 
-                "targets": 1,
-                "className":"dt-body-center",
-              },{ 
-                "targets": 3,
-                "className":"dt-body-center",
-              },
-          ],
+              createdCell: function (td, cellData, rowData, row, col) {
+                $(td).addClass('asset_value');
+                $(td).addClass('caktext');
+                $(td).attr('data-id', rowData[0]);
+              }
+            }
+            ],
           "autoWidth": false,
           dom: 'Bfrtip',
           "scrollX" : true,
@@ -109,6 +109,37 @@
    var name = "";
    $('#example1 tbody').on('click', 'tr', function () {
         $(this).toggleClass('selected');
+    });
+
+    $('#example1').on('click', 'span', function() {
+      var $e = $(this).parent();
+      var id_td = $e.attr('data-id');
+      var val = $(this).html();
+
+      if($e.hasClass("caktext")){
+        $e.html('<input type="text" value="" size="34"/>');
+        
+        var $newE = $e.find('input');
+        $newE.focus();
+        $newE.val(val);
+        $newE.on('blur', function() {
+          var value = $(this).val();
+          
+          $(this).parent().html('<span>'+value+'</span>');
+          if(val != $(this).val()){
+            var tr = $e.parent();
+            var val_arr = [];
+            tr.find('td').each(function(index, value){
+              if(index == 1){
+                val_arr.push($(value).text().replace(/-/g, ''));
+              }else{
+                val_arr.push($(value).text());
+              }
+            });
+            submitform(val_arr);
+          }
+        });
+      }
     });
   }
 
@@ -157,4 +188,68 @@
       })
   } ); 
  });
+
+ function submitform(val_arr, action = 'update'){
+  var field_arr = ["id", "unitkerja_code", "unitkerja_name"];
+  cto_loading_show();
+
+  var urlaction = "/updateunitkerja/"+val_arr[0];
+  if(action == 'create'){
+    urlaction = "/storeunitkerja";
+  }
+
+  var values = "_token="+$("input[name=_token]").val();
+  for(var x = 0; x < field_arr.length; x++){
+    values = values+"&"+field_arr[x]+"="+val_arr[x];
+  }
+  var ajaxRequest;
+  var id_coa = 0;
+  ajaxRequest = $.ajax({
+      url: urlaction,
+      type: "post",
+      data: values,
+      async: false,
+      success: function(data){
+          if(data.status >= 200 && data.status <= 299){
+              id_coa = data.data.id;
+              $.toast({
+                  text: data.message,
+                  heading: 'Status',
+                  icon: 'success',
+                  showHideTransition: 'fade',
+                  allowToastClose: true,
+                  hideAfter: 3000,
+                  position: 'mid-center',
+                  textAlign: 'left'
+              });
+          }
+          cto_loading_hide();
+      },
+      error: function (err) {
+          if (err.status == 422) {
+              var errors = "";
+              $.each(err.responseJSON.errors, function (i, error) {
+                  //var validator = $("#quickForm").validate();
+                  // var errors = {};
+                  // errors[i] = error[0];
+                  //validator.showErrors(errors);
+                  errors += error[0];
+              });
+              $.toast({
+                    text: errors,
+                    heading: 'Status',
+                    icon: 'danger',
+                    showHideTransition: 'fade',
+                    allowToastClose: true,
+                    hideAfter: 3000,
+                    position: 'mid-center',
+                    textAlign: 'left'
+                });
+          }
+        cto_loading_hide();
+      }
+  });
+
+  return id_coa;
+ }
 </script>
