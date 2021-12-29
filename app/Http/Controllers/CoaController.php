@@ -14,7 +14,7 @@ class CoaController extends Controller
 {
     public function tabledesign(){
         $td = [
-            "page_data_name" => "COA",
+            "page_data_name" => "Kode Rekening Akuntansi",
             "page_data_urlname" => "coa",
             "fields" => [
                 "coa_code" => "text",
