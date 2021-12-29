@@ -243,7 +243,7 @@ class CoaController extends Controller
 
     public function get_list(Request $request)
     {
-        $list_column = array("id", "coa_code", "coa_name", "level_coa", "fheader", "factive", "jenis_aktivitas", "id");
+        $list_column = array("id", "coa_code", "coa_name", "level_coa", "fheader", "factive", "", "", "", "", "jenis_aktivitas", "id");
         $keyword = null;
         if(isset($request->search["value"])){
             $keyword = $request->search["value"];
