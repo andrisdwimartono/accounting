@@ -7,7 +7,7 @@
     <meta name="author" content="">
     <link rel="icon" href="{{ asset ("/assets/motaadmin/images/favicon.png") }}">
 
-    <title>SIA UMSIDA Login Page</title>
+    <title>Sistem Informasi Akuntansi Login Page</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/sign-in/">
 
