@@ -15,7 +15,7 @@
                     <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="javascript:void(0)">Master</a></li>
-                            <li class="breadcrumb-item active"><a href="/user">{{$page_data["page_data_name"]}}</a></li>
+                            <li class="breadcrumb-item active"><a href="/{{$page_data["page_data_urlname"]}}">{{$page_data["page_data_name"]}}</a></li>
                         </ol>
                     </div>
                 </div>
