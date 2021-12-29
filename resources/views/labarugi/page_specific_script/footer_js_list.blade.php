@@ -168,8 +168,8 @@
               saldo = kredit-debet
               saldo_debet = "";
               saldo_kredit = "";
-              if(saldo>0) saldo_kredit = formatRupiahWNegative(saldo,".");
-              else saldo_debet = formatRupiahWNegative(saldo,".");
+              if(saldo>0) saldo_debet = formatRupiahWNegative(saldo,".");
+              else saldo_kredit = formatRupiahWNegative(saldo,".");
 
               // Update footer
               $( api.column( 2 ).footer() ).html("JUMLAH");
