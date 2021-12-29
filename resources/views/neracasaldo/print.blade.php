@@ -1,7 +1,7 @@
 <html>
     <head>
         <meta name="dompdf.view" content="FitV" />
-        <title>Print Laporan Posisi Keuangan</title>
+        <title>Print Neraca Saldo</title>
         <style>
             @page {
                 size: A4;
