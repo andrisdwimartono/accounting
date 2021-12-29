@@ -127,7 +127,7 @@
             {
               aTargets: [10],
               mRender: function (data, type, row){
-                if(data){
+                if(data != null && data != ""){
                   data = data.toString();
                   if(row[8]=="on"){
                     return "<span class=\"font-weight-bold\">"+data+"</span>";
@@ -139,8 +139,6 @@
                 }
               },
               createdCell: function (td, cellData, rowData, row, col) {
-                var padd = (15+(parseInt(rowData[3])-1)*15)+"px";
-                $(td).css('padding-left', padd);
                 $(td).addClass('asset_value');
                 $(td).addClass('jenis_aktivitas_column');
                 $(td).addClass('cakdropdown');
@@ -380,6 +378,9 @@
         }
         $newE.on('blur', function() {
           var value = $newE.val();
+          if(value == null){
+            value = "";
+          }
           $(this).parent().html("<span>"+value+"</span>");
           
           if(val != value){

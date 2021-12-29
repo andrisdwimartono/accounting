@@ -34,6 +34,8 @@
     <script src="{{ asset ("/assets/datatables/js/jquery.dataTables.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/dataTables.buttons.min.js") }}"></script>
     
+    <script src="{{ asset ("/assets/datatables/js/jquery.dataTables.colResize.js") }}"></script>
+
     <script src="{{ asset ("/assets/cto/js/cakrudtemplate.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
@@ -83,7 +85,22 @@
         ],
           "autoWidth": false,
           dom: 'Bfrtip',
-          "scrollX" : true,
+          "colResize": {
+            isEnabled: true,
+            hoverClass: 'dt-colresizable-hover',
+            hasBoundCheck: true,
+            minBoundClass: 'dt-colresizable-bound-min',
+            maxBoundClass: 'dt-colresizable-bound-max',
+            isResizable: function(column) { 
+              return true;
+            },
+            onResize: function(column) {
+              //console.log('...resizing...');
+            },
+            onResizeEnd: function(column, columns) {
+              $('#user').DataTable().draw();
+            }
+          },
           "processing" : true,
           "serverSide" : true,
           "pagingType": "full_numbers",
