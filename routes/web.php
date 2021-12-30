@@ -110,6 +110,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getlinksbukubesar', 'App\Http\Controllers\BukuBesarController@getlinks');
         Route::post('/getsaldoawal', 'App\Http\Controllers\BukuBesarController@get_saldo_awal');
         Route::post('/bukubesar/print', 'App\Http\Controllers\BukuBesarController@print');
+        Route::post('/bukubesar/excel', 'App\Http\Controllers\BukuBesarController@excel');
 
         Route::get('/neracasaldo', 'App\Http\Controllers\NeracasaldoController@index')->name('neracasaldo');
         Route::post('/getlistneracasaldo', 'App\Http\Controllers\NeracasaldoController@get_list');
