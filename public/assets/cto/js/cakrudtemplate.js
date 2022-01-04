@@ -21,7 +21,7 @@ $(document).ready(function () {
           if(['user', 'unitkerja', 'coa'].includes(current_url)){
             $("#caknav-master").addClass("active");
             $("#cakmenu-master").addClass(" show active");
-          }else if(['jurnal','jurnalbkk','jurnalbkm'].includes(current_url)){
+          }else if(['jurnal','jurnalbkk','jurnalbkm','jurnalbbm','jurnalbbk'].includes(current_url)){
             $("#caknav-transaksi").addClass("active");
             $("#cakmenu-transaksi").addClass(" show active");
           }else if(['bukubesar', 'neraca', 'neracasaldo', 'labarugi'].includes(current_url)){

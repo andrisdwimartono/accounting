@@ -12,7 +12,9 @@ use App\Models\Coa;
 use App\Models\Jenisbayar;
 use App\Models\Neracasaldo;
 use App\Models\Globalsetting;
+use App\Exports\BukuBesarExport;
 use PDF;
+use Excel;
 
 class BukuBesarController extends Controller
 {
@@ -355,6 +357,12 @@ class BukuBesarController extends Controller
         $pdf->getDomPDF();
         $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
         return $pdf->stream('bukubesar.pdf');
+    }
+
+    public function excel(Request $request)
+    {
+        $date = date("m-d-Y h:i:s a", time());
+        return Excel::download(new BukuBesarExport($request), 'bukubesar_'.$date.'.xlsx');
     }
 
     public function convertBulan($bulan){

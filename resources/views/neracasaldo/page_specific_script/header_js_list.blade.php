@@ -113,6 +113,10 @@
     .total {
       font-weight: bold;
     }
+
+    .dt-buttons {
+      margin-bottom:15px;
+    }
   </style>
 
   <script>    

@@ -1,13 +1,12 @@
 @extends("paging.main")
 
 @section("content")
-
 <!--**********************************
             Content body start
         ***********************************-->
         <div class="content-body">
             <div class="container-fluid">
-            <div class="row page-titles mx-0">
+                <div class="row page-titles mx-0">
                     <div class="col-sm-6 p-md-0">
                         <div class="welcome-text">
                             <h4>{{$page_data["page_data_name"]}}</h4>
@@ -15,18 +14,19 @@
                     </div>
                     <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="javascript:void(0)">Laporan</a></li>
-                            <li class="breadcrumb-item active"><a href="">{{$page_data["page_data_name"]}}</a></li>
+                            <li class="breadcrumb-item"><a href="javascript:void(0)">Master</a></li>
+                            <li class="breadcrumb-item active"><a href="/{{$page_data['page_data_urlname']}}">{{$page_data['page_data_name']}}</a></li>
                         </ol>
                     </div>
                 </div>
                 <!-- row -->
                 <div class="row">
                     <div class="col-sm-12">
-                        <div class="card">                
-                            <form id="quickForm" action="#">
-                            @csrf
-                                <div class="card-body">
+                        <div class="card">
+                            <div class="card-body" style="color: #89879f; padding: 2rem; font-size:0.95rem;">
+                                <div class="basic-form">               
+                                    <form id="quickForm" action="#">
+                                    @csrf
                                         <div class="form-group row">
                                             <label class="col-sm-4 col-form-label" for="name">Name</label>
                                             <div class="col-sm-6">
@@ -75,21 +75,22 @@
                                             </div>
                                             <input type="hidden" class="custom-file-input" id="photo_profile" name="photo_profile">    
                                         </div>
-                                </div>
-                                @if($page_data["page_method_name"] != "View")
-                                <div class="form-group row">
-                                    <div class="col-sm-9 offset-sm-4">
-                                    <button type="submit" class="btn btn-primary" @if($page_data["page_method_name"] == "View") readonly @endif>Submit</button>
-                                    </div>
-                                </div>
-                                @else
-                                <div class="form-group row">
-                                    <div class="col-sm-9 offset-sm-4">
+                                        @if($page_data["page_method_name"] != "View")
+                                        <div class="form-group row">
+                                            <div class="col-sm-9 offset-sm-4">
+                                            <button type="submit" class="btn btn-primary" @if($page_data["page_method_name"] == "View") readonly @endif>Submit</button>
+                                            </div>
+                                        </div>
+                                        @else
+                                        <div class="form-group row">
+                                            <div class="col-sm-9 offset-sm-4">
 
-                                    </div>
+                                            </div>
+                                        </div>
+                                        @endif    
+                                    </form>
                                 </div>
-                                @endif
-                            </form>
+                            </div>
                         </div>
                     </div>
                 </div>

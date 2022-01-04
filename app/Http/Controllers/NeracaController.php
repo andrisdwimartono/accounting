@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Neraca;
 use App\Models\Coa;
 use App\Models\Globalsetting;
+use App\Exports\NeracaExport;
 use PDF;
+use Excel;
 
 class NeracaController extends Controller
 {
@@ -575,6 +577,12 @@ class NeracaController extends Controller
         $pdf->getDomPDF();
         $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
         return $pdf->stream('neraca.pdf');
+    }
+
+    public function excel(Request $request)
+    {
+        $date = date("m-d-Y h:i:s a", time());
+        return Excel::download(new NeracaExport($request), 'laporan_posisi_keuangan_'.$date.'.xlsx');
     }
 
     public function convertBulan($bulan){
