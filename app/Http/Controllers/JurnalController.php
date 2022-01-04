@@ -13,6 +13,7 @@ use App\Models\Coa;
 use App\Models\Globalsetting;
 use App\Models\Jenisbayar;
 use App\Models\Neracasaldo;
+use App\Models\Aruskas;
 use App\Models\Neraca;
 use App\Models\Labarugi;
 use App\Models\Bankva;
@@ -1161,6 +1162,29 @@ class JurnalController extends Controller
                 ]);
             }
 
+            $aruskas = Aruskas::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->first();
+            if($aruskas){
+                Aruskas::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->update([
+                    "debet" => $aruskas->debet+$transaction->debet,
+                    "credit" => $aruskas->credit+$transaction->credit,
+                ]);
+            }else{
+                Aruskas::create([
+                    "tahun_periode" => $tahun, 
+                    "bulan_periode" => $bulan, 
+                    "coa" => $transaction->coa, 
+                    "coa_label" => $coa->coa_code." ".$coa->coa_name, 
+                    "debet" => $transaction->debet,
+                    "credit" => $transaction->credit,
+                    "user_creator_id" => 2,
+                    "jenisbayar" => 0,
+                    "jenisbayar_label" => "",
+                    "jenis_aktivitas" => $coa->jenis_aktivitas,
+                    "unitkerja" => $transaction->unitkerja,
+                    "unitkerja_label" => $transaction->unitkerja_label
+                ]);
+            }
+
             if(in_array($coa->category, array("pendapatan", "biaya", "biaya_lainnya", "pendapatan_lainnya"))){
                 $coa_sur_def = Coa::where("coa_code", "30300000")->first();
                 $neraca = Neraca::where("coa", $coa_sur_def->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->first();
@@ -1222,6 +1246,15 @@ class JurnalController extends Controller
                 Neracasaldo::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
                     "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neracasaldo->debet-$transaction->debet+$transaction->credit:0,
                     "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neracasaldo->credit-$transaction->credit+$transaction->debet:0,
+                    "user_updater_id" => 2
+                ]);
+            }
+
+            $aruskas = Aruskas::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->first();
+            if($aruskas){
+                Aruskas::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->update([
+                    "debet" => $aruskas->debet-$transaction->debet,
+                    "credit" => $aruskas->credit-$transaction->credit,
                     "user_updater_id" => 2
                 ]);
             }
@@ -3415,6 +3448,7 @@ class JurnalController extends Controller
         $base_next_coa = (((int) substr($last_coapendapatancode->coa_code, 0, 3))+1);
         $next_coa = $base_next_coa."00000";
         if(is_null($prodi) || $prodi == ""){
+            $next_coa = $base_next_coa."00001";
             Coa::create([
                 "coa_code"=> $next_coa,
                 "coa_name"=> $coa_name,

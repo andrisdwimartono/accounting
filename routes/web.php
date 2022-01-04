@@ -169,6 +169,12 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/updateprodi/{prodi}', 'App\Http\Controllers\ProdiController@update');
         Route::post('/deleteprodi', 'App\Http\Controllers\ProdiController@destroy');
         Route::post('/getlinksprodi', 'App\Http\Controllers\ProdiController@getlinks');
+
+        Route::get('/aruskas', 'App\Http\Controllers\ArusKasController@index')->name('aruskas');
+        Route::post('/getlistaruskas', 'App\Http\Controllers\ArusKasController@get_list');
+        Route::post('/getlinksaruskas', 'App\Http\Controllers\ArusKasController@getlinks');
+        Route::post('/getsaldoawalaruskas', 'App\Http\Controllers\ArusKasController@get_saldo_awal');
+        Route::post('/aruskas/print', 'App\Http\Controllers\ArusKasController@print');
     });
 });
 
