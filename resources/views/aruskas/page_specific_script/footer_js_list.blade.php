@@ -155,17 +155,42 @@
               nominal = 0;
 
               for(var i = 0; i < data.length; i++){
-                if(data[i][6] == 2){ // if level_coa < 1
+                if(data[i][5] == 2){ // if level_coa < 1
                   nominal = nominal+intVal(data[i][3]);
                 }
               }
 
               // Update footer
-              $( api.column( 2 ).footer() ).html("JUMLAH");
-              $( api.column( 3 ).footer() ).html(formatRupiahWNegative(nominal,"."));
+              // $( api.column( 2 ).footer() ).html("SALDO AWAL");
+              // $( api.column( 3 ).footer() ).html(formatRupiahWNegative(nominal,"."));
               // $( 'tr:eq(1) td:eq(0)', api.table().footer() ).html("SALDO");
               // $( 'tr:eq(1) td:eq(1)', api.table().footer() ).html(saldo_debet);
               // $( 'tr:eq(1) td:eq(2)', api.table().footer() ).html(saldo_kredit);
+              var x = $.ajax({
+                  url:"/get_saldo_awal{{$page_data["page_data_urlname"]}}",
+                  method:"POST",
+                  async : false,
+                  data:{
+                    search : {
+                      bulan_periode: $("#bulan_periode").val(),
+                      tahun_periode: $("#tahun_periode").val(),
+                      unitkerja: $("#unitkerja").val(),
+                    },  
+                    _token: $("input[name=_token]").val()
+                  },
+                  success:function(response) {
+                    return response;
+                },
+                error:function(){
+                  alert("error");
+                }
+
+              });
+
+              $( 'tr:eq(0) td:eq(2)', api.table().footer() ).html("SALDO AWAL");
+              $( 'tr:eq(0) td:eq(3)', api.table().footer() ).html(formatRupiahWNegative(parseFloat(x.responseText),"."));
+              $( 'tr:eq(1) td:eq(2)', api.table().footer() ).html("JUMLAH");
+              $( 'tr:eq(1) td:eq(3)', api.table().footer() ).html(formatRupiahWNegative(nominal+parseFloat(x.responseText),"."));
             },
             "columnDefs": [
               { 

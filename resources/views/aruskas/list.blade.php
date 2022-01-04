@@ -87,11 +87,18 @@
                                         </thead>
                                         <tfoot>
                                             <tr>
-                                                <td></td>
-                                                <td></td>
+                                                <td class="column-hidden"></td>
+                                                <td class="column-hidden"></td>
                                                 <td class="right total"></td>
                                                 <td class="total" style="border-top: 1px solid #000 !Important;"></td>
+                                                <td class="total column-hidden" style="border-top: 1px solid #000 !Important;"></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="column-hidden"></td>
+                                                <td class="column-hidden"></td>
+                                                <td class="right total"></td>
                                                 <td class="total" style="border-top: 1px solid #000 !Important;"></td>
+                                                <td class="total column-hidden" style="border-top: 1px solid #000 !Important;"></td>
                                             </tr>
                                         </tfoot>
                                     </table>

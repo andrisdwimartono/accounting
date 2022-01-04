@@ -182,6 +182,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getlinksaruskas', 'App\Http\Controllers\ArusKasController@getlinks');
         Route::post('/getsaldoawalaruskas', 'App\Http\Controllers\ArusKasController@get_saldo_awal');
         Route::post('/aruskas/print', 'App\Http\Controllers\ArusKasController@print');
+        Route::post('/get_saldo_awalaruskas', 'App\Http\Controllers\ArusKasController@get_saldo_awal');
     });
 });
 
