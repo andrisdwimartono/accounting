@@ -9,7 +9,9 @@ use App\Models\Neracasaldo;
 use App\Models\Coa;
 use App\Models\Jenisbayar;
 use App\Models\Globalsetting;
+use App\Exports\NeracaSaldoExport;
 use PDF;
+use Excel;
 
 class NeracasaldoController extends Controller
 {
@@ -538,6 +540,12 @@ class NeracasaldoController extends Controller
         $pdf->getDomPDF();
         $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
         return $pdf->stream('neraca.pdf');
+    }
+
+    public function excel(Request $request)
+    {
+        $date = date("m-d-Y h:i:s a", time());
+        return Excel::download(new NeracaSaldoExport($request), 'neraca_saldo_'.$date.'.xlsx');
     }
 
     public function convertBulan($bulan){

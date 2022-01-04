@@ -19,7 +19,9 @@ use App\Models\Bankva;
 use App\Models\Opencloseperiode;
 use App\Models\Fakultas;
 use App\Models\Prodi;
+use App\Exports\JurnalExport;
 use PDF;
+use Excel;
 
 class JurnalController extends Controller
 {
@@ -3532,6 +3534,61 @@ class JurnalController extends Controller
         $pdf->getDomPDF();
         $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
         return $pdf->stream('jurnal.pdf');
+    }
+
+    public function bkmkprint(Request $request)
+    {
+        $list_column = array("id", "keterangan", "no_jurnal", "tanggal_jurnal", "id");
+        // dd($request->ordering);
+        $dt = array();
+        $no = 0;
+        foreach(Jurnal::where(function($q) use ($request) {
+            $q->where("no_jurnal", "LIKE", "%" . $request->search['no_jurnal_search']. "%");
+        })->where("no_jurnal", "LIKE", $request->search['jurnal_type']. "%")->whereNull("isdeleted")->whereBetween("tanggal_jurnal", [$request->search['tanggal_jurnal_from'], $request->search['tanggal_jurnal_to']])->orderBy("no_jurnal", $request->search['ordering'])->get(["id", "keterangan", "no_jurnal", "tanggal_jurnal"]) as $jurnal){
+            $no = $no+1;
+            $act = '
+            <a href="/jurnal/'.$jurnal->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
+
+            <a href="/jurnal/'.$jurnal->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
+
+            <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button>';
+
+            array_push($dt, array($jurnal->id, $jurnal->tanggal_jurnal, $jurnal->no_jurnal, $jurnal->keterangan, $act));
+        }
+        $output = array(
+            "draw" => intval($request->draw),
+            "recordsTotal" => Jurnal::get()->count(),
+            "recordsFiltered" => intval(Jurnal::where(function($q) use ($request) {
+                $q->where("no_jurnal", "LIKE", "%" . $request->no_jurnal_search. "%");
+            })->whereBetween("tanggal_jurnal", [$request->tanggal_jurnal_from, $request->tanggal_jurnal_to])->orderBy("tanggal_jurnal", "asc")->get()->count()),
+            "data" => $dt
+        );
+
+        $tanggal_jurnal = $this->tgl_indo($request->search['tanggal_jurnal_from'],"/",0,1,2). " - " . $this->tgl_indo($request->search['tanggal_jurnal_to'],"/",0,1,2);
+
+        $gs = Globalsetting::where("id", 1)->first();
+        $image =  base_path() . '/public/logo_instansi/'.$gs->logo_instansi;
+        $type = pathinfo($image, PATHINFO_EXTENSION);
+        $data = file_get_contents($image);
+        $dataUri = 'data:image/' . $type . ';base64,' . base64_encode($data);
+
+        $pdf = PDF::loadview("jurnal.print", ["jurnal" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first(), "tanggal" => $tanggal_jurnal, "logo" => $dataUri]);
+        $pdf->setPaper('A4', 'Landscape');
+        $pdf->getDomPDF();
+        $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
+        return $pdf->stream('jurnal.pdf');
+    }
+
+    public function excel(Request $request)
+    {
+        $date = date("m-d-Y h:i:s a", time());
+        return Excel::download(new JurnalExport($request), 'laporan_jurnal_'.$date.'.xlsx');
+    }
+
+    public function bkmkexcel(Request $request)
+    {
+        $date = date("m-d-Y h:i:s a", time());
+        return Excel::download(new JurnalExport($request), 'laporan_jurnal_'.$date.'.xlsx');
     }
 
     public function tgl_indo($tanggal, $sep,$d1,$d2,$d3){

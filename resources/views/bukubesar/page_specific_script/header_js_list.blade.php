@@ -116,6 +116,7 @@
 
     .dt-buttons {
       float:left !Important;
+      margin-bottom:15px;
     }
   </style>
 

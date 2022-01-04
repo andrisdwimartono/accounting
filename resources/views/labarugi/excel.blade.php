@@ -1,0 +1,30 @@
+<table>
+    <thead>
+        <tr style="text-align:center; font-weight:bold;">
+            <td colspan=3>Universitas Muhammadiyah Sidoarjo</td>
+        </tr>
+        <tr style="text-align:center; font-weight:bold;">
+            <td colspan=3>Laporan Penghasilan Komprehensif</td>
+        </tr>
+        <tr style="text-align:center; font-weight:bold;">
+            <td colspan=3>Periode {{$transactions['bulan']}} {{$transactions['tahun']}}</td>
+        </tr>
+        <tr><td colspan=3></td></tr>
+        <tr><td colspan=3></td></tr>
+
+        <tr>
+            <th>Kode Rekening Akuntansi</th>
+            <th>Debet</th>
+            <th>Kredit</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach($transactions['data'] as $transaction)
+        <tr>
+            <td>{!! $transaction[1] !!}  {{ $transaction[2] }}</td>
+            <td>{{ $transaction[3] }}</td>
+            <td>{{ $transaction[4] }}</td>
+        </tr>
+        @endforeach
+    </tbody>
+</table>

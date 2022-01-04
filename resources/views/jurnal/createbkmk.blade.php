@@ -148,6 +148,21 @@
                     </div>
                     @endif
                 </form>
+                <button class="btn btn-primary print" tabindex="0" aria-controls="neraca" type="button" style="margin-bottom:30px;">
+                    <span>PDF 
+                        <span class="btn-icon-right">
+                            <i class="fa fa-print"></i>
+                        </span>
+                    </span>
+                </button>
+
+                <button class="btn btn-success excel" tabindex="0" aria-controls="neraca" type="button" style="margin-bottom:30px;">
+                    <span>Excel 
+                        <span class="btn-icon-right">
+                            <i class="fa fa-print"></i>
+                        </span>
+                    </span>
+                </button>
                 <div class="form-group m-0">
                     <div class="col-sm-12 row bg-primary" id="forcaktablesearch2">
                         <!-- <div class="col-sm-1 cakfield">

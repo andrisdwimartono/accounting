@@ -55,6 +55,7 @@ class AuthController extends Controller
             $globalsetting = Globalsetting::where("id", 1)->first();
             Session::put('nama_instansi', $globalsetting['nama_instansi']);
             Session::put('logo_instansi', $globalsetting['logo_instansi']);
+            Session::put('global_setting', $globalsetting);
 
             return redirect()->route('home');
             //return redirect()->back();

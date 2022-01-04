@@ -104,6 +104,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getlistjurnal_bkmk', 'App\Http\Controllers\JurnalController@get_list_bkmk');
         Route::post('/updatejurnalbkmk/{jurnal}', 'App\Http\Controllers\JurnalController@update_bkmk');
         Route::post('/jurnal/print', 'App\Http\Controllers\JurnalController@print');
+        Route::post('/jurnalbkmk/print', 'App\Http\Controllers\JurnalController@bkmkprint');
+        Route::post('/jurnal/excel', 'App\Http\Controllers\JurnalController@excel');
+        Route::post('/jurnalbkmk/excel', 'App\Http\Controllers\JurnalController@bkmkexcel');
 
         Route::get('/bukubesar', 'App\Http\Controllers\BukuBesarController@index')->name('bukubesar');
         Route::post('/getlistbukubesar', 'App\Http\Controllers\BukuBesarController@get_list');
@@ -115,14 +118,17 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/neracasaldo', 'App\Http\Controllers\NeracasaldoController@index')->name('neracasaldo');
         Route::post('/getlistneracasaldo', 'App\Http\Controllers\NeracasaldoController@get_list');
         Route::post('/neracasaldo/print', 'App\Http\Controllers\NeracasaldoController@print');
+        Route::post('/neracasaldo/excel', 'App\Http\Controllers\NeracasaldoController@excel');
         
         Route::get('/neraca', 'App\Http\Controllers\NeracaController@index')->name('neraca');
         Route::post('/getlistneraca', 'App\Http\Controllers\NeracaController@get_list');
         Route::post('/neraca/print', 'App\Http\Controllers\NeracaController@print');
+        Route::post('/neraca/excel', 'App\Http\Controllers\NeracaController@excel');
         
         Route::get('/labarugi', 'App\Http\Controllers\LabarugiController@index')->name('labarugi');
         Route::post('/getlistlabarugi', 'App\Http\Controllers\LabarugiController@get_list');
         Route::post('/labarugi/print', 'App\Http\Controllers\LabarugiController@print');
+        Route::post('/labarugi/excel', 'App\Http\Controllers\LabarugiController@excel');
 
         Route::get('/globalsetting', 'App\Http\Controllers\GlobalsettingController@index')->name('globalsetting');
         Route::post('/getlistglobalsetting', 'App\Http\Controllers\GlobalsettingController@get_list');

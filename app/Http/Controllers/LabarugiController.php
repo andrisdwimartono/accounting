@@ -9,7 +9,9 @@ use App\Models\Labarugi;
 use App\Models\Coa;
 use App\Models\Jenisbayar;
 use App\Models\Globalsetting;
+use App\Exports\LabarugiExport;
 use PDF;
+use Excel;
 
 class LabarugiController extends Controller
 {
@@ -670,6 +672,12 @@ class LabarugiController extends Controller
         $pdf->getDomPDF();
         $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
         return $pdf->stream('labarugi.pdf');
+    }
+
+    public function excel(Request $request)
+    {
+        $date = date("m-d-Y h:i:s a", time());
+        return Excel::download(new LabarugiExport($request), 'laporan_penghasilan_komprehensif_'.$date.'.xlsx');
     }
 
     public function convertBulan($bulan){
