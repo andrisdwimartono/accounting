@@ -19,7 +19,7 @@ class CreateAruskassTable extends Migration
             $table->integer('bulan_periode');
             $table->integer('coa');
             $table->string('coa_label', 255)->nullable();
-            $table->integer('jenisbayar');
+            $table->integer('jenisbayar')->nullable();
             $table->string('jenisbayar_label', 255)->nullable();
             $table->string('jenis_aktivitas', 255)->nullable();
             $table->string('fheader')->nullable();
