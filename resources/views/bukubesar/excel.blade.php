@@ -10,8 +10,9 @@
             <td colspan=5>Kode Rekening {{$transactions['coa']}}</td>
         </tr>
         <tr style="text-align:center; font-weight:bold;">
-            <td colspan=5>Periode {{$transactions['bulan']}} {{$transactions['tahun']}}</td>
+            <td colspan=5><?= $transactions['unitkerja_label'] != ""?"Unit Kerja ".$transactions['unitkerja_label']." ":"" ?>Periode {{$transactions['bulan']}} {{$transactions['tahun']}}</td>
         </tr>
+       
         <tr><td colspan=5></td></tr>
         <tr><td colspan=5></td></tr>
 

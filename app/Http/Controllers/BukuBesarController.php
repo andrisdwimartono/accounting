@@ -98,7 +98,10 @@ class BukuBesarController extends Controller
             $tahun_periode = $request->search["tahun_periode"];
         }
 
-        // dd($bulan_periode, $tahun_periode);
+        $unitkerja = 0;
+        if(isset($request->search["unitkerja"])){
+            $unitkerja = $request->search["unitkerja"];
+        }
 
         $orders = array("id", "ASC");
         if(isset($request->order)){
@@ -119,6 +122,11 @@ class BukuBesarController extends Controller
           ->whereMonth("tanggal", "=", $bulan_periode)
           ->whereYear("tanggal", "=", $tahun_periode)
           ->whereNull('isdeleted')
+          ->where(function($q) use ($unitkerja){
+                if($unitkerja != null && $unitkerja != 0){
+                    $q->where("unitkerja", $unitkerja);
+                }
+            })
           ->orderBy($orders[0], $orders[1])
           ->offset($limit[0])
           ->limit($limit[1])
@@ -137,6 +145,11 @@ class BukuBesarController extends Controller
                 ->whereMonth("tanggal", "=", $bulan_periode)
                 ->whereYear("tanggal", "=", $tahun_periode)
                 ->whereNull('isdeleted')
+                ->where(function($q) use ($unitkerja){
+                    if($unitkerja != null && $unitkerja != 0){
+                        $q->where("unitkerja", $unitkerja);
+                    }
+                })
                 ->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
@@ -150,6 +163,10 @@ class BukuBesarController extends Controller
         $coa = $data["coa"];
         $bulan_periode = $data["bulan_periode"];
         $tahun_periode = $data["tahun_periode"];
+        $unitkerja = 0;
+        if(isset($data["unitkerja"]) && $data["unitkerja"] != ""){
+            $unitkerja = $request->search["unitkerja"];
+        }
         $yearopen = Globalsetting::where("id", 1)->first();
         $neracasaldo = Neracasaldo::select(
                 DB::raw("SUM(debet) as total_debet"),
@@ -172,6 +189,11 @@ class BukuBesarController extends Controller
                     })->orWhere(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
                         $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("tahun_periode", $tahun_periode-1);
                     });
+                }
+            })
+            ->where(function($q) use ($unitkerja){
+                if($unitkerja != null && $unitkerja != 0){
+                    $q->where("aruskass.unitkerja", $unitkerja);
                 }
             })
             ->groupBy("tahun_periode")
@@ -227,7 +249,7 @@ class BukuBesarController extends Controller
             $count = 0;
             if($request->field == "unitkerja"){
                 $lists = Unitkerja::where(function($q) use ($request) {
-                    $q->where("unitkerja_name", "LIKE", "%" . $request->term. "%");
+                    $q->where("unitkerja_name", "LIKE", "%" . $request->term. "%")->orWhere("unitkerja_code", "LIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("unitkerja_name as text")]);
                 $count = Unitkerja::count();
             }elseif($request->field == "anggaran"){
@@ -286,7 +308,10 @@ class BukuBesarController extends Controller
             $tahun_periode = $request->search["tahun_periode"];
         }
 
-        // dd($bulan_periode, $tahun_periode, $coa);
+        $unitkerja = 0;
+        if(isset($request->search["unitkerja"])){
+            $unitkerja = $request->search["unitkerja"];
+        }
 
         $dt = array();
         $dc = "";
@@ -311,6 +336,11 @@ class BukuBesarController extends Controller
           ->whereMonth("tanggal", "=", $bulan_periode)
           ->whereYear("tanggal", "=", $tahun_periode)
           ->whereNull('isdeleted')
+          ->where(function($q) use ($unitkerja){
+            if($unitkerja != null && $unitkerja != 0){
+                $q->where("unitkerja", $unitkerja);
+            }
+        })
           ->get(["id", "tanggal", "no_jurnal", "deskripsi", "debet", "credit"])) as $bukubesar){
         
             $no = $no+1;
@@ -353,7 +383,11 @@ class BukuBesarController extends Controller
         $data = file_get_contents($image);
         $dataUri = 'data:image/' . $type . ';base64,' . base64_encode($data);
 
-        $pdf = PDF::loadview("bukubesar.print", ["bukubesar" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first(), "bulan" => $this->convertBulan($bulan_periode), "tahun" => $tahun_periode, "coa" => $dc, "logo" => $dataUri]);
+        $uk = null;
+        if($unitkerja != null && $unitkerja != 0){
+            $uk = Unitkerja::where("id", ($unitkerja?$unitkerja:0))->first();
+        }
+        $pdf = PDF::loadview("bukubesar.print", ["bukubesar" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first(), "bulan" => $this->convertBulan($bulan_periode), "tahun" => $tahun_periode, "coa" => $dc, "unitkerja" => $unitkerja, "unitkerja_label" => $uk?$uk->unitkerja_name:"", "logo" => $dataUri]);
         $pdf->getDomPDF();
         $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
         return $pdf->stream('bukubesar.pdf');

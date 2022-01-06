@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use App\Models\Coa;
 use App\Models\Transaction;
+use App\Models\Unitkerja;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -64,6 +65,10 @@ class BukuBesarExport implements FromView, WithStyles
         if(isset($this->request->search["tahun_periode"])){
             $tahun_periode = $this->request->search["tahun_periode"];
         }
+        $unitkerja = 0;
+        if(isset($this->request->search["unitkerja"])){
+            $unitkerja = $this->request->search["unitkerja"];
+        }
 
         $dt = array();
         $dc = "";
@@ -85,6 +90,11 @@ class BukuBesarExport implements FromView, WithStyles
           ->whereMonth("tanggal", "=", $bulan_periode)
           ->whereYear("tanggal", "=", $tahun_periode)
           ->whereNull('isdeleted')
+          ->where(function($q) use ($unitkerja){
+            if($unitkerja != null && $unitkerja != 0){
+                $q->where("unitkerja", $unitkerja);
+            }
+        })
           ->get(["id", "tanggal", "no_jurnal", "deskripsi", "debet", "credit"])) as $bukubesar){
         
             $no = $no+1;
@@ -105,6 +115,11 @@ class BukuBesarExport implements FromView, WithStyles
             else $sal_cre = $saldo;
           }
 
+        $uk = null;
+        if($unitkerja != null && $unitkerja != 0){
+            $uk = Unitkerja::where("id", ($unitkerja?$unitkerja:0))->first();
+        }
+
         $output = array(
             "draw" => intval($this->request->draw),
             "recordsTotal" => Transaction::where("coa", $coa)
@@ -119,6 +134,8 @@ class BukuBesarExport implements FromView, WithStyles
             "sal_cre" => (int) $sal_cre,
             "bulan" => $this->convertBulan($bulan_periode), 
             "tahun" => $tahun_periode, 
+            "unitkerja" => $unitkerja, 
+            "unitkerja_label" => $uk?$uk->unitkerja_name:"",
             "coa" => $dc, 
         );
 
