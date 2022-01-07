@@ -329,7 +329,6 @@ class NeracasaldoController extends Controller
         });
 
         
-        
         // sort by code
         $columns = array_column($dt, 1);
         array_multisort($columns, SORT_ASC, $dt);

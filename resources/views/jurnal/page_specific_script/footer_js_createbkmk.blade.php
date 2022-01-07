@@ -275,6 +275,7 @@ $("#unitkerja").on("change", function() {
 
 $("#bank_kas").on("change", function() {
     $("#bank_kas_label").val($("#bank_kas option:selected").text());
+    $("#id_bank_kas").val($("#bank_kas option:selected").val());
 });
 
 $("#anggaran").on("change", function() {
@@ -358,6 +359,11 @@ $("#bank_kas").select2({
         },
         processResults: function (data, params) {
             params.page = params.page || 1;
+            for(var i = 0; i < data.items.length; i++){
+                var te = data.items[i].text.split(" ");
+                text = data.items[i].text;
+                data.items[i].text = convertCode(te[0])+" "+text.replace(te[0]+" ", "");
+            }
             return {
                 results: data.items,
                 pagination: {
@@ -702,6 +708,46 @@ $(document).ready(function() {
     $("#staticBackdropClose_transaksi").click(function(){
         $("#staticBackdrop_transaksi").modal("hide");
     });
+
+    $("#simpan_kas_bank").click(function(){
+        <?php if($page_data["page_job"]=="KM"){ ?>
+            localStorage.setItem("simpan_kas_bank_km_id", $("input[name=id_bank_kas]").val());
+            localStorage.setItem("simpan_kas_bank_km_label", $("input[name=bank_kas_label]").val());
+        <?php }elseif($page_data["page_job"]=="KK"){ ?>
+            localStorage.setItem("simpan_kas_bank_kk_id", $("input[name=id_bank_kas]").val());
+            localStorage.setItem("simpan_kas_bank_kk_label", $("input[name=bank_kas_label]").val());
+        <?php }elseif($page_data["page_job"]=="BM"){ ?>
+            localStorage.setItem("simpan_kas_bank_bm_id", $("input[name=id_bank_kas]").val());
+            localStorage.setItem("simpan_kas_bank_bm_label", $("input[name=bank_kas_label]").val());
+        <?php }elseif($page_data["page_job"]=="BK"){ ?>
+            localStorage.setItem("simpan_kas_bank_bk_id", $("input[name=id_bank_kas]").val());
+            localStorage.setItem("simpan_kas_bank_bk_label", $("input[name=bank_kas_label]").val());
+        <?php } ?>
+    });
+
+    var simpan_kas_bank_km_id = null;
+    var simpan_kas_bank_km_label = null;
+    <?php if($page_data["page_job"]=="KM"){ ?>
+        simpan_kas_bank_km_id = localStorage.getItem("simpan_kas_bank_km_id");
+        simpan_kas_bank_km_label = localStorage.getItem("simpan_kas_bank_km_label");
+    <?php }elseif($page_data["page_job"]=="KK"){ ?>
+        simpan_kas_bank_km_id = localStorage.getItem("simpan_kas_bank_kk_id");
+        simpan_kas_bank_km_label = localStorage.getItem("simpan_kas_bank_kk_label");
+    <?php }elseif($page_data["page_job"]=="BM"){ ?>
+        simpan_kas_bank_km_id = localStorage.getItem("simpan_kas_bank_bm_id");
+        simpan_kas_bank_km_label = localStorage.getItem("simpan_kas_bank_bm_label");
+    <?php }elseif($page_data["page_job"]=="BK"){ ?>
+        simpan_kas_bank_km_id = localStorage.getItem("simpan_kas_bank_bk_id");
+        simpan_kas_bank_km_label = localStorage.getItem("simpan_kas_bank_bk_label");
+    <?php } ?>
+
+    if(simpan_kas_bank_km_id){
+        $("select[name='bank_kas']").empty();
+        var newState = new Option(simpan_kas_bank_km_label, simpan_kas_bank_km_id, true, false);
+        $("#bank_kas").append(newState).trigger('change');
+        $("input[name='id_bank_kas']").val(simpan_kas_bank_km_id);
+        $("input[name='bank_kas_label']").val(simpan_kas_bank_km_label);
+    }
 
     @if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")
     getdata();

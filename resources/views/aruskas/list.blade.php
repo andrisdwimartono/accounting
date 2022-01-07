@@ -93,13 +93,13 @@
                                                 <td class="total" style="border-top: 1px solid #000 !Important;"></td>
                                                 <td class="total column-hidden" style="border-top: 1px solid #000 !Important;"></td>
                                             </tr>
-                                            <tr>
+                                            <!-- <tr>
                                                 <td class="column-hidden"></td>
                                                 <td class="column-hidden"></td>
                                                 <td class="right total"></td>
                                                 <td class="total" style="border-top: 1px solid #000 !Important;"></td>
                                                 <td class="total column-hidden" style="border-top: 1px solid #000 !Important;"></td>
-                                            </tr>
+                                            </tr> -->
                                         </tfoot>
                                     </table>
                                 </div>
