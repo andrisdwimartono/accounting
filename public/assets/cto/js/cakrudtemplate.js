@@ -24,7 +24,7 @@ $(document).ready(function () {
           }else if(['jurnal','jurnalbkk','jurnalbkm','jurnalbbm','jurnalbbk'].includes(current_url)){
             $("#caknav-transaksi").addClass("active");
             $("#cakmenu-transaksi").addClass(" show active");
-          }else if(['bukubesar', 'neraca', 'neracasaldo', 'labarugi'].includes(current_url)){
+          }else if(['bukubesar', 'aruskas', 'neraca', 'neracasaldo', 'labarugi'].includes(current_url)){
             $("#caknav-laporan").addClass("active");
             $("#cakmenu-laporan").addClass(" show active");
           }else if(['saldoawal','opencloseperiode','globalsetting'].includes(current_url)){
