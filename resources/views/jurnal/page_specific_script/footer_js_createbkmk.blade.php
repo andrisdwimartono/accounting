@@ -743,9 +743,6 @@ $(document).ready(function() {
 
     if(simpan_kas_bank_km_id){
         $("select[name='bank_kas']").empty();
-        var te = simpan_kas_bank_km_label.split(" ");
-        text = simpan_kas_bank_km_label;
-        simpan_kas_bank_km_label = convertCode(te[0])+" "+text.replace(te[0]+" ", "");
         var newState = new Option(simpan_kas_bank_km_label, simpan_kas_bank_km_id, true, false);
         $("#bank_kas").append(newState).trigger('change');
         $("input[name='id_bank_kas']").val(simpan_kas_bank_km_id);
