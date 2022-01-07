@@ -321,7 +321,7 @@ class AruskasController extends Controller
         }
 
         $saldo_awal = $this->get_saldo_awal($request);
-        array_unshift($dt, array(0, "SALDO AWAL", "SALDO AWAL", $saldo_awal, 0, "", null, ""));
+        array_unshift($dt, array(0, "<b>SALDO AWAL</b>", "<b>SALDO AWAL</b>", $saldo_awal, 0, 2, null, ""));
 
         $output = array(
             "draw" => intval($request->draw),
@@ -597,7 +597,7 @@ class AruskasController extends Controller
         }
 
         $saldo_awal = $this->get_saldo_awal($request);
-        array_unshift($dt, array(0, "SALDO AWAL", "SALDO AWAL", $saldo_awal, 0, 2, null, ""));
+        array_unshift($dt, array(0, "<b>SALDO AWAL</b>", "<b>SALDO AWAL</b>", $saldo_awal, 0, 2, null, ""));
         
         
         $output = array(
@@ -605,7 +605,7 @@ class AruskasController extends Controller
             "recordsTotal" => 0,
             "recordsFiltered" => 0,
             "data" => $dt,
-            "total" => "<td class='rp'>Rp</td><td class='nom'><b>".number_format($total,0,",",".")."</b></td>"
+            "total" => "<td class='rp'>Rp</td><td class='nom'><b>".number_format($total+$saldo_awal,0,",",".")."</b></td>"
         );
 
         $gs = Globalsetting::where("id", 1)->first();
