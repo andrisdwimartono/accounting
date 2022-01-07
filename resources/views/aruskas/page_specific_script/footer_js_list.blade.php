@@ -210,7 +210,8 @@
               // $( 'tr:eq(0) td:eq(2)', api.table().footer() ).html("SALDO AWAL");
               // $( 'tr:eq(0) td:eq(3)', api.table().footer() ).html(formatRupiahWNegative(parseFloat(x.responseText),"."));
               $( 'tr:eq(0) td:eq(2)', api.table().footer() ).html("SALDO AKHIR");
-              $( 'tr:eq(0) td:eq(3)', api.table().footer() ).html(formatRupiahWNegative(nominal+parseFloat(x.responseText),"."));
+              $( 'tr:eq(0) td:eq(3)', api.table().footer() ).html(formatRupiahWNegative(nominal,"."));
+              //$( 'tr:eq(0) td:eq(3)', api.table().footer() ).html(formatRupiahWNegative(nominal+parseFloat(x.responseText),"."));
             },
             "columnDefs": [
               { 
