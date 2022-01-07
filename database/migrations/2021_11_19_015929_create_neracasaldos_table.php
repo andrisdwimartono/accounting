@@ -19,7 +19,7 @@ class CreateNeracasaldosTable extends Migration
             $table->integer('bulan_periode');
             $table->integer('coa');
             $table->string('coa_label', 255)->nullable();
-            $table->integer('jenisbayar');
+            $table->integer('jenisbayar')->nullable();
             $table->string('jenisbayar_label', 255)->nullable();
             $table->string('fheader')->nullable();
             $table->double('debet', 8, 0);
