@@ -28,7 +28,8 @@ class BukuBesarController extends Controller
                 "no_jurnal" => "link",
                 "deskripsi" => "text",
                 "debet" => "text",
-                "kredit" => "text"
+                "kredit" => "text",
+                "unitkerja" => "link"
             ],
             "fieldschildtable" => [
             ]

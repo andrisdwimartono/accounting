@@ -103,6 +103,7 @@
                         '<input type="hidden" name="_token" value="'+$("input[name=_token]").val()+'" />' +
                         '<input type="hidden" name="search[bulan_periode]" value="'+$("#bulan_periode").val()+'" />' +
                         '<input type="hidden" name="search[tahun_periode]" value="'+$("#tahun_periode").val()+'" />' +
+                        '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja").val()+'" />' +
                         '</form>');
                       $('body').append(form);
                       form.submit();
@@ -122,6 +123,7 @@
                         '<input type="hidden" name="_token" value="'+$("input[name=_token]").val()+'" />' +
                         '<input type="hidden" name="search[bulan_periode]" value="'+$("#bulan_periode").val()+'" />' +
                         '<input type="hidden" name="search[tahun_periode]" value="'+$("#tahun_periode").val()+'" />' +
+                        '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja").val()+'" />' +
                         '</form>');
                       $('body').append(form);
                       form.submit();
@@ -155,7 +157,8 @@
             data:{
               search : {
                 bulan_periode: $("#bulan_periode").val(),
-                tahun_periode: $("#tahun_periode").val()
+                tahun_periode: $("#tahun_periode").val(),
+                unitkerja: $("#unitkerja").val(),
               },  
               _token: $("input[name=_token]").val()
             },
@@ -305,6 +308,10 @@
       fetch_data();
     });
 
+    $("#unitkerja").on("change", function() {
+      fetch_data();
+    });
+
     $("#coa").select2({
       ajax: {
           url: "/getlinks{{$page_data["page_data_urlname"]}}",
@@ -334,6 +341,38 @@
             },
           cache: true
       }
+    });
+
+    $("#unitkerja").select2({
+      placeholder: "Pilih satu",
+      allowClear: true,
+      theme: "bootstrap4",
+      ajax: {
+          url: "/getlinks{{$page_data["page_data_urlname"]}}",
+          type: "post",
+          dataType: "json",
+          data: function(params) {
+              return {
+                  term: params.term || "",
+                  page: params.page,
+                  field: "unitkerja",
+                  _token: $("input[name=_token]").val()
+              }
+          },
+          results: function (data, params) {
+                    params.page = params.page || 1;
+                    for(var i = 0; i < data.items.length; i++){
+                        var te = data.items[i].text.split(" ");
+                        text = data.items[i].text;
+                        data.items[i].text = convertCode(te[0])+" "+text.replace(te[0]+" ", "");
+                    }
+                    return {
+                        results: data.items
+                    };
+            },
+          cache: true
+      },
+      theme : "bootstrap4"
     });
   });
 </script>

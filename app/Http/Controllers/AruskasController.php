@@ -10,7 +10,9 @@ use App\Models\Coa;
 use App\Models\Unitkerja;
 use App\Models\Jenisbayar;
 use App\Models\Globalsetting;
+use App\Exports\AruskasExport;
 use PDF;
+use Excel;
 
 class AruskasController extends Controller
 {
@@ -25,13 +27,15 @@ class AruskasController extends Controller
                 "jenisbayar" => "link",
                 "fheader" => "checkbox",
                 "debet" => "float",
-                "credit" => "float"
+                "credit" => "float",
+                "unitkerja" => "link"
             ],
             "fieldschildtable" => [
             ],
             "fieldlink" => [
                 "coa" => "coas",
-                "jenisbayar" => "jenisbayars"
+                "jenisbayar" => "jenisbayars",
+                "unitkerja" => "unitkerjas"
             ],
             "fieldsoptions" => [
                 "jenis_aktivitas" => [
@@ -613,6 +617,12 @@ class AruskasController extends Controller
         $pdf->getDomPDF();
         $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
         return $pdf->stream('aruskas.pdf');
+    }
+
+    public function excel(Request $request)
+    {
+        $date = date("m-d-Y h:i:s a", time());
+        return Excel::download(new AruskasExport($request), 'arus_kas_'.$date.'.xlsx');
     }
 
     public function convertBulan($bulan){

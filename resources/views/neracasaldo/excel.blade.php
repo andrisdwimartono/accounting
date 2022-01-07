@@ -7,7 +7,7 @@
             <td colspan=3>Laporan Neraca Saldo</td>
         </tr>
         <tr style="text-align:center; font-weight:bold;">
-            <td colspan=3>Periode {{$transactions['bulan']}} {{$transactions['tahun']}}</td>
+            <td colspan=3><?= $transactions['unitkerja_label'] != ""?"Unit Kerja ".$transactions['unitkerja_label']." ":"" ?>Periode {{$transactions['bulan']}} {{$transactions['tahun']}}</td>
         </tr>
         <tr><td colspan=3></td></tr>
         <tr><td colspan=3></td></tr>

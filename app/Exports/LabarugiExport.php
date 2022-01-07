@@ -5,6 +5,7 @@ namespace App\Exports;
 
 use Session;
 use App\Models\Coa;
+use App\Models\Unitkerja;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -57,6 +58,10 @@ class LabarugiExport implements FromView, WithStyles
         if(isset($this->request->search["child_level"])){
             $child_level = $this->request->search["child_level"];
         }
+        $unitkerja = 0;
+        if(isset($this->request->search["unitkerja"])){
+            $unitkerja = $this->request->search["unitkerja"];
+        }
         
         $dt = array();
         $no = 0;
@@ -78,7 +83,7 @@ class LabarugiExport implements FromView, WithStyles
             if($bulan_periode >= $yearopen->bulan_tutup_tahun){
                 //only one year
                 $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
-                    $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    $q->where("bulan_periode", ">=", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
                 });
             }else{
                 //cross year
@@ -91,6 +96,18 @@ class LabarugiExport implements FromView, WithStyles
             $q->orWhere(function($q){
                 $q->whereNull("bulan_periode");
             });  
+        })
+        ->where(function($q) use ($unitkerja){
+            $q->where(function($q) use ($unitkerja){
+                if($unitkerja != null && $unitkerja != 0){
+                    $q->where("labarugis.unitkerja", $unitkerja);
+                }else{
+                    $q->whereNull("coas.fheader");
+                }
+            })
+            ->orWhere(function($q){
+                $q->where("coas.fheader","on");
+            });
         })
         ->groupBy(["coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader"])
         ->orderBy("coas.level_coa", "desc")
@@ -165,6 +182,10 @@ class LabarugiExport implements FromView, WithStyles
             }
         }
         
+        $uk = null;
+        if($unitkerja != null && $unitkerja != 0){
+            $uk = Unitkerja::where("id", ($unitkerja?$unitkerja:0))->first();
+        }
 
         $output = array(
             "draw" => intval($this->request->draw),
@@ -174,7 +195,9 @@ class LabarugiExport implements FromView, WithStyles
             "deb" => $deb_total,
             "cre" => $cre_total,
             "bulan" => $this->convertBulan($bulan_periode), 
-            "tahun" => $tahun_periode, 
+            "tahun" => $tahun_periode,
+            "unitkerja" => $unitkerja, 
+            "unitkerja_label" => $uk?$uk->unitkerja_name:""
         );
 
         return view('labarugi.excel', [
