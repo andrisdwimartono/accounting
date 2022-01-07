@@ -186,31 +186,31 @@
               // $( 'tr:eq(1) td:eq(0)', api.table().footer() ).html("SALDO");
               // $( 'tr:eq(1) td:eq(1)', api.table().footer() ).html(saldo_debet);
               // $( 'tr:eq(1) td:eq(2)', api.table().footer() ).html(saldo_kredit);
-              var x = $.ajax({
-                  url:"/get_saldo_awal{{$page_data["page_data_urlname"]}}",
-                  method:"POST",
-                  async : false,
-                  data:{
-                    search : {
-                      bulan_periode: $("#bulan_periode").val(),
-                      tahun_periode: $("#tahun_periode").val(),
-                      unitkerja: $("#unitkerja").val(),
-                    },  
-                    _token: $("input[name=_token]").val()
-                  },
-                  success:function(response) {
-                    return response;
-                },
-                error:function(){
-                  alert("error");
-                }
+              // var x = $.ajax({
+              //     url:"/get_saldo_awal{{$page_data["page_data_urlname"]}}",
+              //     method:"POST",
+              //     async : false,
+              //     data:{
+              //       search : {
+              //         bulan_periode: $("#bulan_periode").val(),
+              //         tahun_periode: $("#tahun_periode").val(),
+              //         unitkerja: $("#unitkerja").val(),
+              //       },  
+              //       _token: $("input[name=_token]").val()
+              //     },
+              //     success:function(response) {
+              //       return response;
+              //   },
+              //   error:function(){
+              //     alert("error");
+              //   }
 
-              });
+              // });
 
-              $( 'tr:eq(0) td:eq(2)', api.table().footer() ).html("SALDO AWAL");
-              $( 'tr:eq(0) td:eq(3)', api.table().footer() ).html(formatRupiahWNegative(parseFloat(x.responseText),"."));
-              $( 'tr:eq(1) td:eq(2)', api.table().footer() ).html("JUMLAH");
-              $( 'tr:eq(1) td:eq(3)', api.table().footer() ).html(formatRupiahWNegative(nominal+parseFloat(x.responseText),"."));
+              // $( 'tr:eq(0) td:eq(2)', api.table().footer() ).html("SALDO AWAL");
+              // $( 'tr:eq(0) td:eq(3)', api.table().footer() ).html(formatRupiahWNegative(parseFloat(x.responseText),"."));
+              $( 'tr:eq(0) td:eq(2)', api.table().footer() ).html("SALDO AKHIR");
+              $( 'tr:eq(0) td:eq(3)', api.table().footer() ).html(formatRupiahWNegative(nominal+parseFloat(x.responseText),"."));
             },
             "columnDefs": [
               { 

@@ -126,11 +126,7 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td class="nom" style="border:none;"><b>Saldo Awal</b></td>
-                        {!! $aruskas['saldo_awal'] !!}                     
-                    </tr>
-                    <tr>
-                        <td class="nom" style="border:none;"><b>Total</b></td>
+                        <td class="nom" style="border:none;"><b>Saldo Akhir</b></td>
                         {!! $aruskas['total'] !!}                     
                     </tr>
                 </tfoot>
