@@ -279,7 +279,7 @@ class NeracasaldoController extends Controller
                 $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
                     $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
                 })->orWhere(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
-                    $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("tahun_periode", $tahun_periode-1);
+                    $q->where("bulan_periode", ">=", $yearopen->bulan_tutup_tahun)->where("tahun_periode", $tahun_periode-1);
                 });
             }
             $q->orWhere(function($q){
