@@ -61,7 +61,7 @@
         barChart_2gradientStroke2.addColorStop(0, "rgba(190, 212, 255, 1)");
         barChart_2gradientStroke2.addColorStop(1, "rgba(190, 212, 255, 0.7)");
 
-        // barChart_2.height = 100;
+        barChart_2.height = 250;
 
         myChart = new Chart(barChart_2, {
             type: 'horizontalBar',
@@ -87,13 +87,13 @@
             options: {
               responsive: true,
               scales: {
-                xAxes : [{
-                    ticks : {
-                        max : 100,
-                    }
-                }]
-            }
-            }
+                  xAxes : [{
+                      ticks : {
+                          max : 100,
+                      }
+                  }]
+              },
+            },
         });
     }
   })(jQuery);
