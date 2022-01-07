@@ -1,7 +1,7 @@
 <html>
     <head>
         <meta name="dompdf.view" content="FitV" />
-        <title>Print Neraca</title>
+        <title>Print Arus Kas</title>
         <style>
             @page {
                 size: A4;
@@ -71,12 +71,12 @@
                 padding: 2px 10px;
             }
 
-            .rp {
+            .rp{
                 width:10px;
                 border-right:none;
             }
 
-            .nom {
+            .nom{
                 width:70px;
                 border-left:none;
                 text-align:right;
@@ -91,9 +91,9 @@
                     <td width="6em"></td>
                     <td width="30em" style="text-align:center">
                         <h2>Universitas Muhammadiyah Sidoarjo</h2>
-                        <h3>Laporan Neraca</h3>
-                        <h4>Untuk Periode {{ $bulan }} {{ $tahun }}</h4>
+                        <h3>Laporan Arus Kas</h3>
                         <?php if($unitkerja_label != ""){ ?><h4>Unit Kerja {{ $unitkerja_label }}</h4><?php } ?>
+                        <h4>Untuk Periode {{ $bulan }} {{ $tahun }}</h4>
                     </td>
                     <td width="6em">
                     <img class='logo' src="{{ $logo }}" alt="{{ $globalsetting->nama_instansi }}">
@@ -111,25 +111,27 @@
         <table class="table" border=1>
                 <thead >
                     <tr>
-                        <td scope="col" width="100px">Rekening</th>
-                        <td scope="col" colspan=2 width="100px">Debet</th>
-                        <td scope="col" colspan=2 width="100px">Kredit</th>
+                        <td scope="col" width="100px">Jenis Aktivitas</th>
+                        <td scope="col" colspan=2 width="100px">Nominal</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($neraca['data'] as $d)
+                    @foreach($aruskas['data'] as $d)
                     <tr>
-                        <td scope="col" width="290px">{!! $d[1] !!} {!! $d[2] !!}</td>
-                        {!! $d[3] !!}
-                        {!! $d[4] !!}
+                        <td scope="col" width="290px"><?= $d[5] != 2?"<b>":"" ?>{!! $d[2] !!}<?= $d[5] != 2?"</b>":"" ?></td>
+                        <td class='rp'><?= $d[5] == 2?"Rp":"" ?></td>
+                        <td scope="col" class="nom">{!! $d[5] == 2?number_format((float) $d[3],0,",","."):"" !!}</td>
                     </tr>
                     @endforeach
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td class="nom" style="border:none;"><b>JUMLAH</b></td>
-                        {!! $neraca['deb'] !!}
-                        {!! $neraca['cre'] !!}                        
+                        <td class="nom" style="border:none;"><b>Saldo Awal</b></td>
+                        {!! $aruskas['saldo_awal'] !!}                     
+                    </tr>
+                    <tr>
+                        <td class="nom" style="border:none;"><b>Total</b></td>
+                        {!! $aruskas['total'] !!}                     
                     </tr>
                 </tfoot>
             </table>

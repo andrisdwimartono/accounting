@@ -22,6 +22,8 @@ class CreateNeracasTable extends Migration
             $table->string('fheader')->nullable();
             $table->double('debet', 8, 0);
             $table->double('credit', 8, 0);
+            $table->integer('unitkerja')->nullable();
+            $table->string('unitkerja_label', 255)->nullable();
             $table->integer('user_creator_id')->nullable();
             $table->integer('user_updater_id')->nullable();
             $table->timestamps();

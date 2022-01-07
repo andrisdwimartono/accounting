@@ -53,7 +53,7 @@
                             </div>
                         </div>
                         <div class="form-group row m-0">
-                            <label class="col-sm-4 col-form-label" for="no_jurnal">Nomor Jurnal</label>
+                            <label class="col-sm-4 col-form-label" for="no_jurnal">Nomor <?=$page_data["page_job"]=="KM"?"Kas Masuk":($page_data["page_job"]=="KK"?"Kas Keluar":($page_data["page_job"]=="BM"?"Bank Masuk":"Bank Keluar"))?></label>
                             <div class="col-sm-6 cakfield">
                                 <input type="text" name="no_jurnal" class="form-control form-control-sm" id="no_jurnal" placeholder="Enter Nomor Jurnal" value="<?=$page_data["page_job"]?>#######" readonly>
                             </div>
@@ -182,7 +182,7 @@
                         <div class="col-sm-2 cakfield">
                             <input name="tanggal_jurnal_to" id="tanggal_jurnal_to" class="datepicker-default form-control form-control-sm bg-primary mt-1" id="datepicker" <?=$page_data["page_method_name"] == "View"?"readonly":""?>>
                         </div>
-                        <label class="col-sm-2 text-right col-form-label" for="no_jurnal_search">No Jurnal</label>
+                        <label class="col-sm-2 text-right col-form-label" for="no_jurnal_search">No <?=$page_data["page_job"]=="KM"?"Kas Masuk":($page_data["page_job"]=="KK"?"Kas Keluar":($page_data["page_job"]=="BM"?"Bank Masuk":"Bank Keluar"))?></label>
                         <div class="col-sm-3 cakfield">
                             <input type="text" name="no_jurnal_search" class="form-control form-control-sm bg-primary mt-1" id="no_jurnal_search" placeholder="Enter Nomor Jurnal">
                         </div>
@@ -193,7 +193,7 @@
                                 <tr>
                                     <th class="text-black text-center column-hidden" scope="col">ID</th>
                                     <th class="text-black text-center" scope="col">Tanggal</th>
-                                    <th class="text-black text-center" scope="col" id="column_no_jurnal" data-ordering="desc">No Jurnal<b><span id="logo_column_no_jurnal" class="ml-2">↡</span></b></th>
+                                    <th class="text-black text-center" scope="col" id="column_no_jurnal" data-ordering="desc">No <?=$page_data["page_job"]=="KM"?"Kas Masuk":($page_data["page_job"]=="KK"?"Kas Keluar":($page_data["page_job"]=="BM"?"Bank Masuk":"Bank Keluar"))?><b><span id="logo_column_no_jurnal" class="ml-2">↡</span></b></th>
                                     <!-- <th class="text-black text-center" scope="col">No Rek. Akuntansi</th> -->
                                     <th class="text-black text-center" scope="col">Keterangan</th>
                                     <!-- <th class="text-black text-center" scope="col">Debet</th>

@@ -9,6 +9,7 @@ use App\Models\Labarugi;
 use App\Models\Coa;
 use App\Models\Jenisbayar;
 use App\Models\Globalsetting;
+use App\Models\Unitkerja;
 use App\Exports\LabarugiExport;
 use PDF;
 use Excel;
@@ -26,13 +27,15 @@ class LabarugiController extends Controller
                 "jenisbayar" => "link",
                 "fheader" => "checkbox",
                 "debet" => "float",
-                "credit" => "float"
+                "credit" => "float",
+                "unitkerja" => "link"
             ],
             "fieldschildtable" => [
             ],
             "fieldlink" => [
                 "coa" => "coas",
-                "jenisbayar" => "jenisbayars"
+                "jenisbayar" => "jenisbayars",
+                "unitkerja" => "unitkerjas"
             ]
         ];
 
@@ -295,12 +298,16 @@ class LabarugiController extends Controller
         if(isset($request->search["child_level"])){
             $child_level = $request->search["child_level"];
         }
+        $unitkerja = 0;
+        if(isset($request->search["unitkerja"])){
+            $unitkerja = $request->search["unitkerja"];
+        }
 
         $dt = array();
         $no = 0;
         $yearopen = Globalsetting::where("id", 1)->first();
         foreach(Coa::find(1)
-        ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader", DB::raw("SUM(labarugis.debet) as debet"), DB::raw("SUM(labarugis.credit) as credit")]) //"neracas.debet", "neracas.credit"])//DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")])
+        ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader", DB::raw("SUM(labarugis.debet) as debet"), DB::raw("SUM(labarugis.credit) as credit")]) //"labaru$labarugis.debet", "labaru$labarugis.credit"])//DB::raw("SUM(labaru$labarugis.debet) as debet"), DB::raw("SUM(labaru$labarugis.credit) as credit")])
         ->leftJoin('labarugis', 'coas.id', '=', 'labarugis.coa')
         ->whereIn('coas.category',["pendapatan", "biaya", "biaya_lainnya", "pendapatan_lainnya"])
         ->where(function($q){
@@ -330,15 +337,27 @@ class LabarugiController extends Controller
                 $q->whereNull("bulan_periode");
             });  
         })
+        ->where(function($q) use ($unitkerja){
+            $q->where(function($q) use ($unitkerja){
+                if($unitkerja != null && $unitkerja != 0){
+                    $q->where("labarugis.unitkerja", $unitkerja);
+                }else{
+                    $q->whereNull("coas.fheader");
+                }
+            })
+            ->orWhere(function($q){
+                $q->where("coas.fheader","on");
+            });
+        })
         ->groupBy(["coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader"])
         ->orderBy("coas.level_coa", "desc")
-          ->get() as $neraca){
+          ->get() as $labarugi){
             
             $no = $no+1;
-            $dt[$neraca->id] = array($neraca->id, $neraca->coa_code, $neraca->coa_name, $neraca->debet, $neraca->credit, $neraca->coa, $neraca->level_coa, $neraca->fheader);
+            $dt[$labarugi->id] = array($labarugi->id, $labarugi->coa_code, $labarugi->coa_name, $labarugi->debet, $labarugi->credit, $labarugi->coa, $labarugi->level_coa, $labarugi->fheader);
         }
-        
 
+        
         // get nominal
         $iter = array_filter($dt, function ($dt) {
             return ($dt[3] != 0) || ($dt[4] != 0) && ($dt[7] != "on");
@@ -494,6 +513,11 @@ class LabarugiController extends Controller
                     $q->where("jenisbayar_name", "LIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("jenisbayar_name as text")]);
                 $count = Jenisbayar::count();
+            }elseif($request->field == "unitkerja"){
+                $lists = Unitkerja::where(function($q) use ($request) {
+                    $q->where("unitkerja_name", "LIKE", "%" . $request->term. "%")->orWhere("unitkerja_code", "LIKE", "%" . $request->term. "%");
+                })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("unitkerja_name as text")]);
+                $count = Unitkerja::count();
             }
 
             $endCount = $offset + $resultCount;
@@ -526,12 +550,16 @@ class LabarugiController extends Controller
         if(isset($request->search["child_level"])){
             $child_level = $request->search["child_level"];
         }
+        $unitkerja = 0;
+        if(isset($request->search["unitkerja"])){
+            $unitkerja = $request->search["unitkerja"];
+        }
         
         $dt = array();
         $no = 0;
         $yearopen = Globalsetting::where("id", 1)->first();
         foreach(Coa::find(1)
-        ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader", DB::raw("SUM(labarugis.debet) as debet"), DB::raw("SUM(labarugis.credit) as credit")]) //"neracas.debet", "neracas.credit"])//DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")])
+        ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader", DB::raw("SUM(labarugis.debet) as debet"), DB::raw("SUM(labarugis.credit) as credit")]) //"labaru$labarugis.debet", "labaru$labarugis.credit"])//DB::raw("SUM(labaru$labarugis.debet) as debet"), DB::raw("SUM(labaru$labarugis.credit) as credit")])
         ->leftJoin('labarugis', 'coas.id', '=', 'labarugis.coa')
         ->whereIn('coas.category',["pendapatan", "biaya", "biaya_lainnya", "pendapatan_lainnya"])
         ->where(function($q){
@@ -547,7 +575,7 @@ class LabarugiController extends Controller
             if($bulan_periode >= $yearopen->bulan_tutup_tahun){
                 //only one year
                 $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
-                    $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    $q->where("bulan_periode", ">=", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
                 });
             }else{
                 //cross year
@@ -561,11 +589,23 @@ class LabarugiController extends Controller
                 $q->whereNull("bulan_periode");
             });  
         })
+        ->where(function($q) use ($unitkerja){
+            $q->where(function($q) use ($unitkerja){
+                if($unitkerja != null && $unitkerja != 0){
+                    $q->where("labarugis.unitkerja", $unitkerja);
+                }else{
+                    $q->whereNull("coas.fheader");
+                }
+            })
+            ->orWhere(function($q){
+                $q->where("coas.fheader","on");
+            });
+        })
         ->groupBy(["coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader"])
         ->orderBy("coas.level_coa", "desc")
-          ->get() as $neraca){    
+          ->get() as $labarugi){    
             $no = $no+1;
-            $dt[$neraca->id] = array($neraca->id, $neraca->coa_code, $neraca->coa_name, $neraca->debet, $neraca->credit, $neraca->coa, $neraca->level_coa, $neraca->fheader);
+            $dt[$labarugi->id] = array($labarugi->id, $labarugi->coa_code, $labarugi->coa_name, $labarugi->debet, $labarugi->credit, $labarugi->coa, $labarugi->level_coa, $labarugi->fheader);
         }
         
 
@@ -644,11 +684,17 @@ class LabarugiController extends Controller
         $saldo_debet = "<td colspan=2></td>";
         $saldo_kredit = "<td colspan=2></td>";
         if($saldo>0){
-            $saldo_kredit = "<td class='rp'>Rp</td><td class='nom'><b>".number_format($saldo,0,",",".")."</b></td>";
+            $saldo_debet = "<td class='rp'>Rp</td><td class='nom'><b>".number_format($saldo,0,",",".")."</b></td>";
+            $saldo_kredit = "<td colspan=2></td>";
             $ket = "SURPLUS";
         } else {
-            $saldo_debet = "<td class='rp'>Rp</td><td class='nom'><b>".number_format($saldo,0,",",".")."</b></td>";
+            $saldo_debet = "<td colspan=2></td>";
+            $saldo_kredit = "<td class='rp'>Rp</td><td class='nom'><b>".number_format($saldo,0,",",".")."</b></td>";
             $ket = "DEFISIT";
+        }
+        $uk = null;
+        if($unitkerja != null && $unitkerja != 0){
+            $uk = Unitkerja::where("id", ($unitkerja?$unitkerja:0))->first();
         }
         $output = array(
             "draw" => intval($request->draw),
@@ -659,7 +705,9 @@ class LabarugiController extends Controller
             "cre" => "<td class='rp'>Rp</td><td class='nom'><b>".number_format($cre_total,0,",",".")."</b></td>",
             "sal_deb" => $saldo_debet,
             "sal_cre" => $saldo_kredit,
-            "ket" => $ket
+            "ket" => $ket,
+            "unitkerja" => $unitkerja, 
+            "unitkerja_label" => $uk?$uk->unitkerja_name:""
         );
 
         $gs = Globalsetting::where("id", 1)->first();
@@ -668,7 +716,8 @@ class LabarugiController extends Controller
         $data = file_get_contents($image);
         $dataUri = 'data:image/' . $type . ';base64,' . base64_encode($data);
 
-        $pdf = PDF::loadview("labarugi.print", ["neraca" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first(), "bulan" => $this->convertBulan($bulan_periode), "tahun" => $tahun_periode, "logo" => $dataUri]);
+        $pdf = PDF::loadview("labarugi.print", ["labarugi" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first(), "bulan" => $this->convertBulan($bulan_periode), "tahun" => $tahun_periode, "unitkerja" => $unitkerja, 
+        "unitkerja_label" => $uk?$uk->unitkerja_name:"", "logo" => $dataUri]);
         $pdf->getDomPDF();
         $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
         return $pdf->stream('labarugi.pdf');

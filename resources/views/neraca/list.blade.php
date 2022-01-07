@@ -26,7 +26,7 @@
                         @csrf
                             <div class="card-header" style="display:block">
                                 <div class="form-group row m-0" style="height:40px;">
-                                    <div class="col-sm-4">
+                                    <div class="col-sm-3">
                                         <div class="col-sm-3 left">
                                             <label class="text-grey">Bulan</label>
                                         </div>
@@ -47,7 +47,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-sm-4">
+                                    <div class="col-sm-3">
                                         <div class="col-sm-3 left">
                                             <label class="text-grey">Tahun</label>
                                         </div>
@@ -59,7 +59,7 @@
                                             </select>
                                         </div>
                                     </div>       
-                                    <div class="col-sm-4">
+                                    <div class="col-sm-3">
                                         <div class="col-sm-3 left">
                                             <label class="text-grey">Level</label>
                                         </div>
@@ -69,7 +69,16 @@
                                                 <option value=1>Detail</option>
                                             </select>
                                         </div>
-                                    </div>                            
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="col-sm-3 left">
+                                            <label class="text-grey">Unit Kerja</label>
+                                        </div>
+                                        <div class="col-sm-9 right">
+                                            <select name="unitkerja" id="unitkerja" class="form-control select2bs4staticBackdrop" data-row="1" style="width: 100%;">
+                                            </select>
+                                        </div>
+                                    </div>                        
                                 </div>
                             </div>
                             <div class="card-body">                                

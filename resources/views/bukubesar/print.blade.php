@@ -10,7 +10,7 @@
 
             header {
                 position: fixed;
-                top: -160px;
+                top: <?= $unitkerja_label != ""?"-180px":"-160px" ?>;
                 height: 110px;
                 text-align: center;
                 line-height: 10px;
@@ -93,6 +93,7 @@
                         <h2>Universitas Muhammadiyah Sidoarjo</h2>
                         <h3>Laporan Buku Besar</h3>
                         <h4>Untuk Kode Rekening {{ $coa }}</h4> 
+                        <?php if($unitkerja_label != ""){ ?><h4>Unit Kerja {{ $unitkerja_label }}</h4><?php } ?>
                         <h4>Periode {{ $bulan }} {{ $tahun }}</h5>
                     </td>
                     <td width="6em">

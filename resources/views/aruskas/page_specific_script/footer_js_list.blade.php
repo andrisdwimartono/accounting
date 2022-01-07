@@ -30,7 +30,7 @@
     <script src="{{ asset ("/assets/bootstrap/dist/js/bootstrap.bundle.min.js") }}"></script>
     <script src="{{ asset ("/assets/bower_components/jquery-validation/dist/jquery.validate.min.js") }}"></script>
     <script src="{{ asset ("/assets/bower_components/select2/dist/js/select2.full.min.js") }}"></script>
-    
+
     <script src="{{ asset ("/assets/datatables/js/jquery.dataTables.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/dataTables.buttons.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/jquery.dataTables.colResize.js") }}"></script>
@@ -42,9 +42,9 @@
 <script>
   $(document).ready(function(){
     
-    $("#neraca").DataTable({
+    $("#aruskas").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false,
-    }).buttons().container().appendTo('#neraca_wrapper .col-md-6:eq(0)');
+    }).buttons().container().appendTo('#aruskas_wrapper .col-md-6:eq(0)');
 
     fetch_data();
 
@@ -82,12 +82,12 @@
     function fetch_data(){
       cto_loading_show();
       var target = [];
-      $('#neraca thead tr th').each(function(i, obj) {
+      $('#aruskas thead tr th').each(function(i, obj) {
           target.push(i);
       });
       target.shift();
-      $('#neraca').DataTable().destroy();
-      dataTable = $('#neraca').DataTable({
+      $('#aruskas').DataTable().destroy();
+      dataTable = $('#aruskas').DataTable({
           "autoWidth": false,
           dom: 'Brtip',
           buttons: [
@@ -98,18 +98,18 @@
                       $(node).removeClass('dt-button')
                     },
                     action: function ( e, dt, node, config ) {
-                      var url = '/labarugi/print';
+                      var url = '/aruskas/print';
                       var form = $('<form action="' + url + '" target="_blank" method="post">' +
                         '<input type="hidden" name="_token" value="'+$("input[name=_token]").val()+'" />' +
                         '<input type="hidden" name="search[bulan_periode]" value="'+$("#bulan_periode").val()+'" />' +
                         '<input type="hidden" name="search[tahun_periode]" value="'+$("#tahun_periode").val()+'" />' +
-                        '<input type="hidden" name="search[child_level]" value="'+$("#child_level").val()+'" />' +
                         '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja").val()+'" />' +
                         '</form>');
                       $('body').append(form);
                       form.submit();
                     },
                 },
+
                 {
                     text: "Excel <span class='btn-icon-right'><i class='fa fa-print'></i></span>",
                     className: "btn btn-success",
@@ -118,12 +118,11 @@
                       $(node).removeClass('dt-button')
                     },
                     action: function ( e, dt, node, config ) {
-                      var url = '/labarugi/excel';
+                      var url = '/aruskas/excel';
                       var form = $('<form action="' + url + '" target="_blank" method="post">' +
                         '<input type="hidden" name="_token" value="'+$("input[name=_token]").val()+'" />' +
                         '<input type="hidden" name="search[bulan_periode]" value="'+$("#bulan_periode").val()+'" />' +
                         '<input type="hidden" name="search[tahun_periode]" value="'+$("#tahun_periode").val()+'" />' +
-                        '<input type="hidden" name="search[child_level]" value="'+$("#child_level").val()+'" />' +
                         '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja").val()+'" />' +
                         '</form>');
                       $('body').append(form);
@@ -144,7 +143,7 @@
               //console.log('...resizing...');
             },
             onResizeEnd: function(column, columns) {
-              $('#labarugi').DataTable().draw();
+              $('#aruskas').DataTable().draw();
             }
           },
           "processing" : true,
@@ -159,17 +158,11 @@
               search : {
                 bulan_periode: $("#bulan_periode").val(),
                 tahun_periode: $("#tahun_periode").val(),
-                child_level: $("#child_level").val(),
                 unitkerja: $("#unitkerja").val(),
               },  
               _token: $("input[name=_token]").val()
             },
-            "dataSrc": function ( json ) {
-              console.log(json);
-              return json.data;
-            }
           },
-          
           
           "footerCallback": function ( row, data, start, end, display ) {
               var api = this.api(), data;
@@ -178,29 +171,46 @@
               var intVal = function ( i ) {
                   return typeof i === 'string' ? i.replace(/[\$,]/g, '')*1 : typeof i === 'number' ?i : 0;
               };
-              debet = 0;
-              kredit = 0;
+              
+              nominal = 0;
+
               for(var i = 0; i < data.length; i++){
-                if(data[i][6] == 1){ // if level_coa < 1
-                  debet = debet+intVal(data[i][3]);
-                  kredit = kredit+intVal(data[i][4]);
+                if(data[i][5] == 2){ // if level_coa < 1
+                  nominal = nominal+intVal(data[i][3]);
                 }
               }
 
-              saldo = kredit-debet
-              saldo_debet = "";
-              saldo_kredit = "";
-              if(saldo>0) saldo_debet = formatRupiahWNegative(saldo,".");
-              else saldo_kredit = formatRupiahWNegative(saldo,".");
-
               // Update footer
-              $( api.column( 2 ).footer() ).html("JUMLAH");
-              $( api.column( 3 ).footer() ).html(formatRupiahWNegative(debet,"."));
-              $( api.column( 4 ).footer() ).html(formatRupiahWNegative(kredit,"."));
+              // $( api.column( 2 ).footer() ).html("SALDO AWAL");
+              // $( api.column( 3 ).footer() ).html(formatRupiahWNegative(nominal,"."));
+              // $( 'tr:eq(1) td:eq(0)', api.table().footer() ).html("SALDO");
+              // $( 'tr:eq(1) td:eq(1)', api.table().footer() ).html(saldo_debet);
+              // $( 'tr:eq(1) td:eq(2)', api.table().footer() ).html(saldo_kredit);
+              var x = $.ajax({
+                  url:"/get_saldo_awal{{$page_data["page_data_urlname"]}}",
+                  method:"POST",
+                  async : false,
+                  data:{
+                    search : {
+                      bulan_periode: $("#bulan_periode").val(),
+                      tahun_periode: $("#tahun_periode").val(),
+                      unitkerja: $("#unitkerja").val(),
+                    },  
+                    _token: $("input[name=_token]").val()
+                  },
+                  success:function(response) {
+                    return response;
+                },
+                error:function(){
+                  alert("error");
+                }
 
-              $( 'tr:eq(1) td:eq(1)', api.table().footer() ).addClass("right total").html(saldo>0?"SURPLUS":"DEFISIT");
-              $( 'tr:eq(1) td:eq(3)', api.table().footer() ).html(saldo_debet);
-              $( 'tr:eq(1) td:eq(4)', api.table().footer() ).html(saldo_kredit);
+              });
+
+              $( 'tr:eq(0) td:eq(2)', api.table().footer() ).html("SALDO AWAL");
+              $( 'tr:eq(0) td:eq(3)', api.table().footer() ).html(formatRupiahWNegative(parseFloat(x.responseText),"."));
+              $( 'tr:eq(1) td:eq(2)', api.table().footer() ).html("JUMLAH");
+              $( 'tr:eq(1) td:eq(3)', api.table().footer() ).html(formatRupiahWNegative(nominal+parseFloat(x.responseText),"."));
             },
             "columnDefs": [
               { 
@@ -209,6 +219,7 @@
               },
               { 
                 "targets": 1,
+                "class" : "column-hidden",
                 "width" : 150,
                 "render":  function ( data, type, row, meta ) {
                   var code = convertCode(row[1].split(" ")[0]);
@@ -242,32 +253,16 @@
                 "targets": 3,
                 "width" : 130,
                 "render":  function ( data, type, row, meta ) {
-                  if($("#child_level").val() == 1){
-                    if(row[7]!='on'){
-                      return formatRupiahWNegative(row[3],".") ;
-                    } else {
-                      return "";
-                    }
-                  } else {
+                  if(row[7]!='on'){
                     return formatRupiahWNegative(row[3],".") ;
+                  } else {
+                    return "";
                   }
-                          
                 }
               },
               { 
                 "targets": 4,
-                "width" : 130,
-                "render":  function ( data, type, row, meta ) {
-                  if($("#child_level").val() == 1){
-                    if(row[7]!='on'){
-                      return formatRupiahWNegative(row[4],".") ;
-                    } else {
-                      return "";
-                    }
-                  } else {
-                    return formatRupiahWNegative(row[4],".") ;
-                  }
-                }
+                "class" : "column-hidden",
               },
               { 
                 "targets": 5,
@@ -276,16 +271,11 @@
               { 
                 "targets": 6,
                 "class" : "column-hidden",
-              },
-              { 
-                "targets": 7,
-                "class" : "column-hidden",
               }
-              
-          ],
+            ],
         });
       cto_loading_hide();
-      table = dataTable
+      table = dataTable;
     }
 
     function convertCode(data){
@@ -324,47 +314,9 @@
       fetch_data();
     });
 
-    $("#child_level").on("change", function() {
-      fetch_data();
-    });
-
     $("#unitkerja").on("change", function() {
       fetch_data();
-    });
-
-
-    $("#coa").select2({
-      placeholder: "Pilih satu",
-      allowClear: true,
-      theme: "bootstrap4",
-      ajax: {
-          url: "/getlinks{{$page_data["page_data_urlname"]}}",
-          type: "post",
-          dataType: "json",
-          data: function(params) {
-              return {
-                  term: params.term || "",
-                  page: params.page,
-                  field: "coa",
-                  _token: $("input[name=_token]").val()
-              }
-          },
-          processResults: function (data, params) {
-                    params.page = params.page || 1;
-                    for(var i = 0; i < data.items.length; i++){
-                        var te = data.items[i].text.split(" ");
-                        text = data.items[i].text;
-                        data.items[i].text = convertCode(te[0])+" "+text.replace(te[0]+" ", "");
-                    }
-                    return {
-                        results: data.items,
-                        pagination: {
-                            more: (params.page * 25) < data.total_count
-                        }
-                    };
-            },
-          cache: true
-      }
+      // get_saldo_awal();
     });
 
     $("#unitkerja").select2({
@@ -383,21 +335,17 @@
                   _token: $("input[name=_token]").val()
               }
           },
-          results: function (data, params) {
+          processResults: function (data, params) {
                     params.page = params.page || 1;
-                    for(var i = 0; i < data.items.length; i++){
-                        var te = data.items[i].text.split(" ");
-                        text = data.items[i].text;
-                        data.items[i].text = convertCode(te[0])+" "+text.replace(te[0]+" ", "");
-                    }
                     return {
-                        results: data.items
+                        results: data.items,
+                        pagination: {
+                            more: (params.page * 25) < data.total_count
+                        }
                     };
             },
           cache: true
-      },
-      theme : "bootstrap4"
+      }
     });
   });
-
 </script>

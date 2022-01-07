@@ -9,6 +9,7 @@ use App\Models\Neracasaldo;
 use App\Models\Coa;
 use App\Models\Jenisbayar;
 use App\Models\Globalsetting;
+use App\Models\Unitkerja;
 use App\Exports\NeracaSaldoExport;
 use PDF;
 use Excel;
@@ -26,13 +27,15 @@ class NeracasaldoController extends Controller
                 "jenisbayar" => "link",
                 "fheader" => "checkbox",
                 "debet" => "float",
-                "credit" => "float"
+                "credit" => "float",
+                "unitkerja" => "link"
             ],
             "fieldschildtable" => [
             ],
             "fieldlink" => [
                 "coa" => "coas",
-                "jenisbayar" => "jenisbayars"
+                "jenisbayar" => "jenisbayars",
+                "unitkerja" => "unitkerjas"
             ]
         ];
 
@@ -234,6 +237,11 @@ class NeracasaldoController extends Controller
             $tahun_periode = $request->search["tahun_periode"];
         }
 
+        $unitkerja = 0;
+        if(isset($request->search["unitkerja"])){
+            $unitkerja = $request->search["unitkerja"];
+        }
+
         $orders = array("id", "ASC");
         if(isset($request->order)){
             $orders = array($list_column[$request->order["0"]["column"]], $request->order["0"]["dir"]);
@@ -278,6 +286,18 @@ class NeracasaldoController extends Controller
                 $q->whereNull("bulan_periode");
             });  
         })
+        ->where(function($q) use ($unitkerja){
+            $q->where(function($q) use ($unitkerja){
+                if($unitkerja != null && $unitkerja != 0){
+                    $q->where("neracasaldos.unitkerja", $unitkerja)->whereNull("coas.fheader");
+                }else{
+                    $q->whereNull("coas.fheader");
+                }
+            })
+            ->orWhere(function($q){
+                $q->where("coas.fheader","on");
+            });
+        })
         ->groupBy(["coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader"])
         ->orderBy("coas.level_coa", "desc")
           ->get() as $neracasaldo){
@@ -290,7 +310,7 @@ class NeracasaldoController extends Controller
         $iter = array_filter($dt, function ($dt) {
             return ($dt[3] != 0) || ($dt[4] != 0) && ($dt[7] != "on");
         });
-        
+
         // sum nominal to header
         foreach($iter as $key => $item){
             $d = $item;
@@ -307,6 +327,8 @@ class NeracasaldoController extends Controller
             return ($dt[3] != 0) || ($dt[4] != 0);
             // return $dt;
         });
+
+        
         
         // sort by code
         $columns = array_column($dt, 1);
@@ -377,6 +399,11 @@ class NeracasaldoController extends Controller
                     $q->where("jenisbayar_name", "LIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("jenisbayar_name as text")]);
                 $count = Jenisbayar::count();
+            }elseif($request->field == "unitkerja"){
+                $lists = Unitkerja::where(function($q) use ($request) {
+                    $q->where("unitkerja_name", "LIKE", "%" . $request->term. "%")->orWhere("unitkerja_code", "LIKE", "%" . $request->term. "%");
+                })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("unitkerja_name as text")]);
+                $count = Unitkerja::count();
             }
 
             $endCount = $offset + $resultCount;
@@ -408,6 +435,11 @@ class NeracasaldoController extends Controller
         $child_level = 1;
         if(isset($request->search["child_level"])){
             $child_level = $request->search["child_level"];
+        }
+
+        $unitkerja = 0;
+        if(isset($request->search["unitkerja"])){
+            $unitkerja = $request->search["unitkerja"];
         }
         
         $dt = array();
@@ -442,6 +474,18 @@ class NeracasaldoController extends Controller
             $q->orWhere(function($q){
                 $q->whereNull("bulan_periode");
             });  
+        })
+        ->where(function($q) use ($unitkerja){
+            $q->where(function($q) use ($unitkerja){
+                if($unitkerja != null && $unitkerja != 0){
+                    $q->where("neracasaldos.unitkerja", $unitkerja);
+                }else{
+                    $q->whereNull("coas.fheader");
+                }
+            })
+            ->orWhere(function($q){
+                $q->where("coas.fheader","on");
+            });
         })
         ->groupBy(["coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader"])
         ->orderBy("coas.level_coa", "desc")
@@ -521,13 +565,20 @@ class NeracasaldoController extends Controller
             }
         }
 
+        $uk = null;
+        if($unitkerja != null && $unitkerja != 0){
+            $uk = Unitkerja::where("id", ($unitkerja?$unitkerja:0))->first();
+        }
+
         $output = array(
             "draw" => intval($request->draw),
             "recordsTotal" => 0,
             "recordsFiltered" => 0,
             "data" => $dt,
             "deb" => "<td class='rp'>Rp</td><td class='nom'><b>".number_format($deb_total,0,",",".")."</b></td>",
-            "cre" => "<td class='rp'>Rp</td><td class='nom'><b>".number_format($cre_total,0,",",".")."</b></td>"
+            "cre" => "<td class='rp'>Rp</td><td class='nom'><b>".number_format($cre_total,0,",",".")."</b></td>",
+            "unitkerja" => $unitkerja, 
+            "unitkerja_label" => $uk?$uk->unitkerja_name:""
         );
 
         $gs = Globalsetting::where("id", 1)->first();
@@ -536,7 +587,8 @@ class NeracasaldoController extends Controller
         $data = file_get_contents($image);
         $dataUri = 'data:image/' . $type . ';base64,' . base64_encode($data);
 
-        $pdf = PDF::loadview("neracasaldo.print", ["neraca" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first(), "bulan" => $this->convertBulan($bulan_periode), "tahun" => $tahun_periode, "logo"=>$dataUri]);
+        $pdf = PDF::loadview("neracasaldo.print", ["neraca" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first(), "bulan" => $this->convertBulan($bulan_periode), "tahun" => $tahun_periode, "unitkerja" => $unitkerja, 
+        "unitkerja_label" => $uk?$uk->unitkerja_name:"", "logo"=>$dataUri]);
         $pdf->getDomPDF();
         $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
         return $pdf->stream('neraca.pdf');

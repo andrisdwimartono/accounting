@@ -24,18 +24,9 @@
                 <div class="col-12">
                         <div class="card">
                         @csrf
-                        <div class="card-header" style="display:block">
-                                <div class="form-group row m-0" style="height:40px;">
-                                    <div class="col-sm-3">
-                                        <div class="col-sm-2 left">
-                                            <label class="text-grey">Kode Rek.</label>
-                                        </div>
-                                        <div class="col-sm-10 right">
-                                            <select name="coa" id="coa" class="form-control select2bs4staticBackdrop" data-row="1" style="width: 100%;">
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-3">
+                            <div class="card-header" style="display:block">
+                                <div class="form-group row m-0"  style="height:40px;">
+                                    <div class="col-sm-4">
                                         <div class="col-sm-3 left">
                                             <label class="text-grey">Bulan</label>
                                         </div>
@@ -68,49 +59,46 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-sm-3">
-                                        <div class="col-sm-2 left">
+                                    <div class="col-sm-5">
+                                        <div class="col-sm-3 left">
                                             <label class="text-grey">Unit Kerja</label>
                                         </div>
-                                        <div class="col-sm-10 right">
+                                        <div class="col-sm-9 right">
                                             <select name="unitkerja" id="unitkerja" class="form-control select2bs4staticBackdrop" data-row="1" style="width: 100%;">
                                             </select>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
                             <div class="card-body">                                
 
                                 <div class="table-responsive">
                                  
-                                    <table id="bukubesar" class="display" style="width:100%;">
-                                        <thead class="bg-primary">
+                                    
+                                    <table id="aruskas" class="display" style="width: 100%">
+                                        <thead>
                                             <tr>
                                                 <th class="column-hidden">No</th>
-                                                <th>Tanggal</th>
-                                                <th>No Jurnal</th>
-                                                <th>Deskripsi</th>
-                                                <th>Debet</th>
-                                                <th>Kredit</th>
+                                                <th class="column-hidden">Kode Rek.</th>
+                                                <th>Aktivitas</th>
+                                                <th>Nominal</th>
+                                                <th class="column-hidden">Level COA</th>
                                             </tr>
                                         </thead>
                                         <tfoot>
                                             <tr>
                                                 <td class="column-hidden"></td>
-                                                <td></td>
-                                                <td></td>
+                                                <td class="column-hidden"></td>
                                                 <td class="right total"></td>
                                                 <td class="total" style="border-top: 1px solid #000 !Important;"></td>
-                                                <td class="total" style="border-top: 1px solid #000 !Important;"></td>
+                                                <td class="total column-hidden" style="border-top: 1px solid #000 !Important;"></td>
                                             </tr>
                                             <tr>
                                                 <td class="column-hidden"></td>
-                                                <td></td>
-                                                <td></td>
+                                                <td class="column-hidden"></td>
                                                 <td class="right total"></td>
-                                                <td class="total" style="border-top: 1px solid #d7dae3 !Important;"></td>
-                                                <td class="total" style="border-top: 1px solid #d7dae3 !Important;"></td>
+                                                <td class="total" style="border-top: 1px solid #000 !Important;"></td>
+                                                <td class="total column-hidden" style="border-top: 1px solid #000 !Important;"></td>
                                             </tr>
                                         </tfoot>
                                     </table>

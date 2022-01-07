@@ -120,16 +120,19 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/bukubesar/excel', 'App\Http\Controllers\BukuBesarController@excel');
 
         Route::get('/neracasaldo', 'App\Http\Controllers\NeracasaldoController@index')->name('neracasaldo');
+        Route::post('/getlinksneracasaldo', 'App\Http\Controllers\NeracasaldoController@getlinks');
         Route::post('/getlistneracasaldo', 'App\Http\Controllers\NeracasaldoController@get_list');
         Route::post('/neracasaldo/print', 'App\Http\Controllers\NeracasaldoController@print');
         Route::post('/neracasaldo/excel', 'App\Http\Controllers\NeracasaldoController@excel');
         
         Route::get('/neraca', 'App\Http\Controllers\NeracaController@index')->name('neraca');
+        Route::post('/getlinksneraca', 'App\Http\Controllers\NeracaController@getlinks');
         Route::post('/getlistneraca', 'App\Http\Controllers\NeracaController@get_list');
         Route::post('/neraca/print', 'App\Http\Controllers\NeracaController@print');
         Route::post('/neraca/excel', 'App\Http\Controllers\NeracaController@excel');
         
         Route::get('/labarugi', 'App\Http\Controllers\LabarugiController@index')->name('labarugi');
+        Route::post('/getlinkslabarugi', 'App\Http\Controllers\LabarugiController@getlinks');
         Route::post('/getlistlabarugi', 'App\Http\Controllers\LabarugiController@get_list');
         Route::post('/labarugi/print', 'App\Http\Controllers\LabarugiController@print');
         Route::post('/labarugi/excel', 'App\Http\Controllers\LabarugiController@excel');
@@ -180,6 +183,14 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/updateprodi/{prodi}', 'App\Http\Controllers\ProdiController@update');
         Route::post('/deleteprodi', 'App\Http\Controllers\ProdiController@destroy');
         Route::post('/getlinksprodi', 'App\Http\Controllers\ProdiController@getlinks');
+
+        Route::get('/aruskas', 'App\Http\Controllers\AruskasController@index')->name('aruskas');
+        Route::post('/getlistaruskas', 'App\Http\Controllers\AruskasController@get_list');
+        Route::post('/getlinksaruskas', 'App\Http\Controllers\AruskasController@getlinks');
+        Route::post('/getsaldoawalaruskas', 'App\Http\Controllers\AruskasController@get_saldo_awal');
+        Route::post('/aruskas/print', 'App\Http\Controllers\AruskasController@print');
+        Route::post('/get_saldo_awalaruskas', 'App\Http\Controllers\AruskasController@get_saldo_awal');
+        Route::post('/aruskas/excel', 'App\Http\Controllers\AruskasController@excel');
     });
 });
 

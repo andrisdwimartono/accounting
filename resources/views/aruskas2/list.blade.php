@@ -26,11 +26,11 @@
                         @csrf
                         <div class="card-header" style="display:block">
                                 <div class="form-group row m-0" style="height:40px;">
-                                    <div class="col-sm-3">
-                                        <div class="col-sm-2 left">
-                                            <label class="text-grey">Kode Rek.</label>
+                                    <div class="col-sm-6">
+                                        <div class="col-sm-4 left">
+                                            <label class="text-grey">Kode Rekening</label>
                                         </div>
-                                        <div class="col-sm-10 right">
+                                        <div class="col-sm-8 right">
                                             <select name="coa" id="coa" class="form-control select2bs4staticBackdrop" data-row="1" style="width: 100%;">
                                             </select>
                                         </div>
@@ -67,16 +67,7 @@
                                                 <?php } ?>
                                             </select>
                                         </div>
-                                    </div>
-                                    <div class="col-sm-3">
-                                        <div class="col-sm-2 left">
-                                            <label class="text-grey">Unit Kerja</label>
-                                        </div>
-                                        <div class="col-sm-10 right">
-                                            <select name="unitkerja" id="unitkerja" class="form-control select2bs4staticBackdrop" data-row="1" style="width: 100%;">
-                                            </select>
-                                        </div>
-                                    </div>
+                                    </div>                         
                                 </div>
                             </div>
                             
@@ -84,7 +75,7 @@
 
                                 <div class="table-responsive">
                                  
-                                    <table id="bukubesar" class="display" style="width:100%;">
+                                    <table id="aruskas" class="display" style="width:100%;">
                                         <thead class="bg-primary">
                                             <tr>
                                                 <th class="column-hidden">No</th>

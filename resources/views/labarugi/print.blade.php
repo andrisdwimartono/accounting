@@ -10,7 +10,7 @@
 
             header {
                 position: fixed;
-                top: -160px;
+                top: <?= $unitkerja_label != ""?"-180px":"-160px" ?>;
                 height: 110px;
                 text-align: center;
                 line-height: 10px;
@@ -92,7 +92,8 @@
                     <td width="30em" style="text-align:center">
                         <h2>Universitas Muhammadiyah Sidoarjo</h2>
                         <h3>Laporan Laba Rugi</h3>
-                        <h4>Untuk Periode {{ $bulan }} {{ $tahun }}</h5>
+                        <h4>Untuk Periode {{ $bulan }} {{ $tahun }}</h4>
+                        <?php if($unitkerja_label != ""){ ?><h4>Unit Kerja {{ $unitkerja_label }}</h4><?php } ?>
                     </td>
                     <td width="6em">
                         <img class='logo' src="{{ $logo }}" alt="{{ $globalsetting->nama_instansi }}">
@@ -116,7 +117,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($neraca['data'] as $d)
+                    @foreach($labarugi['data'] as $d)
                     <tr>
                         <td scope="col" width="290px">{!! $d[1] !!} {!! $d[2] !!}</td>
                         {!! $d[3] !!}
@@ -127,13 +128,13 @@
                 <tfoot>
                     <tr>
                         <td class="nom" style="border:none;"><b>JUMLAH</b></td>
-                        {!! $neraca['deb'] !!}
-                        {!! $neraca['cre'] !!}                        
+                        {!! $labarugi['deb'] !!}
+                        {!! $labarugi['cre'] !!}                        
                     </tr>
                     <tr>
-                        <td class="nom" style="border:none;"><b>{{ $neraca['ket'] }}</b></td>
-                        {!! $neraca['sal_deb'] !!}
-                        {!! $neraca['sal_cre'] !!}                        
+                        <td class="nom" style="border:none;"><b>{{ $labarugi['ket'] }}</b></td>
+                        {!! $labarugi['sal_deb'] !!}
+                        {!! $labarugi['sal_cre'] !!}                        
                     </tr>
                 </tfoot>
             </table>

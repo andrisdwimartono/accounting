@@ -1,7 +1,7 @@
 <html>
     <head>
         <meta name="dompdf.view" content="FitV" />
-        <title>Print Neraca</title>
+        <title>Print Arus Kas</title>
         <style>
             @page {
                 size: A4;
@@ -10,7 +10,7 @@
 
             header {
                 position: fixed;
-                top: <?= $unitkerja_label != ""?"-180px":"-160px" ?>;
+                top: -160px;
                 height: 110px;
                 text-align: center;
                 line-height: 10px;
@@ -71,13 +71,13 @@
                 padding: 2px 10px;
             }
 
-            .rp {
+            .rp{
                 width:10px;
                 border-right:none;
             }
 
-            .nom {
-                width:70px;
+            .nom{
+                width:100px;
                 border-left:none;
                 text-align:right;
             }
@@ -91,47 +91,62 @@
                     <td width="6em"></td>
                     <td width="30em" style="text-align:center">
                         <h2>Universitas Muhammadiyah Sidoarjo</h2>
-                        <h3>Laporan Neraca</h3>
-                        <h4>Untuk Periode {{ $bulan }} {{ $tahun }}</h4>
-                        <?php if($unitkerja_label != ""){ ?><h4>Unit Kerja {{ $unitkerja_label }}</h4><?php } ?>
+                        <h3>Laporan Arus Kas</h3>
+                        <h4>Untuk Kode Rekening {{ $coa }}</h4> 
+                        <h4>Periode {{ $bulan }} {{ $tahun }}</h5>
                     </td>
                     <td width="6em">
-                    <img class='logo' src="{{ $logo }}" alt="{{ $globalsetting->nama_instansi }}">
+                        <img class='logo' src="{{ $logo }}" alt="{{ $globalsetting->nama_instansi }}">
                     </td>
                 </tr>
             </table>
             <hr size=3>
-            <hr size=2.5 style="margin-top:-5px;">
+            <hr size=2.5 style="margin-top:-5px; margin-bottom:20px;">
         </header>
 
         <footer>
         </footer>
 
         <main>
-        <table class="table" border=1>
+        <table class="table" border=1 style="margin:20px -50px">
                 <thead >
                     <tr>
-                        <td scope="col" width="100px">Rekening</th>
-                        <td scope="col" colspan=2 width="100px">Debet</th>
-                        <td scope="col" colspan=2 width="100px">Kredit</th>
+                        <td scope="col" width="100px">Tanggal</th>
+                        <td scope="col" width="70px">No Jurnal</th>
+                        <td scope="col" width="200px">Deskripsi</th>
+                        <td scope="col" colspan=2>Debet</th>
+                        <td scope="col" colspan=2>Kredit</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($neraca['data'] as $d)
+                    @foreach($aruskas['data'] as $d)
                     <tr>
-                        <td scope="col" width="290px">{!! $d[1] !!} {!! $d[2] !!}</td>
-                        {!! $d[3] !!}
+                        <td scope="col">{!! $d[1] !!}</td>
+                        <td scope="col">{!! $d[2] !!}</td>
+                        <td scope="col">{!! $d[3] !!}</td>
                         {!! $d[4] !!}
+                        {!! $d[5] !!}
                     </tr>
                     @endforeach
+                    
                 </tbody>
                 <tfoot>
                     <tr>
+                        <td style="border:none;"></td>
+                        <td  style="border:none;"></td>
                         <td class="nom" style="border:none;"><b>JUMLAH</b></td>
-                        {!! $neraca['deb'] !!}
-                        {!! $neraca['cre'] !!}                        
+                        {!! $aruskas['deb'] !!}
+                        {!! $aruskas['cre'] !!}                        
+                    </tr>
+                    <tr>
+                        <td style="border:none;"></td>
+                        <td  style="border:none;"></td>
+                        <td class="nom" style="border:none;"><b>SALDO</b></td>
+                        {!! $aruskas['sal_deb'] !!}
+                        {!! $aruskas['sal_cre'] !!}                        
                     </tr>
                 </tfoot>
+                
             </table>
         </main>
         <script type="text/php">
@@ -148,5 +163,6 @@
             ');
         }
         </script>
+        <?php //dd($bulan);?>
     </body>
 </html>
