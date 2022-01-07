@@ -296,7 +296,7 @@ class NeracaController extends Controller
         }
         
         // sort by code
-        $columns = array_column($dt, 1);
+        $columns = array_column($dt, 2);
         array_multisort($columns, SORT_ASC, $dt);
         // convert array
         $dt = array_values($dt);
@@ -518,6 +518,7 @@ class NeracaController extends Controller
         
         // sort by code
         $columns = array_column($dt, 1);
+        
         array_multisort($columns, SORT_ASC, $dt);
         // convert array
         $dt = array_values($dt);
