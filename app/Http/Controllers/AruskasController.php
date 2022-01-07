@@ -597,7 +597,7 @@ class AruskasController extends Controller
         }
 
         $saldo_awal = $this->get_saldo_awal($request);
-        array_unshift($dt, array(0, "SALDO AWAL", "SALDO AWAL", $saldo_awal, 0, "", null, ""));
+        array_unshift($dt, array(0, "SALDO AWAL", "SALDO AWAL", $saldo_awal, 0, 2, null, ""));
         
         
         $output = array(
