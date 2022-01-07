@@ -40,6 +40,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/updatemenu/{menu}', 'App\Http\Controllers\MenuController@update');
         Route::post('/deletemenu', 'App\Http\Controllers\MenuController@destroy');
 
+        Route::get('/dashboard/labarugi', 'App\Http\Controllers\DashboardController@labarugi');
+        Route::post('/dashboard/get_list', 'App\Http\Controllers\DashboardController@get_list');
+        
+
         Route::get('/user', 'App\Http\Controllers\UserController@index')->name('user');
         Route::post('/getlistuser', 'App\Http\Controllers\UserController@get_list');
         Route::get('/user/{user}', 'App\Http\Controllers\UserController@show');
