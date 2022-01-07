@@ -22,9 +22,9 @@
                 <!-- row -->
                 <div class="row">
                 <div class="col-12">
+                        @csrf
                         <div class="card">
                             <div class="card-header" style="display:block">
-                                @csrf
                                 <div class="form-group row m-0" style="height:40px;">
                                     <div class="col-sm-4">
                                         <div class="col-sm-3 left">
