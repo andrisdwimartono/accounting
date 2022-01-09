@@ -275,7 +275,7 @@ class UserController extends Controller
             </button>';
 
             $act = '
-            <a href="/assignmenu/'.$user->id.'" class="btn btn-success shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="Assign Menus to this user"><i class="fa fa-bars"></i></a>
+            <a href="/assignmenu/'.$user->id.'/edit" class="btn btn-success shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="Assign Menus to this user"><i class="fa fa-bars"></i></a>
             
             <a href="/user/'.$user->id.'" class="btn btn-info shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fa fa-eye"></i></a>
 

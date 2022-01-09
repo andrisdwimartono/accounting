@@ -125,7 +125,7 @@ class AruskasExport implements FromView, WithStyles
             $uk = Unitkerja::where("id", ($unitkerja?$unitkerja:0))->first();
         }
 
-        $saldo_awal = $this->get_saldo_awal($request);
+        $saldo_awal = $this->get_saldo_awal();
         array_unshift($dt, array(0, "SALDO AWAL", "SALDO AWAL", $saldo_awal, 0, "", null, ""));
 
         $output = array(
@@ -144,7 +144,7 @@ class AruskasExport implements FromView, WithStyles
         ]);
     }
 
-    function get_saldo_awal(Request $request)
+    function get_saldo_awal()
     {
         $bulan_periode = 1;
         if(isset($this->request->search["bulan_periode"])){
