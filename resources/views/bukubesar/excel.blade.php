@@ -1,7 +1,7 @@
 <table>
     <thead>
         <tr style="text-align:center; font-weight:bold;">
-            <td colspan=5>Universitas Muhammadiyah Sidoarjo</td>
+            <td colspan=5>{{ Session::get('global_setting')->nama_lengkap_instansi }}</td>
         </tr>
         <tr style="text-align:center; font-weight:bold;">
             <td colspan=5>Laporan Buku Besar</td>

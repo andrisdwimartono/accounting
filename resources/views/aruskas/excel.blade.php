@@ -1,7 +1,7 @@
 <table>
     <thead>
         <tr style="text-align:center; font-weight:bold;">
-            <td colspan=2>Universitas Muhammadiyah Sidoarjo</td>
+            <td colspan=2>{{ $globalsetting->nama_lengkap_instansi }}</td>
         </tr>
         <tr style="text-align:center; font-weight:bold;">
             <td colspan=2>Laporan Arus Kas</td>
