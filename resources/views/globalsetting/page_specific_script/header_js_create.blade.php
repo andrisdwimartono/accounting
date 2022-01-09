@@ -71,4 +71,8 @@
       background-color: #fff; 
     }
 
+    .custom-file{
+      width : 100% !important;
+    }
+
   </style>

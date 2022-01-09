@@ -6,9 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Coa;
-use App\Models\Globalsetting;
 use App\Models\Neracasaldo;
 use PDF;
+use Session;
 
 class CoaController extends Controller
 {
@@ -443,7 +443,7 @@ class CoaController extends Controller
             "data" => $dt
         );
 
-        $gs = Globalsetting::where("id", 1)->first();
+        $gs = Session::get('global_setting');
         $image =  base_path() . '/public/logo_instansi/'.$gs->logo_instansi;
         $type = pathinfo($image, PATHINFO_EXTENSION);
         $data = file_get_contents($image);

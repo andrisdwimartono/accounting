@@ -9,7 +9,6 @@ use App\Models\Aruskas;
 use App\Models\Coa;
 use App\Models\Unitkerja;
 use App\Models\Jenisbayar;
-use App\Models\Globalsetting;
 use App\Exports\AruskasExport;
 use PDF;
 use Excel;
@@ -261,7 +260,7 @@ class AruskasController extends Controller
 
         $dt = array();
         $no = 0;
-        $yearopen = Globalsetting::where("id", 1)->first();
+        $yearopen = Session::get('global_setting');
         
         $jenis_aktivitas = "";
         foreach(Coa::find(1)
@@ -366,7 +365,7 @@ class AruskasController extends Controller
 
         $dt = array();
         $no = 0;
-        $yearopen = Globalsetting::where("id", 1)->first();
+        $yearopen =  Session::get('global_setting');
         
         $nominal_saldo_awal = 0;
         foreach(Coa::find(1)
@@ -532,7 +531,7 @@ class AruskasController extends Controller
 
         $dt = array();
         $no = 0;
-        $yearopen = Globalsetting::where("id", 1)->first();
+        $yearopen = Session::get('global_setting');
         
         $jenis_aktivitas = "";
         $total = 0;
@@ -608,7 +607,7 @@ class AruskasController extends Controller
             "total" => "<td class='rp'>Rp</td><td class='nom'><b>".number_format($total,0,",",".")."</b></td>"
         );
 
-        $gs = Globalsetting::where("id", 1)->first();
+        $gs = Session::get('global_setting');
         $image =  base_path() . '/public/logo_instansi/'.$gs->logo_instansi;
         $type = pathinfo($image, PATHINFO_EXTENSION);
         $data = file_get_contents($image);
@@ -618,7 +617,7 @@ class AruskasController extends Controller
         if($unitkerja != null && $unitkerja != 0){
             $uk = Unitkerja::where("id", ($unitkerja?$unitkerja:0))->first();
         }
-        $pdf = PDF::loadview("aruskas.print", ["aruskas" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first(), "bulan" => $this->convertBulan($bulan_periode), "tahun" => $tahun_periode, "unitkerja" => $unitkerja, "unitkerja_label" => $uk?$uk->unitkerja_name:"", "logo"=>$dataUri]);
+        $pdf = PDF::loadview("aruskas.print", ["aruskas" => $output,"data" => $request, "globalsetting" =>  Session::get('global_setting'), "bulan" => $this->convertBulan($bulan_periode), "tahun" => $tahun_periode, "unitkerja" => $unitkerja, "unitkerja_label" => $uk?$uk->unitkerja_name:"", "logo"=>$dataUri]);
         $pdf->getDomPDF();
         $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
         return $pdf->stream('aruskas.pdf');

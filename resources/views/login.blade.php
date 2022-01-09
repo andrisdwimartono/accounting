@@ -25,7 +25,7 @@
 
   <body class="text-center">
     <form action="{{ route('login') }}" method="post" class="form-signin">
-      <img class="mb-4" src="{{ asset ("/assets/motaadmin/images/logonav.png") }}" alt="" height="80">
+      <img class="mb-4" src="{{ asset ('/logo_sia/'.$global_setting->logo_sia) }}" alt="" height="80">
       <h1 class="h5 mb-3 font-weight-normal">Sign In</h1>
       @csrf
       @if(session('errors'))
