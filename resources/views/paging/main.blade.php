@@ -19,6 +19,11 @@
     <meta property="og:image" content="https://motaadmin.dexignlab.com/xhtml/social-image.png" />
     <meta name="format-detection" content="telephone=no">
     
+    @if(isset(Session::get('global_setting')->logo_instansi))
+      <link rel="icon" href="{{ asset ('/logo_instansi/'. Session::get('global_setting')->logo_instansi) }}">
+    @else
+      <link rel="icon" href="{{ asset ('/assets/images/logo_default.png') }}">
+    @endif
     <link rel="icon" href="{{ asset ("/logo_instansi/". Session::get('global_setting')->logo_instansi) }}">
  
     <title>SIA {{ Session::get('global_setting')->nama_instansi }} | {{$page_data["page_method_name"]}} {{$page_data["page_data_name"]}}</title>

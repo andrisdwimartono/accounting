@@ -49,7 +49,7 @@
                                         <div class="form-group row">
                                             <label class="col-sm-4 col-form-label">Logo Instansi</label>
                                             <div class="input-group col-sm-6 cakfield">
-                                                <div class="custom-file">
+                                                <div class="custom-file" style="width:100% !Important;">
                                                     <input type="file" class="custom-file-input" id="upload_logo_instansi" name="upload_logo_instansi" onchange="selectingfile('logo_instansi');">
                                                     <label class="custom-file-label" for="upload_logo_instansi">Pilih file Logo</label>
                                                 </div><br>

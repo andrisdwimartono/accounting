@@ -5,8 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="{{ asset ("/assets/motaadmin/images/favicon.png") }}">
-
+      @if(isset($globalsetting->logo_instansi))
+        <link rel="icon" href="{{ asset ('/logo_instansi/'.$globalsetting->logo_instansi) }}">
+      @else
+        <link rel="icon" href="{{ asset ('/assets/images/logo_default.png') }}">
+      @endif
     <title>Sistem Informasi Akuntansi Login Page</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/sign-in/">
@@ -25,7 +28,11 @@
 
   <body class="text-center">
     <form action="{{ route('login') }}" method="post" class="form-signin">
-      <img class="mb-4" src="{{ asset ('/logo_sia/'.Session::get('global_setting')->logo_sia) }}" alt="" height="80">
+      @if($globalsetting->logo_sia)
+        <img class="mb-4" src="{{ asset ('/logo_sia/'.$globalsetting->logo_sia) }}" alt="" height="80">
+      @else
+        <img class="mb-4" src="/assets/images/logo_sia_default.png" alt="" height="80">
+      @endif
       <h1 class="h5 mb-3 font-weight-normal">Sign In</h1>
       @csrf
       @if(session('errors'))
@@ -61,9 +68,6 @@
         </label>
       </div>
       <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-      <p class="mt-5 mb-3 text-muted"><span class="text-muted">&#169; <a href="http://www.maos.info">maos.info</a> @2021</span><br>
-            <span class="text-muted"><i class="fas fa-facebook"></i> <a href="#">maos info</a> | <i class="fas fa-instagram"></i><a href="https://www.instagram.com/maosinfo">maosinfo</a> | <i class="fas fa-twitter"></i><a href="#">@maosinfo</a></span></p>
-
     </form>
   </body>
 </html>
