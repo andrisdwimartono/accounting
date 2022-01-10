@@ -31,7 +31,7 @@
       @if($globalsetting->logo_sia)
         <img class="mb-4" src="{{ asset ('/logo_sia/'.$globalsetting->logo_sia) }}" alt="" height="80">
       @else
-        <img class="mb-4" src="{{ asset ('/assets/images/logo_sia_default.png')" alt="" height="80">
+        <img class="mb-4" src="{{ asset ('/assets/images/logo_sia_default.png') }}" alt="" height="80">
       @endif
       <h1 class="h5 mb-3 font-weight-normal">Sign In</h1>
       @csrf
