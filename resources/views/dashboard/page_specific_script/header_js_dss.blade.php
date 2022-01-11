@@ -11,6 +11,9 @@
 
   <link href="{{ asset ("/assets/node_modules/jquery-toast-plugin/dist/jquery.toast.min.css") }}" rel="stylesheet" />
   <link href="{{ asset ("/assets/cto/css/cto_loadinganimation.min.css") }}" rel="stylesheet" />
+
+  <!-- Webdatarocks -->
+  <link href="{{ asset ("/assets/webdatarocks/webdatarocks.min.css") }}" rel="stylesheet">
   
   <style>
     .select2-close-mask{

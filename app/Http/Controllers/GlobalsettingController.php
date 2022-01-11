@@ -227,15 +227,16 @@ class GlobalsettingController extends Controller
         if($request->validate($rules, $messages)){
             Globalsetting::where("id", $id)->update([
                 "nama_instansi"=> $request->nama_instansi,
+                "nama_lengkap_instansi"=> $request->nama_lengkap_instansi,
                 "logo_instansi"=> $request->logo_instansi,
+                "logo_sia"=> $request->logo_sia,
                 "bulan_tutup_tahun"=> $request->bulan_tutup_tahun,
                 "bulan_tutup_tahun_label"=> $request->bulan_tutup_tahun_label,
                 "user_updater_id"=> Auth::user()->id
             ]);
 
-            Session::put('nama_instansi', $request->nama_instansi);
-            Session::put('logo_instansi',  $request->logo_instansi);
-
+            Session::put('global_setting', Globalsetting::where("id", 1)->first());
+            
             $new_menu_field_ids = array();
             foreach($requests_ct1_bank_va as $ct_request){
                 if(isset($ct_request["id"])){

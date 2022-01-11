@@ -11,10 +11,10 @@ use App\Models\Anggaran;
 use App\Models\Coa;
 use App\Models\Jenisbayar;
 use App\Models\Neracasaldo;
-use App\Models\Globalsetting;
 use App\Exports\BukuBesarExport;
 use PDF;
 use Excel;
+use Session;
 
 class BukuBesarController extends Controller
 {
@@ -168,7 +168,7 @@ class BukuBesarController extends Controller
         if(isset($data["unitkerja"]) && $data["unitkerja"] != ""){
             $unitkerja = $request->search["unitkerja"];
         }
-        $yearopen = Globalsetting::where("id", 1)->first();
+        $yearopen = Session::get('global_setting');
         $neracasaldo = Neracasaldo::select(
                 DB::raw("SUM(debet) as total_debet"),
                 DB::raw("SUM(credit) as total_credit"),
@@ -378,7 +378,7 @@ class BukuBesarController extends Controller
 
         
 
-        $gs = Globalsetting::where("id", 1)->first();
+        $gs = Session::get('global_setting');
         $image =  base_path() . '/public/logo_instansi/'.$gs->logo_instansi;
         $type = pathinfo($image, PATHINFO_EXTENSION);
         $data = file_get_contents($image);
@@ -388,7 +388,7 @@ class BukuBesarController extends Controller
         if($unitkerja != null && $unitkerja != 0){
             $uk = Unitkerja::where("id", ($unitkerja?$unitkerja:0))->first();
         }
-        $pdf = PDF::loadview("bukubesar.print", ["bukubesar" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first(), "bulan" => $this->convertBulan($bulan_periode), "tahun" => $tahun_periode, "coa" => $dc, "unitkerja" => $unitkerja, "unitkerja_label" => $uk?$uk->unitkerja_name:"", "logo" => $dataUri]);
+        $pdf = PDF::loadview("bukubesar.print", ["bukubesar" => $output,"data" => $request, "globalsetting" => Session::get('global_setting'), "bulan" => $this->convertBulan($bulan_periode), "tahun" => $tahun_periode, "coa" => $dc, "unitkerja" => $unitkerja, "unitkerja_label" => $uk?$uk->unitkerja_name:"", "logo" => $dataUri]);
         $pdf->getDomPDF();
         $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
         return $pdf->stream('bukubesar.pdf');

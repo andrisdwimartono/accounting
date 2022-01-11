@@ -90,7 +90,7 @@
                 <tr>
                     <td width="6em"></td>
                     <td width="30em" style="text-align:center">
-                        <h2>Universitas Muhammadiyah Sidoarjo</h2>
+                        <h2>{{ $globalsetting->nama_lengkap_instansi }}</h2>
                         <h3>Laporan Laba Rugi</h3>
                         <h4>Untuk Periode {{ $bulan }} {{ $tahun }}</h4>
                         <?php if($unitkerja_label != ""){ ?><h4>Unit Kerja {{ $unitkerja_label }}</h4><?php } ?>

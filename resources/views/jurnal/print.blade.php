@@ -90,7 +90,7 @@
                 <tr>
                     <td width="6em"></td>
                     <td width="30em" style="text-align:center">
-                        <h2>Universitas Muhammadiyah Sidoarjo</h2>
+                        <h2>{{ $globalsetting->nama_lengkap_instansi }}</h2>
                         <h3>Laporan Jurnal</h3>
                         <h4>Untuk Tanggal {{ $tanggal }}</h5>
                     </td>

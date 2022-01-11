@@ -7,11 +7,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Neraca;
 use App\Models\Coa;
-use App\Models\Globalsetting;
 use App\Models\Unitkerja;
 use App\Exports\NeracaExport;
 use PDF;
 use Excel;
+use Session;
 
 class NeracaController extends Controller
 {
@@ -234,7 +234,7 @@ class NeracaController extends Controller
 
         $dt = array();
         $no = 0;
-        $yearopen = Globalsetting::where("id", 1)->first();
+        $yearopen = Session::get('global_setting');
         foreach(Coa::find(1)
         ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader", DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")]) //"neracas.debet", "neracas.credit"])//DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")])
         ->leftJoin('neracas', 'coas.id', '=', 'neracas.coa')
@@ -478,7 +478,7 @@ class NeracaController extends Controller
         
         $dt = array();
         $no = 0;
-        $yearopen = Globalsetting::where("id", 1)->first();
+        $yearopen = Session::get('global_setting');
         foreach(Coa::find(1)
         ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader", DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")]) //"neracas.debet", "neracas.credit"])//DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")])
         ->leftJoin('neracas', 'coas.id', '=', 'neracas.coa')
@@ -617,13 +617,13 @@ class NeracaController extends Controller
             "unitkerja_label" => $uk?$uk->unitkerja_name:""
         );
 
-        $gs = Globalsetting::where("id", 1)->first();
+        $gs = Session::get('global_setting');
         $image =  base_path() . '/public/logo_instansi/'.$gs->logo_instansi;
         $type = pathinfo($image, PATHINFO_EXTENSION);
         $data = file_get_contents($image);
         $dataUri = 'data:image/' . $type . ';base64,' . base64_encode($data);
 
-        $pdf = PDF::loadview("neraca.print", ["neraca" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first(), "bulan" => $this->convertBulan($bulan_periode), "tahun" => $tahun_periode, "unitkerja" => $unitkerja, 
+        $pdf = PDF::loadview("neraca.print", ["neraca" => $output,"data" => $request, "globalsetting" => Session::get('global_setting'), "bulan" => $this->convertBulan($bulan_periode), "tahun" => $tahun_periode, "unitkerja" => $unitkerja, 
         "unitkerja_label" => $uk?$uk->unitkerja_name:"" , "logo" => $dataUri]);
         $pdf->getDomPDF();
         $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);

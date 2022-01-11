@@ -3,15 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use App\Models\Labarugi;
 use App\Models\Coa;
-use App\Models\Jenisbayar;
-use App\Models\Globalsetting;
-use App\Exports\LabarugiExport;
-use PDF;
-use Excel;
+use Session;
 
 class DashboardController extends Controller
 {
@@ -73,6 +67,15 @@ class DashboardController extends Controller
         return view("labarugi.list", ["page_data" => $page_data]);
     }
 
+    public function dss(){
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "List";
+        $page_data["footer_js_page_specific_script"] = ["dashboard.page_specific_script.footer_js_dss"];
+        $page_data["header_js_page_specific_script"] = ["dashboard.page_specific_script.header_js_dss"];
+        
+        return view("dashboard.dss", ["page_data" => $page_data]);
+    }
+
     public function labarugi(){
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "List";
@@ -100,7 +103,7 @@ class DashboardController extends Controller
         $dt = array();
         $no = 0;
         $sum_nom = 0;
-        $yearopen = Globalsetting::where("id", 1)->first();
+        $yearopen = Session::get('global_setting');
         foreach(Coa::find(1)
         ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader", DB::raw("SUM(labarugis.debet) as debet"), DB::raw("SUM(labarugis.credit) as credit")]) //"neracas.debet", "neracas.credit"])//DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")])
         ->leftJoin('labarugis', 'coas.id', '=', 'labarugis.coa')

@@ -20,7 +20,8 @@ class AuthController extends Controller
             //return redirect()->back();
             return redirect()->route('home');
         }
-        return view('login');
+        $globalsetting = Globalsetting::where("id", 1)->first();
+        return view('login', ["globalsetting" => $globalsetting]);
     }
   
     public function login(Request $request)
