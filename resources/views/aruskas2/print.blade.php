@@ -90,7 +90,7 @@
                 <tr>
                     <td width="6em"></td>
                     <td width="30em" style="text-align:center">
-                        <h2>Universitas Muhammadiyah Sidoarjo</h2>
+                        <h2>{{ Session::get('global_setting')->nama_lengkap_instansi) }}</h2>
                         <h3>Laporan Arus Kas</h3>
                         <h4>Untuk Kode Rekening {{ $coa }}</h4> 
                         <h4>Periode {{ $bulan }} {{ $tahun }}</h5>

@@ -75,7 +75,7 @@
                 <tr>
                     <td width="6em"></td>
                     <td width="30em" style="text-align:center">
-                        <h2>Universitas Muhammadiyah Sidoarjo</h2>
+                        <h2>{{ Session::get('global_setting')->nama_lengkap_instansi }}</h2>
                         <h3>Laporan Kode Rekening Akuntansi</h3>
                         <?php foreach($page_data["fieldsoptions"]["category"] as $cat){ 
                             if($cat["name"] == $data->category_filter){

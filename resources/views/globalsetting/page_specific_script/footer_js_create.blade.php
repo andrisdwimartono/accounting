@@ -477,32 +477,7 @@ function selectingfile(fieldid){
     $("#"+fieldid).val("");
 }
 
-$("#btn_logo_instansi").on('click', function(){
-    if($("#logo_instansi").val() != ""){
-        fetch('{{ asset ("/logo_instansi/") }}/'+$("#logo_instansi").val()).then(resp => resp.blob())
-        .then(blob => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-            a.download = $("#logo_instansi").val();
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-        })
-        .catch(() => {
-            $.toast({
-                text: 'Download gagal',
-                heading: 'Status',
-                icon: 'warning',
-                showHideTransition: 'fade',
-                allowToastClose: true,
-                hideAfter: 3000,
-                position: 'mid-center',
-                textAlign: 'left'
-            });
-        });
-    }else{
+$("#upload_logo_instansi").on('change', function(){
         $("#btn_logo_instansi").attr("disabled", true);
         $("#btn_logo_instansi").removeClass("btn-primary text-white");
         
@@ -559,6 +534,8 @@ $("#btn_logo_instansi").on('click', function(){
                         $("#btn_logo_instansi").attr("disabled", false);
                         $("#btn_logo_instansi").addClass("btn-success text-white");
                         $("#btn_logo_instansi").html("Download");
+                        $("#preview_logo_instansi").attr('src','/logo_instansi/' + data.filename);
+                        console.log('/logo_instansi/' + data.filename);
                     }
                 },
                 error: function (err) {
@@ -577,7 +554,86 @@ $("#btn_logo_instansi").on('click', function(){
                 }
             });
         }
-    }
+});
+
+$("#upload_logo_sia").on('change', function(){
+    
+        $("#btn_logo_sia").attr("disabled", true);
+        $("#btn_logo_sia").removeClass("btn-primary text-white");
+        
+        var uploadfile = document.getElementById("upload_logo_sia").files[0];
+        var name = uploadfile.name;
+        var form_data = new FormData();
+        var ext = name.split('.').pop().toLowerCase();
+        if(jQuery.inArray(ext, ['png', 'PNG', 'jpg', 'JPG', 'jpeg', 'JPEG']) == -1){
+            $.toast({
+                text: "Format file harus ''",
+                heading: 'Status',
+                icon: 'warning',
+                showHideTransition: 'fade',
+                allowToastClose: true,
+                hideAfter: 3000,
+                position: 'mid-center',
+                textAlign: 'left'
+            });
+            return;
+        }
+        var oFReader = new FileReader();
+        oFReader.readAsDataURL(uploadfile);
+        var f = uploadfile;
+        var fsize = f.size||f.fileSize;
+        if(fsize > 2000000){
+            $.toast({
+                text: "Ukuran file terlalu bersar",
+                heading: 'Status',
+                icon: 'warning',
+                showHideTransition: 'fade',
+                allowToastClose: true,
+                hideAfter: 3000,
+                position: 'mid-center',
+                textAlign: 'left'
+            });
+        }else{
+            form_data.append("file", uploadfile);
+            form_data.append("_token", $("#quickForm input[name=_token]").val());
+            form_data.append("menname", "logo_sia");
+            $.ajax({
+                url:"/uploadfileglobalsetting",
+                method:"POST",
+                data: form_data,
+                contentType: false,
+                cache: false,
+                processData: false,
+                beforeSend:function(){
+                    $("label[for=upload_logo_sia]").html("Uploading <i class=\"fas fa-spinner fa-pulse\"></i>");
+                },
+                success:function(data){
+                    if(data.status >= 200 && data.status <= 299){
+                        $("label[for=upload_logo_sia]").html("Finished upload file");
+                        $("#logo_sia").val(data.filename);
+                        $("#btn_logo_sia").attr("disabled", false);
+                        $("#btn_logo_sia").addClass("btn-success text-white");
+                        $("#btn_logo_sia").html("Download");
+                        $("#preview_logo_sia").attr('src','/logo_sia/' + data.filename);
+                        console.log('/logo_sia/' + data.filename);
+                    }
+                },
+                error: function (err) {
+                    if (err.status >= 400) {
+                        $.toast({
+                            text: "Gagal upload",
+                            heading: 'Status',
+                            icon: 'warning',
+                            showHideTransition: 'fade',
+                            allowToastClose: true,
+                            hideAfter: 3000,
+                            position: 'mid-center',
+                            textAlign: 'left'
+                        });
+                    }
+                }
+            });
+        }
 });
 
 </script>

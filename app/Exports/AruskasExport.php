@@ -6,9 +6,6 @@ namespace App\Exports;
 use Session;
 use App\Models\Coa;
 use App\Models\Unitkerja;
-use App\Models\Transaction;
-use App\Models\Aruskas;
-use App\Models\Globalsetting;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -64,7 +61,7 @@ class AruskasExport implements FromView, WithStyles
 
         $dt = array();
         $no = 0;
-        $yearopen = Globalsetting::where("id", 1)->first();
+        $yearopen = Session::get('global_setting');
         
         $jenis_aktivitas = "";
         foreach(Coa::find(1)
@@ -164,7 +161,7 @@ class AruskasExport implements FromView, WithStyles
 
         $dt = array();
         $no = 0;
-        $yearopen = Globalsetting::where("id", 1)->first();
+        $yearopen = Session::get('global_setting');
         
         $nominal_saldo_awal = 0;
         foreach(Coa::find(1)

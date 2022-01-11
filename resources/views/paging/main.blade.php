@@ -19,9 +19,14 @@
     <meta property="og:image" content="https://motaadmin.dexignlab.com/xhtml/social-image.png" />
     <meta name="format-detection" content="telephone=no">
     
-    <link rel="icon" href="{{ asset ("/logo_instansi/". Session::get('logo_instansi')) }}">
+    @if(isset(Session::get('global_setting')->logo_instansi))
+      <link rel="icon" href="{{ asset ('/logo_instansi/'. Session::get('global_setting')->logo_instansi) }}">
+    @else
+      <link rel="icon" href="{{ asset ('/assets/images/logo_default.png') }}">
+    @endif
+    <link rel="icon" href="{{ asset ("/logo_instansi/". Session::get('global_setting')->logo_instansi) }}">
  
-    <title>SIA {{ Session::get('nama_instansi') }} | {{$page_data["page_method_name"]}} {{$page_data["page_data_name"]}}</title>
+    <title>SIA {{ Session::get('global_setting')->nama_instansi }} | {{$page_data["page_method_name"]}} {{$page_data["page_data_name"]}}</title>
   @if(isset($page_data["header_js_page_specific_script"]))
     @foreach($page_data["header_js_page_specific_script"] as $header_js_pss)
   @include($header_js_pss)

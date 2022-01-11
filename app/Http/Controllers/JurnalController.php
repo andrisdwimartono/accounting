@@ -10,7 +10,6 @@ use App\Models\Unitkerja;
 use App\Models\Transaction;
 use App\Models\Anggaran;
 use App\Models\Coa;
-use App\Models\Globalsetting;
 use App\Models\Jenisbayar;
 use App\Models\Neracasaldo;
 use App\Models\Aruskas;
@@ -23,6 +22,7 @@ use App\Models\Prodi;
 use App\Exports\JurnalExport;
 use PDF;
 use Excel;
+use Session;
 
 class JurnalController extends Controller
 {
@@ -3565,13 +3565,13 @@ class JurnalController extends Controller
             "data" => $dt
         );
 
-        $gs = Globalsetting::where("id", 1)->first();
+        $gs = Session::get('global_setting');
         $image =  base_path() . '/public/logo_instansi/'.$gs->logo_instansi;
         $type = pathinfo($image, PATHINFO_EXTENSION);
         $data = file_get_contents($image);
         $dataUri = 'data:image/' . $type . ';base64,' . base64_encode($data);
 
-        $pdf = PDF::loadview("jurnal.print", ["jurnal" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first(), "tanggal" => $tanggal_jurnal, "logo" => $dataUri]);
+        $pdf = PDF::loadview("jurnal.print", ["jurnal" => $output,"data" => $request, "globalsetting" => Session::get('global_setting'), "tanggal" => $tanggal_jurnal, "logo" => $dataUri]);
         $pdf->setPaper('A4', 'Landscape');
         $pdf->getDomPDF();
         $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
@@ -3608,13 +3608,13 @@ class JurnalController extends Controller
 
         $tanggal_jurnal = $this->tgl_indo($request->search['tanggal_jurnal_from'],"/",0,1,2). " - " . $this->tgl_indo($request->search['tanggal_jurnal_to'],"/",0,1,2);
 
-        $gs = Globalsetting::where("id", 1)->first();
+        $gs = Session::get('global_setting');
         $image =  base_path() . '/public/logo_instansi/'.$gs->logo_instansi;
         $type = pathinfo($image, PATHINFO_EXTENSION);
         $data = file_get_contents($image);
         $dataUri = 'data:image/' . $type . ';base64,' . base64_encode($data);
 
-        $pdf = PDF::loadview("jurnal.print", ["jurnal" => $output,"data" => $request, "globalsetting" => Globalsetting::where("id", 1)->first(), "tanggal" => $tanggal_jurnal, "logo" => $dataUri]);
+        $pdf = PDF::loadview("jurnal.print", ["jurnal" => $output,"data" => $request, "globalsetting" => Session::get('global_setting'), "tanggal" => $tanggal_jurnal, "logo" => $dataUri]);
         $pdf->setPaper('A4', 'Landscape');
         $pdf->getDomPDF();
         $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
