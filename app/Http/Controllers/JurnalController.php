@@ -1144,9 +1144,9 @@ class JurnalController extends Controller
         $bulan = explode("-", $transaction->tanggal)[1];
         $tahun = explode("-", $transaction->tanggal)[0];
         if($method == "store" || $method == "updatelast"){
-            $neracasaldo = Neracasaldo::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->first();
+            $neracasaldo = Neracasaldo::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->first();
             if($neracasaldo){
-                Neracasaldo::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
+                Neracasaldo::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->update([
                     "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neracasaldo->debet+$transaction->debet-$transaction->credit:0,
                     "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neracasaldo->credit+$transaction->credit-$transaction->debet:0,
                 ]);
@@ -1160,7 +1160,9 @@ class JurnalController extends Controller
                     "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$transaction->credit-$transaction->debet:0, 
                     "user_creator_id" => 2,
                     "jenisbayar" => 0,
-                    "jenisbayar_label" => ""
+                    "jenisbayar_label" => "",
+                    "unitkerja" => $transaction->unitkerja,
+                    "unitkerja_label" => $transaction->unitkerja_label
                 ]);
             }
 
@@ -1189,9 +1191,9 @@ class JurnalController extends Controller
 
             if(in_array($coa->category, array("pendapatan", "biaya", "biaya_lainnya", "pendapatan_lainnya"))){
                 $coa_sur_def = Coa::where("coa_code", "30300000")->first();
-                $neraca = Neraca::where("coa", $coa_sur_def->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->first();
+                $neraca = Neraca::where("coa", $coa_sur_def->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->first();
                 if($neraca){
-                    Neraca::where("coa", $coa_sur_def->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
+                    Neraca::where("coa", $coa_sur_def->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->update([
                         "debet" => 0,
                         "credit" => $neraca->credit+$transaction->credit-$transaction->debet,
                     ]);
@@ -1203,12 +1205,14 @@ class JurnalController extends Controller
                         "coa_label" => $coa_sur_def->coa_code." ".$coa_sur_def->coa_name, 
                         "debet" => 0, 
                         "credit" => $transaction->credit-$transaction->debet, 
-                        "user_creator_id" => 2
+                        "user_creator_id" => 2,
+                        "unitkerja" => $transaction->unitkerja,
+                        "unitkerja_label" => $transaction->unitkerja_label
                     ]);
                 }
-                $labarugi = Labarugi::where("coa", $coa->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->first();
+                $labarugi = Labarugi::where("coa", $coa->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->first();
                 if($labarugi){
-                    Labarugi::where("coa", $coa->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
+                    Labarugi::where("coa", $coa->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->update([
                         "debet" => in_array($coa->category, array("biaya", "biaya_lainnya"))?$labarugi->debet+$transaction->debet-$transaction->credit:0,
                         "credit" => !in_array($coa->category, array("biaya", "biaya_lainnya"))?$labarugi->credit+$transaction->credit-$transaction->debet:0,
                     ]);
@@ -1220,13 +1224,15 @@ class JurnalController extends Controller
                         "coa_label" => $coa->coa_code." ".$coa->coa_name, 
                         "debet" => in_array($coa->category, array("biaya", "biaya_lainnya"))?$transaction->debet-$transaction->credit:0, 
                         "credit" => !in_array($coa->category, array("biaya", "biaya_lainnya"))?$transaction->credit-$transaction->debet:0,
-                        "user_creator_id" => 2
+                        "user_creator_id" => 2,
+                        "unitkerja" => $transaction->unitkerja,
+                        "unitkerja_label" => $transaction->unitkerja_label
                     ]);
                 }
             }else{
-                $neraca = Neraca::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->first();
+                $neraca = Neraca::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->first();
                 if($neraca){
-                    Neraca::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
+                    Neraca::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->update([
                         "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neraca->debet+$transaction->debet-$transaction->credit:0,
                         "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neraca->credit+$transaction->credit-$transaction->debet:0,
                     ]);
@@ -1238,14 +1244,16 @@ class JurnalController extends Controller
                         "coa_label" => $coa->coa_code." ".$coa->coa_name, 
                         "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$transaction->debet-$transaction->credit:0, 
                         "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$transaction->credit-$transaction->debet:0, 
-                        "user_creator_id" => 2
+                        "user_creator_id" => 2,
+                        "unitkerja" => $transaction->unitkerja,
+                        "unitkerja_label" => $transaction->unitkerja_label
                     ]);
                 }
             }
         }elseif($method == "updatefirst" || $method == "delete"){
-            $neracasaldo = Neracasaldo::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->first();
+            $neracasaldo = Neracasaldo::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->first();
             if($neracasaldo){
-                Neracasaldo::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
+                Neracasaldo::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->update([
                     "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neracasaldo->debet-$transaction->debet+$transaction->credit:0,
                     "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neracasaldo->credit-$transaction->credit+$transaction->debet:0,
                     "user_updater_id" => 2
@@ -1263,26 +1271,26 @@ class JurnalController extends Controller
 
             if(in_array($coa->category, array("pendapatan", "biaya", "biaya_lainnya", "pendapatan_lainnya"))){
                 $coa_sur_def = Coa::where("coa_code", "30300000")->first();
-                $neraca = Neraca::where("coa", $coa_sur_def->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->first();
+                $neraca = Neraca::where("coa", $coa_sur_def->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->first();
                 if($neraca){
-                    Neraca::where("coa", $coa_sur_def->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
+                    Neraca::where("coa", $coa_sur_def->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->update([
                         "debet" => 0,
                         "credit" => $neraca->credit-$transaction->credit+$transaction->debet,
                         "user_updater_id" => 2
                     ]);
                 }
-                $labarugi = Labarugi::where("coa", $coa->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->first();
+                $labarugi = Labarugi::where("coa", $coa->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->first();
                 if($labarugi){
-                    Labarugi::where("coa", $coa->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
+                    Labarugi::where("coa", $coa->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->update([
                         "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$labarugi->debet-$transaction->debet+$transaction->credit:0,
                         "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$labarugi->credit-$transaction->credit+$transaction->debet:0,
                         "user_updater_id" => 2
                     ]);
                 }
             }else{
-                $neraca = Neraca::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->first();
+                $neraca = Neraca::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->first();
                 if($neraca){
-                    Neraca::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->update([
+                    Neraca::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->update([
                         "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neraca->debet-$transaction->debet+$transaction->credit:0,
                         "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neraca->credit-$transaction->credit+$transaction->debet:0,
                         "user_updater_id" => 2
