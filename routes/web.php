@@ -43,6 +43,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/dashboard/labarugi', 'App\Http\Controllers\DashboardController@labarugi');
         Route::get('/dashboard/dss', 'App\Http\Controllers\DashboardController@dss');
         Route::post('/dashboard/get_list', 'App\Http\Controllers\DashboardController@get_list');
+        Route::post('/dashboard/get_transaction', 'App\Http\Controllers\DashboardController@get_transaction');
         
         Route::get('/user', 'App\Http\Controllers\UserController@index')->name('user');
         Route::post('/getlistuser', 'App\Http\Controllers\UserController@get_list');

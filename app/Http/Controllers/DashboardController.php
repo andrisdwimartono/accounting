@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Coa;
+use App\Models\Transaction;
 use Session;
 
 class DashboardController extends Controller
@@ -75,7 +76,6 @@ class DashboardController extends Controller
         
         return view("dashboard.dss", ["page_data" => $page_data]);
     }
-
     public function labarugi(){
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "List";
@@ -83,6 +83,63 @@ class DashboardController extends Controller
         $page_data["header_js_page_specific_script"] = ["dashboard.page_specific_script.header_js_list"];
         
         return view("dashboard.chart", ["page_data" => $page_data]);
+    }
+
+    public function get_transaction(){
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "List";
+        $page_data["footer_js_page_specific_script"] = ["dashboard.page_specific_script.footer_js_list"];
+        $page_data["header_js_page_specific_script"] = ["dashboard.page_specific_script.header_js_list"];
+
+        $bulan_periode = (int) date('m');
+        $tahun_periode = (int) date('Y');
+        // dd($bulan_periode, $tahun_periode);
+
+        $dt = array();
+        $yearopen = Session::get('global_setting');
+        $periode = "";
+        foreach(Transaction::select([ "unitkerja_label", "anggaran_label", "tanggal", "jenis_transaksi", "coa_label", "jenisbayar_label", "kode_va", DB::raw("ABS(debet-credit) as nominal")])
+        ->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
+            // dd($yearopen);
+            if($bulan_periode >= $yearopen->bulan_tutup_tahun){
+                //only one year
+                $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                    $q->whereMonth("tanggal", ">=", $yearopen->bulan_tutup_tahun)->whereMonth("tanggal", "<=", $bulan_periode)->whereYear("tanggal", $tahun_periode);
+                });
+            }else{
+                //cross year
+                $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                    $q->whereMonth("tanggal", "<=", $bulan_periode)->whereYear("tanggal", $tahun_periode);
+                })->orWhere(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                    $q->whereMonth("tanggal", ">", $yearopen->bulan_tutup_tahun)->whereYear("tanggal", $tahun_periode-1);
+                });
+            }
+        })->get()
+         as $data){
+            array_push($dt, array(
+                "Unit Kerja" => $data->unitkerja_label, 
+                "Kode Anggaran" => $data->anggaran_label, 
+                "Tanggal" => $data->tanggal, 
+                "Jenis Transaksi" => $data->jenis_transaksi, 
+                "COA" => $data->coa_label, 
+                "Jenis Bayar" => $data->jenisbayar_label, 
+                "Kode VA" => $data->kode_va, 
+                "Nominal" => $data->nominal
+            ));
+        }
+
+        if($bulan_periode >= $yearopen->bulan_tutup_tahun){
+            $periode = $this->convertBulan($yearopen->bulan_tutup_tahun) . " - " . $this->convertBulan($bulan_periode) . " " . $tahun_periode;
+        } else {
+            $periode = $this->convertBulan($yearopen->bulan_tutup_tahun) . " " . $tahun_periode-1 . " - " . $this->convertBulan($bulan_periode) . " " . $tahun_periode;
+        }
+        // dd($dt);
+        $output = array(
+            "data" => $dt,
+            "periode" => $periode
+        );
+
+        echo json_encode($output);
     }
 
     public function get_list(Request $request)
@@ -197,5 +254,25 @@ class DashboardController extends Controller
         );
 
         echo json_encode($output);
+    }
+
+    public function convertBulan($bulan){
+        $nmb = "";
+        switch(date("F", mktime(0, 0, 0, $bulan, 10)))
+        {
+            case 'January':     $nmb="Januari";     break; 
+            case 'February':    $nmb="Februari";    break; 
+            case 'March':       $nmb="Maret";       break; 
+            case 'April':       $nmb="April";       break; 
+            case 'May':         $nmb="Mei";         break; 
+            case 'June':        $nmb="Juni";        break; 
+            case 'July':        $nmb="Juli";        break;
+            case 'August':      $nmb="Agustus";     break;
+            case 'September':   $nmb="September";   break;
+            case 'October':     $nmb="Oktober";     break;
+            case 'November':    $nmb="November";    break;
+            case 'December':    $nmb="Desember";    break;
+        }
+        return $nmb;
     }
 }

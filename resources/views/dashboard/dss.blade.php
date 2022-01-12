@@ -22,7 +22,13 @@
                 <!-- row -->
                 <div class="row">
                 <div class="col-12">
-                    <div id="wdr-component"></div>
+                    @csrf
+                    <div class="card">
+                        <div class="card-header"><h4 class="output-header"></h4></div>
+                        <div class="card-body">  
+                            <div id="output" style="min-height: 500px;overflow:auto"></div>
+                        </div>
+                    </div>                
                 </div>
             </div>
         </div>

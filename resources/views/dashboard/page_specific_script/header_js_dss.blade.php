@@ -12,8 +12,9 @@
   <link href="{{ asset ("/assets/node_modules/jquery-toast-plugin/dist/jquery.toast.min.css") }}" rel="stylesheet" />
   <link href="{{ asset ("/assets/cto/css/cto_loadinganimation.min.css") }}" rel="stylesheet" />
 
-  <!-- Webdatarocks -->
-  <link href="{{ asset ("/assets/webdatarocks/webdatarocks.min.css") }}" rel="stylesheet">
+  <!-- PivotTable -->
+  <link href="{{ asset ("/assets/pivottable/c3.min.css") }}" rel="stylesheet">
+  <link href="{{ asset ("/assets/pivottable/pivot.css") }}" rel="stylesheet">
   
   <style>
     .select2-close-mask{
@@ -110,6 +111,23 @@
     .dt-buttons {
       margin-bottom:15px;
     }
+
+    body {font-family: Verdana;}
+    .node {
+      border: solid 1px white;
+      font: 10px sans-serif;
+      line-height: 12px;
+      overflow: hidden;
+      position: absolute;
+      text-indent: 2px;
+    }
+    .c3-line, .c3-focused {stroke-width: 3px !important;}
+    .c3-bar {stroke: white !important; stroke-width: 1;}
+    .c3 text { font-size: 12px; color: grey;}
+    .tick line {stroke: white;}
+    .c3-axis path {stroke: grey;}
+    .c3-circle { opacity: 1 !important; }
+    .c3-xgrid-focus {visibility: hidden !important;}
   </style>
 
   <script>    
