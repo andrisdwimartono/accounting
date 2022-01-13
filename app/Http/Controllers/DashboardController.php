@@ -46,6 +46,17 @@ class DashboardController extends Controller
     public function dss(){
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "";
+        $page_data["category"] = "dss";
+        $page_data["footer_js_page_specific_script"] = ["dashboard.page_specific_script.footer_js_dss"];
+        $page_data["header_js_page_specific_script"] = ["dashboard.page_specific_script.header_js_dss"];
+        
+        return view("dashboard.dss", ["page_data" => $page_data]);
+    }
+
+    public function neraca(){
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "";
+        $page_data["category"] = "neraca";
         $page_data["footer_js_page_specific_script"] = ["dashboard.page_specific_script.footer_js_dss"];
         $page_data["header_js_page_specific_script"] = ["dashboard.page_specific_script.header_js_dss"];
         
@@ -55,13 +66,15 @@ class DashboardController extends Controller
     public function labarugi(){
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "List";
-        $page_data["footer_js_page_specific_script"] = ["dashboard.page_specific_script.footer_js_list"];
-        $page_data["header_js_page_specific_script"] = ["dashboard.page_specific_script.header_js_list"];
+        $page_data["category"] = "labarugi";
+        $page_data["footer_js_page_specific_script"] = ["dashboard.page_specific_script.footer_js_dss"];
+        $page_data["header_js_page_specific_script"] = ["dashboard.page_specific_script.header_js_dss"];
         
-        return view("dashboard.chart", ["page_data" => $page_data]);
+        // return view("dashboard.chart", ["page_data" => $page_data]);
+        return view("dashboard.dss", ["page_data" => $page_data]);
     }
 
-    public function get_transaction(){
+    public function get_transaction(Request $request){
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "List";
         $page_data["footer_js_page_specific_script"] = ["dashboard.page_specific_script.footer_js_list"];
@@ -72,12 +85,20 @@ class DashboardController extends Controller
         // dd($bulan_periode, $tahun_periode);
 
         $debet = array("aset","biaya","biaya_lainnya");
-
+        $category = $request->category;
+        
         $dt = array();
         $yearopen = Session::get('global_setting');
         $periode = "";
         foreach(Transaction::select([ "transactions.unitkerja_label", "coas.category", "anggaran_label", "tanggal", "jenis_transaksi", "transactions.coa_label", "transactions.jenisbayar_label", "kode_va", DB::raw("debet-credit as nominal_dc"), DB::raw("credit-debet as nominal_cd")])
         ->leftJoin('coas', 'transactions.coa', '=', 'coas.id')
+        ->where(function($q) use($category){
+            if($category == 'labarugi'){
+                $q->whereIn('coas.category',['pendapatan', 'biaya', 'biaya_lainnya', 'pendapatan_lainnya']);
+            } else if($category == 'neraca') {
+                $q->whereIn('coas.category',['aset','hutang','modal']);
+            }
+        })
         ->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
             // dd($yearopen);
             if($bulan_periode >= $yearopen->bulan_tutup_tahun){

@@ -30,6 +30,7 @@
 
 <script>
     var APP_URL = {!! json_encode(url('/')) !!}
+    var category = "{{$page_data['category']}}"
     // This example has all the renderers loaded,
     // and should work with touch devices.
 
@@ -43,43 +44,31 @@
             $.pivotUtilities.export_renderers
             );
 
-        // $.getJSON(APP_URL+"/assets/pivottable/mps.json", function(mps) {
-        //     $("#output").pivotUI(mps, {
-        //         renderers: renderers,
-        //         cols: ["Party"], rows: ["Province"],
-        //         rendererName: "Horizontal Stacked Bar Chart",
-        //         rowOrder: "value_z_to_a", colOrder: "value_z_to_a",
-        //         rendererOptions: {
-        //             c3: { data: {colors: {
-        //                 Liberal: '#dc3912', Conservative: '#3366cc', NDP: '#ff9900',
-        //                 Green:'#109618', 'Bloc Quebecois': '#990099'
-        //             }}}
-        //         }
-        //     });
-        // });
-
         $.ajax({
-        url: '/dashboard/get_transaction',
-        type:"POST",
-        data:{
-          _token: $("input[name=_token]").val()
-        },
-        success: function(data) {
-          
-          data = JSON.parse(data)
-          console.log(data.data);
+          url: '/dashboard/get_transaction',
+          type:"POST",
+          data:{
+            category: category,
+            _token: $("input[name=_token]").val()
+          },
+          success: function(data) {
+            
+            data = JSON.parse(data);
+            $('#output-header').html(data.periode);
+            console.log(data.data);
 
-          $("#output").pivotUI(data.data, {
-            renderers: renderers,
-            aggregatorName: "Integer Sum",
-            vals: ["Nominal"],
-            sorters: {"type": function(a,b){ return string_a.localeCompare(string_b) }},
-            rendererName: "Table",
-            rowOrder: "value_a_to_z", 
-            colOrder: "value_a_to_z",
-          });
-        }
-      });
+            $("#output").pivotUI(data.data, {
+              renderers: renderers,
+              aggregatorName: "Integer Sum",
+              vals: ["Nominal"],
+              cols: ["Tahun","Bulan"], rows: ["COA"],
+              sorters: {"type": function(a,b){ return string_a.localeCompare(string_b) }},
+              rendererName: "Table",
+              rowOrder: "value_a_to_z", 
+              colOrder: "value_a_to_z",
+            });
+          }
+        });
      });
 
 </script>
