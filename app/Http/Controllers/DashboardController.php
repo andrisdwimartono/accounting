@@ -132,9 +132,9 @@ class DashboardController extends Controller
         }
 
         if($bulan_periode >= $yearopen->bulan_tutup_tahun){
-            $periode = $this->convertBulan($yearopen->bulan_tutup_tahun) . " - " . $this->convertBulan($bulan_periode) . " " . $tahun_periode;
+            $periode = $this->convertBulan((int) $yearopen->bulan_tutup_tahun) . " - " . $this->convertBulan($bulan_periode) . " " . $tahun_periode;
         } else {
-            $periode = $this->convertBulan($yearopen->bulan_tutup_tahun) . " " . $tahun_periode-1 . " - " . $this->convertBulan($bulan_periode) . " " . $tahun_periode;
+            $periode = $this->convertBulan((int) $yearopen->bulan_tutup_tahun) . " " . $tahun_periode-1 . " - " . $this->convertBulan($bulan_periode) . " " . $tahun_periode;
         }
         // dd($dt);
         $output = array(
