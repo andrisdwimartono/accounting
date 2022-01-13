@@ -71,13 +71,13 @@
 
           $("#output").pivotUI(data.data, {
             renderers: renderers,
-            aggregatorName: "Sum",
+            aggregatorName: "Integer Sum",
             vals: ["Nominal"],
+            sorters: {"type": function(a,b){ return string_a.localeCompare(string_b) }},
             rendererName: "Table",
-            rowOrder: "value_a_to_z", colOrder: "value_a_to_z",
+            rowOrder: "value_a_to_z", 
+            colOrder: "value_a_to_z",
           });
-
-          $(".output-header").html("Data Transaksi Periode " + data.periode);
         }
       });
      });

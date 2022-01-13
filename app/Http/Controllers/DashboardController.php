@@ -12,33 +12,8 @@ class DashboardController extends Controller
 {
     public function tabledesign(){
         $td = [
-            "page_data_name" => "Laba Rugi",
-            "page_data_urlname" => "labarugi",
-            "fields" => [
-                "tahun_periode" => "integer",
-                "bulan_periode" => "integer",
-                "coa" => "link",
-                "jenisbayar" => "link",
-                "fheader" => "checkbox",
-                "debet" => "float",
-                "credit" => "float"
-            ],
-            "fieldschildtable" => [
-            ],
-            "fieldlink" => [
-                "coa" => "coas",
-                "jenisbayar" => "jenisbayars"
-            ]
-        ];
-
-        $td["fieldsrules"] = [
-            "tahun_periode" => "required|integer",
-            "bulan_periode" => "required|integer",
-            "coa" => "required|exists:coas,id",
-            "jenisbayar" => "required|exists:jenisbayars,id",
-            "fheader" => "required",
-            "debet" => "required|numeric",
-            "credit" => "required|numeric"
+            "page_data_name" => "DSS",
+            "page_data_urlname" => "dss",
         ];
 
         $td["fieldsmessages"] = [
@@ -70,12 +45,13 @@ class DashboardController extends Controller
 
     public function dss(){
         $page_data = $this->tabledesign();
-        $page_data["page_method_name"] = "List";
+        $page_data["page_method_name"] = "";
         $page_data["footer_js_page_specific_script"] = ["dashboard.page_specific_script.footer_js_dss"];
         $page_data["header_js_page_specific_script"] = ["dashboard.page_specific_script.header_js_dss"];
         
         return view("dashboard.dss", ["page_data" => $page_data]);
     }
+
     public function labarugi(){
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "List";
@@ -95,10 +71,13 @@ class DashboardController extends Controller
         $tahun_periode = (int) date('Y');
         // dd($bulan_periode, $tahun_periode);
 
+        $debet = array("aset","biaya","biaya_lainnya");
+
         $dt = array();
         $yearopen = Session::get('global_setting');
         $periode = "";
-        foreach(Transaction::select([ "unitkerja_label", "anggaran_label", "tanggal", "jenis_transaksi", "coa_label", "jenisbayar_label", "kode_va", DB::raw("ABS(debet-credit) as nominal")])
+        foreach(Transaction::select([ "transactions.unitkerja_label", "coas.category", "anggaran_label", "tanggal", "jenis_transaksi", "transactions.coa_label", "transactions.jenisbayar_label", "kode_va", DB::raw("debet-credit as nominal_dc"), DB::raw("credit-debet as nominal_cd")])
+        ->leftJoin('coas', 'transactions.coa', '=', 'coas.id')
         ->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
             // dd($yearopen);
             if($bulan_periode >= $yearopen->bulan_tutup_tahun){
@@ -106,7 +85,7 @@ class DashboardController extends Controller
                 $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
                     $q->whereMonth("tanggal", ">=", $yearopen->bulan_tutup_tahun)->whereMonth("tanggal", "<=", $bulan_periode)->whereYear("tanggal", $tahun_periode);
                 });
-            }else{
+            } else {
                 //cross year
                 $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
                     $q->whereMonth("tanggal", "<=", $bulan_periode)->whereYear("tanggal", $tahun_periode);
@@ -119,12 +98,15 @@ class DashboardController extends Controller
             array_push($dt, array(
                 "Unit Kerja" => $data->unitkerja_label, 
                 "Kode Anggaran" => $data->anggaran_label, 
-                "Tanggal" => $data->tanggal, 
+                "Tahun" => date("Y",strtotime($data->tanggal)), 
+                "Bulan" => date("m",strtotime($data->tanggal)), 
                 "Jenis Transaksi" => $data->jenis_transaksi, 
+                "Kategori" => $data->category,
                 "COA" => $data->coa_label, 
                 "Jenis Bayar" => $data->jenisbayar_label, 
                 "Kode VA" => $data->kode_va, 
-                "Nominal" => $data->nominal
+                // "Nominal" => $data->nominal
+                "Nominal" => in_array($data->category,$debet) ? $data->nominal_dc : $data->nominal_cd
             ));
         }
 
