@@ -137,7 +137,7 @@ class DashboardController extends Controller
         if($bulan_periode >= $bulan_tutup){
             $periode = $this->convertBulan($bulan_tutup) . " - " . $this->convertBulan($bulan_periode) . " " . $tahun_periode;
         } else {
-            $periode = $this->convertBulan($bulan_tutup) . " " . $tahun_periode-1 . " - " . $this->convertBulan($bulan_periode) . " " . $tahun_periode;
+            $periode = $this->convertBulan($bulan_tutup) . " " . " - " . $this->convertBulan($bulan_periode) . " " . $tahun_periode;
         }
         $output = array(
             "data" => $dt,
