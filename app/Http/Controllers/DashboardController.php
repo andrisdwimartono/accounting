@@ -133,6 +133,7 @@ class DashboardController extends Controller
 
         $bulan_tutup = (int)$yearopen->bulan_tutup_tahun;
         
+        dd($tahun_periode);
         $periode = $tahun_periode-1 ;
         
         if($bulan_periode >= $bulan_tutup){
