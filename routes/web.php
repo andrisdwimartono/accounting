@@ -20,14 +20,14 @@ Route::post('login', [AuthController::class, 'login']);
 Route::get('register', [AuthController::class, 'showFormRegister'])->name('register');
 Route::post('register', [AuthController::class, 'register']);
  
+Route::post('/send_otp','App\Http\Controllers\UserController@kirimemail');
+
 Route::group(['middleware' => 'auth'], function () {
     Route::get('home', [HomeController::class, 'index'])->name('home');
     Route::get('test', [HomeController::class, 'test'])->name('test');
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/user/editprofile', 'App\Http\Controllers\UserController@editprofile');
-    Route::post('/updateprofile', 'App\Http\Controllers\UserController@updateprofile');
-
-    
+    Route::post('/updateprofile', 'App\Http\Controllers\UserController@updateprofile');    
 
     Route::middleware(['checkauth'])->group(function () {
         Route::get('/menu', 'App\Http\Controllers\MenuController@index')->name('menu');
@@ -191,6 +191,18 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/aruskas/print', 'App\Http\Controllers\AruskasController@print');
         Route::post('/get_saldo_awalaruskas', 'App\Http\Controllers\AruskasController@get_saldo_awal');
         Route::post('/aruskas/excel', 'App\Http\Controllers\AruskasController@excel');
+
+        Route::get('/iku', 'App\Http\Controllers\IkuController@index')->name('iku');
+        Route::post('/getlistiku', 'App\Http\Controllers\IkuController@get_list');
+        Route::get('/iku/{iku}', 'App\Http\Controllers\IkuController@show');
+        Route::get('/createiku', 'App\Http\Controllers\IkuController@create');
+        Route::post('/storeiku', 'App\Http\Controllers\IkuController@store');
+        Route::get('/iku/{iku}/edit', 'App\Http\Controllers\IkuController@edit');
+        Route::post('/getdataiku', 'App\Http\Controllers\IkuController@getdata');
+        Route::post('/updateiku/{iku}', 'App\Http\Controllers\IkuController@update');
+        Route::post('/deleteiku', 'App\Http\Controllers\IkuController@destroy');
+        Route::post('/getoptionsiku', 'App\Http\Controllers\IkuController@getoptions');
+        Route::post('/getlinksiku', 'App\Http\Controllers\IkuController@getlinks');
     });
 });
 
