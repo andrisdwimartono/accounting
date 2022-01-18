@@ -16,18 +16,59 @@
   <script src="{{ asset ("/assets/cto/js/cakrudtemplate.js") }}"></script>
   <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
 
-  <script src="{{ asset ("/assets/webdatarocks/webdatarocks.js") }}"></script>
-  <script src="{{ asset ("/assets/webdatarocks/webdatarocks.toolbar.min.js") }}"></script>
+  <!-- Pivottable -->
+  <script src="{{ asset ("/assets/pivottable/jquery.min.js") }}"></script>
+  <script src="{{ asset ("/assets/pivottable/jquery.ui.touch-punch.min.js") }}"></script>
+  <script src="{{ asset ("/assets/pivottable/jquery-ui.min.js") }}"></script>
+  <script src="{{ asset ("/assets/pivottable/pivot.js") }}"></script>
+  <script src="{{ asset ("/assets/pivottable/c3.min.js") }}"></script>
+  <script src="{{ asset ("/assets/pivottable/c3_renderers.js") }}"></script>
+  <script src="{{ asset ("/assets/pivottable/d3.min.js") }}"></script>
+  <script src="{{ asset ("/assets/pivottable/d3_renderers.min.js") }}"></script>
+  <script src="{{ asset ("/assets/pivottable/export_renderers.js") }}"></script>
+  
 
 <script>
+    var APP_URL = {!! json_encode(url('/')) !!}
+    var category = "{{$page_data['category']}}"
+    // This example has all the renderers loaded,
+    // and should work with touch devices.
 
-var pivot = new WebDataRocks({
-	container: "#wdr-component",
-	toolbar: true,
-	report: {
-		dataSource: {
-			filename: "https://cdn.webdatarocks.com/data/data.csv"
-		}
-	}
-});
+    $(function(){
+        var derivers = $.pivotUtilities.derivers;
+
+        var renderers = $.extend(
+            $.pivotUtilities.renderers,
+            $.pivotUtilities.c3_renderers,
+            $.pivotUtilities.d3_renderers,
+            $.pivotUtilities.export_renderers
+            );
+
+        $.ajax({
+          url: '/dashboard/get_transaction',
+          type:"POST",
+          data:{
+            category: category,
+            _token: $("input[name=_token]").val()
+          },
+          success: function(data) {
+            
+            data = JSON.parse(data);
+            $('#output-header').html(data.periode);
+            console.log(data.data);
+
+            $("#output").pivotUI(data.data, {
+              renderers: renderers,
+              aggregatorName: "Integer Sum",
+              vals: ["Nominal"],
+              cols: ["Tahun","Bulan"], rows: ["COA"],
+              sorters: {"type": function(a,b){ return string_a.localeCompare(string_b) }},
+              rendererName: "Table",
+              rowOrder: "value_a_to_z", 
+              colOrder: "value_a_to_z",
+            });
+          }
+        });
+     });
+
 </script>
