@@ -14,9 +14,57 @@ use App\Models\Unitkerja;
 use Validator;
 use Hash;
 use Session;
+use App\Mail\OtpMail;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
+    public function kirimemail(Request $request){
+        var_dump($request->email);
+        $email = $request->email;
+        $password = $request->password;
+        $dataUser = User::where([
+            'email' => $email,
+        ])->first();
+        if ($dataUser) {
+            //if (password_verify($password, $dataUser->password)) {
+                
+                //$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                $charactersLength = strlen($characters);
+                $otp = '';
+                for ($i = 0; $i < 6; $i++) {
+                    $otp .= $characters[rand(0, $charactersLength - 1)];
+                }
+
+                Mail::to($dataUser->email)->send(new OtpMail($otp, $dataUser->name));
+                User::where("id", $dataUser->id)->update(["otp" => md5($otp)]);
+                return response()->json([
+                    'status' => 201,
+                    'message' => 'OTP Terkirim ke '.$email.', Cek untuk tahu OTP Anda!'
+                ]);
+            // } else {
+            //     $getUser = User::where("email", $email)->first();
+            //     if((int)$getUser->login_attemp > 2){
+            //         User::update($getUser->id, [
+            //             "login_attemp" => (int)$getUser->login_attemp+1,
+            //             "rowstatus" => -1
+            //         ]);
+            //         session()->setFlashdata('error', 'Email, Password, atau OTP salah<br>Percobaan login lebih dari 3 kali. Akun Di kunci!');
+            //     }else{
+            //         User::update($getUser->id, [
+            //             "login_attemp" => (int)$getUser->login_attemp+1
+            //         ]);
+            //         session()->setFlashdata('error', 'Email, Password, atau OTP salah');
+            //     }
+                
+            //     return $this->response->setStatusCode(422);
+            // }
+        } else {
+            abort(422, "Login failed");
+        }
+	}
+
     public function tabledesign(){
         $td = [
             "page_data_name" => "User",
