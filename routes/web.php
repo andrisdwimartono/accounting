@@ -20,14 +20,14 @@ Route::post('login', [AuthController::class, 'login']);
 Route::get('register', [AuthController::class, 'showFormRegister'])->name('register');
 Route::post('register', [AuthController::class, 'register']);
  
+Route::post('/send_otp','App\Http\Controllers\UserController@kirimemail');
+
 Route::group(['middleware' => 'auth'], function () {
     Route::get('home', [HomeController::class, 'index'])->name('home');
     Route::get('test', [HomeController::class, 'test'])->name('test');
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/user/editprofile', 'App\Http\Controllers\UserController@editprofile');
-    Route::post('/updateprofile', 'App\Http\Controllers\UserController@updateprofile');
-
-    
+    Route::post('/updateprofile', 'App\Http\Controllers\UserController@updateprofile');    
 
     Route::middleware(['checkauth'])->group(function () {
         Route::get('/menu', 'App\Http\Controllers\MenuController@index')->name('menu');
@@ -197,6 +197,45 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/aruskas/print', 'App\Http\Controllers\AruskasController@print');
         Route::post('/get_saldo_awalaruskas', 'App\Http\Controllers\AruskasController@get_saldo_awal');
         Route::post('/aruskas/excel', 'App\Http\Controllers\AruskasController@excel');
+
+        Route::get('/ikuunitkerja', 'App\Http\Controllers\IkuunitkerjaController@index')->name('ikuunitkerja');
+        Route::post('/getlistikuunitkerja', 'App\Http\Controllers\IkuunitkerjaController@get_list');
+        Route::get('/ikuunitkerja/{ikuunitkerja}', 'App\Http\Controllers\IkuunitkerjaController@show');
+        Route::get('/createikuunitkerja', 'App\Http\Controllers\IkuunitkerjaController@create');
+        Route::post('/storeikuunitkerja', 'App\Http\Controllers\IkuunitkerjaController@store');
+        Route::get('/ikuunitkerja/{ikuunitkerja}/edit', 'App\Http\Controllers\IkuunitkerjaController@edit');
+        Route::post('/getdataikuunitkerja', 'App\Http\Controllers\IkuunitkerjaController@getdata');
+        Route::post('/updateikuunitkerja/{ikuunitkerja}', 'App\Http\Controllers\IkuunitkerjaController@update');
+        Route::post('/deleteikuunitkerja', 'App\Http\Controllers\IkuunitkerjaController@destroy');
+        Route::post('/getoptionsikuunitkerja', 'App\Http\Controllers\IkuunitkerjaController@getoptions');
+        Route::post('/getlinksikuunitkerja', 'App\Http\Controllers\IkuunitkerjaController@getlinks');
+        Route::post('/uploadfileikuunitkerja', 'App\Http\Controllers\IkuunitkerjaController@storeUploadFile');
+
+        Route::get('/iktunitkerja', 'App\Http\Controllers\IkuunitkerjaController@indexikt')->name('iktunitkerja');
+        Route::post('/getlistiktunitkerja', 'App\Http\Controllers\IkuunitkerjaController@get_list');
+        Route::get('/iktunitkerja/{iktunitkerja}', 'App\Http\Controllers\IkuunitkerjaController@showikt');
+        Route::get('/createiktunitkerja', 'App\Http\Controllers\IkuunitkerjaController@createikt');
+        Route::post('/storeiktunitkerja', 'App\Http\Controllers\IkuunitkerjaController@storeikt');
+        Route::get('/iktunitkerja/{iktunitkerja}/edit', 'App\Http\Controllers\IkuunitkerjaController@editikt');
+        Route::post('/getdataiktunitkerja', 'App\Http\Controllers\IkuunitkerjaController@getdata');
+        Route::post('/updateiktunitkerja/{iktunitkerja}', 'App\Http\Controllers\IkuunitkerjaController@updateikt');
+        Route::post('/deleteiktunitkerja', 'App\Http\Controllers\IkuunitkerjaController@destroy');
+        Route::post('/getoptionsiktunitkerja', 'App\Http\Controllers\IkuunitkerjaController@getoptions');
+        Route::post('/getlinksiktunitkerja', 'App\Http\Controllers\IkuunitkerjaController@getlinks');
+        Route::post('/uploadfileiktunitkerja', 'App\Http\Controllers\IkuunitkerjaController@storeUploadFile');
+
+        Route::get('/kegiatan', 'App\Http\Controllers\KegiatanController@index')->name('kegiatan');
+        Route::post('/getlistkegiatan', 'App\Http\Controllers\KegiatanController@get_list');
+        Route::get('/kegiatan/{kegiatan}', 'App\Http\Controllers\KegiatanController@show');
+        Route::get('/createkegiatan', 'App\Http\Controllers\KegiatanController@create');
+        Route::post('/storekegiatan', 'App\Http\Controllers\KegiatanController@store');
+        Route::get('/kegiatan/{kegiatan}/edit', 'App\Http\Controllers\KegiatanController@edit');
+        Route::post('/getdatakegiatan', 'App\Http\Controllers\KegiatanController@getdata');
+        Route::post('/updatekegiatan/{kegiatan}', 'App\Http\Controllers\KegiatanController@update');
+        Route::post('/deletekegiatan', 'App\Http\Controllers\KegiatanController@destroy');
+        Route::post('/getoptionskegiatan', 'App\Http\Controllers\KegiatanController@getoptions');
+        Route::post('/getlinkskegiatan', 'App\Http\Controllers\KegiatanController@getlinks');
+        Route::post('/uploadfilekegiatan', 'App\Http\Controllers\KegiatanController@storeUploadFile');
     });
 });
 
