@@ -47,11 +47,18 @@ class AuthController extends Controller
             return redirect()->back()->withErrors($validator)->withInput($request->all);
         }
   
-        $data = [
-            'email'     => $request->input('email'),
-            'password'  => $request->input('password'),
-            'otp'       => md5($request->input('otp')),
-        ];
+        if(env('USEOTP') == 1){
+            $data = [
+                'email'     => $request->input('email'),
+                'password'  => $request->input('password'),
+                'otp'       => md5($request->input('otp')),
+            ];
+        }else{
+            $data = [
+                'email'     => $request->input('email'),
+                'password'  => $request->input('password')
+            ];
+        }
   
         Auth::attempt($data);
 
