@@ -38,7 +38,7 @@
   <body class="text-center">
     <h4 style="position:absolute;top:80px;"><span style="white-space: pre-line; color:#ddd;">{{$globalsetting->nama_sia}}</span></h4>
 
-    <form action="{{ route('login') }}" method="post" class="form-signin">
+    <form action="{{ route('login') }}" method="post" class="form-signin" style="margin-top:10vh;">
       @if($globalsetting->logo_sia)
         <!-- <img class="mb-4" src="{{ asset ('/logo_sia/'.$globalsetting->logo_sia) }}" alt="" height="80"> -->
       @else
