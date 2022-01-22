@@ -74,6 +74,10 @@
                             </div>
                             <div class="card-body">                                
                                 <canvas id="laporanChart"></canvas>
+                                <br><br>
+                                <!-- <button type="button" class="btn btn-danger" id="downloadPdf">PDF <span class='btn-icon-right'><i class='fa fa-download'></i></span></button>  -->
+                                <div id="output" style="height: 100%;overflow:auto"></div>
+                               
                             </div>
                         </div>
                     </div>

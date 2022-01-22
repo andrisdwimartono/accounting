@@ -20,28 +20,10 @@
 <script src="{{ asset ("/assets/node_modules/jquery-toast-plugin/dist/jquery.toast.min.js") }}"></script>
 <script src="{{ asset ("/assets/bootstrap/dist/js/bootstrap.bundle.min.js") }}"></script>
 
-<script src="{{ asset ("/assets/datatables/js/dataTables.bootstrap4.min.js") }}"></script>
-<script src="{{ asset ("/assets/datatables/js/dataTables.rowReorder.min.js") }}"></script>
 <script src="{{ asset ("/assets/datatables/js/dataTables.buttons.min.js") }}"></script>
 <script src="{{ asset ("/assets/cto/js/cakrudtemplate.js") }}"></script>
 <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
 
-<script src="{{ asset ("/assets/jquery/js/jquery-3.6.0.min.js") }}"></script>
-    <script src="{{ asset ("/assets/node_modules/@popperjs/core/dist/umd/popper.min.js") }}"></script>
-    <!-- <script src="{{ asset ("/assets/node_modules/gijgo/js/gijgo.min.js") }}"></script> -->
-    <script src="{{ asset ("/assets/node_modules/jquery-toast-plugin/dist/jquery.toast.min.js") }}"></script>
-    <script src="{{ asset ("/assets/node_modules/autonumeric/dist/autoNumeric.min.js") }}"></script>
-    <script src="{{ asset ("/assets/bootstrap/dist/js/bootstrap.bundle.min.js") }}"></script>
-    <script src="{{ asset ("/assets/bower_components/jquery-validation/dist/jquery.validate.min.js") }}"></script>
-    <script src="{{ asset ("/assets/bower_components/select2/dist/js/select2.full.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/jquery.dataTables.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/dataTables.bootstrap4.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/dataTables.rowReorder.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/dataTables.buttons.min.js") }}"></script>
-    
-    <script src="{{ asset ("/assets/cto/js/cakrudtemplate.js") }}"></script>
-    <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
-    <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
 <script>
     var app_url = '{{ env('APP_URL') }}';
     var editor;

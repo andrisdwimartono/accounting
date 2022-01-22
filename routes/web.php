@@ -43,7 +43,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/dashboard/dss', 'App\Http\Controllers\DashboardController@dss');
         Route::get('/dashboard/labarugi', 'App\Http\Controllers\DashboardController@labarugi');
         Route::get('/dashboard/neraca', 'App\Http\Controllers\DashboardController@neraca');
+        Route::get('/dashboard/labarugi/chart', 'App\Http\Controllers\DashboardController@labarugichart'); 
+        Route::get('/dashboard/neraca/chart', 'App\Http\Controllers\DashboardController@neracachart'); 
+        Route::get('/dashboard/neracasaldo/chart', 'App\Http\Controllers\DashboardController@neracasaldochart');        
         Route::post('/dashboard/get_list', 'App\Http\Controllers\DashboardController@get_list');
+        Route::post('/dashboard/get_list_two_month', 'App\Http\Controllers\DashboardController@get_list_two_month');
         Route::post('/dashboard/get_transaction', 'App\Http\Controllers\DashboardController@get_transaction');
         
         Route::get('/user', 'App\Http\Controllers\UserController@index')->name('user');

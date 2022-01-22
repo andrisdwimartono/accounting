@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Coa;
 use App\Models\Transaction;
+use App\Models\Neracasaldo;
 use Session;
 
 class DashboardController extends Controller
@@ -74,6 +75,36 @@ class DashboardController extends Controller
         return view("dashboard.dss", ["page_data" => $page_data]);
     }
 
+    public function labarugichart(){
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "List";
+        $page_data["category"] = "labarugi";
+        $page_data["footer_js_page_specific_script"] = ["dashboard.page_specific_script.footer_js_list"];
+        $page_data["header_js_page_specific_script"] = ["dashboard.page_specific_script.header_js_list"];
+        
+        return view("dashboard.chart", ["page_data" => $page_data]);
+    }
+
+    public function neracachart(){
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "List";
+        $page_data["category"] = "neraca";
+        $page_data["footer_js_page_specific_script"] = ["dashboard.page_specific_script.footer_js_list"];
+        $page_data["header_js_page_specific_script"] = ["dashboard.page_specific_script.header_js_list"];
+        
+        return view("dashboard.chart", ["page_data" => $page_data]);
+    }
+
+    public function neracasaldochart(){
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "List";
+        $page_data["category"] = "neracasaldo";
+        $page_data["footer_js_page_specific_script"] = ["dashboard.page_specific_script.footer_js_list"];
+        $page_data["header_js_page_specific_script"] = ["dashboard.page_specific_script.header_js_list"];
+        
+        return view("dashboard.chart", ["page_data" => $page_data]);
+    }
+
     public function get_transaction(Request $request){
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "List";
@@ -90,8 +121,8 @@ class DashboardController extends Controller
         $dt = array();
         $yearopen = Session::get('global_setting');
         $periode = "";
-        foreach(Transaction::select([ "transactions.unitkerja_label", "coas.category", "anggaran_label", "tanggal", "jenis_transaksi", "transactions.coa_label", "transactions.jenisbayar_label", "kode_va", DB::raw("debet-credit as nominal_dc"), DB::raw("credit-debet as nominal_cd")])
-        ->leftJoin('coas', 'transactions.coa', '=', 'coas.id')
+        foreach(Neracasaldo::select([ "neracasaldos.unitkerja_label", "coas.category", "bulan_periode", "tahun_periode", "neracasaldos.coa_label", "neracasaldos.jenisbayar_label", DB::raw("debet-credit as nominal_dc"), DB::raw("credit-debet as nominal_cd")])
+        ->leftJoin('coas', 'neracasaldos.coa', '=', 'coas.id')
         ->where(function($q) use($category){
             if($category == 'labarugi'){
                 $q->whereIn('coas.category',['pendapatan', 'biaya', 'biaya_lainnya', 'pendapatan_lainnya']);
@@ -104,28 +135,28 @@ class DashboardController extends Controller
             if($bulan_periode >= $yearopen->bulan_tutup_tahun){
                 //only one year
                 $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
-                    $q->whereMonth("tanggal", ">=", $yearopen->bulan_tutup_tahun)->whereMonth("tanggal", "<=", $bulan_periode)->whereYear("tanggal", $tahun_periode);
+                    $q->where("bulan_periode", ">=", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
                 });
             } else {
                 //cross year
                 $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
-                    $q->whereMonth("tanggal", "<=", $bulan_periode)->whereYear("tanggal", $tahun_periode);
+                    $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
                 })->orWhere(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
-                    $q->whereMonth("tanggal", ">", $yearopen->bulan_tutup_tahun)->whereYear("tanggal", $tahun_periode-1);
+                    $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("tahun_periode", $tahun_periode-1);
                 });
             }
         })->get()
          as $data){
             array_push($dt, array(
                 "Unit Kerja" => $data->unitkerja_label, 
-                "Kode Anggaran" => $data->anggaran_label, 
-                "Tahun" => date("Y",strtotime($data->tanggal)), 
-                "Bulan" => date("m",strtotime($data->tanggal)), 
-                "Jenis Transaksi" => $data->jenis_transaksi, 
+                // "Kode Anggaran" => $data->anggaran_label, 
+                "Tahun" => $data->tahun_periode, 
+                "Bulan" => $data->bulan_periode, 
+                // "Jenis Transaksi" => $data->jenis_transaksi, 
                 "Kategori" => $data->category,
                 "COA" => $data->coa_label, 
                 "Jenis Bayar" => $data->jenisbayar_label, 
-                "Kode VA" => $data->kode_va, 
+                // "Kode VA" => $data->kode_va, 
                 // "Nominal" => $data->nominal
                 "Nominal" => in_array($data->category,$debet) ? $data->nominal_dc : $data->nominal_cd
             ));
@@ -147,7 +178,7 @@ class DashboardController extends Controller
         echo json_encode($output);
     }
 
-    public function get_list(Request $request)
+    public function get_list(Request $request, $x)
     {
         $bulan_periode = 1;
         if(isset($request->search["bulan_periode"])){
@@ -160,6 +191,14 @@ class DashboardController extends Controller
         $child_level = 1;
         if(isset($request->search["child_level"])){
             $child_level = $request->search["child_level"];
+        }
+
+        if($x==0){
+            $bulan_periode -= 1;
+            if($bulan_periode==0){
+                $bulan_periode = 12;
+                $tahun_periode -= 1;
+            }
         }
 
         $dt = array();
@@ -246,7 +285,13 @@ class DashboardController extends Controller
 
         $labels = array_column($dt, 2);
         $noms = array_column($dt, 3);
-        $perc = array_map( function($val) use($sum_nom) { return ($val / $sum_nom)*100; }, $noms);
+        $perc = array_map( function($val) use($sum_nom) { 
+            return round((float)($val / $sum_nom)*100, 2); 
+        }, $noms);
+        $noms = array_map(function($val){
+           return "Rp " . number_format($val,0,",",".") ;
+        }, $noms);
+        $noms = array_values($noms);
         $perc = array_values($perc);
 
 
@@ -255,8 +300,22 @@ class DashboardController extends Controller
             "recordsTotal" => 0,
             "recordsFiltered" => 0,
             "data" => $perc,
-            "label" => $labels
+            "nominal" => $noms,
+            "label" => $labels,
+            "bulan" => $this->convertBulan($bulan_periode),
+            "tahun" => $tahun_periode
         );
+
+        return $output;
+    }
+
+    public function get_list_two_month(Request $request)
+    {
+        $dt = array();
+        $dt[0] = $this->get_list($request, 0);
+        $dt[1] = $this->get_list($request, 1);
+
+        $output = $dt;
 
         echo json_encode($output);
     }

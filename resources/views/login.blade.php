@@ -24,16 +24,26 @@
     <script defer src="{{ asset ("assets/fontawesome/js/solid.js") }}"></script>
     <script defer src="{{ asset ("assets/fontawesome/js/fontawesome.js") }}"></script>
 
+    <style>
+      body {
+        background : url("{{ asset ('/main_background/'.$globalsetting->main_background) }}") rgba(0, 0, 0, 0.5);
+        background-size: cover;
+        background-blend-mode: multiply;
+      }  
+    </style>
   </head>
 
   <body class="text-center">
+    <h4 style="position:absolute;top:80px;"><span style="white-space: pre-line; color:#ddd;">{{$globalsetting->nama_sia}}</span></h4>
+
     <form action="{{ route('login') }}" method="post" class="form-signin">
       @if($globalsetting->logo_sia)
-        <img class="mb-4" src="{{ asset ('/logo_sia/'.$globalsetting->logo_sia) }}" alt="" height="80">
+        <!-- <img class="mb-4" src="{{ asset ('/logo_sia/'.$globalsetting->logo_sia) }}" alt="" height="80"> -->
       @else
-        <img class="mb-4" src="{{ asset ('/assets/images/logo_sia_default.png') }}" alt="" height="80">
+        <!-- <img class="mb-4" src="{{ asset ('/assets/images/logo_sia_default.png') }}" alt="" height="80"> -->
       @endif
-      <h1 class="h5 mb-3 font-weight-normal">Sign In</h1>
+      
+      <h1 class="h5 mb-3 font-weight-normal" style="color:#fafafa;">Sign In</h1>
       @csrf
       @if(session('errors'))
           <div class="alert alert-danger alert-dismissible fade show" role="alert">
