@@ -54,6 +54,16 @@ class DashboardController extends Controller
         return view("dashboard.dss", ["page_data" => $page_data]);
     }
 
+    public function fuzzy(){
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "";
+        $page_data["category"] = "dss";
+        $page_data["footer_js_page_specific_script"] = ["dashboard.page_specific_script.footer_js_fuzzy"];
+        $page_data["header_js_page_specific_script"] = ["dashboard.page_specific_script.header_js_dss"];
+        
+        return view("dashboard.fuzzy", ["page_data" => $page_data]);
+    }
+
     public function neraca(){
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "";
@@ -155,6 +165,81 @@ class DashboardController extends Controller
                 // "Jenis Transaksi" => $data->jenis_transaksi, 
                 "Kategori" => $data->category,
                 "COA" => $data->coa_label, 
+                "Jenis Bayar" => $data->jenisbayar_label, 
+                // "Kode VA" => $data->kode_va, 
+                // "Nominal" => $data->nominal
+                "Nominal" => in_array($data->category,$debet) ? $data->nominal_dc : $data->nominal_cd
+            ));
+        }
+
+        $tahun_periode = (int)$tahun_periode;
+        $bulan_tutup = (int)$yearopen->bulan_tutup_tahun;
+        
+        if($bulan_periode >= $bulan_tutup){
+            $periode = $this->convertBulan($bulan_tutup) . " - " . $this->convertBulan($bulan_periode) . " " . $tahun_periode;
+        } else {
+            $periode = $this->convertBulan($bulan_tutup) . " " . " - " . $this->convertBulan($bulan_periode) . " " . $tahun_periode;
+        }
+        $output = array(
+            "data" => $dt,
+            "periode" => $periode
+        );
+
+        echo json_encode($output);
+    }
+
+    public function get_data_fuzzy(Request $request){
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "List";
+        $page_data["footer_js_page_specific_script"] = ["dashboard.page_specific_script.footer_js_fuzzy"];
+        $page_data["header_js_page_specific_script"] = ["dashboard.page_specific_script.header_js_fuzzy"];
+
+        $bulan_periode = (int) date('m');
+        $tahun_periode = (int) date('Y');
+        // dd($bulan_periode, $tahun_periode);
+
+        $debet = array("aset","biaya","biaya_lainnya");
+        $category = $request->category;
+        
+        $dt = array();
+        $yearopen = Session::get('global_setting');
+        $periode = "";
+        foreach(Neracasaldo::select([ "neracasaldos.unitkerja_label", "coas.level_coa","coas.category", "bulan_periode", "tahun_periode", "neracasaldos.coa_label", "neracasaldos.jenisbayar_label", DB::raw("debet-credit as nominal_dc"), DB::raw("credit-debet as nominal_cd")])
+        ->leftJoin('coas', 'neracasaldos.coa', '=', 'coas.id')
+        ->where(function($q) use($category){
+            if($category == 'pendapatan'){
+                $q->whereIn('coas.category',['aset','pendapatan', 'pendapatan_lainnya','modal']);
+            } else if($category == 'pengeluaran') {
+                $q->whereIn('coas.category',['hutang','biaya', 'biaya_lainnya']);
+            }
+        })
+        ->where('coas.level_coa',2)
+        ->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
+            // dd($yearopen);
+            if($bulan_periode >= $yearopen->bulan_tutup_tahun){
+                //only one year
+                $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                    $q->where("bulan_periode", ">=", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                });
+            } else {
+                //cross year
+                $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                    $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                })->orWhere(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                    $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("tahun_periode", $tahun_periode-1);
+                });
+            }
+        })->get()
+         as $data){
+            array_push($dt, array(
+                "Unit Kerja" => $data->unitkerja_label, 
+                // "Kode Anggaran" => $data->anggaran_label, 
+                "Tahun" => $data->tahun_periode, 
+                "Bulan" => $data->bulan_periode, 
+                // "Jenis Transaksi" => $data->jenis_transaksi, 
+                "Kategori" => $data->category,
+                "COA" => $data->coa_label, 
+                "level" => $data->level_coa, 
                 "Jenis Bayar" => $data->jenisbayar_label, 
                 // "Kode VA" => $data->kode_va, 
                 // "Nominal" => $data->nominal

@@ -46,9 +46,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/dashboard/labarugi/chart', 'App\Http\Controllers\DashboardController@labarugichart'); 
         Route::get('/dashboard/neraca/chart', 'App\Http\Controllers\DashboardController@neracachart'); 
         Route::get('/dashboard/neracasaldo/chart', 'App\Http\Controllers\DashboardController@neracasaldochart');        
+        Route::get('/fuzzy', 'App\Http\Controllers\DashboardController@fuzzy');
         Route::post('/dashboard/get_list', 'App\Http\Controllers\DashboardController@get_list');
         Route::post('/dashboard/get_list_two_month', 'App\Http\Controllers\DashboardController@get_list_two_month');
         Route::post('/dashboard/get_transaction', 'App\Http\Controllers\DashboardController@get_transaction');
+        Route::post('/dashboard/get_data_fuzzy', 'App\Http\Controllers\DashboardController@get_data_fuzzy');
         
         Route::get('/user', 'App\Http\Controllers\UserController@index')->name('user');
         Route::post('/getlistuser', 'App\Http\Controllers\UserController@get_list');
