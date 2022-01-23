@@ -18,7 +18,7 @@
 			<div class="fixed-content-body dz-scroll" id="DZ_W_Fixed_Contant">
 				<div class="tab-content" id="menu">
 					
-					<div class="tab-pane fade" id="cakmenu-fuzzy" role="tabpanel">
+					<div class="tab-pane fade" id="cakmenu-dashboard" role="tabpanel">
 						<ul class="metismenu tab-nav-menu">
 							<li class="nav-label">Dashboard</li>
 							<li class="d-none" id="cakmenu-fuzzy">
