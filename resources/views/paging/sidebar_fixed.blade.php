@@ -18,11 +18,11 @@
 			<div class="fixed-content-body dz-scroll" id="DZ_W_Fixed_Contant">
 				<div class="tab-content" id="menu">
 					
-					<div class="tab-pane fade" id="cakmenu-dashboard" role="tabpanel">
+					<div class="tab-pane fade" id="cakmenu-fuzzy" role="tabpanel">
 						<ul class="metismenu tab-nav-menu">
 							<li class="nav-label">Dashboard</li>
 							<li class="d-none" id="cakmenu-fuzzy">
-								<a href="/dashboard/fuzzy">
+								<a href="/fuzzy">
 									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="svg-main-icon">
 										<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
 											<rect x="0" y="0" width="24" height="24"/>
