@@ -213,7 +213,7 @@ class DashboardController extends Controller
                 $q->whereIn('coas.category',['hutang','biaya', 'biaya_lainnya']);
             }
         })
-        ->where('coas.level_coa',2)
+        ->whereNull('coas.fheader')
         ->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
             // dd($yearopen);
             if($bulan_periode >= $yearopen->bulan_tutup_tahun){
