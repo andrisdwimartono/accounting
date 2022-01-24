@@ -373,10 +373,10 @@ class DashboardController extends Controller
         $perc = array_map( function($val) use($sum_nom) { 
             return round((float)($val / $sum_nom)*100, 2); 
         }, $noms);
-        $noms = array_map(function($val){
+        $noms_edit = array_map(function($val){
            return "Rp " . number_format($val,0,",",".") ;
         }, $noms);
-        $noms = array_values($noms);
+        $noms_edit = array_values($noms_edit);
         $perc = array_values($perc);
 
 
@@ -384,8 +384,9 @@ class DashboardController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => 0,
             "recordsFiltered" => 0,
-            "data" => $perc,
-            "nominal" => $noms,
+            "data" => $noms,
+            "percent" => $perc, 
+            "nominal" => $noms_edit,
             "label" => $labels,
             "bulan" => $this->convertBulan($bulan_periode),
             "tahun" => $tahun_periode

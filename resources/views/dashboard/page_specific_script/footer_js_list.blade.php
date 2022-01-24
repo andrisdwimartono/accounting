@@ -89,24 +89,19 @@
             },
             options: {
               responsive: true,
-              // maintainAspectRatio: false,
               scales: {
                   xAxes : [{
                       ticks : {
                           min : 0,
-                          max : 100,
                       }
                   }],
-                  yAxes : [{
-                    // barThickness: 100,
-                  }]
               },
               tooltips: {
                 enabled: true,
                 mode: 'single',
                 callbacks: {
                     label: function(tooltipItems, data, i) {
-                      return data.datasets[tooltipItems.datasetIndex].label + ' : ' + data.datasets[tooltipItems.datasetIndex].nominal[tooltipItems.datasetIndex] + ' (' + tooltipItems.xLabel + "%)";
+                      return data.datasets[tooltipItems.datasetIndex].label + ' : ' + data.datasets[tooltipItems.datasetIndex].nominal[tooltipItems.datasetIndex] + ' (' + data.datasets[tooltipItems.datasetIndex].percent[tooltipItems.datasetIndex].toString() + "%)";
                     }
                 }
               },
@@ -142,6 +137,7 @@
             
             myChart.data.datasets[i].data = data[i].data;
             myChart.data.datasets[i].nominal = data[i].nominal;
+            myChart.data.datasets[i].percent = data[i].percent;
             myChart.data.datasets[i].label = data[i].bulan + " " + data[i].tahun;
             
             myChart.legend.legendItems[i].text = data[i].bulan + " " + data[i].tahun;
