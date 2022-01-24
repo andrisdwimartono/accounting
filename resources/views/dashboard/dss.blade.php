@@ -21,6 +21,63 @@
                 </div>
                 <!-- row -->
                 <div class="row">
+					<div class="col-xl-9 col-xxl-12">
+                        <div class="row">
+							<div class="col-xl-3 col-xxl-3 col-lg-6 col-sm-6">
+								<div class="card overflow-hidden">
+									<div class="card-body pb-4 px-4 pt-4">
+										<div class="row">
+											<div class="col">
+												<h5 class="mb-1">2000</h5>
+                                                <span style="font-size:15pt;" class="text-success"><b>ROA</b></span>
+												<span class="text-success">Return of Asset</span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+                            <div class="col-xl-3 col-xxl-3 col-lg-6 col-sm-6">
+								<div class="card overflow-hidden">
+									<div class="card-body pb-4 px-4 pt-4">
+										<div class="row">
+											<div class="col">
+												<h5 class="mb-1">2000</h5>
+												<span style="font-size:15pt;" class="text-success"><b>ROE</b></span>
+                                                <span class="text-success">Return on Equity</span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+                            <div class="col-xl-3 col-xxl-3 col-lg-6 col-sm-6">
+								<div class="card overflow-hidden">
+									<div class="card-body pb-4 px-4 pt-4">
+										<div class="row">
+											<div class="col">
+												<h5 class="mb-1">2000</h5>
+                                                <span style="font-size:15pt;" class="text-success"><b>ROI</b></span>
+												<span class="text-success">Return of Investment</span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+                            <div class="col-xl-3 col-xxl-3 col-lg-6 col-sm-6">
+								<div class="card overflow-hidden">
+									<div class="card-body pb-4 px-4 pt-4">
+										<div class="row">
+											<div class="col">
+												<h5 class="mb-1">2000</h5>
+                                                <span style="font-size:15pt;" class="text-success"><b>Klasifikasi</b></span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
                 <div class="col-12">
                     @csrf
                     <div class="card">

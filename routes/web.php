@@ -51,6 +51,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/dashboard/get_list_two_month', 'App\Http\Controllers\DashboardController@get_list_two_month');
         Route::post('/dashboard/get_transaction', 'App\Http\Controllers\DashboardController@get_transaction');
         Route::post('/dashboard/get_data_fuzzy', 'App\Http\Controllers\DashboardController@get_data_fuzzy');
+        Route::get('/dashboard/roa', 'App\Http\Controllers\DashboardController@roa');
         
         Route::get('/user', 'App\Http\Controllers\UserController@index')->name('user');
         Route::post('/getlistuser', 'App\Http\Controllers\UserController@get_list');

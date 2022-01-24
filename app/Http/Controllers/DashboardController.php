@@ -263,6 +263,64 @@ class DashboardController extends Controller
         echo json_encode($output);
     }
 
+    public function roe(){
+        $bulan_periode = (int) date('m');
+        $tahun_periode = (int) date('Y');
+
+        $debet = array("aset","biaya","biaya_lainnya");
+        
+        $dt = array();
+        $yearopen = Session::get('global_setting');
+        $periode = "";
+        $modal = Neracasaldo::select([ DB::raw("SUM(credit-debet) as modal")])
+            ->leftJoin('coas', 'neracasaldos.coa', '=', 'coas.id')
+            ->where('coas.category','modal')
+            ->groupBy('coas.category')
+            ->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
+                // dd($yearopen);
+                if($bulan_periode >= $yearopen->bulan_tutup_tahun){
+                    //only one year
+                    $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", ">=", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    });
+                } else {
+                    //cross year
+                    $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    })->orWhere(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("tahun_periode", $tahun_periode-1);
+                    });
+                }
+            })
+            ->first();
+        $aset = Neracasaldo::select([ DB::raw("SUM(credit-debet) as aset")])
+            ->leftJoin('coas', 'neracasaldos.coa', '=', 'coas.id')
+            ->where('coas.category','aset')
+            ->groupBy('coas.category')
+            ->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
+                // dd($yearopen);
+                if($bulan_periode >= $yearopen->bulan_tutup_tahun){
+                    //only one year
+                    $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", ">=", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    });
+                } else {
+                    //cross year
+                    $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    })->orWhere(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("tahun_periode", $tahun_periode-1);
+                    });
+                }
+            })
+            ->first();
+        $modal = isset($modal->modal) ? $modal->modal : 0;
+        $aset = isset($aset->aset) ? $aset->aset : 0;
+        $roa = $modal / $aset;
+        
+        echo json_encode($roa);
+    }
+
     public function get_list(Request $request, $x)
     {
         $bulan_periode = 1;
