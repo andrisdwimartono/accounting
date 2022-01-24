@@ -83,7 +83,7 @@
           url: '/dashboard/get_data_fuzzy',
           type:"POST",
           data:{
-            category: "pengeluaran",
+            category: "biaya",
             _token: $("input[name=_token]").val()
           },
           success: function(data) {
