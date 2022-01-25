@@ -263,7 +263,7 @@ class DashboardController extends Controller
         echo json_encode($output);
     }
 
-    public function roe(){
+    public function roa(){
         $bulan_periode = (int) date('m');
         $tahun_periode = (int) date('Y');
 
@@ -275,6 +275,7 @@ class DashboardController extends Controller
         $modal = Neracasaldo::select([ DB::raw("SUM(credit-debet) as modal")])
             ->leftJoin('coas', 'neracasaldos.coa', '=', 'coas.id')
             ->where('coas.category','modal')
+            ->where('coas.coa_code','30300000')
             ->groupBy('coas.category')
             ->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
                 // dd($yearopen);
@@ -314,6 +315,7 @@ class DashboardController extends Controller
                 }
             })
             ->first();
+            dd($modal);
         $modal = isset($modal->modal) ? $modal->modal : 0;
         $aset = isset($aset->aset) ? $aset->aset : 0;
         $roa = $modal / $aset;

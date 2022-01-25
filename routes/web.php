@@ -52,6 +52,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/dashboard/get_transaction', 'App\Http\Controllers\DashboardController@get_transaction');
         Route::post('/dashboard/get_data_fuzzy', 'App\Http\Controllers\DashboardController@get_data_fuzzy');
         Route::get('/dashboard/roa', 'App\Http\Controllers\DashboardController@roa');
+        Route::get('/dashboard/roe', 'App\Http\Controllers\DashboardController@roe');
+        Route::get('/dashboard/roi', 'App\Http\Controllers\DashboardController@roi');
         
         Route::get('/user', 'App\Http\Controllers\UserController@index')->name('user');
         Route::post('/getlistuser', 'App\Http\Controllers\UserController@get_list');
