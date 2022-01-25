@@ -71,6 +71,32 @@
         });
      });
 
+     $(document).ready(function(){
+        $.ajax({
+          url: '/dashboard/roa',
+          type:"GET",
+          success: function(data) {
+            $("#valueofroa").html(data+" %");
+          }
+        });
+
+        $.ajax({
+          url: '/dashboard/roe',
+          type:"GET",
+          success: function(data) {
+            $("#valueofroe").html(data+" %");
+          }
+        });
+
+        $.ajax({
+          url: '/dashboard/roi',
+          type:"GET",
+          success: function(data) {
+            $("#valueofroi").html(data+" %");
+          }
+        });
+      });
+
     function exportTableToExcel(tableID, filename = ''){
       var rightNow = new Date();
       var res = rightNow.toISOString();

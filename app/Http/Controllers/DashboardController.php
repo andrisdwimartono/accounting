@@ -272,7 +272,49 @@ class DashboardController extends Controller
         $dt = array();
         $yearopen = Session::get('global_setting');
         $periode = "";
-        $modal = Neracasaldo::select([ DB::raw("SUM(credit-debet) as modal")])
+        $pendapatan = Neracasaldo::select([ DB::raw("SUM(credit-debet) as nominal")])
+            ->leftJoin('coas', 'neracasaldos.coa', '=', 'coas.id')
+            ->where('coas.category','pendapatan')
+            ->groupBy('coas.category')
+            ->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
+                // dd($yearopen);
+                if($bulan_periode >= $yearopen->bulan_tutup_tahun){
+                    //only one year
+                    $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", ">=", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    });
+                } else {
+                    //cross year
+                    $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    })->orWhere(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("tahun_periode", $tahun_periode-1);
+                    });
+                }
+            })
+            ->first();
+        $biaya = Neracasaldo::select([ DB::raw("SUM(debet-credit) as nominal")])
+            ->leftJoin('coas', 'neracasaldos.coa', '=', 'coas.id')
+            ->where('coas.category','biaya')
+            ->groupBy('coas.category')
+            ->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
+                // dd($yearopen);
+                if($bulan_periode >= $yearopen->bulan_tutup_tahun){
+                    //only one year
+                    $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", ">=", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    });
+                } else {
+                    //cross year
+                    $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    })->orWhere(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("tahun_periode", $tahun_periode-1);
+                    });
+                }
+            })
+            ->first();
+        $modal = Neracasaldo::select([ DB::raw("SUM(credit-debet) as nominal")])
             ->leftJoin('coas', 'neracasaldos.coa', '=', 'coas.id')
             ->where('coas.category','modal')
             ->where('coas.coa_code','30300000')
@@ -294,7 +336,70 @@ class DashboardController extends Controller
                 }
             })
             ->first();
-        $aset = Neracasaldo::select([ DB::raw("SUM(credit-debet) as aset")])
+        $pendapatan = isset($pendapatan->nominal) ? $pendapatan->nominal : 0;
+        $biaya = isset($biaya->nominal) ? $biaya->nominal : 0;
+        $modal = isset($modal->nominal) ? $modal->nominal : 0;
+        if($modal == 0){
+            echo json_encode(0);
+            return;
+        }
+        $roe = ($pendapatan-$biaya) / $modal * 100;
+        
+        echo json_encode($roe);
+    }
+
+    public function roa(){
+        $bulan_periode = (int) date('m');
+        $tahun_periode = (int) date('Y');
+
+        $debet = array("aset","biaya","biaya_lainnya");
+        
+        $dt = array();
+        $yearopen = Session::get('global_setting');
+        $periode = "";
+        $pendapatan = Neracasaldo::select([ DB::raw("SUM(credit-debet) as nominal")])
+            ->leftJoin('coas', 'neracasaldos.coa', '=', 'coas.id')
+            ->where('coas.category','pendapatan')
+            ->groupBy('coas.category')
+            ->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
+                // dd($yearopen);
+                if($bulan_periode >= $yearopen->bulan_tutup_tahun){
+                    //only one year
+                    $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", ">=", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    });
+                } else {
+                    //cross year
+                    $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    })->orWhere(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("tahun_periode", $tahun_periode-1);
+                    });
+                }
+            })
+            ->first();
+        $biaya = Neracasaldo::select([ DB::raw("SUM(debet-credit) as nominal")])
+            ->leftJoin('coas', 'neracasaldos.coa', '=', 'coas.id')
+            ->where('coas.category','biaya')
+            ->groupBy('coas.category')
+            ->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
+                // dd($yearopen);
+                if($bulan_periode >= $yearopen->bulan_tutup_tahun){
+                    //only one year
+                    $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", ">=", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    });
+                } else {
+                    //cross year
+                    $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    })->orWhere(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("tahun_periode", $tahun_periode-1);
+                    });
+                }
+            })
+            ->first();
+        $aset = Neracasaldo::select([ DB::raw("SUM(debet-credit) as nominal")])
             ->leftJoin('coas', 'neracasaldos.coa', '=', 'coas.id')
             ->where('coas.category','aset')
             ->groupBy('coas.category')
@@ -315,12 +420,100 @@ class DashboardController extends Controller
                 }
             })
             ->first();
-            dd($modal);
-        $modal = isset($modal->modal) ? $modal->modal : 0;
-        $aset = isset($aset->aset) ? $aset->aset : 0;
-        $roa = $modal / $aset;
+        $pendapatan = isset($pendapatan->nominal) ? $pendapatan->nominal : 0;
+        $biaya = isset($biaya->nominal) ? $biaya->nominal : 0;
+        $aset = isset($aset->nominal) ? $aset->nominal : 0;
+        if($aset == 0){
+            echo json_encode(0);
+            return;
+        }
+        $roa = ($pendapatan-$biaya) / $aset * 100;
         
         echo json_encode($roa);
+    }
+
+    public function roi(){
+        $bulan_periode = (int) date('m');
+        $tahun_periode = (int) date('Y');
+
+        $debet = array("aset","biaya","biaya_lainnya");
+        
+        $dt = array();
+        $yearopen = Session::get('global_setting');
+        $periode = "";
+        $pendapatan = Neracasaldo::select([ DB::raw("SUM(credit-debet) as nominal")])
+            ->leftJoin('coas', 'neracasaldos.coa', '=', 'coas.id')
+            ->where('coas.category','pendapatan')
+            ->groupBy('coas.category')
+            ->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
+                // dd($yearopen);
+                if($bulan_periode >= $yearopen->bulan_tutup_tahun){
+                    //only one year
+                    $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", ">=", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    });
+                } else {
+                    //cross year
+                    $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    })->orWhere(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("tahun_periode", $tahun_periode-1);
+                    });
+                }
+            })
+            ->first();
+        $biaya = Neracasaldo::select([ DB::raw("SUM(debet-credit) as nominal")])
+            ->leftJoin('coas', 'neracasaldos.coa', '=', 'coas.id')
+            ->where('coas.category','biaya')
+            ->groupBy('coas.category')
+            ->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
+                // dd($yearopen);
+                if($bulan_periode >= $yearopen->bulan_tutup_tahun){
+                    //only one year
+                    $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", ">=", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    });
+                } else {
+                    //cross year
+                    $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    })->orWhere(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("tahun_periode", $tahun_periode-1);
+                    });
+                }
+            })
+            ->first();
+        $investment = Neracasaldo::select([ DB::raw("SUM(debet-credit) as nominal")])
+            ->leftJoin('coas', 'neracasaldos.coa', '=', 'coas.id')
+            ->whereIn('coas.coa_code', ['10102006', '10103001', '10103002', '10103003', '10201001','10202001', '10203001', '10203002', '10204001', '10301001', '10302002'])
+            ->groupBy('coas.category')
+            ->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
+                // dd($yearopen);
+                if($bulan_periode >= $yearopen->bulan_tutup_tahun){
+                    //only one year
+                    $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", ">=", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    });
+                } else {
+                    //cross year
+                    $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    })->orWhere(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                        $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("tahun_periode", $tahun_periode-1);
+                    });
+                }
+            })
+            ->first();
+        $pendapatan = isset($pendapatan->nominal) ? $pendapatan->nominal : 0;
+        $biaya = isset($biaya->nominal) ? $biaya->nominal : 0;
+        $investment = isset($investment->nominal) ? $investment->nominal : 0;
+        if($investment == 0){
+            echo json_encode(0);
+            return;
+        }
+        $roi = ($pendapatan-$biaya) / $investment;
+        
+        echo json_encode($roi);
     }
 
     public function get_list(Request $request, $x)
