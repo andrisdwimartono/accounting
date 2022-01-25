@@ -21,27 +21,46 @@
                 </div>
                 <!-- row -->
                 <div class="row">
-                <div class="col-12">
+                <div class="col-6">
                     @csrf
                     <div class="card">
                         <div class="card-header"><h4 class="output-header">Pendapatan</h4></div>
                         <div class="card-body">
-                            <div id="pendapatan" style="min-height: 500px;overflow:auto"></div>
+                            <table id="neraca" class="display" style="width: 100%;">
+                                <!-- <thead >
+                                    <tr>
+                                        <th class="column-hidden">No</th>
+                                        <th>Kode Rek.</th>
+                                        <th>Nama Rekening Akuntansi</th>
+                                        <th>Debet</th>
+                                        <th>Kredit</th>
+                                        <th class="column-hidden">Level COA</th>
+                                    </tr>
+                                </thead> -->
+                                <tfoot>
+                                    <tr>
+                                        <td class="right total"></td>
+                                        <td class="total" style="border-top: 1px solid #000 !Important;"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
                         </div>
                     </div>                
                 </div>
-                <div class="col-12">
+                <div class="col-6">
                     @csrf
                     <div class="card">
                         <div class="card-header"><h4 class="output-header">Pengeluaran</h4></div>
                         <div class="card-body">
-                            <div id="pengeluaran" style="min-height: 500px;overflow:auto"></div>
+                            
                         </div>
                     </div>                
                 </div>
                 <div class="col-12">
                     <div class="card">
-                        <button type="button" class="btn light btn-primary">Analisis</button>
+                        <div class="card-header"><h4 class="output-header">Analisis</h4></div>
+                        <div class="card-body">
+                        
                     </div>                
                 </div>
             </div>

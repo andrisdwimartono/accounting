@@ -263,7 +263,7 @@ class DashboardController extends Controller
         echo json_encode($output);
     }
 
-    public function roa(){
+    public function roe(){
         $bulan_periode = (int) date('m');
         $tahun_periode = (int) date('Y');
 
@@ -339,13 +339,27 @@ class DashboardController extends Controller
         $pendapatan = isset($pendapatan->nominal) ? $pendapatan->nominal : 0;
         $biaya = isset($biaya->nominal) ? $biaya->nominal : 0;
         $modal = isset($modal->nominal) ? $modal->nominal : 0;
-        if($modal == 0){
-            echo json_encode(0);
-            return;
+        $roe = 0;
+        if($modal != 0){
+            $roe = ($pendapatan-$biaya) / $modal * 100;
         }
-        $roe = ($pendapatan-$biaya) / $modal * 100;
+        $roe = (float) number_format((float)$roe, 2, '.', '');
         
-        echo json_encode($roe);
+        $klas = "rendah";
+        if($roe>=0 && $roe < 30){
+            $klas = "rendah";
+        } elseif($roe < 60) {
+            $klas = "sedang";
+        } else {
+            $klas = "tinggi";
+        }
+
+        $output = array(
+            "value" => $roe,
+            "klasifikasi" => $klas
+        );
+
+        return $output;
     }
 
     public function roa(){
@@ -423,13 +437,27 @@ class DashboardController extends Controller
         $pendapatan = isset($pendapatan->nominal) ? $pendapatan->nominal : 0;
         $biaya = isset($biaya->nominal) ? $biaya->nominal : 0;
         $aset = isset($aset->nominal) ? $aset->nominal : 0;
-        if($aset == 0){
-            echo json_encode(0);
-            return;
+        $roa = 0;
+        if($aset != 0){
+            $roa = ($pendapatan-$biaya) / $aset * 100;
         }
-        $roa = ($pendapatan-$biaya) / $aset * 100;
+        $roa = (float) number_format((float)$roa, 2, '.', '');
         
-        echo json_encode($roa);
+        $klas = "rendah";
+        if($roa>=0 && $roa < 30){
+            $klas = "rendah";
+        } elseif($roa < 60) {
+            $klas = "sedang";
+        } else {
+            $klas = "tinggi";
+        }
+
+        $output = array(
+            "value" => $roa,
+            "klasifikasi" => $klas
+        );
+
+        return $output;
     }
 
     public function roi(){
@@ -507,13 +535,121 @@ class DashboardController extends Controller
         $pendapatan = isset($pendapatan->nominal) ? $pendapatan->nominal : 0;
         $biaya = isset($biaya->nominal) ? $biaya->nominal : 0;
         $investment = isset($investment->nominal) ? $investment->nominal : 0;
-        if($investment == 0){
-            echo json_encode(0);
-            return;
+        $roi = 0;
+        if($investment != 0){
+            $roi = ($pendapatan-$biaya) / $investment;
         }
-        $roi = ($pendapatan-$biaya) / $investment;
+        $roi = (float) number_format((float)$roi, 2, '.', '');
         
-        echo json_encode($roi);
+        $klas = "";
+        if($roi>=0 && $roi < 30){
+            $klas = "rendah";
+        } elseif($roi < 60) {
+            $klas = "sedang";
+        } else {
+            $klas = "tinggi";
+        }
+
+        $output = array(
+            "value" => $roi,
+            "klasifikasi" => $klas
+        );
+
+        return $output;
+    }
+
+    public function klasifikasi(){
+        $roa = $this->roa();
+        $roi = $this->roi();
+        $roe = $this->roe();
+
+        $aksi = "";
+        if($roa['klasifikasi'] == "rendah") {
+            if($roi['klasifikasi'] == "rendah"){
+                if($roe['klasifikasi'] == "rendah"){
+                    $aksi = "A";        
+                } else if($roe['klasifikasi'] == "sedang"){
+                    $aksi = "B";
+                } else if($roe['klasifikasi'] == "tinggi"){
+                    $aksi = "C";
+                }
+            } else if($roi['klasifikasi'] == "sedang") {
+                if($roe['klasifikasi'] == "rendah"){
+                    $aksi = "D";        
+                } else if($roe['klasifikasi'] == "sedang"){
+                    $aksi = "E";
+                } else if($roe['klasifikasi'] == "tinggi"){
+                    $aksi = "F";
+                }
+            } else if($roi['klasifikasi'] == "tinggi") {
+                if($roe['klasifikasi'] == "rendah"){
+                    $aksi = "G";        
+                } else if($roe['klasifikasi'] == "sedang"){
+                    $aksi = "H";
+                } else if($roe['klasifikasi'] == "tinggi"){
+                    $aksi = "I";
+                }
+            }
+        } else if($roa['klasifikasi'] == "sedang") {
+            if($roi['klasifikasi'] == "rendah"){
+                if($roe['klasifikasi'] == "rendah"){
+                    $aksi = "J";        
+                } else if($roe['klasifikasi'] == "sedang"){
+                    $aksi = "K";
+                } else if($roe['klasifikasi'] == "tinggi"){
+                    $aksi = "L";
+                }
+            } else if($roi['klasifikasi'] == "sedang") {
+                if($roe['klasifikasi'] == "rendah"){
+                    $aksi = "M";        
+                } else if($roe['klasifikasi'] == "sedang"){
+                    $aksi = "N";
+                } else if($roe['klasifikasi'] == "tinggi"){
+                    $aksi = "O";
+                }
+            } else if($roi['klasifikasi'] == "tinggi") {
+                if($roe['klasifikasi'] == "rendah"){
+                    $aksi = "P";        
+                } else if($roe['klasifikasi'] == "sedang"){
+                    $aksi = "Q";
+                } else if($roe['klasifikasi'] == "tinggi"){
+                    $aksi = "R";
+                }
+            }
+        } else if($roa['klasifikasi'] == "tinggi") {
+            if($roi['klasifikasi'] == "rendah"){
+                if($roe['klasifikasi'] == "rendah"){
+                    $aksi = "S";        
+                } else if($roe['klasifikasi'] == "sedang"){
+                    $aksi = "T";
+                } else if($roe['klasifikasi'] == "tinggi"){
+                    $aksi = "U";
+                }
+            } else if($roi['klasifikasi'] == "sedang") {
+                if($roe['klasifikasi'] == "rendah"){
+                    $aksi = "V";        
+                } else if($roe['klasifikasi'] == "sedang"){
+                    $aksi = "W";
+                } else if($roe['klasifikasi'] == "tinggi"){
+                    $aksi = "X";
+                }
+            } else if($roi['klasifikasi'] == "tinggi") {
+                if($roe['klasifikasi'] == "rendah"){
+                    $aksi = "Y";        
+                } else if($roe['klasifikasi'] == "sedang"){
+                    $aksi = "Z";
+                } else if($roe['klasifikasi'] == "tinggi"){
+                    $aksi = "AA";
+                }
+            }
+        }  
+
+        echo json_encode(array(
+            "roa" => $roa,
+            "roi" => $roi,
+            "roe" => $roe,
+            "aksi" => $aksi
+        ));
     }
 
     public function get_list(Request $request, $x)

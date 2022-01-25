@@ -73,26 +73,15 @@
 
      $(document).ready(function(){
         $.ajax({
-          url: '/dashboard/roa',
+          url: '/dashboard/klasifikasi',
           type:"GET",
           success: function(data) {
-            $("#valueofroa").html(data+" %");
-          }
-        });
-
-        $.ajax({
-          url: '/dashboard/roe',
-          type:"GET",
-          success: function(data) {
-            $("#valueofroe").html(data+" %");
-          }
-        });
-
-        $.ajax({
-          url: '/dashboard/roi',
-          type:"GET",
-          success: function(data) {
-            $("#valueofroi").html(data+" %");
+            data = JSON.parse(data)
+            console.log(data.value)
+            $("#valueofroa").html(data.roa.value+" %");
+            $("#valueofroe").html(data.roe.value+" %");
+            $("#valueofroi").html(data.roi.value+" %");
+            $("#valueofklasifikasi").html(data.aksi);
           }
         });
       });

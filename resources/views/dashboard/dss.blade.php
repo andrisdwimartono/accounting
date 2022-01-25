@@ -67,7 +67,7 @@
 									<div class="card-body pb-4 px-4 pt-4">
 										<div class="row">
 											<div class="col">
-												<h5 class="mb-1" id="valueofklasifikasi">0</h5>
+												<h5 class="mb-1" id="valueofklasifikasi">Aksi A</h5>
                                                 <span style="font-size:15pt;" class="text-success"><b>Klasifikasi</b></span>
 											</div>
 										</div>
