@@ -55,6 +55,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/dashboard/roe', 'App\Http\Controllers\DashboardController@roe');
         Route::get('/dashboard/roi', 'App\Http\Controllers\DashboardController@roi');
         Route::get('/dashboard/klasifikasi', 'App\Http\Controllers\DashboardController@klasifikasi');
+        Route::get('/dashboard/analisis', 'App\Http\Controllers\DashboardController@analisis');
         
         Route::get('/user', 'App\Http\Controllers\UserController@index')->name('user');
         Route::post('/getlistuser', 'App\Http\Controllers\UserController@get_list');
@@ -84,6 +85,16 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getdataunitkerja', 'App\Http\Controllers\UnitkerjaController@getdata');
         Route::post('/updateunitkerja/{unitkerja}', 'App\Http\Controllers\UnitkerjaController@update');
         Route::post('/deleteunitkerja', 'App\Http\Controllers\UnitkerjaController@destroy');
+
+        Route::get('/kebijakan', 'App\Http\Controllers\KebijakanController@index')->name('kebijakan');
+        Route::post('/getlistkebijakan', 'App\Http\Controllers\KebijakanController@get_list');
+        Route::get('/kebijakan/{kebijakan}', 'App\Http\Controllers\KebijakanController@show');
+        Route::get('/createkebijakan', 'App\Http\Controllers\KebijakanController@create');
+        Route::post('/storekebijakan', 'App\Http\Controllers\KebijakanController@store');
+        Route::get('/kebijakan/{kebijakan}/edit', 'App\Http\Controllers\KebijakanController@edit');
+        Route::post('/getdatakebijakan', 'App\Http\Controllers\KebijakanController@getdata');
+        Route::post('/updatekebijakan/{kebijakan}', 'App\Http\Controllers\KebijakanController@update');
+        Route::post('/deletekebijakan', 'App\Http\Controllers\KebijakanController@destroy');
 
         Route::get('/coa/{category}/list', 'App\Http\Controllers\CoaController@index');
         Route::post('/getlistcoa', 'App\Http\Controllers\CoaController@get_list');

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Coa;
+use App\Models\Kebijakan;
 use App\Models\Transaction;
 use App\Models\Neracasaldo;
 use Session;
@@ -341,17 +342,17 @@ class DashboardController extends Controller
         $modal = isset($modal->nominal) ? $modal->nominal : 0;
         $roe = 0;
         if($modal != 0){
-            $roe = ($pendapatan-$biaya) / $modal * 100;
+            $roe = ($pendapatan-$biaya) / $modal;
         }
         $roe = (float) number_format((float)$roe, 2, '.', '');
         
-        $klas = "rendah";
-        if($roe>=0 && $roe < 30){
-            $klas = "rendah";
-        } elseif($roe < 60) {
-            $klas = "sedang";
+        $klas = 0;
+        if($roe>=0 && $roe < 0.3){
+            $klas = 0;
+        } elseif($roe < 0.6) {
+            $klas = 1;
         } else {
-            $klas = "tinggi";
+            $klas = 2;
         }
 
         $output = array(
@@ -439,17 +440,17 @@ class DashboardController extends Controller
         $aset = isset($aset->nominal) ? $aset->nominal : 0;
         $roa = 0;
         if($aset != 0){
-            $roa = ($pendapatan-$biaya) / $aset * 100;
+            $roa = ($pendapatan-$biaya) / $aset;
         }
         $roa = (float) number_format((float)$roa, 2, '.', '');
         
-        $klas = "rendah";
-        if($roa>=0 && $roa < 30){
-            $klas = "rendah";
-        } elseif($roa < 60) {
-            $klas = "sedang";
+        $klas = 0;
+        if($roa>=0 && $roa < 0.3){
+            $klas = 0;
+        } elseif($roa < 0.6) {
+            $klas = 1;
         } else {
-            $klas = "tinggi";
+            $klas = 2;
         }
 
         $output = array(
@@ -541,13 +542,13 @@ class DashboardController extends Controller
         }
         $roi = (float) number_format((float)$roi, 2, '.', '');
         
-        $klas = "";
-        if($roi>=0 && $roi < 30){
-            $klas = "rendah";
-        } elseif($roi < 60) {
-            $klas = "sedang";
+        $klas = 0;
+        if($roi>=0 && $roi < 0.3){
+            $klas = 0;
+        } elseif($roi < 0.6) {
+            $klas = 1;
         } else {
-            $klas = "tinggi";
+            $klas = 2;
         }
 
         $output = array(
@@ -563,92 +564,18 @@ class DashboardController extends Controller
         $roi = $this->roi();
         $roe = $this->roe();
 
-        $aksi = "";
-        if($roa['klasifikasi'] == "rendah") {
-            if($roi['klasifikasi'] == "rendah"){
-                if($roe['klasifikasi'] == "rendah"){
-                    $aksi = "A";        
-                } else if($roe['klasifikasi'] == "sedang"){
-                    $aksi = "B";
-                } else if($roe['klasifikasi'] == "tinggi"){
-                    $aksi = "C";
-                }
-            } else if($roi['klasifikasi'] == "sedang") {
-                if($roe['klasifikasi'] == "rendah"){
-                    $aksi = "D";        
-                } else if($roe['klasifikasi'] == "sedang"){
-                    $aksi = "E";
-                } else if($roe['klasifikasi'] == "tinggi"){
-                    $aksi = "F";
-                }
-            } else if($roi['klasifikasi'] == "tinggi") {
-                if($roe['klasifikasi'] == "rendah"){
-                    $aksi = "G";        
-                } else if($roe['klasifikasi'] == "sedang"){
-                    $aksi = "H";
-                } else if($roe['klasifikasi'] == "tinggi"){
-                    $aksi = "I";
-                }
-            }
-        } else if($roa['klasifikasi'] == "sedang") {
-            if($roi['klasifikasi'] == "rendah"){
-                if($roe['klasifikasi'] == "rendah"){
-                    $aksi = "J";        
-                } else if($roe['klasifikasi'] == "sedang"){
-                    $aksi = "K";
-                } else if($roe['klasifikasi'] == "tinggi"){
-                    $aksi = "L";
-                }
-            } else if($roi['klasifikasi'] == "sedang") {
-                if($roe['klasifikasi'] == "rendah"){
-                    $aksi = "M";        
-                } else if($roe['klasifikasi'] == "sedang"){
-                    $aksi = "N";
-                } else if($roe['klasifikasi'] == "tinggi"){
-                    $aksi = "O";
-                }
-            } else if($roi['klasifikasi'] == "tinggi") {
-                if($roe['klasifikasi'] == "rendah"){
-                    $aksi = "P";        
-                } else if($roe['klasifikasi'] == "sedang"){
-                    $aksi = "Q";
-                } else if($roe['klasifikasi'] == "tinggi"){
-                    $aksi = "R";
-                }
-            }
-        } else if($roa['klasifikasi'] == "tinggi") {
-            if($roi['klasifikasi'] == "rendah"){
-                if($roe['klasifikasi'] == "rendah"){
-                    $aksi = "S";        
-                } else if($roe['klasifikasi'] == "sedang"){
-                    $aksi = "T";
-                } else if($roe['klasifikasi'] == "tinggi"){
-                    $aksi = "U";
-                }
-            } else if($roi['klasifikasi'] == "sedang") {
-                if($roe['klasifikasi'] == "rendah"){
-                    $aksi = "V";        
-                } else if($roe['klasifikasi'] == "sedang"){
-                    $aksi = "W";
-                } else if($roe['klasifikasi'] == "tinggi"){
-                    $aksi = "X";
-                }
-            } else if($roi['klasifikasi'] == "tinggi") {
-                if($roe['klasifikasi'] == "rendah"){
-                    $aksi = "Y";        
-                } else if($roe['klasifikasi'] == "sedang"){
-                    $aksi = "Z";
-                } else if($roe['klasifikasi'] == "tinggi"){
-                    $aksi = "AA";
-                }
-            }
-        }  
+        $kebijakan = Kebijakan::select('deskripsi')
+        ->where([
+            ['roa','=',$roa['klasifikasi']],
+            ['roe','=',$roe['klasifikasi']],
+            ['roi','=',$roi['klasifikasi']]
+        ])->first();
 
         echo json_encode(array(
             "roa" => $roa,
             "roi" => $roi,
             "roe" => $roe,
-            "aksi" => $aksi
+            "kebijakan" => $kebijakan->deskripsi
         ));
     }
 
@@ -722,7 +649,6 @@ class DashboardController extends Controller
             $dt[$neraca->id] = array($neraca->id, $neraca->coa_code, $neraca->coa_name, $nom, $nom, $neraca->coa, $neraca->level_coa, $neraca->fheader);
         }
         
-
         // get nominal
         $iter = array_filter($dt, function ($dt) {
             return ($dt[3] != 0) || ($dt[4] != 0) && ($dt[7] != "on");

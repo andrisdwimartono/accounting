@@ -28,7 +28,14 @@
 									<div class="card-body pb-4 px-4 pt-4">
 										<div class="row">
 											<div class="col">
-												<h5 class="mb-1" id="valueofroa">0</h5>
+                                            <div class="row">
+                                                    <div class="col-md-6">
+                                                        <h5 class="mb-1" id="valueofroa">0</h5>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <span class='badge light' id="classroa" style='width:50px'></span>
+                                                    </div>
+                                                </div>
                                                 <span style="font-size:15pt;" class="text-success"><b>ROA</b></span>
 												<span class="text-success">Return of Asset</span>
 											</div>
@@ -41,7 +48,14 @@
 									<div class="card-body pb-4 px-4 pt-4">
 										<div class="row">
 											<div class="col">
-												<h5 class="mb-1" id="valueofroe">0</h5>
+												<div class="row">
+                                                    <div class="col-md-6">
+                                                        <h5 class="mb-1" id="valueofroe">0</h5>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <span class='badge light' id="classroe" style='width:50px'></span>
+                                                    </div>
+                                                </div>
 												<span style="font-size:15pt;" class="text-success"><b>ROE</b></span>
                                                 <span class="text-success">Return on Equity</span>
 											</div>
@@ -54,7 +68,14 @@
 									<div class="card-body pb-4 px-4 pt-4">
 										<div class="row">
 											<div class="col">
-												<h5 class="mb-1" id="valueofroi">0</h5>
+                                            <div class="row">
+                                                    <div class="col-md-6">
+                                                        <h5 class="mb-1" id="valueofroi">0</h5>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <span class='badge light' id="classroi" style='width:50px'></span>
+                                                    </div>
+                                                </div>
                                                 <span style="font-size:15pt;" class="text-success"><b>ROI</b></span>
 												<span class="text-success">Return of Investment</span>
 											</div>
@@ -62,18 +83,20 @@
 									</div>
 								</div>
 							</div>
+                            
                             <div class="col-xl-3 col-xxl-3 col-lg-6 col-sm-6">
 								<div class="card overflow-hidden">
 									<div class="card-body pb-4 px-4 pt-4">
 										<div class="row">
 											<div class="col">
 												<h5 class="mb-1" id="valueofklasifikasi">Aksi A</h5>
-                                                <span style="font-size:15pt;" class="text-success"><b>Klasifikasi</b></span>
+                                                <a href="/kebijakan"><span style="font-size:15pt;" class="text-success"><b>Kebijakan</b></span></a>
 											</div>
 										</div>
 									</div>
 								</div>
 							</div>
+                            
                         </div>
                     </div>
                 </div>

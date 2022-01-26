@@ -71,6 +71,24 @@
         });
      });
 
+     function addClass(id,data){
+       var value = ""
+       var badge = ""
+
+       if(data==0){
+        value="rendah";
+        badge="badge-danger";
+       } else if(data==1){
+        value="sedang";
+        badge="badge-warning";
+       } else if(data==2){
+        value="tinggi";
+        badge="badge-success";
+       }
+       $(id).html(value).addClass(badge);
+
+     }
+
      $(document).ready(function(){
         $.ajax({
           url: '/dashboard/klasifikasi',
@@ -78,10 +96,16 @@
           success: function(data) {
             data = JSON.parse(data)
             console.log(data.value)
-            $("#valueofroa").html(data.roa.value+" %");
-            $("#valueofroe").html(data.roe.value+" %");
-            $("#valueofroi").html(data.roi.value+" %");
-            $("#valueofklasifikasi").html(data.aksi);
+            $("#valueofroa").html(data.roa.value);
+            addClass("#classroa",data.roa.klasifikasi)
+            
+            $("#valueofroe").html(data.roe.value);
+            addClass("#classroe",data.roe.klasifikasi)
+
+            $("#valueofroi").html(data.roi.value);
+            addClass("#classroi",data.roi.klasifikasi)
+
+            $("#valueofklasifikasi").html(data.kebijakan);
           }
         });
       });
