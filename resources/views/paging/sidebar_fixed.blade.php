@@ -69,7 +69,7 @@
 									DSS - Penghasilan Komprehensif
 								</a>
 							</li>
-							<li class="d-none" id="cakmenu-dssneracasaldochart">
+							<li class="d-none" id="cakmenu-analisis">
 								<a href="/dashboard/analisis">
 									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="svg-main-icon">
 										<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">

@@ -56,6 +56,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/dashboard/roi', 'App\Http\Controllers\DashboardController@roi');
         Route::get('/dashboard/klasifikasi', 'App\Http\Controllers\DashboardController@klasifikasi');
         Route::get('/dashboard/analisis', 'App\Http\Controllers\DashboardController@analisis');
+        Route::post('/dashboard/get_analisis', 'App\Http\Controllers\DashboardController@get_analisis');
         
         Route::get('/user', 'App\Http\Controllers\UserController@index')->name('user');
         Route::post('/getlistuser', 'App\Http\Controllers\UserController@get_list');
@@ -214,6 +215,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/aruskas/print', 'App\Http\Controllers\AruskasController@print');
         Route::post('/get_saldo_awalaruskas', 'App\Http\Controllers\AruskasController@get_saldo_awal');
         Route::post('/aruskas/excel', 'App\Http\Controllers\AruskasController@excel');
+        Route::get('/forecast', 'App\Http\Controllers\AruskasController@forecast');
+        Route::get('/total-forecast', 'App\Http\Controllers\AruskasController@get_total_forecast');
+        Route::post('/get_forecast', 'App\Http\Controllers\AruskasController@get_forecast');
 
         Route::get('/ikuunitkerja', 'App\Http\Controllers\IkuunitkerjaController@index')->name('ikuunitkerja');
         Route::post('/getlistikuunitkerja', 'App\Http\Controllers\IkuunitkerjaController@get_list');

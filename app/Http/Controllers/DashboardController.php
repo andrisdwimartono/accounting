@@ -86,6 +86,62 @@ class DashboardController extends Controller
         return view("dashboard.dss", ["page_data" => $page_data]);
     }
 
+    public function analisis(){
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "List";
+        $page_data["category"] = "Analisis";
+        $page_data["footer_js_page_specific_script"] = ["dashboard.page_specific_script.footer_js_analisis"];
+        $page_data["header_js_page_specific_script"] = ["dashboard.page_specific_script.header_js_list"];
+                
+        return view("dashboard.analisis", ["page_data" => $page_data]);
+    }
+
+    public function get_analisis(Request $request){
+        $bulan_periode = 1;
+        if(isset($request->search["bulan_periode"])){
+            $bulan_periode = $request->search["bulan_periode"];
+        }
+        $tahun_periode = 1;
+        if(isset($request->search["tahun_periode"])){
+            $tahun_periode = $request->search["tahun_periode"];
+        }
+
+        $n = 3;
+        $roas = array();
+        $rois = array();
+        $roes = array();
+        $bulans = array();
+        
+        for($x=0; $x<$n; $x++){
+            
+            if($x>0){
+                $bulan_periode = $bulan_periode - 1;
+            }
+            if($bulan_periode<=0){
+                $bulan_periode = 12;
+                $tahun_periode = $tahun_periode - 1;
+            }
+
+            $roa = $this->roa($bulan_periode, $tahun_periode);
+            $roi = $this->roi($bulan_periode, $tahun_periode);
+            $roe = $this->roe($bulan_periode, $tahun_periode);
+    
+            array_push($roas, $roa['value']);
+            array_push($rois, $roi['value']);
+            array_push($roes, $roe['value']);
+            array_push($bulans,  $this->convertBulan($bulan_periode) . ' ' . $tahun_periode);
+        }
+
+        $output = array(
+            "bulan" => $bulans, 
+            "roa" => $roas,
+            "roi" => $rois,
+            "roe" => $roes,
+        );
+
+        echo json_encode($output);
+    }
+
     public function labarugichart(){
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "List";
@@ -264,15 +320,8 @@ class DashboardController extends Controller
         echo json_encode($output);
     }
 
-    public function roe(){
-        $bulan_periode = (int) date('m');
-        $tahun_periode = (int) date('Y');
-
-        $debet = array("aset","biaya","biaya_lainnya");
-        
-        $dt = array();
+    public function roe($bulan_periode, $tahun_periode){
         $yearopen = Session::get('global_setting');
-        $periode = "";
         $pendapatan = Neracasaldo::select([ DB::raw("SUM(credit-debet) as nominal")])
             ->leftJoin('coas', 'neracasaldos.coa', '=', 'coas.id')
             ->where('coas.category','pendapatan')
@@ -363,15 +412,8 @@ class DashboardController extends Controller
         return $output;
     }
 
-    public function roa(){
-        $bulan_periode = (int) date('m');
-        $tahun_periode = (int) date('Y');
-
-        $debet = array("aset","biaya","biaya_lainnya");
-        
-        $dt = array();
+    public function roa($bulan_periode, $tahun_periode){
         $yearopen = Session::get('global_setting');
-        $periode = "";
         $pendapatan = Neracasaldo::select([ DB::raw("SUM(credit-debet) as nominal")])
             ->leftJoin('coas', 'neracasaldos.coa', '=', 'coas.id')
             ->where('coas.category','pendapatan')
@@ -461,15 +503,9 @@ class DashboardController extends Controller
         return $output;
     }
 
-    public function roi(){
-        $bulan_periode = (int) date('m');
-        $tahun_periode = (int) date('Y');
+    public function roi($bulan_periode, $tahun_periode){
 
-        $debet = array("aset","biaya","biaya_lainnya");
-        
-        $dt = array();
         $yearopen = Session::get('global_setting');
-        $periode = "";
         $pendapatan = Neracasaldo::select([ DB::raw("SUM(credit-debet) as nominal")])
             ->leftJoin('coas', 'neracasaldos.coa', '=', 'coas.id')
             ->where('coas.category','pendapatan')
@@ -560,9 +596,12 @@ class DashboardController extends Controller
     }
 
     public function klasifikasi(){
-        $roa = $this->roa();
-        $roi = $this->roi();
-        $roe = $this->roe();
+        $bulan_periode = (int) date('m');
+        $tahun_periode = (int) date('Y');
+
+        $roa = $this->roa($bulan_periode, $tahun_periode);
+        $roi = $this->roi($bulan_periode, $tahun_periode);
+        $roe = $this->roe($bulan_periode, $tahun_periode);
 
         $kebijakan = Kebijakan::select('deskripsi')
         ->where([
