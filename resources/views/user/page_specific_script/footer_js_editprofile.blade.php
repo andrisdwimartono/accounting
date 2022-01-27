@@ -196,6 +196,7 @@ function getdata(){
             _token: $("#quickForm input[name=_token]").val()
         },
         success: function(data){
+            console.log(data);
             for(var i = 0; i < Object.keys(data.data.{{$page_data["page_data_urlname"]}}).length; i++){
                 if(Object.keys(data.data.user)[i] == "unitkerja"){
                     if(data.data.user[Object.keys(data.data.user)[i]]){
