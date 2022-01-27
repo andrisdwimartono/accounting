@@ -617,13 +617,15 @@ class UserController extends Controller
         $page_data = $this->tabledesign();
         $rules = $page_data["fieldsrules"];
         $messages = $page_data["fieldsmessages"];
+        $rules['password'] = '';
         if($request->validate($rules, $messages)){
             User::where("id", Auth::user()->id)->update([
                 "name"=> $request->name,
                 "email"=> $request->email,
                 "phone"=> $request->phone,
-                "password"=> Hash::make($request->password),
                 "photo_profile"=> $request->photo_profile,
+                "unitkerja" => $request->unitkerja,
+                "unitkerja_label" => $request->unitkerja_label,
                 "user_updater_id"=> Auth::user()->id
             ]);
 

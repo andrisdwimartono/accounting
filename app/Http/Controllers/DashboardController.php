@@ -714,9 +714,15 @@ class DashboardController extends Controller
         return $output;
     }
 
-    public function klasifikasi(){
+    public function klasifikasi(Request $request){
         $bulan_periode = (int) date('m');
         $tahun_periode = (int) date('Y');
+        if(isset($request->search["bulan_periode"])){
+            $bulan_periode = $request->search["bulan_periode"];
+        }
+        if(isset($request->search["tahun_periode"])){
+            $tahun_periode = $request->search["tahun_periode"];
+        }
 
         $roa = $this->roa($bulan_periode, $tahun_periode);
         $roi = $this->roi($bulan_periode, $tahun_periode);
