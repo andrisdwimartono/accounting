@@ -449,10 +449,10 @@ class AruskasController extends Controller
     }
 
     public function get_forecast_chart(){
-        
+
     }
 
-    public function get_total_forecast($bulan_periode, $tahun_periode)
+    public function get_total_forecast(Request $request)
     {
         // $unitkerja = 0;
         // if(isset($request->search["unitkerja"])){
@@ -460,6 +460,11 @@ class AruskasController extends Controller
         // }
 
         $nominal = 0;
+
+        $n = 3;
+        for($x=0; $x<$n; $x++){
+            
+        }
 
         foreach(Coa::find(1)
         ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.category", "coas.coa", DB::raw("2 as level_coa"), "coas.fheader", DB::raw("SUM(aruskass.debet) as debet"), DB::raw("SUM(aruskass.credit) as credit"), "coas.jenis_aktivitas"])

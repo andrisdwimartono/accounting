@@ -56,7 +56,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/dashboard/roi', 'App\Http\Controllers\DashboardController@roi');
         Route::get('/dashboard/klasifikasi', 'App\Http\Controllers\DashboardController@klasifikasi');
         Route::get('/dashboard/analisis', 'App\Http\Controllers\DashboardController@analisis');
-        Route::post('/dashboard/get_analisis', 'App\Http\Controllers\DashboardController@get_analisis');
+        Route::get('/dashboard/forecast', 'App\Http\Controllers\DashboardController@forecast');
+        Route::post('/dashboard/get_forecast', 'App\Http\Controllers\DashboardController@get_forecast');
+        Route::post('/dashboard/get_3month', 'App\Http\Controllers\DashboardController@get_3month');
         
         Route::get('/user', 'App\Http\Controllers\UserController@index')->name('user');
         Route::post('/getlistuser', 'App\Http\Controllers\UserController@get_list');

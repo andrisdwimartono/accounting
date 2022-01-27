@@ -86,6 +86,16 @@ class DashboardController extends Controller
         return view("dashboard.dss", ["page_data" => $page_data]);
     }
 
+    public function forecast(){
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "List";
+        $page_data["category"] = "forecast";
+        $page_data["footer_js_page_specific_script"] = ["dashboard.page_specific_script.footer_js_forecast"];
+        $page_data["header_js_page_specific_script"] = ["dashboard.page_specific_script.header_js_list"];
+        
+        return view("dashboard.forecast", ["page_data" => $page_data]);
+    }
+
     public function analisis(){
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "List";
@@ -243,6 +253,115 @@ class DashboardController extends Controller
         );
 
         echo json_encode($output);
+    }
+
+    public function get_3month(Request $request){
+        $bulans = array();
+        $bulan_periode = 1;
+        if(isset($request->search["bulan_periode"])){
+            $bulan_periode = $request->search["bulan_periode"];
+        }
+        $tahun_periode = 1;
+        if(isset($request->search["tahun_periode"])){
+            $tahun_periode = $request->search["tahun_periode"];
+        }
+        // $bulan_periode = (int) date('m');
+        // $tahun_periode = (int) date('Y');
+        
+        // maju satu bulan
+        $bulan_periode += 1;
+        if($bulan_periode==13){
+            $bulan_periode = 1;
+            $tahun_periode += 1;
+        }
+
+        array_push($bulans,$this->convertBulan($bulan_periode)." ".$tahun_periode);
+
+        // mundur satu bulan
+        $bulan_periode -= 1;
+        if($bulan_periode==0){
+            $bulan_periode = 12;
+            $tahun_periode -= 1;
+        }
+                
+        $data = array();
+        $data[1] = $this->get_forecast($bulan_periode, $tahun_periode)['nominal'];
+        array_push($bulans,$this->convertBulan($bulan_periode)." ".$tahun_periode);
+
+        // mundur satu bulan
+        $bulan_periode -= 1;
+        if($bulan_periode==0){
+            $bulan_periode = 12;
+            $tahun_periode -= 1;
+        }
+
+        $data[2] = $this->get_forecast($bulan_periode, $tahun_periode)['nominal'];
+        array_push($bulans,$this->convertBulan($bulan_periode)." ".$tahun_periode);
+                
+        // mundur satu bulan
+        $bulan_periode -= 1;
+        if($bulan_periode==0){
+            $bulan_periode = 12;
+            $tahun_periode -= 1;
+        }
+        
+        $data[3] = $this->get_forecast($bulan_periode, $tahun_periode)['nominal'];
+        array_push($bulans,$this->convertBulan($bulan_periode)." ".$tahun_periode);
+
+        $data[0] = ($data[1]+$data[2]+$data[3])/3;
+        
+        $dt = array();
+        for($x=0;$x<4;$x++){
+            array_push($dt,$data[$x]);
+        }
+
+
+        echo json_encode(array(
+            "bulan" => $bulans,
+            "data" => $dt
+        ));
+    }
+
+    public function get_forecast($bulan_periode, $tahun_periode){
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "List";
+        $page_data["footer_js_page_specific_script"] = ["dashboard.page_specific_script.footer_js_list"];
+        $page_data["header_js_page_specific_script"] = ["dashboard.page_specific_script.header_js_list"];
+
+        $debet = array("aset","biaya","biaya_lainnya");
+        
+        $dt = array();
+        $yearopen = Session::get('global_setting');
+        $nominal = 0;
+        $periode = "";
+        foreach(Neracasaldo::select([ "neracasaldos.unitkerja_label", "coas.category", "bulan_periode", "tahun_periode", "neracasaldos.coa_label", "neracasaldos.jenisbayar_label", DB::raw("debet-credit as nominal_dc"), DB::raw("credit-debet as nominal_cd")])
+        ->leftJoin('coas', 'neracasaldos.coa', '=', 'coas.id')
+        ->whereIn('coas.coa',[68,69])
+        ->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
+            // dd($yearopen);
+            if($bulan_periode >= $yearopen->bulan_tutup_tahun){
+                //only one year
+                $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                    $q->where("bulan_periode", ">=", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                });
+            } else {
+                //cross year
+                $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                    $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                })->orWhere(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
+                    $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("tahun_periode", $tahun_periode-1);
+                });
+            }
+        })->get()
+         as $data){
+            $nominal += in_array($data->category,$debet) ? $data->nominal_dc : $data->nominal_cd;
+        }
+
+        $output = array(
+            "nominal" => $nominal
+        );
+
+        return $output;
     }
 
     public function get_data_fuzzy(Request $request){
@@ -748,6 +867,8 @@ class DashboardController extends Controller
 
         return $output;
     }
+
+    
 
     public function get_list_two_month(Request $request)
     {
