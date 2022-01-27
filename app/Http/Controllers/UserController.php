@@ -624,6 +624,8 @@ class UserController extends Controller
                 "email"=> $request->email,
                 "phone"=> $request->phone,
                 "photo_profile"=> $request->photo_profile,
+                "unitkerja" => $request->unitkerja,
+                "unitkerja_label" => $request->unitkerja_label,
                 "user_updater_id"=> Auth::user()->id
             ]);
 
