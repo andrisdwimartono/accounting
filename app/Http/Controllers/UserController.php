@@ -68,10 +68,13 @@ class UserController extends Controller
         $td["fieldsoptions"] = [
             "role" => [
                 ["name" => "admin", "label" => "Administrator"],
+                ["name" => "direktur", "label" => "Direktur"],
                 ["name" => "manager", "label" => "Manager"],
-                ["name" => "selling", "label" => "Selling Staf"],
-                ["name" => "purchasing", "label" => "Purchasing Staf"],
-                ["name" => "sellingandpurchasing", "label" => "Selling and Purhcasing Staf"]
+                ["name" => "staffkeuangan", "label" => "Staff Keuangan"],
+                ["name" => "staff", "label" => "Staff Umum"],
+                // ["name" => "selling", "label" => "Selling Staf"],
+                // ["name" => "purchasing", "label" => "Purchasing Staf"],
+                // ["name" => "sellingandpurchasing", "label" => "Selling and Purhcasing Staf"]
             ]
         ];
 

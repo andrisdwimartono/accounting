@@ -115,6 +115,52 @@
                                             </table>
                                             <input type="hidden" name="ct1_bank_va" class="form-control" id="ct1_bank_va" placeholder="Enter Menu Field" @if($page_data["page_method_name"] == "View") readonly @endif>
                                         </div>
+
+                                        <div class="form-group">
+                                            <label for="ct2_approval_setting">Approval RKA</label>
+                                            <div id="result">
+                                                Event result:
+                                            </div>
+                                            <table id="ctct2_approval_setting" class="table table-bordered table-striped" style="width:100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th>Jabatan</th>
+                                                        <th>Jabatan Label</th>
+                                                        <th>Menu</th>
+                                                        <th>Action</th>
+                                                        <th>id</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                </tbody>
+                                            </table>
+                                            <input type="hidden" name="ct2_approval_setting" class="form-control" id="ct2_approval_setting" placeholder="Enter Menu Field" @if($page_data["page_method_name"] == "View") readonly @endif>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="ct2_approval_settingpjk">Approval PJK</label>
+                                            <div id="result">
+                                                Event result:
+                                            </div>
+                                            <table id="ctct2_approval_settingpjk" class="table table-bordered table-striped" style="width:100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th>Jabatan</th>
+                                                        <th>Jabatan Label</th>
+                                                        <th>Menu</th>
+                                                        <th>Action</th>
+                                                        <th>id</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                </tbody>
+                                            </table>
+                                            <input type="hidden" name="ct2_approval_settingpjk" class="form-control" id="ct2_approval_settingpjk" placeholder="Enter Menu Field" @if($page_data["page_method_name"] == "View") readonly @endif>
+                                        </div>
                                     
                                         @if($page_data["page_method_name"] != "View")
                                         <div class="form-group row">
@@ -169,6 +215,35 @@
                     </div>
                 </div>
                 <!-- Modal Bank VA End -->
+                <!-- Modal Approval Setting -->
+                <div class="modal fade bd-example-modal-lg" id="staticBackdrop_ct2_approval_setting" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" data-focus="false" role="dialog" aria-labelledby="staticBackdrop_ct2_approval_setting_Label" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdrop_ct2_approval_setting_Label">Approval RKA</h5>
+                            <button type="button" id="staticBackdrop_ct2_approval_setting_Close" class="btn-close" data-bs-dismiss="modal" aria-label="Close">x</button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="quickModalForm_ct2_approval_setting" action="#">
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label" for="role">Jabatan</label>
+                                    <div class="col-sm-6 cakfield">
+                                        <select name="role" id="role" class="form-control select2bs4staticBackdrop" style="width: 100%;" @if($page_data["page_method_name"] == "View") readonly @endif>
+
+                                        </select>
+                                        <input type="hidden" name="role_label" id="role_label">
+                                    </div>
+                                </div>
+                                <input type="hidden" name="jenismenu" id="jenismenu" value="RKA">
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal Approval Setting End -->
             </div>
         </div>
 @endsection

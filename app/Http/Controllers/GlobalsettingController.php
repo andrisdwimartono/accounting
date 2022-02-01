@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Globalsetting;
 use App\Models\Bankva;
 use App\Models\Coa;
+use App\Models\Approvalsetting;
 use Session;
 
 class GlobalsettingController extends Controller
@@ -20,12 +21,17 @@ class GlobalsettingController extends Controller
                 "nama_instansi" => "text",
                 "logo_instansi" => "upload",
                 "bulan_tutup_tahun" => "select",
-                "ct1_bank_va" => "childtable"
+                "ct1_bank_va" => "childtable",
+                "ct2_approval_setting" => "childtable"
             ],
             "fieldschildtable" => [
                 "ct1_bank_va" => [
                     "kode_va" => "text",
                     "coa" => "link"
+                ],
+                "ct2_approval_setting" => [
+                    "role" => "select",
+                    "jenismenu" => "hidden"
                 ]
             ],
             "fieldsoptions" => [
@@ -42,14 +48,23 @@ class GlobalsettingController extends Controller
                     ["name" => "10", "label" => "Oktober"],
                     ["name" => "11", "label" => "November"],
                     ["name" => "12", "label" => "Desember"]
+                ],
+                "role" => [
+                    ["name" => "admin", "label" => "Administrator"],
+                    ["name" => "direktur", "label" => "Direktur"],
+                    ["name" => "manager", "label" => "Manager"],
+                    ["name" => "staffkeuangan", "label" => "Staff Keuangan"],
+                    ["name" => "staff", "label" => "Staff Umum"]
                 ]
             ],
             "fieldlink" => [
                 "coa" => "coas"
-            ]
+            ],
         ];
 
         $bulan_tutup_tahun_list = "1,2,3,4,5,6,7,8,9,10,11,12";
+
+        $role_list = "admin,direktur,manager,staffkeuangan,staff";
 
         $td["fieldsrules"] = [
             "nama_instansi" => "required|min:2|max:255",
@@ -72,6 +87,20 @@ class GlobalsettingController extends Controller
         ];
 
         $td["fieldsmessages_ct1_bank_va"] = [
+            "required" => ":attribute harus diisi!!",
+            "min" => ":attribute minimal :min karakter!!",
+            "max" => ":attribute maksimal :max karakter!!",
+            "in" => "Tidak ada dalam pilihan :attribute!!",
+            "exists" => "Tidak ada dalam :attribute!!",
+            "date_format" => "Format tidak sesuai di :attribute!!"
+        ];
+
+        $td["fieldsrules_ct2_approval_setting"] = [
+            "role" => "required|in:admin,direktur,manager,staffkeuangan,staff",
+            "jenismenu" => "required"
+        ];
+
+        $td["fieldsmessages_ct2_approval_setting"] = [
             "required" => ":attribute harus diisi!!",
             "min" => ":attribute minimal :min karakter!!",
             "max" => ":attribute maksimal :max karakter!!",
@@ -136,6 +165,18 @@ class GlobalsettingController extends Controller
             $child_tb_request->validate($rules_ct1_bank_va, $ct_messages);
         }
 
+        $rules_ct2_approval_setting = $page_data["fieldsrules_ct2_approval_setting"];
+        $requests_ct2_approval_setting = json_decode($request->ct2_approval_setting, true);
+        foreach($requests_ct2_approval_setting as $ct_request){
+            $child_tb_request = new \Illuminate\Http\Request();
+            $child_tb_request->replace($ct_request);
+            $ct_messages = array();
+            foreach($page_data["fieldsmessages_ct2_approval_setting"] as $key => $value){
+                $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
+            }
+            $child_tb_request->validate($rules_ct2_approval_setting, $ct_messages);
+        }
+
         $rules = $page_data["fieldsrules"];
         $messages = $page_data["fieldsmessages"];
         if($request->validate($rules, $messages)){
@@ -154,6 +195,17 @@ class GlobalsettingController extends Controller
                     "kode_va"=> $ct_request["kode_va"],
                     "coa"=> $ct_request["coa"],
                     "coa_label"=> $ct_request["coa_label"],
+                    "user_creator_id" => Auth::user()->id
+                ]);
+            }
+
+            foreach($requests_ct2_approval_setting as $ct_request){
+                Approvalsetting::create([
+                    "no_seq" => $ct_request["no_seq"],
+                    "parent_id" => $id,
+                    "role"=> $ct_request["role"],
+                    "role_label"=> $ct_request["role_label"],
+                    "jenismenu"=> $ct_request["jenismenu"],
                     "user_creator_id" => Auth::user()->id
                 ]);
             }
@@ -222,6 +274,18 @@ class GlobalsettingController extends Controller
             $child_tb_request->validate($rules_ct1_bank_va, $ct_messages);
         }
 
+        $rules_ct2_approval_setting = $page_data["fieldsrules_ct2_approval_setting"];
+        $requests_ct2_approval_setting = json_decode($request->ct2_approval_setting, true);
+        foreach($requests_ct2_approval_setting as $ct_request){
+            $child_tb_request = new \Illuminate\Http\Request();
+            $child_tb_request->replace($ct_request);
+            $ct_messages = array();
+            foreach($page_data["fieldsmessages_ct2_approval_setting"] as $key => $value){
+                $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
+            }
+            $child_tb_request->validate($rules_ct2_approval_setting, $ct_messages);
+        }
+
         $rules = $page_data["fieldsrules"];
         $messages = $page_data["fieldsmessages"];
         if($request->validate($rules, $messages)){
@@ -262,16 +326,52 @@ class GlobalsettingController extends Controller
             }
 
             foreach(Bankva::whereParentId($id)->get() as $ch){
-                    $is_still_exist = false;
-                    foreach($requests_ct1_bank_va as $ct_request){
-                        if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
-                            $is_still_exist = true;
-                        }
-                    }
-                    if(!$is_still_exist){
-                        Bankva::whereId($ch->id)->delete();
+                $is_still_exist = false;
+                foreach($requests_ct1_bank_va as $ct_request){
+                    if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
+                        $is_still_exist = true;
                     }
                 }
+                if(!$is_still_exist){
+                    Bankva::whereId($ch->id)->delete();
+                }
+            }
+
+            $new_menu_field_ids = array();
+            foreach($requests_ct2_approval_setting as $ct_request){
+                if(isset($ct_request["id"])){
+                    Approvalsetting::where("id", $ct_request["id"])->update([
+                        "no_seq" => $ct_request["no_seq"],
+                        "parent_id" => $id,
+                        "role"=> $ct_request["role"],
+                        "role_label"=> $ct_request["role_label"],
+                        "jenismenu"=> $ct_request["jenismenu"],
+                        "user_updater_id" => Auth::user()->id
+                    ]);
+                }else{
+                    $idct = Approvalsetting::create([
+                        "no_seq" => $ct_request["no_seq"],
+                        "parent_id" => $id,
+                        "role"=> $ct_request["role"],
+                        "role_label"=> $ct_request["role_label"],
+                        "jenismenu"=> $ct_request["jenismenu"],
+                        "user_creator_id" => Auth::user()->id
+                    ])->id;
+                    array_push($new_menu_field_ids, $idct);
+                }
+            }
+
+            foreach(Approvalsetting::whereParentId($id)->get() as $ch){
+                $is_still_exist = false;
+                foreach($requests_ct2_approval_setting as $ct_request){
+                    if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
+                        $is_still_exist = true;
+                    }
+                }
+                if(!$is_still_exist){
+                    Approvalsetting::whereId($ch->id)->delete();
+                }
+            }
 
             return response()->json([
                 'status' => 201,
@@ -363,12 +463,16 @@ class GlobalsettingController extends Controller
             }
 
             $ct1_bank_vas = Bankva::whereParentId($request->id)->get();
+            $ct2_approval_settings = Approvalsetting::whereParentId($request->id)->where("jenismenu", "RKA")->get();
+            $ct2_approval_settingspjk = Approvalsetting::whereParentId($request->id)->where("jenismenu", "PJK")->get();
 
             $results = array(
                 "status" => 201,
                 "message" => "Data available",
                 "data" => [
                     "ct1_bank_va" => $ct1_bank_vas,
+                    "ct2_approval_setting" => $ct2_approval_settings,
+                    "ct2_approval_settingpjk" => $ct2_approval_settingspjk,
                     "globalsetting" => $globalsetting
                 ]
             );
