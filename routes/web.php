@@ -20,14 +20,14 @@ Route::post('login', [AuthController::class, 'login']);
 Route::get('register', [AuthController::class, 'showFormRegister'])->name('register');
 Route::post('register', [AuthController::class, 'register']);
  
+Route::post('/send_otp','App\Http\Controllers\UserController@kirimemail');
+
 Route::group(['middleware' => 'auth'], function () {
     Route::get('home', [HomeController::class, 'index'])->name('home');
     Route::get('test', [HomeController::class, 'test'])->name('test');
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/user/editprofile', 'App\Http\Controllers\UserController@editprofile');
-    Route::post('/updateprofile', 'App\Http\Controllers\UserController@updateprofile');
-
-    
+    Route::post('/updateprofile', 'App\Http\Controllers\UserController@updateprofile');    
 
     Route::middleware(['checkauth'])->group(function () {
         Route::get('/menu', 'App\Http\Controllers\MenuController@index')->name('menu');
@@ -40,9 +40,25 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/updatemenu/{menu}', 'App\Http\Controllers\MenuController@update');
         Route::post('/deletemenu', 'App\Http\Controllers\MenuController@destroy');
 
-        Route::get('/dashboard/labarugi', 'App\Http\Controllers\DashboardController@labarugi');
         Route::get('/dashboard/dss', 'App\Http\Controllers\DashboardController@dss');
+        Route::get('/dashboard/labarugi', 'App\Http\Controllers\DashboardController@labarugi');
+        Route::get('/dashboard/neraca', 'App\Http\Controllers\DashboardController@neraca');
+        Route::get('/dashboard/labarugi/chart', 'App\Http\Controllers\DashboardController@labarugichart'); 
+        Route::get('/dashboard/neraca/chart', 'App\Http\Controllers\DashboardController@neracachart'); 
+        Route::get('/dashboard/neracasaldo/chart', 'App\Http\Controllers\DashboardController@neracasaldochart');        
+        Route::get('/dashboard/fuzzy', 'App\Http\Controllers\DashboardController@fuzzy');
         Route::post('/dashboard/get_list', 'App\Http\Controllers\DashboardController@get_list');
+        Route::post('/dashboard/get_list_two_month', 'App\Http\Controllers\DashboardController@get_list_two_month');
+        Route::post('/dashboard/get_transaction', 'App\Http\Controllers\DashboardController@get_transaction');
+        Route::post('/dashboard/get_data_fuzzy', 'App\Http\Controllers\DashboardController@get_data_fuzzy');
+        Route::get('/dashboard/roa', 'App\Http\Controllers\DashboardController@roa');
+        Route::get('/dashboard/roe', 'App\Http\Controllers\DashboardController@roe');
+        Route::get('/dashboard/roi', 'App\Http\Controllers\DashboardController@roi');
+        Route::post('/dashboard/klasifikasi', 'App\Http\Controllers\DashboardController@klasifikasi');
+        Route::get('/dashboard/analisis', 'App\Http\Controllers\DashboardController@analisis');
+        Route::get('/dashboard/forecast', 'App\Http\Controllers\DashboardController@forecast');
+        Route::post('/dashboard/get_forecast', 'App\Http\Controllers\DashboardController@get_forecast');
+        Route::post('/dashboard/get_3month', 'App\Http\Controllers\DashboardController@get_3month');
         
         Route::get('/user', 'App\Http\Controllers\UserController@index')->name('user');
         Route::post('/getlistuser', 'App\Http\Controllers\UserController@get_list');
@@ -72,6 +88,16 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getdataunitkerja', 'App\Http\Controllers\UnitkerjaController@getdata');
         Route::post('/updateunitkerja/{unitkerja}', 'App\Http\Controllers\UnitkerjaController@update');
         Route::post('/deleteunitkerja', 'App\Http\Controllers\UnitkerjaController@destroy');
+
+        Route::get('/kebijakan', 'App\Http\Controllers\KebijakanController@index')->name('kebijakan');
+        Route::post('/getlistkebijakan', 'App\Http\Controllers\KebijakanController@get_list');
+        Route::get('/kebijakan/{kebijakan}', 'App\Http\Controllers\KebijakanController@show');
+        Route::get('/createkebijakan', 'App\Http\Controllers\KebijakanController@create');
+        Route::post('/storekebijakan', 'App\Http\Controllers\KebijakanController@store');
+        Route::get('/kebijakan/{kebijakan}/edit', 'App\Http\Controllers\KebijakanController@edit');
+        Route::post('/getdatakebijakan', 'App\Http\Controllers\KebijakanController@getdata');
+        Route::post('/updatekebijakan/{kebijakan}', 'App\Http\Controllers\KebijakanController@update');
+        Route::post('/deletekebijakan', 'App\Http\Controllers\KebijakanController@destroy');
 
         Route::get('/coa/{category}/list', 'App\Http\Controllers\CoaController@index');
         Route::post('/getlistcoa', 'App\Http\Controllers\CoaController@get_list');
@@ -191,6 +217,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/aruskas/print', 'App\Http\Controllers\AruskasController@print');
         Route::post('/get_saldo_awalaruskas', 'App\Http\Controllers\AruskasController@get_saldo_awal');
         Route::post('/aruskas/excel', 'App\Http\Controllers\AruskasController@excel');
+        Route::get('/forecast', 'App\Http\Controllers\AruskasController@forecast');
+        Route::get('/total-forecast', 'App\Http\Controllers\AruskasController@get_total_forecast');
+        Route::post('/get_forecast', 'App\Http\Controllers\AruskasController@get_forecast');
 
         Route::get('/ikuunitkerja', 'App\Http\Controllers\IkuunitkerjaController@index')->name('ikuunitkerja');
         Route::post('/getlistikuunitkerja', 'App\Http\Controllers\IkuunitkerjaController@get_list');
@@ -204,6 +233,19 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getoptionsikuunitkerja', 'App\Http\Controllers\IkuunitkerjaController@getoptions');
         Route::post('/getlinksikuunitkerja', 'App\Http\Controllers\IkuunitkerjaController@getlinks');
         Route::post('/uploadfileikuunitkerja', 'App\Http\Controllers\IkuunitkerjaController@storeUploadFile');
+
+        Route::get('/iktunitkerja', 'App\Http\Controllers\IkuunitkerjaController@indexikt')->name('iktunitkerja');
+        Route::post('/getlistiktunitkerja', 'App\Http\Controllers\IkuunitkerjaController@get_list');
+        Route::get('/iktunitkerja/{iktunitkerja}', 'App\Http\Controllers\IkuunitkerjaController@showikt');
+        Route::get('/createiktunitkerja', 'App\Http\Controllers\IkuunitkerjaController@createikt');
+        Route::post('/storeiktunitkerja', 'App\Http\Controllers\IkuunitkerjaController@storeikt');
+        Route::get('/iktunitkerja/{iktunitkerja}/edit', 'App\Http\Controllers\IkuunitkerjaController@editikt');
+        Route::post('/getdataiktunitkerja', 'App\Http\Controllers\IkuunitkerjaController@getdata');
+        Route::post('/updateiktunitkerja/{iktunitkerja}', 'App\Http\Controllers\IkuunitkerjaController@updateikt');
+        Route::post('/deleteiktunitkerja', 'App\Http\Controllers\IkuunitkerjaController@destroy');
+        Route::post('/getoptionsiktunitkerja', 'App\Http\Controllers\IkuunitkerjaController@getoptions');
+        Route::post('/getlinksiktunitkerja', 'App\Http\Controllers\IkuunitkerjaController@getlinks');
+        Route::post('/uploadfileiktunitkerja', 'App\Http\Controllers\IkuunitkerjaController@storeUploadFile');
 
         Route::get('/kegiatan', 'App\Http\Controllers\KegiatanController@index')->name('kegiatan');
         Route::post('/getlistkegiatan', 'App\Http\Controllers\KegiatanController@get_list');

@@ -13,7 +13,6 @@ $(document).ready(function () {
           $("#caknav-transaksi").removeClass(" active")
           $("#caknav-laporan").removeClass(" active")
 
-          
           for(var i = 0; i < data.data.user_menus.length; i++){
             $("#cakmenu-"+data.data.user_menus[i].mainmenu).removeClass("d-none");
           }

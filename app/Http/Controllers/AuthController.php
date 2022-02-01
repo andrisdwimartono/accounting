@@ -28,14 +28,17 @@ class AuthController extends Controller
     {
         $rules = [
             'email'                 => 'required|email',
-            'password'              => 'required|string'
+            'password'              => 'required|string',
+            'otp'                   => 'required|string',
         ];
   
         $messages = [
             'email.required'        => 'Email wajib diisi',
             'email.email'           => 'Email tidak valid',
             'password.required'     => 'Password wajib diisi',
-            'password.string'       => 'Password harus berupa string'
+            'password.string'       => 'Password harus berupa string',
+            'otp.required'          => 'OTP harus diisi',
+            'otp.string'            => 'OTP harus berupa string'
         ];
   
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -44,10 +47,18 @@ class AuthController extends Controller
             return redirect()->back()->withErrors($validator)->withInput($request->all);
         }
   
-        $data = [
-            'email'     => $request->input('email'),
-            'password'  => $request->input('password'),
-        ];
+        if(env('USEOTP') == 1){
+            $data = [
+                'email'     => $request->input('email'),
+                'password'  => $request->input('password'),
+                'otp'       => md5($request->input('otp')),
+            ];
+        }else{
+            $data = [
+                'email'     => $request->input('email'),
+                'password'  => $request->input('password')
+            ];
+        }
   
         Auth::attempt($data);
 
@@ -57,6 +68,8 @@ class AuthController extends Controller
             Session::put('nama_instansi', $globalsetting['nama_instansi']);
             Session::put('logo_instansi', $globalsetting['logo_instansi']);
             Session::put('global_setting', $globalsetting);
+            
+            User::where("id", Auth::user()->id)->update(["otp" => null]);
 
             return redirect()->route('home');
             //return redirect()->back();
@@ -64,7 +77,7 @@ class AuthController extends Controller
         } else { // false
   
             //Login Fail
-            Session::flash('error', 'Email atau password salah');
+            Session::flash('error', 'Email atau password atau OTP salah');
             return redirect()->route('login');
         }
   

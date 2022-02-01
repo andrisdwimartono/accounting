@@ -294,6 +294,8 @@ class GlobalsettingController extends Controller
                 "nama_lengkap_instansi"=> $request->nama_lengkap_instansi,
                 "logo_instansi"=> $request->logo_instansi,
                 "logo_sia"=> $request->logo_sia,
+                "nama_sia"=> $request->nama_sia,
+                "main_background"=> $request->main_background,
                 "bulan_tutup_tahun"=> $request->bulan_tutup_tahun,
                 "bulan_tutup_tahun_label"=> $request->bulan_tutup_tahun_label,
                 "user_updater_id"=> Auth::user()->id

@@ -16,6 +16,7 @@
   <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.js") }}"></script>
   <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.time.js") }}"></script>
   <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.date.js") }}"></script>
+  <script src="{{ asset ("/assets/jspdf.debug.js") }}"></script>
   <!-- Pickdate -->
   <!-- <script src="{{ asset ("/assets/motaadmin/js/plugins-init/pickadate-init.js") }}"></script> -->
 
@@ -47,7 +48,9 @@
   (function($) {
     "use strict"
 
-    
+    $("#neraca").DataTable({
+      "responsive": true, "lengthChange": false, "autoWidth": false,
+    }).buttons().container().appendTo('#neraca_wrapper .col-md-6:eq(0)');
 
     //basic bar chart
     if(jQuery('#laporanChart').length > 0 ){
@@ -61,7 +64,7 @@
         barChart_2gradientStroke2.addColorStop(0, "rgba(190, 212, 255, 1)");
         barChart_2gradientStroke2.addColorStop(1, "rgba(190, 212, 255, 0.7)");
 
-        barChart_2.height = 250;
+        // barChart_2.height = 250;
 
         myChart = new Chart(barChart_2, {
             type: 'horizontalBar',
@@ -89,9 +92,18 @@
               scales: {
                   xAxes : [{
                       ticks : {
-                          max : 100,
+                          min : 0,
                       }
-                  }]
+                  }],
+              },
+              tooltips: {
+                enabled: true,
+                mode: 'single',
+                callbacks: {
+                    label: function(tooltipItems, data, i) {
+                      return data.datasets[tooltipItems.datasetIndex].label + ' : ' + data.datasets[tooltipItems.datasetIndex].nominal[tooltipItems.datasetIndex] + ' (' + data.datasets[tooltipItems.datasetIndex].percent[tooltipItems.datasetIndex].toString() + "%)";
+                    }
+                }
               },
             },
         });
@@ -101,18 +113,13 @@
   
 
   $(document).ready(function(){
-    function fetch_data(i){
-      bulan = parseInt($("#bulan_periode").val()) - 1 + i
+    
+    function fetch_data(){
+      bulan = parseInt($("#bulan_periode").val())
       tahun = parseInt($("#tahun_periode").val())
-      if(bulan==0){
-        bulan = 12;
-        tahun = tahun - 1;
-      }
-      
-      console.log(i, bulan, tahun)
-      
+      console.log(myChart);
       $.ajax({
-        url: '/dashboard/get_list',
+        url: '/dashboard/get_list_two_month',
         type:"POST",
         data:{
           search : {
@@ -123,26 +130,29 @@
           _token: $("input[name=_token]").val()
         },
         success: function(data) {
-          
           data = JSON.parse(data)
-          // add new label and data point to chart's underlying data structures
-          myChart.data.labels = data.label;
-          
-          myChart.data.datasets[i].data = data.data;
-          myChart.data.datasets[i].label = bulan + " " + tahun;
-          
+          for(i=0;i<data.length;i++){
+            // add new label and data point to chart's underlying data structures
+            myChart.data.labels = data[i].label;
+            
+            myChart.data.datasets[i].data = data[i].data;
+            myChart.data.datasets[i].nominal = data[i].nominal;
+            myChart.data.datasets[i].percent = data[i].percent;
+            myChart.data.datasets[i].label = data[i].bulan + " " + data[i].tahun;
+            
+            myChart.legend.legendItems[i].text = data[i].bulan + " " + data[i].tahun;
+            
+          }
+          // myChart.height = (data[0].data.length)*100;
+          // var canvas = document.getElementById("output")
+          // canvas.height = (data[0].data.length)*100;
           // re-render the chart
           myChart.update();
         }
       });
     }
 
-    fetch_data(0);
-    fetch_data(1);
-
-    $("#neraca").DataTable({
-      "responsive": true, "lengthChange": false, "autoWidth": false,
-    }).buttons().container().appendTo('#neraca_wrapper .col-md-6:eq(0)');
+    fetch_data();
 
     var today = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
         $('#startDate').datepicker({
@@ -175,210 +185,7 @@
 	  var table = null;
     var dataTable;
   
-    function fetch_data2(){
-      cto_loading_show();
-      var target = [];
-      $('#neraca thead tr th').each(function(i, obj) {
-          target.push(i);
-      });
-      target.shift();
-      $('#neraca').DataTable().destroy();
-      dataTable = $('#neraca').DataTable({
-          "autoWidth": false,
-          dom: 'Brtip',
-          buttons: [
-                {
-                    text: "PDF <span class='btn-icon-right'><i class='fa fa-print'></i></span>",
-                    className: "btn btn-primary",
-                    init: function(api, node, config) {
-                      $(node).removeClass('dt-button')
-                    },
-                    action: function ( e, dt, node, config ) {
-                      var url = '/labarugi/print';
-                      var form = $('<form action="' + url + '" target="_blank" method="post">' +
-                        '<input type="hidden" name="_token" value="'+$("input[name=_token]").val()+'" />' +
-                        '<input type="hidden" name="search[bulan_periode]" value="'+$("#bulan_periode").val()+'" />' +
-                        '<input type="hidden" name="search[tahun_periode]" value="'+$("#tahun_periode").val()+'" />' +
-                        '<input type="hidden" name="search[child_level]" value="'+$("#child_level").val()+'" />' +
-                        '</form>');
-                      $('body').append(form);
-                      form.submit();
-                    },
-                },
-                {
-                    text: "Excel <span class='btn-icon-right'><i class='fa fa-print'></i></span>",
-                    className: "btn btn-success",
-                    init: function(api, node, config) {
-                      $(node).removeClass('dt-buttons')
-                      $(node).removeClass('dt-button')
-                    },
-                    action: function ( e, dt, node, config ) {
-                      var url = '/labarugi/excel';
-                      var form = $('<form action="' + url + '" target="_blank" method="post">' +
-                        '<input type="hidden" name="_token" value="'+$("input[name=_token]").val()+'" />' +
-                        '<input type="hidden" name="search[bulan_periode]" value="'+$("#bulan_periode").val()+'" />' +
-                        '<input type="hidden" name="search[tahun_periode]" value="'+$("#tahun_periode").val()+'" />' +
-                        '<input type="hidden" name="search[child_level]" value="'+$("#child_level").val()+'" />' +
-                        '</form>');
-                      $('body').append(form);
-                      form.submit();
-                    },
-                },
-            ],
-          "colResize": {
-            isEnabled: true,
-            hoverClass: 'dt-colresizable-hover',
-            hasBoundCheck: true,
-            minBoundClass: 'dt-colresizable-bound-min',
-            maxBoundClass: 'dt-colresizable-bound-max',
-            isResizable: function(column) { 
-              return true;
-            },
-            onResize: function(column) {
-              //console.log('...resizing...');
-            },
-            onResizeEnd: function(column, columns) {
-              $('#labarugi').DataTable().draw();
-            }
-          },
-          "processing" : true,
-          "serverSide" : true,
-          "pagingType": "full_numbers",
-          "pageLength": 20,
-          "order": [[ 1, "asc" ]],
-          "ajax" : {
-            url:"/getlist{{$page_data["page_data_urlname"]}}",
-            type:"POST",
-            data:{
-              search : {
-                bulan_periode: $("#bulan_periode").val(),
-                tahun_periode: $("#tahun_periode").val(),
-                child_level: $("#child_level").val(),
-              },  
-              _token: $("input[name=_token]").val()
-            },
-            "dataSrc": function ( json ) {
-              return json.data;
-            }
-          },
-          
-          
-          "footerCallback": function ( row, data, start, end, display ) {
-              var api = this.api(), data;
-              var api2 = this.api(), data;
-  
-              var intVal = function ( i ) {
-                  return typeof i === 'string' ? i.replace(/[\$,]/g, '')*1 : typeof i === 'number' ?i : 0;
-              };
-              debet = 0;
-              kredit = 0;
-              for(var i = 0; i < data.length; i++){
-                if(data[i][6] == 1){ // if level_coa < 1
-                  debet = debet+intVal(data[i][3]);
-                  kredit = kredit+intVal(data[i][4]);
-                }
-              }
 
-              saldo = kredit-debet
-              saldo_debet = "";
-              saldo_kredit = "";
-              if(saldo>0) saldo_debet = formatRupiahWNegative(saldo,".");
-              else saldo_kredit = formatRupiahWNegative(saldo,".");
-
-              // Update footer
-              $( api.column( 2 ).footer() ).html("JUMLAH");
-              $( api.column( 3 ).footer() ).html(formatRupiahWNegative(debet,"."));
-              $( api.column( 4 ).footer() ).html(formatRupiahWNegative(kredit,"."));
-
-              $( 'tr:eq(1) td:eq(1)', api.table().footer() ).addClass("right total").html(saldo>0?"SURPLUS":"DEFISIT");
-              $( 'tr:eq(1) td:eq(3)', api.table().footer() ).html(saldo_debet);
-              $( 'tr:eq(1) td:eq(4)', api.table().footer() ).html(saldo_kredit);
-            },
-            "columnDefs": [
-              { 
-                "targets": 0,
-                "class" : "column-hidden"
-              },
-              { 
-                "targets": 1,
-                "width" : 150,
-                "render":  function ( data, type, row, meta ) {
-                  var code = convertCode(row[1].split(" ")[0]);
-                  if(row[7]=='on'){
-                    return "<b>"+code+"</b>";
-                  } else {
-                    return code;
-                  }
-                },
-                createdCell: function (td, cellData, rowData, row, col) {
-                  var padd = (10+(parseInt(rowData[6])-1)*12)+"px";
-                  $(td).css('padding-left', padd);
-                }
-              },
-              { 
-                "targets": 2,
-                "width" : 250,
-                "render":  function ( data, type, row, meta ) {
-                  if(row[7]=='on'){
-                    return "<b>"+row[2]+"</b>";
-                  } else {
-                    return row[2];
-                  }
-                },
-                createdCell: function (td, cellData, rowData, row, col) {
-                  var padd = (10+(parseInt(rowData[6])-1)*12)+"px";
-                  $(td).css('padding-left', padd);
-                }
-              },
-              { 
-                "targets": 3,
-                "width" : 130,
-                "render":  function ( data, type, row, meta ) {
-                  if($("#child_level").val() == 1){
-                    if(row[7]!='on'){
-                      return formatRupiahWNegative(row[3],".") ;
-                    } else {
-                      return "";
-                    }
-                  } else {
-                    return formatRupiahWNegative(row[3],".") ;
-                  }
-                          
-                }
-              },
-              { 
-                "targets": 4,
-                "width" : 130,
-                "render":  function ( data, type, row, meta ) {
-                  if($("#child_level").val() == 1){
-                    if(row[7]!='on'){
-                      return formatRupiahWNegative(row[4],".") ;
-                    } else {
-                      return "";
-                    }
-                  } else {
-                    return formatRupiahWNegative(row[4],".") ;
-                  }
-                }
-              },
-              { 
-                "targets": 5,
-                "class" : "column-hidden",
-              },
-              { 
-                "targets": 6,
-                "class" : "column-hidden",
-              },
-              { 
-                "targets": 7,
-                "class" : "column-hidden",
-              }
-              
-          ],
-        });
-      cto_loading_hide();
-      table = dataTable
-    }
 
     function convertCode(data){
       var val = "";
@@ -409,20 +216,16 @@
     };
 
     $("#bulan_periode").on("change", function() {
-      fetch_data(0);
-      fetch_data(1);
+      fetch_data();
     });
 
     $("#tahun_periode").on("change", function() {
-      fetch_data(0);
-      fetch_data(1);
+      fetch_data();
     });
 
     $("#child_level").on("change", function() {
-      fetch_data(0);
-      fetch_data(1);
+      fetch_data();
     });
-
 
     $("#coa").select2({
       ajax: {
@@ -453,6 +256,49 @@
             },
           cache: true
       }
+    });
+
+    $('#downloadPdf').click(function(event) {
+      // get size of report page
+      var reportPageHeight = $('.card').innerHeight();
+      var reportPageWidth = $('.card').innerWidth();
+      
+      // create a new canvas object that we will populate with all other canvas objects
+      var pdfCanvas = $('<canvas />').attr({
+        id: "canvaspdf",
+        width: reportPageWidth,
+        height: reportPageHeight
+      });
+      
+      // keep track canvas position
+      var pdfctx = $(pdfCanvas)[0].getContext('2d');
+      var pdfctxX = 0;
+      var pdfctxY = 0;
+      var buffer = 100;
+      
+      // for each chart.js chart
+      $("canvas").each(function(index) {
+        // get the chart height/width
+        var canvasHeight = $(this).innerHeight();
+        var canvasWidth = $(this).innerWidth();
+        
+        // draw the chart into the new canvas
+        pdfctx.drawImage($(this)[0], pdfctxX, pdfctxY, canvasWidth, canvasHeight);
+        pdfctxX += canvasWidth + buffer;
+        
+        // our report page is in a grid pattern so replicate that in the new canvas
+        if (index % 2 === 1) {
+          pdfctxX = 0;
+          pdfctxY += canvasHeight + buffer;
+        }
+      });
+      
+      // create new pdf and add our new canvas as an image
+      var pdf = new jsPDF('l', 'pt', [reportPageWidth, reportPageHeight]);
+      pdf.addImage($(pdfCanvas)[0], 'PNG', 0, 0);
+      
+      // download the pdf
+      pdf.save('filename.pdf');
     });
   });
 

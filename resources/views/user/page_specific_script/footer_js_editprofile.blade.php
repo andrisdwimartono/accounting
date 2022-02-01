@@ -1,4 +1,17 @@
-    <script src="{{ asset ("/assets/jquery/js/jquery-3.6.0.min.js") }}"></script>
+     <!-- Required vendors -->
+<script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
+	<script src="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/js/bootstrap-select.min.js") }} "></script>
+    <script src="{{ asset ("/assets/motaadmin/vendor/chart.js/Chart.bundle.min.js") }}"></script>
+    <script src="{{ asset ("/assets/motaadmin/js/custom.min.js") }}"></script>
+	<script src="{{ asset ("/assets/motaadmin/js/deznav-init.js") }}"></script>
+	<!-- Apex Chart -->
+	<script src="{{ asset ("/assets/motaadmin/vendor/apexchart/apexchart.js") }}"></script>
+    
+	<!-- Svganimation scripts -->
+    <script src="{{ asset ("/assets/motaadmin/vendor/svganimation/vivus.min.js") }}"></script>
+    <script src="{{ asset ("/assets/motaadmin/vendor/svganimation/svg.animation.js") }}"></script>
+
+    <!-- <script src="{{ asset ("/assets/jquery/js/jquery-3.6.0.min.js") }}"></script> -->
     <script src="{{ asset ("/assets/node_modules/@popperjs/core/dist/umd/popper.min.js") }}"></script>
     <script src="{{ asset ("/assets/node_modules/gijgo/js/gijgo.min.js") }}"></script>
     <script src="{{ asset ("/assets/node_modules/jquery-toast-plugin/dist/jquery.toast.min.js") }}"></script>
@@ -68,7 +81,44 @@ $(function () {
     }
 });
 
+$("select").select2({
+    placeholder: "Pilih satu",
+    allowClear: true,
+    theme: "bootstrap4" @if($page_data["page_method_name"] == "View"),
+    disabled: true @endif
+});
+
+$("#unitkerja").on("change", function() {
+    $("#unitkerja_label").val($("#unitkerja option:selected").text());
+});
+
 var fields = $("#quickForm").serialize();
+
+$("#unitkerja").select2({
+    ajax: {
+        url: "{{ env('APP_URL') }}/getlinksuser",
+        type: "post",
+        dataType: "json",
+        data: function(params) {
+            return {
+                term: params.term || "",
+                page: params.page,
+                field: "unitkerja",
+                _token: $("input[name=_token]").val()
+            }
+        },
+        processResults: function (data, params) {
+            params.page = params.page || 1;
+            return {
+                results: data.items,
+                pagination: {
+                more: (params.page * 25) < data.total_count
+                }
+            };
+        },
+        cache: true
+    }
+});
 
 $("#quickForm").validate({
     rules: {
@@ -146,9 +196,13 @@ function getdata(){
             _token: $("#quickForm input[name=_token]").val()
         },
         success: function(data){
+            console.log(data);
             for(var i = 0; i < Object.keys(data.data.{{$page_data["page_data_urlname"]}}).length; i++){
-                if(["ewfsdfsafdsafasdfasdferad"].includes(Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i])){
-                    $("input[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").prop("checked", data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
+                if(Object.keys(data.data.user)[i] == "unitkerja"){
+                    if(data.data.user[Object.keys(data.data.user)[i]]){
+                        var newState = new Option(data.data.user[Object.keys(data.data.user)[i]+"_label"], data.data.user[Object.keys(data.data.user)[i]], true, false);
+                        $("#"+Object.keys(data.data.user)[i]).append(newState).trigger("change");
+                    }
                 }else{
                     $("input[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").val(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
                         if(["photo_profile"].includes(Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i])){

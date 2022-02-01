@@ -34,85 +34,99 @@
                                 <div class="basic-form">
                                     <form id="quickForm" action="#"  style="color: #89879f; padding: 2rem; font-size:0.95rem;">
                                     @csrf
-                                        <div class="form-group row">
-                                            <label class="col-sm-4 col-form-label" for="nama_instansi">Nama Instansi</label>
-                                            <div class="col-sm-6 cakfield">
-                                                <input type="text" name="nama_instansi" class="form-control" id="nama_instansi" placeholder="Enter Nama Instansi" @if($page_data["page_method_name"] == "View") readonly @endif>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <!-- === LOGO Instansi === -->
+                                                <label class="col-sm-12 col-form-label">Logo Instansi</label>
+                                                <div class="col-sm-12 input-group cakfield">
+                                                    <div class="custom-file" style="width:100% !Important;">
+                                                        <input type="file" class="custom-file-input" id="upload_logo_instansi" name="upload_logo_instansi" onchange="selectingfile('logo_instansi');">
+                                                        <label class="custom-file-label" for="upload_logo_instansi">Pilih file Logo</label>
+                                                    </div><br>
+                                                    
+                                                    @if($globalsetting->logo_instansi != "")
+                                                        <img id="preview_logo_instansi" src="{{ asset ('/logo_instansi/'.$globalsetting->logo_instansi) }}"
+                                                                alt="preview image" style="max-width: 100%;margin-top:10px;">
+                                                    @else
+                                                        <img id="preview_logo_instansi" src="{{ asset ("/assets/images/no_image.png") }}"
+                                                            alt="preview image" style="max-width: 100%; max-height: 100px;margin-top:10px;">
+                                                    @endif
+                                                </div>
+                                                <input type="hidden" class="custom-file-input" id="logo_instansi" name="logo_instansi">    
+
+                                                <!-- === LOGO SIA === -->
+                                                <label class="col-sm-12 col-form-label">Logo SIA</label>
+                                                <div class="input-group col-sm-12 cakfield">
+                                                    <div class="custom-file" style="width:100% !Important;">
+                                                        <input type="file" class="custom-file-input" id="upload_logo_sia" name="upload_logo_sia" onchange="selectingfile('logo_sia');">
+                                                        <label class="custom-file-label" for="upload_logo_sia">Pilih file Logo</label>
+                                                    </div><br>
+                                                    
+                                                    @if($globalsetting->logo_sia != "")
+                                                        <img id="preview_logo_sia" src="{{ asset ('/logo_sia/'.$globalsetting->logo_sia) }}"
+                                                                alt="preview image" style="max-width: 100%;margin-top:10px;">
+                                                    @else
+                                                        <img id="preview_logo_sia" src="{{ asset ("/assets/images/no_image.png") }}"
+                                                            alt="preview image" style="max-width: 100%; max-height: 100px;margin-top:10px;">
+                                                    @endif
+                                                </div>
+                                                <input type="hidden" class="custom-file-input" id="logo_sia" name="logo_sia">    
+
+                                                <!-- === MAIN BACKGROUND === -->
+                                                <label class="col-sm-12 col-form-label">Background</label>
+                                                <div class="input-group col-sm-12 cakfield">
+                                                    <div class="custom-file" style="width:100% !Important;">
+                                                        <input type="file" class="custom-file-input" id="upload_main_background" name="upload_main_background" onchange="selectingfile('main_background');">
+                                                        <label class="custom-file-label" for="upload_main_background">Pilih file Background</label>
+                                                    </div><br>
+                                                    
+                                                    @if($globalsetting->main_background != "")
+                                                        <img id="preview_main_background" src="{{ asset ('/main_background/'.$globalsetting->main_background) }}"
+                                                                alt="preview image" style="max-width: 100%;margin-top:10px;">
+                                                    @else
+                                                        <img id="preview_main_background" src="{{ asset ("/assets/images/no_image.png") }}"
+                                                            alt="preview image" style="max-width: 100%; max-height: 100px;margin-top:10px;">
+                                                    @endif
+                                                </div>
+                                                <input type="hidden" class="custom-file-input" id="main_background" name="main_background">    
                                             </div>
-                                        </div>
-                                        <div class="form-group row">
-                                            <label class="col-sm-4 col-form-label" for="nama_instansi">Nama Lengkap Instansi</label>
-                                            <div class="col-sm-6 cakfield">
-                                                <input type="text" name="nama_lengkap_instansi" class="form-control" id="nama_lengkap_instansi" placeholder="Enter Nama Lengkap Instansi" @if($page_data["page_method_name"] == "View") readonly @endif>
+                                            <div class="form-group col-md-6">
+                                                <label>Nama Instansi</label>
+                                                <input type="text" name="nama_lengkap_instansi" class="form-control" id="nama_lengkap_instansi" placeholder="Enter Nama Lengkap Instansi" @if($page_data["page_method_name"] == "View") readonly @endif><br>
+                                                <label>Nama Alias</label>
+                                                <input type="text" name="nama_instansi" class="form-control" id="nama_instansi" placeholder="Enter Nama Alias Instansi" @if($page_data["page_method_name"] == "View") readonly @endif><br>
+                                                <label>Nama SIA</label>
+                                                <textarea type="text" name="nama_sia" class="form-control" style="height:90px;" id="nama_sia" placeholder="Enter Nama SIA" @if($page_data["page_method_name"] == "View") readonly @endif></textarea><br>
+                                                <label class="col-form-label" for="bulan_tutup_tahun">Bulan Tutup Tahun</label>
+                                                <div class="cakfield">
+                                                    <select name="bulan_tutup_tahun" id="bulan_tutup_tahun" class="form-control select2bs4" style="width: 100%;" @if($page_data["page_method_name"] == "View") readonly @endif></select>
+                                                    <input type="hidden" name="bulan_tutup_tahun_label" id="bulan_tutup_tahun_label">
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="form-group row">
-                                            <label class="col-sm-4 col-form-label">Logo Instansi</label>
-                                            <div class="input-group col-sm-6 cakfield">
-                                                <div class="custom-file" style="width:100% !Important;">
-                                                    <input type="file" class="custom-file-input" id="upload_logo_instansi" name="upload_logo_instansi" onchange="selectingfile('logo_instansi');">
-                                                    <label class="custom-file-label" for="upload_logo_instansi">Pilih file Logo</label>
-                                                </div><br>
-                                                
-                                                @if($globalsetting->logo_instansi != "")
-                                                    <img id="preview_logo_instansi" src="{{ asset ('/logo_instansi/'.$globalsetting->logo_instansi) }}"
-                                                            alt="preview image" style="max-width: 100%;margin-top:10px;">
-                                                @else
-                                                    <img id="preview_logo_instansi" src="{{ asset ("/assets/images/no_image.png") }}"
-                                                        alt="preview image" style="max-width: 100%; max-height: 100px;margin-top:10px;">
-                                                @endif
-                                            </div>
-                                            <input type="hidden" class="custom-file-input" id="logo_instansi" name="logo_instansi">    
                                         </div>
 
-                                        <div class="form-group row">
-                                            <label class="col-sm-4 col-form-label">Logo SIA</label>
-                                            <div class="input-group col-sm-6 cakfield">
-                                                <div class="custom-file" style="width:100% !Important;">
-                                                    <input type="file" class="custom-file-input" id="upload_logo_sia" name="upload_logo_sia" onchange="selectingfile('logo_sia');">
-                                                    <label class="custom-file-label" for="upload_logo_sia">Pilih file Logo</label>
-                                                </div><br>
-                                                
-                                                @if($globalsetting->logo_sia != "")
-                                                    <img id="preview_logo_sia" src="{{ asset ('/logo_sia/'.$globalsetting->logo_sia) }}"
-                                                            alt="preview image" style="max-width: 100%;margin-top:10px;">
-                                                @else
-                                                    <img id="preview_logo_sia" src="{{ asset ("/assets/images/no_image.png") }}"
-                                                        alt="preview image" style="max-width: 100%; max-height: 100px;margin-top:10px;">
-                                                @endif
-                                            </div>
-                                            <input type="hidden" class="custom-file-input" id="logo_sia" name="logo_sia">    
-                                        </div>
-                                        
-                                        <div class="form-group row">
-                                            <label class="col-sm-4 col-form-label" for="bulan_tutup_tahun">Bulan Tutup Tahun</label>
-                                            <div class="col-sm-6 cakfield">
-                                                <select name="bulan_tutup_tahun" id="bulan_tutup_tahun" class="form-control select2bs4" style="width: 100%;" @if($page_data["page_method_name"] == "View") readonly @endif>
-
-                                                </select>
-                                                <input type="hidden" name="bulan_tutup_tahun_label" id="bulan_tutup_tahun_label">
-                                            </div>
-                                        </div>
                                         <div class="form-group">
                                             <label for="ct1_bank_va">Bank VA</label>
                                             <div id="result">
                                                 Event result:
                                             </div>
-                                            <table id="ctct1_bank_va" class="table table-bordered table-striped" style="width:100%">
-                                                <thead>
-                                                    <tr>
-                                                        <th>No</th>
-                                                        <th>Nomor VA</th>
-                                                        <th>No. Kode Rekening</th>
-                                                        <th>No. Kode Rekening Label</th>
-                                                        <th>Action</th>
-                                                        <th>id</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
+                                            <div class="table-responsive">
+                                                <table id="ctct1_bank_va" class="display" style="width:100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>No</th>
+                                                            <th>Nomor VA</th>
+                                                            <th>No. Kode Rekening</th>
+                                                            <th>No. Kode Rekening Label</th>
+                                                            <th>Action</th>
+                                                            <th>id</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
 
-                                                </tbody>
-                                            </table>
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                             <input type="hidden" name="ct1_bank_va" class="form-control" id="ct1_bank_va" placeholder="Enter Menu Field" @if($page_data["page_method_name"] == "View") readonly @endif>
                                         </div>
 
