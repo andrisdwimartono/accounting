@@ -24,6 +24,8 @@ use App\Models\Iku;
 use App\Models\Detailbiayakegiatan;
 use App\Models\Approval;
 use App\Models\Approvalsetting;
+use App\Models\Pjk;
+use App\Models\Detailbiayapjk;
 
 use App\Exports\JurnalExport;
 use PDF;
@@ -3533,13 +3535,13 @@ class JurnalController extends Controller
 
     public function processapprove(Request $request){
         if($request->ajax() || $request->wantsJson()){
-            $last_approval = Approval::where("parent_id", $request->id)->where("no_seq", ((int)$request->no_seq)+1)->first();
+            $last_approval = Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->where("no_seq", ((int)$request->no_seq)+1)->first();
 
             if($last_approval && $last_approval->status_approval != "approve"){
                 abort(403, $last_approval->role_label." tidak/belum menerima pengajuan ini!");
             }
 
-            if(!Approval::where("parent_id", $request->id)->where("no_seq", ((int)$request->no_seq))->update([
+            if(!Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->where("no_seq", ((int)$request->no_seq))->update([
                 "role"                    => $request->role,
                 "role_label"              => $request->role_label,
                 "jenismenu"               => $request->jenismenu,
@@ -3553,8 +3555,8 @@ class JurnalController extends Controller
             }
             
             $tgl = date('Y-m-d');
-            if(Approval::where("parent_id", $request->id)->count() > Approval::where("parent_id", $request->id)->where("status_approval", "approve")->count()){
-                if(Approval::where("parent_id", $request->id)->where("status_approval", "approve")->count() > 1){
+            if(Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->count() > Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->where("status_approval", "approve")->count()){
+                if(Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->where("status_approval", "approve")->count() > 1){
                     Kegiatan::where("id", $request->id)->update([
                         "status" => "approving"
                     ]);
@@ -3582,7 +3584,10 @@ class JurnalController extends Controller
                         $this->summerizeJournal("delete", $trans->id);
                     }
                 }
-            }elseif(Approval::where("parent_id", $request->id)->count() == Approval::where("parent_id", $request->id)->where("status_approval", "approve")->count()){
+            }elseif(Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->count() == Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->where("status_approval", "approve")->count()){
+                if(Transaction::where("anggaran", $kegiatan->id)->count() > 0){
+                    abort(403, "Sudah approved dan terjurnal");
+                }
                 $this->checkOpenPeriode($tgl);
                 $kegiatan = Kegiatan::where("id", $request->id)->first();
                 $detailbiayakegiatan = Detailbiayakegiatan::where("parent_id", $request->id)->get();
@@ -3661,6 +3666,167 @@ class JurnalController extends Controller
                 $this->summerizeJournal("store", $idct);
 
                 Kegiatan::where("id", $request->id)->update([
+                    "status" => "approved"
+                ]);
+
+                return response()->json([
+                    "status" => 200,
+                    "message" => "Membuat Jurnal"
+                ]);
+            }
+
+            return response()->json([
+                "status" => 200,
+                "message" => $request->status_approval_label." berhasil"
+            ]);
+        }
+        return response()->json(['error'=>$validator->errors()->all()]);
+    }
+
+    public function processapprovepjk(Request $request){
+        if($request->ajax() || $request->wantsJson()){
+            $kegiatan = Kegiatan::where("id", $request->id)->first();
+            $pjk = Pjk::where("kegiatan_id", $request->id)->first();
+            $last_approval = Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("no_seq", ((int)$request->no_seq)+1)->first();
+
+            if($last_approval && $last_approval->status_approval != "approve"){
+                abort(403, $last_approval->role_label." tidak/belum menerima pengajuan ini!");
+            }
+
+            if(!Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("no_seq", ((int)$request->no_seq))->update([
+                "role"                    => $request->role,
+                "role_label"              => $request->role_label,
+                "jenismenu"               => $request->jenismenu,
+                "user"                    => $request->user,
+                "user_label"              => $request->user_label,
+                "komentar"                => $request->komentar,
+                "status_approval"         => $request->status_approval,
+                "status_approval_label"   => $request->status_approval_label,
+            ])){
+                abort(401, "Gagal update");
+            }
+            
+            $tgl = date('Y-m-d');
+            
+            $transkeg = Transaction::where("anggaran", $kegiatan->id)->first();
+            $jurnalkeg = Jurnal::where("id", $transkeg->parent_id)->first();
+            if(Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->count() > Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("status_approval", "approve")->count()){
+                if(Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("status_approval", "approve")->count() > 1){
+                    Kegiatan::where("id", $request->id)->update([
+                        "status" => "approving"
+                    ]);
+                }else{
+                    Kegiatan::where("id", $request->id)->update([
+                        "status" => "process"
+                    ]);
+                }
+
+                $this->checkOpenPeriode($tgl);
+                $kegiatan = Kegiatan::where("id", $request->id)->first();
+                
+                $trans = Transaction::where("idjurnalreference", $jurnalkeg->id)->first();
+                $jurnal = Jurnal::where("idjurnalreference", $jurnalkeg->id)->first();
+                if($jurnal){
+                    Jurnal::where("id", $jurnal->id)->whereNull("isdeleted")->update([
+                        "alasan_hapus" => "Batal Approve",
+                        "isdeleted" => "on"
+                    ]);
+
+                    Transaction::where("parent_id", $jurnal->id)->whereNull("isdeleted")->update([
+                        "alasan_hapus" => "Batal Approve",
+                        "isdeleted" => "on"
+                    ]);
+                    foreach(Transaction::where("parent_id", $jurnal->id)->get() as $trans){
+                        $this->summerizeJournal("delete", $trans->id);
+                    }
+                }
+            }elseif(Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->count() == Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("status_approval", "approve")->count()){
+                if(Jurnal::where("idjurnalreference", $jurnalkeg->id)->count() > 0){
+                    abort(403, "Sudah approved dan terjurnal");
+                }
+                $this->checkOpenPeriode($tgl);
+                $kegiatan = Kegiatan::where("id", $request->id)->first();
+                $detailbiayakegiatan = Detailbiayakegiatan::where("parent_id", $request->id)->get();
+                $detailbiayapjk = Detailbiayapjk::where("parent_id", $pjk->id)->get();
+                
+                $id = Jurnal::create([
+                    "unitkerja"=> $kegiatan->unit_pelaksana,
+                    "unitkerja_label"=> $kegiatan->unit_pelaksana_label,
+                    "no_jurnal"=> "JU#####",
+                    "tanggal_jurnal"=> $tgl,
+                    "keterangan"=> $kegiatan->kegiatan_name,
+                    "idjurnalreference" => $jurnalkeg->id,
+                    "no_jurnalreference" => $jurnalkeg->no_jurnal,
+                    "user_creator_id"=> Auth::user()->id
+                ])->id;
+    
+                $no_jurnal = "JU";
+                for($i = 0; $i < 7-strlen((string)$id); $i++){
+                    $no_jurnal .= "0";
+                }
+                $no_jurnal .= $id;
+                Jurnal::where("id", $id)->update([
+                    "no_jurnal"=> $no_jurnal
+                ]);
+                
+                $coaum = Coa::where("factive", "on")->whereNull("fheader")->where("kode_jenisbayar", "UMKERJA1")->first();
+
+                $nominal = 0;
+                $no_seq = -1;
+                foreach($detailbiayapjk as $dbk){
+                    $nominal += $dbk->nominalbiaya;
+                    $no_seq++;
+                    $idct = Transaction::create([
+                        "no_seq" => $no_seq,
+                        "parent_id" => $id,
+                        "deskripsi"=> "",
+                        "debet"=> $dbk->nominalbiaya,
+                        "credit"=> 0,
+                        "unitkerja"=> $kegiatan->unit_pelaksana,
+                        "unitkerja_label"=> $kegiatan->unit_pelaksana_label,
+                        "anggaran"=> $kegiatan->id,
+                        "anggaran_label"=> $kegiatan->kegiatan_name,
+                        "tanggal"=> $tgl,
+                        "keterangan"=> $kegiatan->Deskripsi,
+                        "jenis_transaksi"=> 0,
+                        "coa"=> $dbk->coa,
+                        "coa_label"=> $dbk->coa_label,
+                        "fheader"=> null,
+                        "no_jurnal"=> $no_jurnal,
+                        "idjurnalreference" => $jurnalkeg->id,
+                        "no_jurnalreference" => $jurnalkeg->no_jurnal,
+                        "user_creator_id" => Auth::user()->id
+                    ])->id;
+                    $this->summerizeJournal("store", $idct);
+                }
+                
+                $no_seq++;
+                $idct = Transaction::create([
+                    "no_seq" => $no_seq,
+                    "parent_id" => $id,
+                    "deskripsi"=> "",
+                    "debet"=> 0,
+                    "credit"=> $nominal,
+                    "unitkerja"=> $kegiatan->unit_pelaksana,
+                    "unitkerja_label"=> $kegiatan->unit_pelaksana_label,
+                    "anggaran"=> $kegiatan->id,
+                    "anggaran_label"=> $kegiatan->kegiatan_name,
+                    "tanggal"=> $tgl,
+                    "keterangan"=> $kegiatan->Deskripsi,
+                    "jenis_transaksi"=> 0,
+                    "coa"=> $coaum->id,
+                    "coa_label"=> $this->convertCode($coaum->coa_code)." ".$coaum->coa_name,
+                    "jenisbayar"=> $coaum->jenisbayar,
+                    "jenisbayar_label"=> $coaum->jenisbayar_label,
+                    "fheader"=> null,
+                    "no_jurnal"=> $no_jurnal,
+                    "idjurnalreference" => $jurnalkeg->id,
+                    "no_jurnalreference" => $jurnalkeg->no_jurnal,
+                    "user_creator_id" => Auth::user()->id
+                ])->id;
+                $this->summerizeJournal("store", $idct);
+
+                Pjk::where("id", $pjk->id)->update([
                     "status" => "approved"
                 ]);
 

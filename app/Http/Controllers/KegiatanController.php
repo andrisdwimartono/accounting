@@ -14,22 +14,15 @@ use App\Models\Approval;
 use App\Models\Approvalsetting;
 use App\Models\Jurnal;
 use App\Models\Transaction;
-
-use App\Models\Neracasaldo;
-use App\Models\Aruskas;
-use App\Models\Neraca;
-use App\Models\Labarugi;
-use App\Models\Bankva;
-use App\Models\Opencloseperiode;
-use App\Models\Fakultas;
-use App\Models\Prodi;
+use App\Models\Pjk;
+use App\Models\Detailbiayapjk;
 
 
 class KegiatanController extends Controller
 {
     public function tabledesign(){
         $td = [
-            "page_data_name" => "Kegiatan",
+            "page_data_name" => "RKA",
             "page_data_urlname" => "kegiatan",
             "fields" => [
                 "unit_pelaksana" => "link",
@@ -134,6 +127,21 @@ class KegiatanController extends Controller
         ];
 
         $td["fieldsmessages_ct2_approval"] = [
+            "required" => ":attribute harus diisi!!",
+            "min" => ":attribute minimal :min karakter!!",
+            "max" => ":attribute maksimal :max karakter!!",
+            "in" => "Tidak ada dalam pilihan :attribute!!",
+            "exists" => "Tidak ada dalam :attribute!!",
+            "date_format" => "Format tidak sesuai di :attribute!!"
+        ];
+
+        $td["fieldsrules_ct1_detailbiayapjk"] = [
+            "coa" => "required|exists:coas,id",
+            "deskripsibiaya" => "nullable",
+            "nominalbiaya" => "required|numeric"
+        ];
+
+        $td["fieldsmessages_ct1_detailbiayapjk"] = [
             "required" => ":attribute harus diisi!!",
             "min" => ":attribute minimal :min karakter!!",
             "max" => ":attribute maksimal :max karakter!!",
@@ -424,12 +432,16 @@ class KegiatanController extends Controller
             $act = '
             <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
 
-            <a href="/kegiatan/'.$kegiatan->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
+            <a href="/kegiatan/'.$kegiatan->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a> |
+
+            <a href="/pjk/'.$kegiatan->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail PJK"><i class="fas fa-eye text-white"></i></a>
+
+            <a href="/pjk/'.$kegiatan->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data PJK"><i class="fas fa-edit text-white"></i></a> |
 
             <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button>';
 
             array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label, $kegiatan->tahun_label, $kegiatan->iku_label, $kegiatan->kegiatan_name, $kegiatan->output, $act));
-    }
+        }
         $output = array(
             "draw" => intval($request->draw),
             "recordsTotal" => Kegiatan::get()->count(),
@@ -451,7 +463,7 @@ class KegiatanController extends Controller
             }
 
             $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->get();
-            $ct2_approvals = Approval::whereParentId($request->id)->get();
+            $ct2_approvals = Approval::whereParentId($request->id)->where("jenismenu", "RKA")->get();
 
             $results = array(
                 "status" => 201,
@@ -536,340 +548,259 @@ class KegiatanController extends Controller
         return response()->json(['error'=>$validator->errors()->all()]);
     }
 
-    public function processapprove(Request $request){
-        if($request->ajax() || $request->wantsJson()){
-            $last_approval = Approval::where("parent_id", $request->id)->where("no_seq", ((int)$request->no_seq)+1)->first();
+    /**
+    * Display the specified resource.
+    *
+    * @param int $id
+    * @return \Illuminate\Http\Response
+    */
+    public function showpjk(Kegiatan $kegiatan)
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_data_name"] = "PJK";
+        $page_data["page_method_name"] = "View";
+        $page_data["footer_js_page_specific_script"] = ["kegiatan.page_specific_script.footer_js_createpjk"];
+        $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_create"];
+        
+        $page_data["id"] = $kegiatan->id;
+        return view("kegiatan.createpjk", ["page_data" => $page_data]);
+    }
 
-            if($last_approval && $last_approval->status_approval != "approve"){
-                abort(403, $last_approval->role_label." tidak/belum menerima pengajuan ini!");
-            }
+    /**
+    * Show the form for editing the specified resource.
+    *
+    * @param int $id
+    * @return \Illuminate\Http\Response
+    */
+    public function createpjk(Kegiatan $kegiatan)
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_data_name"] = "PJK";
+        $page_data["page_method_name"] = "Update";
+        $page_data["footer_js_page_specific_script"] = ["kegiatan.page_specific_script.footer_js_createpjk"];
+        $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_create"];
+        
+        $page_data["id"] = $kegiatan->id;
+        return view("kegiatan.createpjk", ["page_data" => $page_data]);
+    }
 
-            if(!Approval::where("parent_id", $request->id)->where("no_seq", ((int)$request->no_seq))->update([
-                "role"                    => $request->role,
-                "role_label"              => $request->role_label,
-                "jenismenu"               => $request->jenismenu,
-                "user"                    => $request->user,
-                "user_label"              => $request->user_label,
-                "komentar"                => $request->komentar,
-                "status_approval"         => $request->status_approval,
-                "status_approval_label"   => $request->status_approval_label,
-            ])){
-                abort(401, "Gagal update");
+    /**
+    * Update the specified resource in storage.
+    *
+    * @param \Illuminate\Http\Request $request
+    * @param int $id
+    * @return \Illuminate\Http\Response
+    */
+    public function updatepjk(Request $request, $id)
+    {
+        $keg = Kegiatan::where("id",$id)->first();
+        if($keg->status != "approved"){
+            abort(403, "tidak dapat di PJK, status belum approved");
+        }
+
+        $thispjk = Pjk::where("kegiatan_id", $id)->first();
+        if(!$thispjk){
+            return $this->storepjk($request, $id);
+        }
+
+        $page_data = $this->tabledesign();
+        $rules_ct1_detailbiayapjk = $page_data["fieldsrules_ct1_detailbiayapjk"];
+        $requests_ct1_detailbiayapjk = json_decode($request->ct1_detailbiayakegiatan, true);
+        foreach($requests_ct1_detailbiayapjk as $ct_request){
+            $child_tb_request = new \Illuminate\Http\Request();
+            $child_tb_request->replace($ct_request);
+            $ct_messages = array();
+            foreach($page_data["fieldsmessages_ct1_detailbiayapjk"] as $key => $value){
+                $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
             }
+            $child_tb_request->validate($rules_ct1_detailbiayapjk, $ct_messages);
+        }
+
+        $rules = $page_data["fieldsrules"];
+        $messages = $page_data["fieldsmessages"];
+        if($request->validate($rules, $messages)){
+            Pjk::where("id", $thispjk->id)->update([
+                "unit_pelaksana"=> $request->unit_pelaksana,
+                "unit_pelaksana_label"=> $request->unit_pelaksana_label,
+                "tahun"=> $request->tahun,
+                "tahun_label"=> $request->tahun_label,
+                "iku"=> $request->iku,
+                "iku_label"=> $request->iku_label,
+                "kegiatan_name"=> $request->kegiatan_name,
+                "Deskripsi"=> $request->Deskripsi == ''?null:$request->Deskripsi,
+                "output"=> $request->output == ''?null:$request->output,
+                "proposal"=> $request->proposal == ''?null:$request->proposal,
+                'kegiatan_id' => $id,
+                'desc_pjk' => $request->desc_pjk == ''?null:$request->desc_pjk,
+                'laporan_pjk' => $request->laporan_pjk == ''?null:$request->laporan_pjk, 
+                'user_pjk' => Auth::user()->id,
+                "user_updater_id"=> Auth::user()->id
+            ]);
             
-            $tgl = date('Y-m-d');
-            if(Approval::where("parent_id", $request->id)->count() > Approval::where("parent_id", $request->id)->where("status_approval", "approve")->count()){
-                if(Approval::where("parent_id", $request->id)->where("status_approval", "approve")->count() > 1){
-                    Kegiatan::where("id", $request->id)->update([
-                        "status" => "approving"
+            $new_menu_field_ids = array();
+            foreach($requests_ct1_detailbiayapjk as $ct_request){
+                if(isset($ct_request["id"])){
+                    Detailbiayapjk::where("id", $ct_request["id"])->update([
+                        "no_seq" => $ct_request["no_seq"],
+                        "parent_id" => $thispjk->id,
+                        "coa"=> $ct_request["coa"],
+                        "coa_label"=> $ct_request["coa_label"],
+                        "deskripsibiaya"=> $ct_request["deskripsibiaya"],
+                        "nominalbiaya"=> $ct_request["nominalbiaya"],
+                        'kegiatan_id' => $id,
+                        'desc_detail' => $ct_request["desc_detail"],
+                        "user_updater_id" => Auth::user()->id
                     ]);
                 }else{
-                    Kegiatan::where("id", $request->id)->update([
-                        "status" => "process"
-                    ]);
+                    $idct = Detailbiayapjk::create([
+                        "no_seq" => $ct_request["no_seq"],
+                        "parent_id" => $thispjk->id,
+                        "coa"=> $ct_request["coa"],
+                        "coa_label"=> $ct_request["coa_label"],
+                        "deskripsibiaya"=> $ct_request["deskripsibiaya"],
+                        "nominalbiaya"=> $ct_request["nominalbiaya"],
+                        'kegiatan_id' => $id,
+                        'desc_detail' => $ct_request["desc_detail"],
+                        "user_creator_id" => Auth::user()->id
+                    ])->id;
+                    array_push($new_menu_field_ids, $idct);
                 }
+            }
 
-                $this->checkOpenPeriode($tgl);
-                $kegiatan = Kegiatan::where("id", $request->id)->first();
-                $trans = Transaction::where("anggaran", $kegiatan->id)->first();
-                $jurnal = Jurnal::where("id", $trans->parent_id)->first();
-                if($jurnal){
-                    Jurnal::where("id", $jurnal->id)->whereNull("isdeleted")->update([
-                        "alasan_hapus" => "Batal Approve",
-                        "isdeleted" => "on"
-                    ]);
-
-                    Transaction::where("parent_id", $jurnal->id)->whereNull("isdeleted")->update([
-                        "alasan_hapus" => "Batal Approve",
-                        "isdeleted" => "on"
-                    ]);
-                    foreach(Transaction::where("parent_id", $jurnal->id)->get() as $trans){
-                        $this->summerizeJournal("delete", $trans->id);
+            foreach(Detailbiayapjk::whereParentId($thispjk->id)->get() as $ch){
+                    $is_still_exist = false;
+                    foreach($requests_ct1_detailbiayapjk as $ct_request){
+                        if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
+                            $is_still_exist = true;
+                        }
+                    }
+                    if(!$is_still_exist){
+                        Detailbiayapjk::whereId($ch->id)->delete();
                     }
                 }
-            }elseif(Approval::where("parent_id", $request->id)->count() == Approval::where("parent_id", $request->id)->where("status_approval", "approve")->count()){
-                $this->checkOpenPeriode($tgl);
-                $kegiatan = Kegiatan::where("id", $request->id)->first();
-                $detailbiayakegiatan = Detailbiayakegiatan::where("parent_id", $request->id)->get();
-                $nominal = 0;
-                foreach($detailbiayakegiatan as $dbk){
-                    $nominal += $dbk->nominalbiaya;
-                }
-                
-                $id = Jurnal::create([
-                    "unitkerja"=> $kegiatan->unit_pelaksana,
-                    "unitkerja_label"=> $kegiatan->unit_pelaksana_label,
-                    "no_jurnal"=> "JU#####",
-                    "tanggal_jurnal"=> $tgl,
-                    "keterangan"=> $kegiatan->kegiatan_name,
-                    "user_creator_id"=> Auth::user()->id
-                ])->id;
-    
-                $no_jurnal = "JU";
-                for($i = 0; $i < 7-strlen((string)$id); $i++){
-                    $no_jurnal .= "0";
-                }
-                $no_jurnal .= $id;
-                Jurnal::where("id", $id)->update([
-                    "no_jurnal"=> $no_jurnal
-                ]);
-                
-                $coaum = Coa::where("factive", "on")->whereNull("fheader")->where("kode_jenisbayar", "UMKERJA1")->first();
-                $coabank = Coa::where("factive", "on")->whereNull("fheader")->where("kode_jenisbayar", "BANKBSIQQ")->first();
 
-                $no_seq = 0;
-                $idct = Transaction::create([
-                    "no_seq" => $no_seq,
-                    "parent_id" => $id,
-                    "deskripsi"=> "",
-                    "debet"=> 0,
-                    "credit"=> $nominal,
-                    "unitkerja"=> $kegiatan->unit_pelaksana,
-                    "unitkerja_label"=> $kegiatan->unit_pelaksana_label,
-                    "anggaran"=> $kegiatan->id,
-                    "anggaran_label"=> $kegiatan->kegiatan_name,
-                    "tanggal"=> $tgl,
-                    "keterangan"=> $kegiatan->Deskripsi,
-                    "jenis_transaksi"=> 0,
-                    "coa"=> $coabank->id,
-                    "coa_label"=> $this->convertCode($coabank->coa_code)." ".$coabank->coa_name,
-                    "jenisbayar"=> $coabank->jenisbayar,
-                    "jenisbayar_label"=> $coabank->jenisbayar_label,
-                    "fheader"=> null,
-                    "no_jurnal"=> $no_jurnal,
+            return response()->json([
+                'status' => 201,
+                'message' => 'Id '.$id.' is updated',
+                'data' => ['id' => $id]
+            ]);
+        }
+    }
+
+    public function storepjk(Request $request, $id)
+    {
+        $keg = Kegiatan::where("id",$id)->first();
+        if($keg->status != "approved"){
+            abort(403, "tidak dapat di PJK, status belum approved");
+        }
+        $page_data = $this->tabledesign();
+        $rules_ct1_detailbiayapjk = $page_data["fieldsrules_ct1_detailbiayapjk"];
+        $requests_ct1_detailbiayapjk = json_decode($request->ct1_detailbiayakegiatan, true);
+        foreach($requests_ct1_detailbiayapjk as $ct_request){
+            $child_tb_request = new \Illuminate\Http\Request();
+            $child_tb_request->replace($ct_request);
+            $ct_messages = array();
+            foreach($page_data["fieldsmessages_ct1_detailbiayapjk"] as $key => $value){
+                $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
+            }
+            $child_tb_request->validate($rules_ct1_detailbiayapjk, $ct_messages);
+        }
+
+        $rules = $page_data["fieldsrules"];
+        $messages = $page_data["fieldsmessages"];
+        if($request->validate($rules, $messages)){
+            $pjkid = pjk::create([
+                "unit_pelaksana"=> $request->unit_pelaksana,
+                "unit_pelaksana_label"=> $request->unit_pelaksana_label,
+                "tahun"=> $request->tahun,
+                "tahun_label"=> $request->tahun_label,
+                "iku"=> $request->iku,
+                "iku_label"=> $request->iku_label,
+                "kegiatan_name"=> $request->kegiatan_name,
+                "Deskripsi"=> $request->Deskripsi,
+                "output"=> $request->output,
+                "proposal"=> $request->proposal,
+                'kegiatan_id' => $id,
+                'desc_pjk' => $request->desc_pjk,
+                'laporan_pjk' => $request->laporan_pjk,
+                'user_pjk' => Auth::user()->id,
+                "user_creator_id"=> Auth::user()->id
+            ])->id;
+
+            foreach($requests_ct1_detailbiayapjk as $ct_request){
+                Detailbiayapjk::create([
+                    "no_seq" => $ct_request["no_seq"],
+                    "parent_id" => $pjkid,
+                    "coa"=> $ct_request["coa"],
+                    "coa_label"=> $ct_request["coa_label"],
+                    "deskripsibiaya"=> $ct_request["deskripsibiaya"],
+                    "nominalbiaya"=> $ct_request["nominalbiaya"],
+                    'kegiatan_id' => $id,
+                    'desc_detail' => $ct_request["desc_detail"],
                     "user_creator_id" => Auth::user()->id
-                ])->id;
-                $this->summerizeJournal("store", $idct);
-                
-                $no_seq++;
-                $idct = Transaction::create([
-                    "no_seq" => $no_seq,
-                    "parent_id" => $id,
-                    "deskripsi"=> "",
-                    "debet"=> $nominal,
-                    "credit"=> 0,
-                    "unitkerja"=> $kegiatan->unit_pelaksana,
-                    "unitkerja_label"=> $kegiatan->unit_pelaksana_label,
-                    "anggaran"=> $kegiatan->id,
-                    "anggaran_label"=> $kegiatan->kegiatan_name,
-                    "tanggal"=> $tgl,
-                    "keterangan"=> $kegiatan->Deskripsi,
-                    "jenis_transaksi"=> 0,
-                    "coa"=> $coaum->id,
-                    "coa_label"=> $this->convertCode($coaum->coa_code)." ".$coaum->coa_name,
-                    "jenisbayar"=> $coaum->jenisbayar,
-                    "jenisbayar_label"=> $coaum->jenisbayar_label,
-                    "fheader"=> null,
-                    "no_jurnal"=> $no_jurnal,
-                    "user_creator_id" => Auth::user()->id
-                ])->id;
-                $this->summerizeJournal("store", $idct);
-
-                Kegiatan::where("id", $request->id)->update([
-                    "status" => "approved"
                 ]);
+            }
 
-                return response()->json([
-                    "status" => 200,
-                    "message" => "Membuat Jurnal"
+            foreach(Approvalsetting::where("jenismenu", "PJK")->get() as $appr){
+                Approval::create([
+                    "no_seq" => $appr->no_seq,
+                    "parent_id" => $pjkid,
+                    "role"=> $appr->role,
+                    "role_label"=> $appr->role_label,
+                    "jenismenu"=> $appr->jenismenu,
+                    "user_creator_id" => Auth::user()->id
                 ]);
             }
 
             return response()->json([
-                "status" => 200,
-                "message" => $request->status_approval_label." berhasil"
+                'status' => 201,
+                'message' => 'Created with id '.$id,
+                'data' => ['id' => $id]
             ]);
         }
-        return response()->json(['error'=>$validator->errors()->all()]);
     }
 
-    public function summerizeJournal($method, $id_transaction){
-        $transaction = Transaction::where("id", $id_transaction)->first();
-        $coa = Coa::where("id", $transaction->coa)->first();
-        $bulan = explode("-", $transaction->tanggal)[1];
-        $tahun = explode("-", $transaction->tanggal)[0];
-        if($method == "store" || $method == "updatelast"){
-            $neracasaldo = Neracasaldo::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->first();
-            if($neracasaldo){
-                Neracasaldo::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->update([
-                    "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neracasaldo->debet+$transaction->debet-$transaction->credit:0,
-                    "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neracasaldo->credit+$transaction->credit-$transaction->debet:0,
-                ]);
+    public function getdatapjk(Request $request)
+    {
+        if($request->ajax() || $request->wantsJson()){
+            $kegiatan = Kegiatan::whereId($request->id)->first();
+            if(!$kegiatan){
+                abort(404, "Data not found");
+            }
+
+            $pjk = Pjk::where("kegiatan_id", $request->id)->first();
+            if($pjk){
+                $ct1_detailbiayakegiatans = Detailbiayapjk::where("kegiatan_id", $request->id)->get();
+                $ct2_approvals = Approval::whereParentId($pjk->id)->where("jenismenu", "PJK")->get();
+
+                $results = array(
+                    "status" => 201,
+                    "message" => "Data available",
+                    "data" => [
+                        "ct1_detailbiayakegiatan" => $ct1_detailbiayakegiatans,
+                        "ct2_approval" => $ct2_approvals,
+                        "kegiatan" => $pjk
+                    ]
+                );
             }else{
-                Neracasaldo::create([
-                    "tahun_periode" => $tahun, 
-                    "bulan_periode" => $bulan, 
-                    "coa" => $transaction->coa, 
-                    "coa_label" => $coa->coa_code." ".$coa->coa_name, 
-                    "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$transaction->debet-$transaction->credit:0, 
-                    "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$transaction->credit-$transaction->debet:0, 
-                    "user_creator_id" => 2,
-                    "jenisbayar" => 0,
-                    "jenisbayar_label" => "",
-                    "unitkerja" => $transaction->unitkerja,
-                    "unitkerja_label" => $transaction->unitkerja_label
-                ]);
+                $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->get();
+                foreach($ct1_detailbiayakegiatans as $ct1){
+                    $ct1->desc_detail = '';
+                }
+                $ct2_approvals = null;
+
+                $results = array(
+                    "status" => 201,
+                    "message" => "Data available",
+                    "data" => [
+                        "ct1_detailbiayakegiatan" => $ct1_detailbiayakegiatans,
+                        "ct2_approval" => $ct2_approvals,
+                        "kegiatan" => $kegiatan
+                    ]
+                );
             }
 
-            $aruskas = Aruskas::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->first();
-            if($aruskas){
-                Aruskas::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->update([
-                    "debet" => $aruskas->debet+$transaction->debet,
-                    "credit" => $aruskas->credit+$transaction->credit,
-                ]);
-            }else{
-                Aruskas::create([
-                    "tahun_periode" => $tahun, 
-                    "bulan_periode" => $bulan, 
-                    "coa" => $transaction->coa, 
-                    "coa_label" => $coa->coa_code." ".$coa->coa_name, 
-                    "debet" => $transaction->debet,
-                    "credit" => $transaction->credit,
-                    "user_creator_id" => 2,
-                    "jenisbayar" => 0,
-                    "jenisbayar_label" => "",
-                    "jenis_aktivitas" => $coa->jenis_aktivitas,
-                    "unitkerja" => $transaction->unitkerja,
-                    "unitkerja_label" => $transaction->unitkerja_label
-                ]);
-            }
-
-            if(in_array($coa->category, array("pendapatan", "biaya", "biaya_lainnya", "pendapatan_lainnya"))){
-                $coa_sur_def = Coa::where("coa_code", "30300000")->first();
-                $neraca = Neraca::where("coa", $coa_sur_def->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->first();
-                if($neraca){
-                    Neraca::where("coa", $coa_sur_def->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->update([
-                        "debet" => 0,
-                        "credit" => $neraca->credit+$transaction->credit-$transaction->debet,
-                    ]);
-                }else{
-                    Neraca::create([
-                        "tahun_periode" => $tahun, 
-                        "bulan_periode" => $bulan, 
-                        "coa" => $coa_sur_def->id, 
-                        "coa_label" => $coa_sur_def->coa_code." ".$coa_sur_def->coa_name, 
-                        "debet" => 0, 
-                        "credit" => $transaction->credit-$transaction->debet, 
-                        "user_creator_id" => 2,
-                        "unitkerja" => $transaction->unitkerja,
-                        "unitkerja_label" => $transaction->unitkerja_label
-                    ]);
-                }
-                $labarugi = Labarugi::where("coa", $coa->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->first();
-                if($labarugi){
-                    Labarugi::where("coa", $coa->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->update([
-                        "debet" => in_array($coa->category, array("biaya", "biaya_lainnya"))?$labarugi->debet+$transaction->debet-$transaction->credit:0,
-                        "credit" => !in_array($coa->category, array("biaya", "biaya_lainnya"))?$labarugi->credit+$transaction->credit-$transaction->debet:0,
-                    ]);
-                }else{
-                    Labarugi::create([
-                        "tahun_periode" => $tahun, 
-                        "bulan_periode" => $bulan, 
-                        "coa" => $coa->id, 
-                        "coa_label" => $coa->coa_code." ".$coa->coa_name, 
-                        "debet" => in_array($coa->category, array("biaya", "biaya_lainnya"))?$transaction->debet-$transaction->credit:0, 
-                        "credit" => !in_array($coa->category, array("biaya", "biaya_lainnya"))?$transaction->credit-$transaction->debet:0,
-                        "user_creator_id" => 2,
-                        "unitkerja" => $transaction->unitkerja,
-                        "unitkerja_label" => $transaction->unitkerja_label
-                    ]);
-                }
-            }else{
-                $neraca = Neraca::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->first();
-                if($neraca){
-                    Neraca::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->update([
-                        "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neraca->debet+$transaction->debet-$transaction->credit:0,
-                        "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neraca->credit+$transaction->credit-$transaction->debet:0,
-                    ]);
-                }else{
-                    Neraca::create([
-                        "tahun_periode" => $tahun, 
-                        "bulan_periode" => $bulan, 
-                        "coa" => $transaction->coa, 
-                        "coa_label" => $coa->coa_code." ".$coa->coa_name, 
-                        "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$transaction->debet-$transaction->credit:0, 
-                        "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$transaction->credit-$transaction->debet:0, 
-                        "user_creator_id" => 2,
-                        "unitkerja" => $transaction->unitkerja,
-                        "unitkerja_label" => $transaction->unitkerja_label
-                    ]);
-                }
-            }
-        }elseif($method == "updatefirst" || $method == "delete"){
-            $neracasaldo = Neracasaldo::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->first();
-            if($neracasaldo){
-                Neracasaldo::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->update([
-                    "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neracasaldo->debet-$transaction->debet+$transaction->credit:0,
-                    "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neracasaldo->credit-$transaction->credit+$transaction->debet:0,
-                    "user_updater_id" => 2
-                ]);
-            }
-
-            $aruskas = Aruskas::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->first();
-            if($aruskas){
-                Aruskas::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->update([
-                    "debet" => $aruskas->debet-$transaction->debet,
-                    "credit" => $aruskas->credit-$transaction->credit,
-                    "user_updater_id" => 2
-                ]);
-            }
-
-            if(in_array($coa->category, array("pendapatan", "biaya", "biaya_lainnya", "pendapatan_lainnya"))){
-                $coa_sur_def = Coa::where("coa_code", "30300000")->first();
-                $neraca = Neraca::where("coa", $coa_sur_def->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->first();
-                if($neraca){
-                    Neraca::where("coa", $coa_sur_def->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->update([
-                        "debet" => 0,
-                        "credit" => $neraca->credit-$transaction->credit+$transaction->debet,
-                        "user_updater_id" => 2
-                    ]);
-                }
-                $labarugi = Labarugi::where("coa", $coa->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->first();
-                if($labarugi){
-                    Labarugi::where("coa", $coa->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->update([
-                        "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$labarugi->debet-$transaction->debet+$transaction->credit:0,
-                        "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$labarugi->credit-$transaction->credit+$transaction->debet:0,
-                        "user_updater_id" => 2
-                    ]);
-                }
-            }else{
-                $neraca = Neraca::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->first();
-                if($neraca){
-                    Neraca::where("coa", $transaction->coa)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->update([
-                        "debet" => in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neraca->debet-$transaction->debet+$transaction->credit:0,
-                        "credit" => !in_array($coa->category, array("aset", "biaya", "biaya_lainnya"))?$neraca->credit-$transaction->credit+$transaction->debet:0,
-                        "user_updater_id" => 2
-                    ]);
-                }
-            }
-        }
-    }
-
-    public function convertCode($data){
-        $val = "";
-        $array = str_split($data);
-        $i = 0;
-        foreach ($array as $char) {
-            if($i == 0){
-                $val = $val.$char."-";
-            }else if($i == 2 || $i == 4){
-                $val = $val.$char."-";
-            }else if($i > 4 && ($i-4)%3 == 0 && $i != strlen($data)-1){
-                $val = $val.$char."-";
-            }else{
-                $val = $val.$char;
-            }
-            $i++;
-        }
-        return $val;
-     }
-
-     public function checkOpenPeriode($date){
-        $opencloseperiode = Opencloseperiode::orderBy("id", "desc")->first();
-        if($opencloseperiode->bulan_open == explode("-", $date)[1] && $opencloseperiode->tahun_open == explode("-", $date)[0]){
-            return true;
-        }else{
-            abort(403, "Periode buka hanya ".$opencloseperiode->bulan_open_label." ".$opencloseperiode->tahun_open);
+            return response()->json($results);
         }
     }
 }

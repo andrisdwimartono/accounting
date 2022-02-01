@@ -62,7 +62,7 @@
                                                     </div>
                                                 </div>
                                             <div class="form-group row">
-                                                <label class="col-sm-4 col-form-label" for="Deskripsi">deskripsi</label>
+                                                <label class="col-sm-4 col-form-label" for="Deskripsi">Deskripsi</label>
                                                 <div class="col-sm-6 cakfield">
                                                     <textarea name="Deskripsi" class="form-control" id="Deskripsi" placeholder="Enter deskripsi" @if($page_data["page_method_name"] == "View") readonly @endif></textarea>
                                                 </div>
@@ -86,6 +86,30 @@
                                                     </div>
                                                     <input type="hidden" class="custom-file-input" id="proposal" name="proposal">    
                                                 </div>
+
+
+                                            <div class="form-group row">
+                                                <label class="col-sm-4 col-form-label" for="desc_pjk">Deskripsi PJK</label>
+                                                <div class="col-sm-6 cakfield">
+                                                    <textarea name="desc_pjk" class="form-control" id="desc_pjk" placeholder="Enter deskripsi PJK" @if($page_data["page_method_name"] == "View") readonly @endif></textarea>
+                                                </div>
+                                            </div>
+
+                                                <div class="form-group row">
+                                                    <label class="col-sm-4 col-form-label"></label>
+                                                    <div class="input-group col-sm-6 cakfield">
+                                                        <div class="custom-file">
+                                                            <input type="file" class="custom-file-input" id="upload_laporan_pjk" name="upload_laporan_pjk" onchange="selectingfile('laporan_pjk');">
+                                                            <label class="custom-file-label" for="upload_laporan_pjk">Pilih file Laporan PJK</label>
+                                                        </div>
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-outline-secondary" type="button" id="btn_laporan_pjk" disabled>Upload</button>
+                                                        </div>
+                                                    </div>
+                                                    <input type="hidden" class="custom-file-input" id="laporan_pjk" name="laporan_pjk">    
+                                                </div>
+
+
                                             <div class="form-group">
                                                 <label for="ct1_detailbiayakegiatan">Detail Biaya</label>
                                                 <div id="result">
@@ -99,6 +123,7 @@
                                                             <th>Kode Rek. Biaya</th>
                                                             <th>Deskripsi</th>
                                                             <th>Nominal Pengajuan</th>
+                                                            <th>Deskripsi PJK</th>
                                                             <th>Action</th>
                                                             <th>id</th>
                                                         </tr>
@@ -182,6 +207,12 @@
                                                             <label class="col-sm-4 col-form-label" for="nominalbiaya">Nominal Pengajuan</label>
                                                             <div class="col-sm-6 cakfield">
                                                                 <input type="text" name="nominalbiaya" value="0" class="form-control cakautonumeric cakautonumeric-float" id="nominalbiaya" placeholder="Enter Nominal Pengajuan" @if($page_data["page_method_name"] == "View") readonly @endif>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row">
+                                                            <label class="col-sm-4 col-form-label" for="desc_detail">Deskripsi Detail PJK</label>
+                                                            <div class="col-sm-6 cakfield">
+                                                                <textarea name="desc_detail" class="form-control" id="desc_detail" placeholder="Enter Deskripsi PJK" @if($page_data["page_method_name"] == "View") readonly @endif></textarea>
                                                             </div>
                                                         </div>
                                                     </form>

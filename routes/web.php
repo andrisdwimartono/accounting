@@ -260,6 +260,15 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getlinkskegiatan', 'App\Http\Controllers\KegiatanController@getlinks');
         Route::post('/uploadfilekegiatan', 'App\Http\Controllers\KegiatanController@storeUploadFile');
         Route::post('/processapprove', 'App\Http\Controllers\JurnalController@processapprove');
+
+        
+        Route::get('/pjk/{kegiatan}/edit', 'App\Http\Controllers\KegiatanController@createpjk');
+        Route::post('/storepjk', 'App\Http\Controllers\KegiatanController@storepjk');
+        Route::post('/updatepjk/{kegiatan}', 'App\Http\Controllers\KegiatanController@updatepjk');
+        Route::get('/pjk/{kegiatan}', 'App\Http\Controllers\KegiatanController@showpjk');
+        Route::post('/processapprovepjk', 'App\Http\Controllers\JurnalController@processapprovepjk');
+        Route::post('/getdatapjk', 'App\Http\Controllers\KegiatanController@getdatapjk');
+        
     });
 });
 
