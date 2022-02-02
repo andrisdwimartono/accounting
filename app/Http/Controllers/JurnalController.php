@@ -3555,6 +3555,7 @@ class JurnalController extends Controller
             }
             
             $tgl = date('Y-m-d');
+            $kegiatan = Kegiatan::where("id", $request->id)->first();
             if(Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->count() > Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->where("status_approval", "approve")->count()){
                 if(Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->where("status_approval", "approve")->count() > 1){
                     Kegiatan::where("id", $request->id)->update([
@@ -3567,7 +3568,7 @@ class JurnalController extends Controller
                 }
 
                 $this->checkOpenPeriode($tgl);
-                $kegiatan = Kegiatan::where("id", $request->id)->first();
+                
                 $trans = Transaction::where("anggaran", $kegiatan->id)->first();
                 if($trans){
                     $jurnal = Jurnal::where("id", $trans->parent_id)->first();
