@@ -7,11 +7,13 @@ $(document).ready(function () {
           $("#cakmenu-master").removeClass(" show active")
           $("#cakmenu-transaksi").removeClass(" show active")
           $("#cakmenu-laporan").removeClass(" show active")
+          $("#cakmenu-ebudgeting").removeClass(" show active")
 
           $("#caknav-dashboard").removeClass(" active")
           $("#caknav-master").removeClass(" active")
           $("#caknav-transaksi").removeClass(" active")
           $("#caknav-laporan").removeClass(" active")
+          $("#caknav-ebudgeting").removeClass(" active")
 
           for(var i = 0; i < data.data.user_menus.length; i++){
             $("#cakmenu-"+data.data.user_menus[i].mainmenu).removeClass("d-none");
@@ -29,6 +31,9 @@ $(document).ready(function () {
           }else if(['saldoawal','opencloseperiode','globalsetting'].includes(current_url)){
             $("#caknav-settings").addClass("active");
             $("#cakmenu-settings").addClass(" show active");
+          }else if(['ikuunitkerja','iktunitkerja','kegiatan'].includes(current_url)){
+            $("#caknav-ebudgeting").addClass("active");
+            $("#cakmenu-ebudgeting").addClass(" show active");
           }else{
             $("#caknav-dashboard").addClass("active");
             $("#cakmenu-dashboard").addClass(" show active");
