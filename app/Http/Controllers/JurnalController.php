@@ -3569,19 +3569,21 @@ class JurnalController extends Controller
                 $this->checkOpenPeriode($tgl);
                 $kegiatan = Kegiatan::where("id", $request->id)->first();
                 $trans = Transaction::where("anggaran", $kegiatan->id)->first();
-                $jurnal = Jurnal::where("id", $trans->parent_id)->first();
-                if($jurnal){
-                    Jurnal::where("id", $jurnal->id)->whereNull("isdeleted")->update([
-                        "alasan_hapus" => "Batal Approve",
-                        "isdeleted" => "on"
-                    ]);
+                if($trans){
+                    $jurnal = Jurnal::where("id", $trans->parent_id)->first();
+                    if($jurnal){
+                        Jurnal::where("id", $jurnal->id)->whereNull("isdeleted")->update([
+                            "alasan_hapus" => "Batal Approve",
+                            "isdeleted" => "on"
+                        ]);
 
-                    Transaction::where("parent_id", $jurnal->id)->whereNull("isdeleted")->update([
-                        "alasan_hapus" => "Batal Approve",
-                        "isdeleted" => "on"
-                    ]);
-                    foreach(Transaction::where("parent_id", $jurnal->id)->get() as $trans){
-                        $this->summerizeJournal("delete", $trans->id);
+                        Transaction::where("parent_id", $jurnal->id)->whereNull("isdeleted")->update([
+                            "alasan_hapus" => "Batal Approve",
+                            "isdeleted" => "on"
+                        ]);
+                        foreach(Transaction::where("parent_id", $jurnal->id)->get() as $trans){
+                            $this->summerizeJournal("delete", $trans->id);
+                        }
                     }
                 }
             }elseif(Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->count() == Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->where("status_approval", "approve")->count()){
@@ -3725,19 +3727,21 @@ class JurnalController extends Controller
                 $kegiatan = Kegiatan::where("id", $request->id)->first();
                 
                 $trans = Transaction::where("idjurnalreference", $jurnalkeg->id)->first();
-                $jurnal = Jurnal::where("idjurnalreference", $jurnalkeg->id)->first();
-                if($jurnal){
-                    Jurnal::where("id", $jurnal->id)->whereNull("isdeleted")->update([
-                        "alasan_hapus" => "Batal Approve",
-                        "isdeleted" => "on"
-                    ]);
+                if($trans){
+                    $jurnal = Jurnal::where("idjurnalreference", $jurnalkeg->id)->first();
+                    if($jurnal){
+                        Jurnal::where("id", $jurnal->id)->whereNull("isdeleted")->update([
+                            "alasan_hapus" => "Batal Approve",
+                            "isdeleted" => "on"
+                        ]);
 
-                    Transaction::where("parent_id", $jurnal->id)->whereNull("isdeleted")->update([
-                        "alasan_hapus" => "Batal Approve",
-                        "isdeleted" => "on"
-                    ]);
-                    foreach(Transaction::where("parent_id", $jurnal->id)->get() as $trans){
-                        $this->summerizeJournal("delete", $trans->id);
+                        Transaction::where("parent_id", $jurnal->id)->whereNull("isdeleted")->update([
+                            "alasan_hapus" => "Batal Approve",
+                            "isdeleted" => "on"
+                        ]);
+                        foreach(Transaction::where("parent_id", $jurnal->id)->get() as $trans){
+                            $this->summerizeJournal("delete", $trans->id);
+                        }
                     }
                 }
             }elseif(Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->count() == Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("status_approval", "approve")->count()){
