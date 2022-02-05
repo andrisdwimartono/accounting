@@ -116,10 +116,13 @@ class UserController extends Controller
         $td["fieldsoptions"] = [
             "role" => [
                 ["name" => "admin", "label" => "Administrator"],
+                ["name" => "direktur", "label" => "Direktur"],
                 ["name" => "manager", "label" => "Manager"],
-                ["name" => "selling", "label" => "Selling Staf"],
-                ["name" => "purchasing", "label" => "Purchasing Staf"],
-                ["name" => "sellingandpurchasing", "label" => "Selling and Purhcasing Staf"]
+                ["name" => "staffkeuangan", "label" => "Staff Keuangan"],
+                ["name" => "staff", "label" => "Staff Umum"],
+                // ["name" => "selling", "label" => "Selling Staf"],
+                // ["name" => "purchasing", "label" => "Purchasing Staf"],
+                // ["name" => "sellingandpurchasing", "label" => "Selling and Purhcasing Staf"]
             ]
         ];
 
@@ -710,6 +713,32 @@ class UserController extends Controller
         if(Auth::user()){
             $user_menus = User_menu::whereUserId(Auth::user()->id)->where("is_granted", "on")->where("is_shown_at_side_menu", "on")->orderBy("mp_sequence", "ASC")->orderBy("m_sequence", "ASC")->get();
             
+            if(!$user_menus){
+                abort(404, "Data not found");
+            }
+
+            $results = array(
+                "status" => 201,
+                "message" => "Data available",
+                "data" => [
+                    "user_menus" => $user_menus
+                ]
+            );
+
+            return response()->json($results);
+        }
+    }
+
+
+    public function getRoleMenu(){
+        if(Auth::user()){
+            $user_menus = User_role_menu::find(1)
+            ->select(['menus.*'])
+            ->leftJoin('menus','menus.id','user_role_menus.menu_id')
+            ->where("role",Auth::user()->role)->where("is_granted", "on")
+            ->where("is_shown_at_side_menu", "on")->orderBy("mp_sequence", "ASC")->orderBy("m_sequence", "ASC")
+            ->get();
+
             if(!$user_menus){
                 abort(404, "Data not found");
             }
