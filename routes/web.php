@@ -78,6 +78,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getdataassignmenuuserrole', 'App\Http\Controllers\UserController@getdataassignmenuuserrole');
         Route::post('/updateassignmenuuser/{user}', 'App\Http\Controllers\UserController@updateassignmenu');
         Route::get('/getusermenu', 'App\Http\Controllers\UserController@getUserMenu');
+        Route::get('/getrolemenu', 'App\Http\Controllers\UserController@getRoleMenu');
 
         Route::get('/unitkerja', 'App\Http\Controllers\UnitkerjaController@index')->name('unitkerja');
         Route::post('/getlistunitkerja', 'App\Http\Controllers\UnitkerjaController@get_list');
