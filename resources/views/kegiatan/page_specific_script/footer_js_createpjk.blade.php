@@ -572,7 +572,7 @@ function getdata(){
                     }
                     $("select[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").val(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]).change();
                 }
-                }
+            }
 
             $("#ctct1_detailbiayakegiatan").DataTable().clear().draw();
             if(data.data.ct1_detailbiayakegiatan.length > 0){
@@ -585,7 +585,7 @@ function getdata(){
                 }
             }
             $("#ctct2_approval").DataTable().clear().draw();
-            if(data.data.ct2_approval.length > 0){
+            if(data.data.ct2_approval  != null){
                 for(var i = 0; i < data.data.ct2_approval.length; i++){
                     var dttb = $('#ctct2_approval').DataTable();
                     var child_table_data = [data.data.ct2_approval[i].no_seq, data.data.ct2_approval[i].role, data.data.ct2_approval[i].role_label, data.data.ct2_approval[i].jenismenu, data.data.ct2_approval[i].user, data.data.ct2_approval[i].user_label, data.data.ct2_approval[i].komentar, data.data.ct2_approval[i].status_approval, data.data.ct2_approval[i].status_approval_label, data.data.ct2_approval[i].role=='<?= Auth::user()->role ?>'?'<div class="row-show"><i class="fa fa-list" style="color:blue;cursor: pointer;"></i></div>':'', data.data.ct2_approval[i].id];
@@ -595,7 +595,7 @@ function getdata(){
                 }
             }
         cto_loading_hide();
-    },
+        },
         error: function (err) {
             // console.log(err);
             if (err.status >= 400 && err.status <= 500) {
@@ -1144,4 +1144,238 @@ function convertCode(data){
     }
     return val;
  }
+
+// ========== INLINE TABLE ==========
+    $(document).keydown(function(event) {
+    var rowlen = 0;
+    
+
+    if((event.ctrlKey || event.metaKey) && event.which == 66) {
+        $("#addrow").trigger("click");
+        return false;
+    };
+    if((event.ctrlKey || event.metaKey) && event.which == 83) {
+        $("#quickForm").submit();
+            return false;
+        };
+    });
+
+    $("#submit-form").click(function(){
+        $("#quickForm").submit();
+    });
+
+    $(".row-delete").click(function(){
+        var $td = $(this).parent();
+        var $tr = $($td).parent();
+        $($tr).remove();
+        calcTotal();
+    });
+    
+    $(".addnewrowselect").select2({
+        ajax: {
+            url: "/getlinksjurnal",
+            type: "post",
+            dataType: "json",
+            data: function(params) {
+                return {
+                    term: params.term || "",
+                    page: params.page,
+                    field: "coa",
+                    _token: $("input[name=_token]").val()
+                }
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+                for(var i = 0; i < data.items.length; i++){
+                    var te = data.items[i].text.split(" ");
+                    text = data.items[i].text;
+                    data.items[i].text = convertCode(te[0])+" "+text.replace(te[0]+" ", "");
+                }
+                return {
+                    results: data.items,
+                    pagination: {
+                        more: (params.page * 25) < data.total_count
+                    }
+                };
+            },
+            cache: true
+        }
+    });
+
+    $(".addnewrowselect").on("change", function() {
+        var $td = $(this).parent();
+        var $tr = $($td).parent();
+        $($tr).find("td:eq(0)").text($(this).val());
+    });
+
+    $(".cakautonumeric").on("change", function(){
+        if(AutoNumeric.getNumber("#debet_"+$(this).attr("id").split("_")[1]) > 0 && AutoNumeric.getNumber("#kredit_"+$(this).attr("id").split("_")[1]) > 0){
+            $("#debet_"+$(this).attr("id").split("_")[1]).addClass("border-danger");
+            $("#kredit_"+$(this).attr("id").split("_")[1]).addClass("border-danger");
+        }else{
+            $("#debet_"+$(this).attr("id").split("_")[1]).removeClass("border-danger");
+            $("#kredit_"+$(this).attr("id").split("_")[1]).removeClass("border-danger");
+        }
+        calcTotal();
+    });
+
+    addRow();
+    $("#addrow").click(function(){
+        addRow();
+    });  
+
+    function addRow(){
+        rowlen = 0;
+        if($('#caktable1 > tbody > tr').length > 0){
+            rowlen = parseInt($('#caktable1 > tbody > tr:last').attr('row-seq'))+1;
+        }
+         
+
+        var rowaddlen = 0;
+        $("#caktable1").find('tbody')
+            .append("<tr row-seq=\""+rowlen+"\" class=\"addnewrow\">"
+                +"<td class=\"column-hidden\"></td>"
+                +"<td class=\"p-0\"><select name=\"coa_"+rowlen+"\" id=\"coa_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
+                +"<td class=\"p-0\"><input type=\"text\" name=\"deskripsi_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"deskripsi_"+rowlen+"\"></td>"
+                +"<td class=\"p-0\"><input type=\"text\" name=\"debet_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"debet_"+rowlen+"\" placeholder=\"Enter Debet\"></td>"
+                +"<td class=\"p-0\"><input type=\"text\" name=\"kredit_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm \" id=\"kredit_"+rowlen+"\" placeholder=\"Enter Kredit\"></td>"
+                +"<td class=\"p-0 text-center\"><button id=\"row_delete_"+rowlen+"\" class=\"bg-white border-0\"><i class=\"text-danger fas fa-minus-circle row-delete\" style=\"cursor: pointer;\"></i></button></td>"
+                +"<td class=\"column-hidden\"></td>"
+            +"</tr>");
+        rowaddlen = $('#caktable1 tr.addnewrow').length;
+        
+        $("#row_delete_"+rowlen).on('click', function(){
+            var $td = $(this).parent();
+            var $tr = $($td).parent();
+            $($tr).remove();
+            calcTotal();
+        });
+
+        $("#coa_"+rowlen+"").on("change", function() {
+            var $td = $(this).parent();
+            var $tr = $($td).parent();
+            $($tr).find("td:eq(0)").text($(this).val());
+        });
+
+        var debets = new AutoNumeric("#debet_"+rowlen, {
+            currencySymbol : 'Rp ',
+            decimalCharacter : ',',
+            digitGroupSeparator : '.',
+            minimumValue : 0,
+            decimalPlaces : 2,
+            unformatOnSubmit : true
+        });
+
+        $("#debet_"+rowlen).on("change", function(){
+            if(debets.rawValue > 0 && kredits.rawValue > 0){
+                $("#debet_"+rowlen).addClass("border-danger");
+            }else{
+                $("#debet_"+rowlen).removeClass("border-danger");
+            }
+            calcTotal();
+        });
+
+        $("#coa_"+rowlen+"").select2({
+            ajax: {
+                url: "getlinkskegiatan",
+                type: "post",
+                dataType: "json",
+                data: function(params) {
+                    return {
+                        term: params.term || "",
+                        page: params.page,
+                        field: "coa",
+                        _token: $("input[name=_token]").val()
+                    }
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    for(var i = 0; i < data.items.length; i++){
+                        var te = data.items[i].text.split(" ");
+                        text = data.items[i].text;
+                        data.items[i].text = convertCode(te[0])+" "+text.replace(te[0]+" ", "");
+                    }
+                    return {
+                        results: data.items,
+                        pagination: {
+                            more: (params.page * 25) < data.total_count
+                        }
+                    };
+                },
+                cache: true
+            }
+        });
+
+        <?php if(isset($page_data["page_job"]) && $page_data["page_job"] == "Saldo Awal"){ ?>
+            $("input[name=deskripsi_1]").val("Saldo Awal");
+            $("input[name=deskripsi_1]").prop("readonly", true);
+            $("input[name=deskripsi_"+rowlen+"]").val("Saldo Awal");
+            $("input[name=deskripsi_"+rowlen+"]").prop("readonly", true);
+        <?php } ?>
+
+        $("#coa_"+rowlen+"").select2({
+            ajax: {
+                url: "/getlinkskegiatan",
+                type: "post",
+                dataType: "json",
+                data: function(params) {
+                    return {
+                        term: params.term || "",
+                        page: params.page,
+                        field: "coa",
+                        _token: $("input[name=_token]").val()
+                    }
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    for(var i = 0; i < data.items.length; i++){
+                        var te = data.items[i].text.split(" ");
+                        text = data.items[i].text;
+                        data.items[i].text = convertCode(te[0])+" "+text.replace(te[0]+" ", "");
+                    }
+                    return {
+                        results: data.items,
+                        pagination: {
+                            more: (params.page * 25) < data.total_count
+                        }
+                    };
+                },
+                cache: true
+            }
+        });
+    }
+
+    $("#createnew").click(function(){
+        $("#id_jurnal").val(0);
+        $("#is_edit").val(0);
+        $('#unitkerja').val(null).trigger('change');
+        $("#anggaran_label").val("");
+        $("#no_jurnal").val("JU#######");
+        $('input[name=tanggal_jurnal]').val("");
+        $('#coa_1').val(null).trigger('change');
+        $('#deskripsi_1').val("");
+        AutoNumeric.getAutoNumericElement('#debet_1').set(0);
+        AutoNumeric.getAutoNumericElement('#kredit_1').set(0);
+        var last_row = $('#caktable1 > tbody > tr:last').attr('row-seq');
+        if(parseInt(last_row) > 1){
+            for(var i = 2; i <= last_row; i++){
+                $("#row_delete_"+i).trigger("click");
+            }
+        }
+        calcTotal();
+        $("#addrow").trigger("click");
+        $("#addrow").trigger("click");
+        $("#addrow").trigger("click");
+    });
+
+    $("#createnew").trigger("click");
+
+    $("#staticBackdropClose_transaksi").click(function(){
+        $("#staticBackdrop_transaksi").modal("hide");
+    });
+
+    @if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")
+    getdata();
+    @endif
+    
 </script>

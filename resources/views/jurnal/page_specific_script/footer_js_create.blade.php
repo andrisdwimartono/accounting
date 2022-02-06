@@ -480,7 +480,6 @@ $("#quickModalForm_transaksi").validate({
 
 });
 $(document).ready(function() {
-    //<?=isset($page_data["page_job"])?" ".$page_data["page_job"]:""?>
     getlist();
     $("#no_jurnal_search, #tanggal_jurnal_from, #tanggal_jurnal_to").change(function(){
         getlist();

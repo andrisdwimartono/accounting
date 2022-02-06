@@ -115,6 +115,56 @@
                                                 <div id="result">
                                                     Event result:
                                                 </div>
+                                                
+                                                    <table id="caktable1" class="table table-bordered" style="table-layout: fixed;">
+                                                        <thead class="bg-primary">
+                                                            <tr>
+                                                                <th class="column-hidden" scope="col">No</th>
+                                                                <th class="text-white text-center" scope="col" style="width: 40%; overflow: hidden;">Kode Rekening</th>
+                                                                <th class="text-white text-center" scope="col" style="width: 15%;">Deskripsi</th>
+                                                                <th class="text-white text-center" scope="col" style="width: 20%;">Nominal</th>
+                                                                <th class="text-white text-center" scope="col" style="width: 20%;">Deskripsi PJK</th>
+                                                                <th class="text-white text-center" scope="col" style="width: 20%;">Action</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <!-- <tr row-seq="1">
+                                                                <td class="column-hidden"></td>
+                                                                <td class="p-0"><select name="coa_1" id="coa_1" class="form-control form-control-sm select2bs4staticBackdrop addnewrowselect" data-row="1" style="width: 100%;"></select></td>
+                                                                <td class="p-0"><input type="text" name="deskripsi_1" class="form-control form-control-sm" id="deskripsi_1"></td>
+                                                                <td class="p-0"><input type="text" name="nominal_1" value="0" class="form-control form-control-sm cakautonumeric cakautonumeric-float text-right" id="debet_1" placeholder="Enter Debet"></td>
+                                                                <td class="p-0"><input type="text" name="deksripsi_pjk_1" value="0" class="form-control form-control-sm cakautonumeric cakautonumeric-float text-right" id="kredit_1" placeholder="Enter Kredit"></td>
+                                                                <td class="p-0 text-center"><i class="text-danger fas fa-minus-circle row-delete" id="row_delete_1" style="cursor: pointer;"></i></td>
+                                                            </tr> -->
+                                                        </tbody>
+                                                        <tfoot>
+                                                            <tr class="p-0">
+                                                                <td class="column-hidden"></td>
+                                                                <td rowspan="2" class="text-center">
+                                                                    <div class="form-group row m-0 p-0">
+                                                                        <button type="button" id="createnew" class="btn btn-primary">Baru</button>
+                                                                        <button type="button" class="btn btn-success" id="submit-form" @if($page_data["page_method_name"] == "View") readonly @endif>Simpan</button>
+                                                                        <button type="button" id="addrow" class="btn btn-primary">+row</button>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="p-0 text-right">Total : </td>
+                                                                <td class="p-0 text-right" id="totaldebet"></td>
+                                                                <td class="p-0 text-right" id="totalkredit"></td>
+                                                                <td class="p-0"></td>
+                                                                <td class="column-hidden"></td>
+                                                            </tr>
+                                                            <tr class="p-0">
+                                                                <td class="column-hidden"></td>
+                                                                <td class="p-0 text-right">Selisih : </td>
+                                                                <td class="p-0 text-right" id="totalselisih"></td>
+                                                                <td class="p-0"></td>
+                                                                <td class="p-0"></td>
+                                                                <td class="column-hidden"></td>
+                                                            </tr>
+                                                        </tfoot>
+                                                    </table>
+                                                    <div class="text-danger col-sm-12" id="caktable1_message"></div>
+                                
                                                 <table id="ctct1_detailbiayakegiatan" class="table table-bordered table-striped" style="width:100%">
                                                     <thead>
                                                         <tr>

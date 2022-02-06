@@ -68,6 +68,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/user/{user}/edit', 'App\Http\Controllers\UserController@edit');
         Route::post('/getdatauser', 'App\Http\Controllers\UserController@getdata');
         Route::post('/getoptionsuser', 'App\Http\Controllers\UserController@getoptions');
+        Route::post('/getoptionsuserrole', 'App\Http\Controllers\UserController@getoptions');
         Route::post('/updateuser/{user}', 'App\Http\Controllers\UserController@update');
         Route::post('/deleteuser', 'App\Http\Controllers\UserController@destroy');
         Route::post('/getlinksuser', 'App\Http\Controllers\UserController@getlinks');
@@ -77,7 +78,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getdataassignmenuuser', 'App\Http\Controllers\UserController@getdataassignmenuuser');
         Route::post('/getdataassignmenuuserrole', 'App\Http\Controllers\UserController@getdataassignmenuuserrole');
         Route::post('/updateassignmenuuser/{user}', 'App\Http\Controllers\UserController@updateassignmenu');
+        
         Route::get('/getusermenu', 'App\Http\Controllers\UserController@getUserMenu');
+        Route::get('/getrolemenu', 'App\Http\Controllers\UserController@getRoleMenu');
+
+        Route::get('/assignmenurole/{role}/edit', 'App\Http\Controllers\User_role_menuController@assignmenu');
 
         Route::get('/unitkerja', 'App\Http\Controllers\UnitkerjaController@index')->name('unitkerja');
         Route::post('/getlistunitkerja', 'App\Http\Controllers\UnitkerjaController@get_list');
@@ -267,6 +272,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/updatepjk/{kegiatan}', 'App\Http\Controllers\KegiatanController@updatepjk');
         Route::get('/pjk/{kegiatan}', 'App\Http\Controllers\KegiatanController@showpjk');
         Route::post('/processapprovepjk', 'App\Http\Controllers\JurnalController@processapprovepjk');
+        Route::post('/getdatapjk', 'App\Http\Controllers\KegiatanController@getdatapjk');
         Route::post('/getdatapjk', 'App\Http\Controllers\KegiatanController@getdatapjk');
         
     });

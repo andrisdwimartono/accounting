@@ -22,7 +22,7 @@ class KegiatanController extends Controller
 {
     public function tabledesign(){
         $td = [
-            "page_data_name" => "RKA",
+            "page_data_name" => "Rencana Kegiatan dan Anggaran",
             "page_data_urlname" => "kegiatan",
             "fields" => [
                 "unit_pelaksana" => "link",
@@ -178,7 +178,7 @@ class KegiatanController extends Controller
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "Create";
         $page_data["footer_js_page_specific_script"] = ["kegiatan.page_specific_script.footer_js_create"];
-        $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_create"];
+        $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_create"];
         
         return view("kegiatan.create", ["page_data" => $page_data]);
     }
@@ -264,7 +264,7 @@ class KegiatanController extends Controller
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "View";
         $page_data["footer_js_page_specific_script"] = ["kegiatan.page_specific_script.footer_js_create"];
-        $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_create"];
+        $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_create"];
         
         $page_data["id"] = $kegiatan->id;
         return view("kegiatan.create", ["page_data" => $page_data]);
@@ -281,7 +281,7 @@ class KegiatanController extends Controller
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "Update";
         $page_data["footer_js_page_specific_script"] = ["kegiatan.page_specific_script.footer_js_create"];
-        $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_create"];
+        $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_create"];
         
         $page_data["id"] = $kegiatan->id;
         return view("kegiatan.create", ["page_data" => $page_data]);
@@ -560,7 +560,7 @@ class KegiatanController extends Controller
         $page_data["page_data_name"] = "PJK";
         $page_data["page_method_name"] = "View";
         $page_data["footer_js_page_specific_script"] = ["kegiatan.page_specific_script.footer_js_createpjk"];
-        $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_create"];
+        $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_create"];
         
         $page_data["id"] = $kegiatan->id;
         return view("kegiatan.createpjk", ["page_data" => $page_data]);
@@ -578,7 +578,7 @@ class KegiatanController extends Controller
         $page_data["page_data_name"] = "PJK";
         $page_data["page_method_name"] = "Update";
         $page_data["footer_js_page_specific_script"] = ["kegiatan.page_specific_script.footer_js_createpjk"];
-        $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_create"];
+        $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_create"];
         
         $page_data["id"] = $kegiatan->id;
         return view("kegiatan.createpjk", ["page_data" => $page_data]);

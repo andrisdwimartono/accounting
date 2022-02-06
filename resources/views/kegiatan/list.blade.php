@@ -27,25 +27,21 @@
                                 <h4 class="card-title text-white">Unit Kerja</h4>
                             </div> -->
                             <div class="card-body">
-                                <div class="col-md-3">
-                                    <a href="/create{{$page_data["page_data_urlname"]}}" class="btn btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Add Data"><i class="fas fa-plus text-white"></i></a>
-                                </div>
                                 <div class="table-responsive">
                                  @csrf
-                                 <table id="example1" class="table table-bordered table-striped">
-                                    <thead class="bg-primary">
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Unit Pelaksana</th>
-                                            <th>Tahun</th>
-                                            <th>IKU</th>
-                                            <th>Nama</th>
-                                            <th>Output</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                </table>
-
+                                    <table id="example1" class="table table-bordered table-striped">
+                                        <thead class="bg-primary">
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Unit Pelaksana</th>
+                                                <th>Tahun</th>
+                                                <th>IKU</th>
+                                                <th>Nama</th>
+                                                <th>Output</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
                                     <div class="modal fade" id="modal-delete" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                                         <div class="modal-dialog modal-lg">
                                             <div class="modal-content">

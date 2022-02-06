@@ -14,6 +14,10 @@ class User_role_menu extends Model
         "is_granted"
     ];
     
+    // function getMenu(){
+    //     return $this->belongsToMany('App\Models\Menu'::class);
+    // }
+
     function getMenu(){
         return $this->hasOne('App\Models\Menu');
     }

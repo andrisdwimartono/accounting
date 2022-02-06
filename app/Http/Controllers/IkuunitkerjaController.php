@@ -200,8 +200,8 @@ class IkuunitkerjaController extends Controller
     {
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "List";
-        $page_data["footer_js_page_specific_script"] = ["paging.page_specific_script.footer_js_list"];
-        $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_list"];
+        $page_data["footer_js_page_specific_script"] = ["ikuunitkerja.page_specific_script.footer_js_list"];
+        $page_data["header_js_page_specific_script"] = ["ikuunitkerja.page_specific_script.header_js_list"];
         
         return view("ikuunitkerja.list", ["page_data" => $page_data]);
     }
@@ -214,7 +214,7 @@ class IkuunitkerjaController extends Controller
         $page_data["page_data_urlname"] = "iktunitkerja";
         $page_data["ikt"] = true;
         $page_data["footer_js_page_specific_script"] = ["ikuunitkerja.page_specific_script.footer_js_list"];
-        $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_list"];
+        $page_data["header_js_page_specific_script"] = ["ikuunitkerja.page_specific_script.header_js_list"];
         
         return view("ikuunitkerja.list", ["page_data" => $page_data]);
     }
@@ -793,12 +793,14 @@ class IkuunitkerjaController extends Controller
             }
         })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "iku_tahun_label", "iku_unit_pelaksana_label"]) as $ikuunitkerja){
             $no = $no+1;
+
             $act = '
-            <a href="/ikuunitkerja/'.$ikuunitkerja->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
+            <a href="/ikuunitkerja/'.$ikuunitkerja->id.'" class="btn btn-info shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fa fa-eye"></i></a>
 
-            <a href="/ikuunitkerja/'.$ikuunitkerja->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
+            <a href="/ikuunitkerja/'.$ikuunitkerja->id.'/edit" class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit User Data"><i class="fa fa-edit"></i></a>
 
-            <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button>';
+            <a class="row-delete btn btn-danger shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Delete User"><i class="fa fa-trash"></i></a>';
+
             if($request->is_ikt == "on"){
                 $act = '
                 <a href="/iktunitkerja/'.$ikuunitkerja->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>

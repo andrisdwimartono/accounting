@@ -18,6 +18,10 @@ class User extends Authenticatable
     function getUserMenu(){
         return $this->hasMany('App\Models\User_menu')->orderBy('mp_sequence', 'ASC')->orderBy('m_sequence', 'ASC');
     }
+
+    function getRoleMenu(){
+        return $this->belongsToMany('App\Models\User_role_menu'::class);
+    }
     
     /**
      * The attributes that should be hidden for arrays.

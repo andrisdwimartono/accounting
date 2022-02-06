@@ -1,28 +1,35 @@
     <!-- Required vendors -->
-    <script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
-	<script src="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/js/bootstrap-select.min.js") }} "></script>
+<script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
+	<!-- <script src="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/js/bootstrap-select.min.js") }} "></script> -->
     <script src="{{ asset ("/assets/motaadmin/vendor/chart.js/Chart.bundle.min.js") }}"></script>
     <script src="{{ asset ("/assets/motaadmin/js/custom.min.js") }}"></script>
 	<script src="{{ asset ("/assets/motaadmin/js/deznav-init.js") }}"></script>
 	<!-- Apex Chart -->
 	<script src="{{ asset ("/assets/motaadmin/vendor/apexchart/apexchart.js") }}"></script>
-    
+
+    <script src="{{ asset ("/assets/motaadmin/vendor/moment/moment.min.js") }}"></script>
+
+    <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.js") }}"></script>
+    <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.time.js") }}"></script>
+    <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.date.js") }}"></script>
+    <!-- Pickdate -->
+    <!-- <script src="{{ asset ("/assets/motaadmin/js/plugins-init/pickadate-init.js") }}"></script> -->
+
 	<!-- Svganimation scripts -->
     <script src="{{ asset ("/assets/motaadmin/vendor/svganimation/vivus.min.js") }}"></script>
     <script src="{{ asset ("/assets/motaadmin/vendor/svganimation/svg.animation.js") }}"></script>
 
-    <!-- <script src="{{ asset ("/assets/jquery/js/jquery-3.6.0.min.js") }}"></script> -->
     <script src="{{ asset ("/assets/node_modules/@popperjs/core/dist/umd/popper.min.js") }}"></script>
-    <script src="{{ asset ("/assets/node_modules/gijgo/js/gijgo.min.js") }}"></script>
+    <!-- <script src="{{ asset ("/assets/node_modules/gijgo/js/gijgo.min.js") }}"></script> -->
     <script src="{{ asset ("/assets/node_modules/jquery-toast-plugin/dist/jquery.toast.min.js") }}"></script>
     <script src="{{ asset ("/assets/node_modules/autonumeric/dist/autoNumeric.min.js") }}"></script>
     <script src="{{ asset ("/assets/bootstrap/dist/js/bootstrap.bundle.min.js") }}"></script>
     <script src="{{ asset ("/assets/bower_components/jquery-validation/dist/jquery.validate.min.js") }}"></script>
     <script src="{{ asset ("/assets/bower_components/select2/dist/js/select2.full.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/jquery.dataTables.min.js") }}"></script>
+    <!-- <script src="{{ asset ("/assets/datatables/js/jquery.dataTables.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/dataTables.bootstrap4.min.js") }}"></script>
     <script src="{{ asset ("/assets/datatables/js/dataTables.rowReorder.min.js") }}"></script>
-    <script src="{{ asset ("/assets/datatables/js/dataTables.buttons.min.js") }}"></script>
+    <script src="{{ asset ("/assets/datatables/js/dataTables.buttons.min.js") }}"></script> -->
     <script src="{{ asset ("/assets/cto/js/cakrudtemplate.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
     <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
@@ -575,6 +582,7 @@ function getdata(){
                 }
 
             $("#ctct1_detailbiayakegiatan").DataTable().clear().draw();
+            console.log(data.data);
             if(data.data.ct1_detailbiayakegiatan.length > 0){
                 for(var i = 0; i < data.data.ct1_detailbiayakegiatan.length; i++){
                     var dttb = $('#ctct1_detailbiayakegiatan').DataTable();
@@ -1037,4 +1045,6 @@ function convertCode(data){
     }
     return val;
  }
+
+ 
 </script>

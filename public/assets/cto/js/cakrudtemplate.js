@@ -1,6 +1,6 @@
 $(document).ready(function () {
     $.ajax({
-        url: "/getusermenu",
+        url: "/getrolemenu",
         type: "get",
         success: function(data){
           $("#cakmenu-dashboard").removeClass(" show active")
