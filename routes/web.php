@@ -76,14 +76,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/assignmenu/{user}/edit', 'App\Http\Controllers\UserController@assignmenu');
         Route::post('/assignmenu/{user}', 'App\Http\Controllers\UserController@update_assignmenu');
         Route::post('/getdataassignmenuuser', 'App\Http\Controllers\UserController@getdataassignmenuuser');
-        Route::post('/getdataassignmenuuserrole', 'App\Http\Controllers\UserController@getdataassignmenuuserrole');
         Route::post('/updateassignmenuuser/{user}', 'App\Http\Controllers\UserController@updateassignmenu');
         
         Route::get('/getusermenu', 'App\Http\Controllers\UserController@getUserMenu');
-        Route::get('/getrolemenu', 'App\Http\Controllers\UserController@getRoleMenu');
-
-        Route::get('/assignmenurole/{role}/edit', 'App\Http\Controllers\User_role_menuController@assignmenu');
-
+        
         Route::get('/unitkerja', 'App\Http\Controllers\UnitkerjaController@index')->name('unitkerja');
         Route::post('/getlistunitkerja', 'App\Http\Controllers\UnitkerjaController@get_list');
         Route::get('/unitkerja/{unitkerja}', 'App\Http\Controllers\UnitkerjaController@show');
@@ -93,6 +89,20 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getdataunitkerja', 'App\Http\Controllers\UnitkerjaController@getdata');
         Route::post('/updateunitkerja/{unitkerja}', 'App\Http\Controllers\UnitkerjaController@update');
         Route::post('/deleteunitkerja', 'App\Http\Controllers\UnitkerjaController@destroy');
+
+        Route::get('/role', 'App\Http\Controllers\RoleController@index')->name('role');
+        Route::post('/getlistrole', 'App\Http\Controllers\RoleController@get_list');
+        Route::get('/role/{role}', 'App\Http\Controllers\RoleController@show');
+        Route::get('/createrole', 'App\Http\Controllers\RoleController@create');
+        Route::post('/storerole', 'App\Http\Controllers\RoleController@store');
+        Route::get('/role/{role}/edit', 'App\Http\Controllers\RoleController@edit');
+        Route::post('/getdatarole', 'App\Http\Controllers\RoleController@getdata');
+        Route::post('/updaterole/{role}', 'App\Http\Controllers\RoleController@update');
+        Route::post('/deleterole', 'App\Http\Controllers\RoleController@destroy');
+        Route::post('/getdataassignmenurole', 'App\Http\Controllers\RoleController@getdataassignmenurole');
+        Route::get('/assignmenurole/{role}/edit', 'App\Http\Controllers\RoleController@assignmenu');
+        Route::get('/getrolemenu', 'App\Http\Controllers\RoleController@getRoleMenu');
+
 
         Route::get('/kebijakan', 'App\Http\Controllers\KebijakanController@index')->name('kebijakan');
         Route::post('/getlistkebijakan', 'App\Http\Controllers\KebijakanController@get_list');

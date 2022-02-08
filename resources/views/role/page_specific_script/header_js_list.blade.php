@@ -15,6 +15,10 @@
   
   <!-- datatables -->
   <link href="{{ asset ("/assets/motaadmin/vendor/datatables/css/jquery.dataTables.min.css") }} " rel="stylesheet">
+  <!-- <link href="{{ asset ("/assets/datatables/css/dataTables.bootstrap4.min.css") }}" rel="stylesheet" /> -->
+  <!-- <link href="{{ asset ("/assets/datatables/css/rowReorder.dataTables.min.css") }}" rel="stylesheet" /> -->
+  <link href="{{ asset ("/assets/datatables/css/buttons.dataTables.min.css") }}" rel="stylesheet" />
+
   <link href="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/css/bootstrap-select.min.css") }}" rel="stylesheet">
   <link href="{{ asset ("/assets/motaadmin/css/style.css") }}" rel="stylesheet">
 

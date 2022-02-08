@@ -13,18 +13,13 @@
   <link href="{{ asset ("/assets/bower_components/select2/dist/css/select2.min.css") }}" rel="stylesheet" />
   <link href="{{ asset ("/assets/node_modules/@ttskch/select2-bootstrap4-theme/dist/select2-bootstrap4.min.css") }}" rel="stylesheet" />
 
-
-  <!-- hijgo for date dan datetime picker -->
-  <!-- <link href="{{ asset ("/assets/node_modules/gijgo/css/gijgo.min.css") }}" rel="stylesheet" /> -->
+<!-- datatables -->
+<link href="{{ asset ("/assets/motaadmin/vendor/datatables/css/jquery.dataTables.min.css") }} " rel="stylesheet">
+  
   <link href="{{ asset ("/assets/motaadmin/vendor/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css") }}" rel="stylesheet">
   <!-- Pick date -->
   <link rel="stylesheet" href="{{ asset ("/assets/motaadmin/vendor/pickadate/themes/default.css") }}">
   <link rel="stylesheet" href="{{ asset ("/assets/motaadmin/vendor/pickadate/themes/default.date.css") }}">
-
-  <!-- datatables
-  <link href="{{ asset ("/assets/datatables/css/dataTables.bootstrap4.min.css") }}" rel="stylesheet" />
-  <link href="{{ asset ("/assets/datatables/css/rowReorder.dataTables.min.css") }}" rel="stylesheet" />
-  <link href="{{ asset ("/assets/datatables/css/buttons.dataTables.min.css") }}" rel="stylesheet" /> -->
 
   <link href="{{ asset ("/assets/node_modules/jquery-toast-plugin/dist/jquery.toast.min.css") }}" rel="stylesheet" />
   <link href="{{ asset ("/assets/cto/css/cto_loadinganimation.min.css") }}" rel="stylesheet" />
@@ -40,15 +35,6 @@
       width: 50%;
       float: right;
       text-align: right;
-    }
-    .select2-selection__rendered {
-      line-height: 26px !important;
-    }
-    .select2-container .select2-selection--single {
-        height: 26px !important;
-    }
-    .select2-selection__arrow {
-        height: 26px !important;
     }
     .column-hidden{
       display:none;
@@ -69,6 +55,46 @@
       box-sizing: border-box;
       outline: none; 
       background-color: #fff; 
+    }
+
+    .form-group {
+      margin-bottom: 0.5rem !important;
+    }
+
+    table thead tr th {
+      background:#d2e1ff;
+      text-align:center;
+      word-wrap: break-word;
+      word-break: break-all;
+      color : #000;
+      line-height: 40px;
+      text-align: center;
+    }
+
+    table tbody tr td {
+      font-size: 14px;
+      padding-top: 1px;
+      padding-bottom: 1px;
+    }
+
+    td { 
+      /* border-top: 1px solid #aaa;  */
+      height: 30px; 
+      text-align: left; 
+      width: 100px; 
+      color:#404040;
+    }
+    td > span{
+      display: inline-block;
+      width: 100%;
+    }
+
+    .properties {
+      padding:10px;
+    }
+
+    .properties button{
+      margin : 5px 3px;
     }
 
   </style>

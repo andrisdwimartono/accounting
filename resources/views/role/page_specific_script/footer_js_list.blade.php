@@ -58,7 +58,7 @@
       //"searching": false,
       buttons: [
             {
-                text: "Tambah Kegiatan <span class='btn-icon-right'><i class='fa fa-plus'></i></span>",
+                text: "Tambah Role <span class='btn-icon-right'><i class='fa fa-plus'></i></span>",
                 className: "btn btn-primary",
                 init: function(api, node, config) {
                   $(node).removeClass('dt-button')
@@ -75,9 +75,8 @@
         // { "width": "20px" },
         // ],
         aoColumnDefs: [{
-              aTargets: [1],
+              aTargets: [1, 2],
               mRender: function (data, type, row){
-                console.log(data);
                 data = data.toString();
                 return "<span>"+data+"</span>";
               },
@@ -194,9 +193,9 @@
   var field_arr = ["id", "nama", "alias"];
   cto_loading_show();
 
-  var urlaction = "/updatekegiatan/"+val_arr[0];
+  var urlaction = "/updaterole/"+val_arr[0];
   if(action == 'create'){
-    urlaction = "/storekegiatan";
+    urlaction = "/storerole";
   }
 
   var values = "_token="+$("input[name=_token]").val();

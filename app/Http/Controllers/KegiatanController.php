@@ -85,8 +85,8 @@ class KegiatanController extends Controller
 
         $td["fieldsrules"] = [
             "unit_pelaksana" => "required|exists:unitkerjas,id",
-            "tahun" => "required|in:2020,2021,2022,2023",
-            "iku" => "required|exists:ikus,id",
+            // "tahun" => "required|in:2020,2021,2022,2023",
+            // "iku" => "required|exists:ikus,id",
             "kegiatan_name" => "required",
             "Deskripsi" => "nullable",
             "output" => "nullable",
@@ -162,8 +162,8 @@ class KegiatanController extends Controller
     {
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "List";
-        $page_data["footer_js_page_specific_script"] = ["paging.page_specific_script.footer_js_list"];
-        $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_list"];
+        $page_data["footer_js_page_specific_script"] = ["kegiatan.page_specific_script.footer_js_list"];
+        $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_list"];
         
         return view("kegiatan.list", ["page_data" => $page_data]);
     }
@@ -407,7 +407,7 @@ class KegiatanController extends Controller
 
     public function get_list(Request $request)
     {
-        $list_column = array("id", "unit_pelaksana_label", "tahun_label", "iku_label", "kegiatan_name", "output", "id");
+        $list_column = array("id", "unit_pelaksana_label", "tanggal", "kegiatan_name", "output", "id");
         $keyword = null;
         if(isset($request->search["value"])){
             $keyword = $request->search["value"];
@@ -430,18 +430,16 @@ class KegiatanController extends Controller
         })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tahun_label", "iku_label", "kegiatan_name", "output"]) as $kegiatan){
             $no = $no+1;
             $act = '
-            <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
+            <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
 
-            <a href="/kegiatan/'.$kegiatan->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a> |
+            <a href="/kegiatan/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
 
-            <a href="/pjk/'.$kegiatan->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail PJK"><i class="fas fa-eye text-white"></i></a>
+            <button type="button" class="row-delete btn btn-danger shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
 
-            <a href="/pjk/'.$kegiatan->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data PJK"><i class="fas fa-edit text-white"></i></a> |
-
-            <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button>';
-
-            array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label, $kegiatan->tahun_label, $kegiatan->iku_label, $kegiatan->kegiatan_name, $kegiatan->output, $act));
+            array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label, $kegiatan->kegiatan_name, $kegiatan->output, $act));
         }
+
+
         $output = array(
             "draw" => intval($request->draw),
             "recordsTotal" => Kegiatan::get()->count(),

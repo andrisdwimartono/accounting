@@ -36,56 +36,63 @@
   </head>
 
   <body class="text-center">
-    <h4 style="position:absolute;top:80px;"><span style="white-space: pre-line; color:#ddd;">{{$globalsetting->nama_sia}}</span></h4>
-
-    <form action="{{ route('login') }}" method="post" class="form-signin" style="margin-top:10vh;">
-      @if($globalsetting->logo_sia)
-        <!-- <img class="mb-4" src="{{ asset ('/logo_sia/'.$globalsetting->logo_sia) }}" alt="" height="80"> -->
-      @else
-        <!-- <img class="mb-4" src="{{ asset ('/assets/images/logo_sia_default.png') }}" alt="" height="80"> -->
-      @endif
-      
-      <h1 class="h5 mb-3 font-weight-normal" style="color:#fafafa;">Sign In</h1>
-      @csrf
-      @if(session('errors'))
-          <div class="alert alert-danger alert-dismissible fade show" role="alert">
-              Something it's wrong:
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                  <span aria-hidden="true">×</span>
-              </button>
-              <ul>
-              @foreach ($errors->all() as $error)
-              <li>{{ $error }}</li>
-              @endforeach
-              </ul>
-          </div>
-      @endif
-      @if (Session::has('success'))
-          <div class="alert alert-success">
-              {{ Session::get('success') }}
-          </div>
-      @endif
-      @if (Session::has('error'))
-          <div class="alert alert-danger">
-              {{ Session::get('error') }}
-          </div>
-      @endif
-      @csrf
-      <label for="inputEmail" class="sr-only">Email address</label>
-      <input type="email" id="inputEmail" class="form-control" name="email" placeholder="Email address" required autofocus>
-      <label for="inputPassword" class="sr-only">Password</label>
-      <input type="password" id="inputPassword" class="form-control" name="password" placeholder="Password" required>
-      <button class="btn btn-lg btn-primary btn-default" id="send_otp" type="button">Send OTP</button>
-      <br><br>
-      <label for="inputOTP" class="sr-only">Email OTP</label>
-      <input type="text" id="inputOtp" class="form-control" name="otp" placeholder="OTP" required>
-      <div class="checkbox mb-3">
-        <label>
-          <input type="checkbox" value="remember-me"> Remember me
-        </label>
+    <!-- <h4 style="position:absolute;top:80px;"><span style="white-space: pre-line; color:#ddd;">{{$globalsetting->nama_sia}}</span></h4> -->
+    <div class="row" style="position: absolute;left: 15vh;">
+      <div class="col-md-4">
+        @if($globalsetting->logo_sia)
+            <img class="mb-4" src="{{ asset ('/logo_instansi/'.$globalsetting->logo_instansi) }}" alt="" height="100">
+          @else
+            <img class="mb-4" src="{{ asset ('/assets/images/logo_sia_default.png') }}" alt="" height="100">
+          @endif
       </div>
-      <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-    </form>
+      <div class="col-md-8">
+        <form action="{{ route('login') }}" method="post" class="form-signin" style="width:350px !important;" >
+         
+          
+          <!-- <h1 class="h5 mb-3 font-weight-normal" style="color:#fafafa;">Sign In</h1> -->
+          @csrf
+          @if(session('errors'))
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                  Something it's wrong:
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">×</span>
+                  </button>
+                  <ul>
+                  @foreach ($errors->all() as $error)
+                  <li>{{ $error }}</li>
+                  @endforeach
+                  </ul>
+              </div>
+          @endif
+          @if (Session::has('success'))
+              <div class="alert alert-success">
+                  {{ Session::get('success') }}
+              </div>
+          @endif
+          @if (Session::has('error'))
+              <div class="alert alert-danger">
+                  {{ Session::get('error') }}
+              </div>
+          @endif
+          @csrf
+          <label for="inputEmail" class="sr-only">Email address</label>
+          <input type="email" id="inputEmail" class="form-control" name="email" placeholder="Email address" required autofocus>
+          <label for="inputPassword" class="sr-only">Password</label>
+          <input type="password" id="inputPassword" class="form-control" name="password" placeholder="Password" required>
+          <!-- <button class="btn btn-lg btn-primary btn-default" id="send_otp" type="button">Send OTP</button>
+          <br><br>
+          <label for="inputOTP" class="sr-only">Email OTP</label>
+          <input type="text" id="inputOtp" class="form-control" name="otp" placeholder="OTP" required> -->
+          <div class="checkbox mb-3">
+            <label>
+              <input type="checkbox" value="remember-me"> Remember me
+            </label>
+          </div>
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        </form>
+      </div>
+    </div>
+    
     <script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
     <script src="{{ asset ("/assets/node_modules/jquery-toast-plugin/dist/jquery.toast.min.js") }}"></script>
     <script>

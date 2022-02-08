@@ -28,7 +28,7 @@
                                     <form id="quickForm" action="#">
                                         @csrf
                                             <div class="card-body">
-                                                <div class="form-group row">
+                                                <div class="form-group row m-0">
                                                     <label class="col-sm-4 col-form-label" for="unit_pelaksana">Unit Pelaksana</label>
                                                     <div class="col-sm-6 cakfield">
                                                         <select name="unit_pelaksana" id="unit_pelaksana" class="form-control select2bs4" style="width: 100%;" @if($page_data["page_method_name"] == "View") readonly @endif>
@@ -37,43 +37,41 @@
                                                         <input type="hidden" name="unit_pelaksana_label" id="unit_pelaksana_label">
                                                     </div>
                                                 </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4 col-form-label" for="tahun">Tahun</label>
+                                                <div class="form-group row m-0">
+                                                    <label for="tanggal_kegiatan" class="col-sm-4 col-form-label">Tanggal Kegiatan</label>
                                                     <div class="col-sm-6 cakfield">
-                                                        <select name="tahun" id="tahun" class="form-control select2bs4" style="width: 100%;" @if($page_data["page_method_name"] == "View") readonly @endif>
-
-                                                        </select>
-                                                        <input type="hidden" name="tahun_label" id="tahun_label">
+                                                        <input name="tanggal_kegiatan" class="datepicker-default form-control form-control-sm tanggaljurnal1" id="datepicker" <?=$page_data["page_method_name"] == "View"?"readonly":""?>>
                                                     </div>
                                                 </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4 col-form-label" for="iku">IKU</label>
+                                                <!-- <div class="form-group row m-0">
+                                                    <label class="col-sm-4 col-form-label" for="iku">Indikator</label>
                                                     <div class="col-sm-6 cakfield">
                                                         <select name="iku" id="iku" class="form-control select2bs4" style="width: 100%;" @if($page_data["page_method_name"] == "View") readonly @endif>
+                                                        
 
                                                         </select>
                                                         <input type="hidden" name="iku_label" id="iku_label">
                                                     </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4 col-form-label" for="kegiatan_name">Nama</label>
+                                                </div> -->
+                                                <div class="form-group row m-0">
+                                                    <label class="col-sm-4 col-form-label" for="kegiatan_name">Nama Kegiatan</label>
                                                     <div class="col-sm-6 cakfield">
                                                         <input type="text" name="kegiatan_name" class="form-control" id="kegiatan_name" placeholder="Enter Nama" @if($page_data["page_method_name"] == "View") readonly @endif>
                                                     </div>
                                                 </div>
-                                            <div class="form-group row">
-                                                <label class="col-sm-4 col-form-label" for="Deskripsi">deskripsi</label>
+                                            <div class="form-group row m-0">
+                                                <label class="col-sm-4 col-form-label" for="Deskripsi">Deksripsi Kegiatan</label>
                                                 <div class="col-sm-6 cakfield">
                                                     <textarea name="Deskripsi" class="form-control" id="Deskripsi" placeholder="Enter deskripsi" @if($page_data["page_method_name"] == "View") readonly @endif></textarea>
                                                 </div>
                                             </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4 col-form-label" for="output">Output</label>
+                                                <div class="form-group row m-0">
+                                                    <label class="col-sm-4 col-form-label" for="output">Output Kegiatan</label>
                                                     <div class="col-sm-6 cakfield">
                                                         <input type="text" name="output" class="form-control" id="output" placeholder="Enter Output" @if($page_data["page_method_name"] == "View") readonly @endif>
                                                     </div>
                                                 </div>
-                                                <div class="form-group row">
+                                                <div class="form-group row m-0">
                                                     <label class="col-sm-4 col-form-label"></label>
                                                     <div class="input-group col-sm-6 cakfield">
                                                         <div class="custom-file">
@@ -91,24 +89,50 @@
                                                 <div id="result">
                                                     Event result:
                                                 </div>
-                                                <table id="ctct1_detailbiayakegiatan" class="table table-bordered table-striped" style="width:100%">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>No</th>
-                                                            <th>Kode Rek. Biaya</th>
-                                                            <th>Kode Rek. Biaya</th>
-                                                            <th>Deskripsi</th>
-                                                            <th>Nominal Pengajuan</th>
-                                                            <th>Action</th>
-                                                            <th>id</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-
-                                                    </tbody>
-                                                </table>
+                                                <div class="table-responsive">
+                                                    <table id="caktable1" class="display" style="width: 100%">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="column-hidden" scope="col">No</th>
+                                                                <th scope="col" style="width: 30%; overflow: hidden;">Kode Rekening</th>
+                                                                <th scope="col" style="width: 40%;">Deskripsi</th>
+                                                                <th scope="col" style="width: 20%;">Nominal</th>
+                                                                <!-- <th scope="col" style="width: 20%;">Deskripsi PJK</th> -->
+                                                                <th scope="col" style="width: 10%;"></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <!-- <tr row-seq="1">
+                                                                <td class="column-hidden"></td>
+                                                                <td class="p-0"><select name="coa_1" id="coa_1" class="form-control form-control-sm select2bs4staticBackdrop addnewrowselect" data-row="1" style="width: 100%;"></select></td>
+                                                                <td class="p-0"><input type="text" name="deskripsi_1" class="form-control form-control-sm" id="deskripsi_1"></td>
+                                                                <td class="p-0"><input type="text" name="nominal_1" value="0" class="form-control form-control-sm cakautonumeric cakautonumeric-float text-right" id="debet_1" placeholder="Enter Debet"></td>
+                                                                <td class="p-0 text-center"><i class="text-danger fas fa-minus-circle row-delete" id="row_delete_1" style="cursor: pointer;"></i></td>
+                                                            </tr> -->
+                                                        </tbody>
+                                                        <tfoot>
+                                                            <tr class="p-0">
+                                                                <td class="column-hidden"></td>
+                                                                    <td class="text-center">
+                                                                        <div class="form-group row m-0 p-0 properties">
+                                                                            <button type="button" id="createnew" class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Reset Tabel"><i class="fa fa-trash"></i></button>
+                                                                            <button type="button" class="btn btn-success shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Simpan Anggaran" id="submit-form" @if($page_data["page_method_name"] == "View") readonly @endif><i class="fa fa-save"></i></button>
+                                                                            <button type="button" id="addrow" class="btn btn-primary shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Tambah Anggaran"><i class="fa fa-plus"></i></button>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td class="p-0 text-right">Total : </td>
+                                                                    <td class="p-0 text-right" id="totalnom"></td>
+                                                                    <!-- <td class="p-0 text-right" id="totalkredit"></td> -->
+                                                                    <td class="p-0"></td>
+                                                                    <td class="column-hidden"></td>
+                                                                </tr>
+                                                        </tfoot>
+                                                    </table>
+                                                </div>
+                                                <!-- <div class="text-danger col-sm-12" id="caktable1_message"></div> -->
                                                 <input type="hidden" name="ct1_detailbiayakegiatan" class="form-control" id="ct1_detailbiayakegiatan" placeholder="Enter Menu Field" @if($page_data["page_method_name"] == "View") readonly @endif>
                                             </div>
+
                                             <?php if($page_data["page_method_name"] != "Create" && $page_data["page_method_name"] != "Update"){ ?>
                                             <div class="form-group">
                                                 <label for="ct2_approval">Approval</label>

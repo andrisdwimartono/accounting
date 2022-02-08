@@ -29,19 +29,17 @@
                             <div class="card-body">
                                 <div class="table-responsive">
                                  @csrf
-                                    <table id="example1" class="table table-bordered table-striped">
-                                        <thead class="bg-primary">
+                                    <table id="example1" class="display" style="width: 100%">
+                                        <thead>
                                             <tr>
                                                 <th>No</th>
-                                                <th>Unit Pelaksana</th>
-                                                <!-- <th>Tanggal</th> -->
-                                                <!-- <th>IKU</th> -->
                                                 <th>Nama</th>
-                                                <th>Output</th>
+                                                <th>Alias</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
                                     </table>
+
                                     <div class="modal fade" id="modal-delete" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                                         <div class="modal-dialog modal-lg">
                                             <div class="modal-content">

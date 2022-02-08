@@ -465,25 +465,7 @@ class UserController extends Controller
         }
     }
 
-    public function getdataassignmenuuserrole(Request $request)
-    {
-       if($request->ajax() || $request->wantsJson()){
-            $user_menus = User_role_menu::whereRole($request->role)->get();
-            if(!$user_menus){
-                abort(404, "Data not found");
-            }
-
-            $results = array(
-                "status" => 201,
-                "message" => "Data available",
-                "data" => [
-                    "user_menus" => $user_menus
-                ]
-            );
-
-            return response()->json($results);
-        }
-    }
+    
 
     public function updateassignmenu(Request $request, $id)
     {
@@ -746,7 +728,7 @@ class UserController extends Controller
             $results = array(
                 "status" => 201,
                 "message" => "Data available",
-                "data" => [
+                "data" => [ 
                     "user_menus" => $user_menus
                 ]
             );
