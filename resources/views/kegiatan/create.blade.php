@@ -98,7 +98,11 @@
                                                                 <th scope="col" style="width: 40%;">Deskripsi</th>
                                                                 <th scope="col" style="width: 20%;">Nominal</th>
                                                                 <!-- <th scope="col" style="width: 20%;">Deskripsi PJK</th> -->
+                                                                @if($page_data["page_method_name"] == "View")
+                                                                    <th scope="col" style="width: 20%;">Status</th>
+                                                                @else
                                                                 <th scope="col" style="width: 10%;"></th>
+                                                                @endif
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -117,14 +121,21 @@
                                                                         <div class="form-group row m-0 p-0 properties">
                                                                             <!-- <button type="button" id="createnew" class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Reset Tabel"><i class="fa fa-trash"></i></button>
                                                                             <button type="button" class="btn btn-success shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Simpan Anggaran" id="submit-form" @if($page_data["page_method_name"] == "View") readonly @endif><i class="fa fa-save"></i></button> -->
-                                                                            <button type="button" id="addrow" class="btn btn-primary shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Tambah Anggaran"><i class="fa fa-plus"></i></button>
+                                                                            @if($page_data["page_method_name"] != "View") 
+                                                                                <button type="button" id="addrow" class="btn btn-primary shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Tambah Anggaran"><i class="fa fa-plus"></i></button>
+                                                                            @endif
                                                                         </div>
                                                                     </td>
                                                                     <td class="p-0 text-right">Total : </td>
                                                                     <td class="p-0 text-right" id="totalnom"></td>
                                                                     <!-- <td class="p-0 text-right" id="totalkredit"></td> -->
-                                                                    <td class="p-0"></td>
+                                                                    @if($page_data["page_method_name"] == "View")
+                                                                        <td class="p-0"></td>
+                                                                    @else
+                                                                        <td class="p-0"></td>
+                                                                    @endif
                                                                     <td class="column-hidden"></td>
+                                                                    
                                                                 </tr>
                                                         </tfoot>
                                                     </table>

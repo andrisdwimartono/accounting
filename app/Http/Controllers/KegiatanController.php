@@ -67,6 +67,11 @@ class KegiatanController extends Controller
                     ["name" => "approve", "label" => "Terima"],
                     ["name" => "revise", "label" => "Revisi"],
                     ["name" => "reject", "label" => "Tolak"]
+                ],
+                "status" => [
+                    ["name" => "pengajuan", "label" => "Pengajuan"],
+                    ["name" => "terima", "label" => "Terima"],
+                    ["name" => "revisi", "label" => "Revisi"]
                 ]
             ],
             "fieldlink" => [
@@ -230,7 +235,8 @@ class KegiatanController extends Controller
                     "coa_label"=> $ct_request["coa_label"],
                     "deskripsibiaya"=> $ct_request["deskripsibiaya"],
                     "nominalbiaya"=> $ct_request["nominalbiaya"],
-                    "user_creator_id" => Auth::user()->id
+                    "user_creator_id" => Auth::user()->id,
+                    "status" => "pengajuan",
                 ]);
             }
 
@@ -332,8 +338,11 @@ class KegiatanController extends Controller
             ]);
 
             $new_menu_field_ids = array();
+            // dd($requests_ct1_detailbiayakegiatan);
             foreach($requests_ct1_detailbiayakegiatan as $ct_request){
-                if(isset($ct_request["id"])){
+                
+                if(isset($ct_request["id"]) && $ct_request["id"] != ""){
+                    
                     Detailbiayakegiatan::where("id", $ct_request["id"])->update([
                         "no_seq" => $ct_request["no_seq"],
                         "parent_id" => $id,
@@ -341,9 +350,11 @@ class KegiatanController extends Controller
                         "coa_label"=> $ct_request["coa_label"],
                         "deskripsibiaya"=> $ct_request["deskripsibiaya"],
                         "nominalbiaya"=> $ct_request["nominalbiaya"],
-                        "user_updater_id" => Auth::user()->id
+                        "user_updater_id" => Auth::user()->id,
+                        "status" => "pengajuan"
                     ]);
                 }else{
+                    
                     $idct = Detailbiayakegiatan::create([
                         "no_seq" => $ct_request["no_seq"],
                         "parent_id" => $id,

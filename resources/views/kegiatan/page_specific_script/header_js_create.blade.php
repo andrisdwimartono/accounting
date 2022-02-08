@@ -58,7 +58,7 @@
     }
 
     .form-group {
-      margin-bottom: 0.5rem !important;
+      margin-bottom: 0.2rem !important;
     }
 
     table thead tr th {
@@ -95,6 +95,10 @@
 
     .properties button{
       margin : 5px 3px;
+    }
+
+    .datepicker-default{
+      height:100%;
     }
 
   </style>
