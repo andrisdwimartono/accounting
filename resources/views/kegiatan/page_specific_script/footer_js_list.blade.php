@@ -68,12 +68,14 @@
                 }
             },
         ],
-        // "columns": [
-        // { "width": "5px" },
-        // { "width": "5px" },
-        // { "width": "550px" },
-        // { "width": "20px" },
-        // ],
+        "columns": [
+        { "width": "5px" },
+        { "width": "50px" },
+        { "width": "50px" },
+        { "width": "50px" },
+        { "width": "50px" },
+        { "width": "50px" },
+        ],
         aoColumnDefs: [{
               aTargets: [1],
               mRender: function (data, type, row){

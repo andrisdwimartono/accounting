@@ -87,6 +87,7 @@ class KegiatanController extends Controller
             "unit_pelaksana" => "required|exists:unitkerjas,id",
             // "tahun" => "required|in:2020,2021,2022,2023",
             // "iku" => "required|exists:ikus,id",
+            "tanggal_kegiatan_submit" => "required",
             "kegiatan_name" => "required",
             "Deskripsi" => "nullable",
             "output" => "nullable",
@@ -210,10 +211,9 @@ class KegiatanController extends Controller
             $id = Kegiatan::create([
                 "unit_pelaksana"=> $request->unit_pelaksana,
                 "unit_pelaksana_label"=> $request->unit_pelaksana_label,
-                "tahun"=> $request->tahun,
-                "tahun_label"=> $request->tahun_label,
-                "iku"=> $request->iku,
-                "iku_label"=> $request->iku_label,
+                "tanggal"=> $request->tanggal_kegiatan_submit,
+                // "iku"=> $request->iku,
+                // "iku_label"=> $request->iku_label,
                 "kegiatan_name"=> $request->kegiatan_name,
                 "Deskripsi"=> $request->Deskripsi,
                 "output"=> $request->output,
@@ -427,7 +427,7 @@ class KegiatanController extends Controller
         $no = 0;
         foreach(Kegiatan::where(function($q) use ($keyword) {
             $q->where("unit_pelaksana_label", "LIKE", "%" . $keyword. "%")->orWhere("tahun_label", "LIKE", "%" . $keyword. "%")->orWhere("iku_label", "LIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "LIKE", "%" . $keyword. "%")->orWhere("output", "LIKE", "%" . $keyword. "%");
-        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tahun_label", "iku_label", "kegiatan_name", "output"]) as $kegiatan){
+        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output"]) as $kegiatan){
             $no = $no+1;
             $act = '
             <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
@@ -436,7 +436,7 @@ class KegiatanController extends Controller
 
             <button type="button" class="row-delete btn btn-danger shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
 
-            array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label, $kegiatan->kegiatan_name, $kegiatan->output, $act));
+            array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $kegiatan->output, $act));
         }
 
 

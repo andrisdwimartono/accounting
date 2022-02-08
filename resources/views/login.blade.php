@@ -27,7 +27,7 @@
 
     <style>
       body {
-        background : url("{{ asset ('/main_background/'.$globalsetting->main_background) }}") rgba(0, 0, 0, 0.51);
+        background : url("{{ asset ('/main_background/'.$globalsetting->main_background) }}") rgba(0, 0, 0, 0.05);
         background-size: cover;
         background-blend-mode: multiply;
       }  

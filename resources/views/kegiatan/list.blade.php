@@ -34,7 +34,7 @@
                                             <tr>
                                                 <th>No</th>
                                                 <th>Unit Pelaksana</th>
-                                                <!-- <th>Tanggal</th> -->
+                                                <th>Tanggal</th>
                                                 <!-- <th>IKU</th> -->
                                                 <th>Nama</th>
                                                 <th>Output</th>
