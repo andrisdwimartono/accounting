@@ -1,5 +1,5 @@
     <!-- Required vendors -->
-<script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
+    <script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
 	<!-- <script src="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/js/bootstrap-select.min.js") }} "></script> -->
     <script src="{{ asset ("/assets/motaadmin/vendor/chart.js/Chart.bundle.min.js") }}"></script>
     <script src="{{ asset ("/assets/motaadmin/js/custom.min.js") }}"></script>
@@ -1079,7 +1079,7 @@ $(document).keydown(function(event) {
                         var newState = new Option(data[i].label, data[i].name, true, false);
                         console.log($("#status_"+rowlen).val())
                         console.log(newState)
-                        $("#status_"+rowlen).append(newState);
+                        $("#status_"+rowlen).append(newState).trigger("change");
                         // $("#status_"+rowlen).append('<option value=' + data[i].label + '>' + data[i].name + '</option>');
                     }
                 },
