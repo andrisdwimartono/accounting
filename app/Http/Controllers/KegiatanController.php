@@ -39,7 +39,8 @@ class KegiatanController extends Controller
                 "ct1_detailbiayakegiatan" => [
                     "coa" => "link",
                     "deskripsibiaya" => "textarea",
-                    "nominalbiaya" => "float"
+                    "nominalbiaya" => "float",
+                    "status" => "select"
                 ],
                 "ct2_approval" => [
                     "role" => "select",
@@ -87,6 +88,8 @@ class KegiatanController extends Controller
         $role_list = "admin,direktur,manager,staffkeuangan,staff";
 
         $status_approval_list = "approve,revise,reject";
+        
+        $status_list = "pengajuan,terima,revisi";
 
         $td["fieldsrules"] = [
             "unit_pelaksana" => "required|exists:unitkerjas,id",

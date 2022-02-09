@@ -433,8 +433,34 @@ function getdata(){
                 });
                 // addRow();
                 for(var i = 0; i < data.data.ct1_detailbiayakegiatan.length; i++){
-                    
                     addRow();
+                    $.ajax({
+                        url: "/getoptions{{$page_data["page_data_urlname"]}}",
+                        type: "post",
+                        indexValue: i+1,
+                        data: {
+                            fieldname: "status",
+                            _token: $("#quickForm input[name=_token]").val()
+                        },
+                        success: function(data){
+                            for(var x = 0; x < data.length; x++){
+                                if(data[x].name){
+                                    var newState = new Option(data[x].label, data[x].name, true, false);
+                                    $("#status_"+this.indexValue).append(newState).trigger("change");
+                                }
+                            }
+                        },
+                        error: function (err) {
+                            if (err.status == 422) {
+                                $.each(err.responseJSON.errors, function (x, error) {
+                                    var validator = $("#quickForm").validate();
+                                    var errors = {}
+                                    errors[x] = error[0];
+                                    validator.showErrors(errors);
+                                });
+                            }
+                        }
+                    });
                     $("#caktable1 > tbody").find("[row-seq="+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"]").find("td:eq(0)").text(data.data.ct1_detailbiayakegiatan[i].coa);
                     $("select[name='coa_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"']").empty();
                     var newState = new Option(data.data.ct1_detailbiayakegiatan[i].coa_label, data.data.ct1_detailbiayakegiatan[i].coa, true, false);
@@ -1063,19 +1089,20 @@ $(document).keydown(function(event) {
             }
         });
 
-        $("#status_"+rowlen).select2({
-            ajax: {
-                url: "/getoptions{{$page_data["page_data_urlname"]}}",
-                type: "post",
-                dataType: "json",
-                data: {
-                    fieldname: "status",
-                    _token: $("input[name=_token]").val()
-                },
-                success: function(data){
+    //     $("#status_"+rowlen).select2({
+    //         ajax: {
+    //             url: "/getoptions{{$page_data["page_data_urlname"]}}",
+    //             type: "post",
+    //             dataType: "json",
+    //             data: {
+    //                 fieldname: "status",
+    //                 _token: $("input[name=_token]").val()
+    //             },
+    //             success: function(data){
                     
-                    for(var i = 0; i < data.length; i++){
+    //                 for(var i = 0; i < data.length; i++){
                         
+<<<<<<< HEAD
                         var newState = new Option(data[i].label, data[i].name, true, false);
                         console.log($("#status_"+rowlen).val())
                         console.log(newState)
@@ -1096,6 +1123,28 @@ $(document).keydown(function(event) {
                 cache: true
             }
         });
+=======
+    //                     var newState = new Option(data[i].label, data[i].name, true, false);
+    //                     console.log($("#status_"+rowlen).val())
+    //                     console.log(newState)
+    //                     $("#status_"+rowlen).append(newState);
+    //                     // $("#status_"+rowlen).append('<option value=' + data[i].label + '>' + data[i].name + '</option>');
+    //                 }
+    //             },
+    //             error: function (err) {
+    //                 if (err.status == 422) {
+    //                     $.each(err.responseJSON.errors, function (i, error) {
+    //                         var validator = $("#quickForm").validate();
+    //                         var errors = {}
+    //                         errors[i] = error[0];
+    //                         validator.showErrors(errors);
+    //                     });
+    //                 }
+    //             },
+    //             cache: true
+    //         }
+    //     });
+>>>>>>> 9a68234432b0824d5c9c6ca77c1e02e9f5837e8f
     }
 
     

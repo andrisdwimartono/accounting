@@ -17,9 +17,9 @@ class CreateKegiatansTable extends Migration
             $table->id();
             $table->integer('unit_pelaksana');
             $table->string('unit_pelaksana_label', 255)->nullable();
-            $table->enum('tahun', ['2020', '2021', '2022', '2023']);
+            $table->string('tahun')->nullable();
             $table->string('tahun_label', 255)->nullable();
-            $table->integer('iku');
+            $table->integer('iku')->nullable();
             $table->string('iku_label', 255)->nullable();
             $table->string('kegiatan_name');
             $table->string('Deskripsi')->nullable();
