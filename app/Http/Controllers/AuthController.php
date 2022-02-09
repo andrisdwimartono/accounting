@@ -29,7 +29,7 @@ class AuthController extends Controller
         $rules = [
             'email'                 => 'required|email',
             'password'              => 'required|string',
-            'otp'                   => 'required|string',
+            // 'otp'                   => 'required|string',
         ];
   
         $messages = [
