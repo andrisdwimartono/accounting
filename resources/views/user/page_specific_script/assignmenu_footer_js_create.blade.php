@@ -86,11 +86,13 @@
         });
 
         $.ajax({
-            url: "{{ env('APP_URL') }}/getoptions{{$page_data["page_data_urlname"]}}",
+            url: "{{ env('APP_URL') }}/getlist{{$page_data["page_data_urlname"]}}",
             type: "post",
             data: {
-                fieldname: "role",
-                _token: $("#quickForm input[name=_token]").val()
+                start:0,
+                length:100,
+                _token: $("input[name=_token]").val()
+                // _token: $("#quickForm input[name=_token]").val()
             },
             success: function(data){
                 var newState = new Option("", "", true, false);
@@ -161,7 +163,7 @@
             url: "{{ env('APP_URL') }}/getdataassignmenu{{$page_data["page_data_urlname"]}}",
             type: "post",
             data: {
-                id: {{$page_data["id"]}},
+                id: "{{$page_data['id']}}",
                 _token: $('#quickForm input[name=_token]').val()
             },
             success: function(data){
@@ -177,7 +179,7 @@
                         url: "{{ env('APP_URL') }}/getdataassignmenu{{$page_data["page_data_urlname"]}}role",
                         type: "post",
                         data: {
-                            role: $('#quickForm select[name=role]').val(),
+                            // role: $('#quickForm select[name=role]').val(),
                             _token: $('#quickForm input[name=_token]').val()
                         },
                         success: function(data){

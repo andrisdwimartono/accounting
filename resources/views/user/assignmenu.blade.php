@@ -7,16 +7,15 @@
         <div class="content-body">
             <div class="container-fluid">
                 <div class="row page-titles mx-0">
-                    <div class="col-sm-10 p-md-0">
+                    <div class="col-sm-6 p-md-0">
                         <div class="welcome-text">
-                            <!-- <h4>Hi, welcome back!</h4>
-                            <span>Element</span> -->
+                            <h4>Assign Role {{$page_data["id"]}}</h4>
                         </div>
                     </div>
-                    <div class="col-sm-10 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+                    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="javascript:void(0)">Master</a></li>
-                            <li class="breadcrumb-item active"><a href="/user">User</a></li>
+                            <li class="breadcrumb-item active"><a href="/{{$page_data['page_data_urlname']}}">{{$page_data['page_data_name']}}</a></li>
                         </ol>
                     </div>
                 </div>
@@ -30,6 +29,7 @@
               </div>
               <form id="quickForm" action="#">
               @csrf
+              <!-- 
               <div class="form-group row">
                 <label class="col-sm-1 ml-2 col-form-label" for="role">Role</label>
                 <div class="col-sm-6">
@@ -37,9 +37,9 @@
 
                   </select>
                 </div>
-                <input type="hidden" name="role_label" id="role_label">
-              </div>
+              </div> -->
               <div class="card-header p-0 pt-1">
+                <input type="hidden" name="role_label" id="role_label">
                 <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
                   @php $index = 0 @endphp
                   @foreach ($menus as $menu)
