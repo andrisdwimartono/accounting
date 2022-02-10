@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\User_menu;
 use App\Models\User_role_menu;
 use App\Models\Menu;
+use App\Models\Role;
 use App\Models\Unitkerja;
 use Validator;
 use Hash;
@@ -180,6 +181,8 @@ class UserController extends Controller
                 "photo_profile"=> $request->photo_profile,
                 "unitkerja"=> $request->unitkerja,
                 "unitkerja_label"=> $request->unitkerja_label,
+                "role"=> $request->role,
+                "role_label"=> $request->role_label,
                 "user_creator_id"=> Auth::user()->id
             ])->id;
 
@@ -246,6 +249,8 @@ class UserController extends Controller
                 "photo_profile"=> $request->photo_profile,
                 "unitkerja"=> $request->unitkerja,
                 "unitkerja_label"=> $request->unitkerja_label,
+                "role"=> $request->role,
+                "role_label"=> $request->role_label,
                 "user_updater_id"=> Auth::user()->id
             ]);
 
@@ -397,6 +402,11 @@ class UserController extends Controller
                     $q->where("unitkerja_name", "LIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("unitkerja_name as text")]);
                 $count = Unitkerja::count();
+            } else if($request->field == "role"){
+                $lists = Role::where(function($q) use ($request) {
+                    $q->where("nama", "LIKE", "%" . $request->term. "%");
+                })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("nama as text")]);
+                $count = Role::count();
             }
 
             $endCount = $offset + $resultCount;

@@ -28,12 +28,7 @@
     .select2-dropdown{
         z-index: 3051;
     }
-    /* .dataTables_filter {
-      width: 20%;
-      float: right;
-      text-align: right;
-    } */
-
+    
     #example1_processing{
       z-index:1;
       height:80px;
@@ -43,53 +38,82 @@
     table.dataTable thead tr th {
       background:#d2e1ff;
       text-align:center;
-      word-wrap: break-word;
-      word-break: break-all;
     }
-
     table.dataTable tbody tr td {
       font-size: 14px;
       padding-top: 1px;
       padding-bottom: 1px;
     }
+
+    table.dataTable tfoot tr td {
+      font-size: 14px;
+      padding: 5px 10px !important;
+    }
     
     .column-hidden{
       display:none;
     }
+
+    .left{
+      float:left;
+      text-align : left;
+    }
+
+    .right{
+      float:right;
+      text-align : left;
+    }
+
+    .text-grey {
+      color : #000;
+    }
+
     td { 
-      /* border-top: 1px solid #aaa;  */
       height: 30px; 
       text-align: left; 
       width: 100px; 
       color:#404040;
     }
-    td > span{
-      display: inline-block;
-      width: 100%;
+
+    .column-hidden{
+      display:none;
     }
     input:not([type=checkbox]), input:not([type=checkbox]):hover, input:not([type=checkbox])focus { 
       width: 100%; 
+      height: 30px; 
       box-sizing: border-box;
       outline: none; 
       background-color: #fff; 
     }
     .nav-link{
-      color: #959595;
+      color: white;
     }
 
-    .row-delete{
-        color:#fff !important;
-        font-size:12px;
+    .cak-rp{
+        float: left;
+    }
+    .cak-nom{
+        float: right;
+    }
+    .coa-header{
+      font-weight: bold;
+    }
+    .coa-code{
+      color : #919191;
+    }
+    .card-header{
+      background : #f1f5ff;
+    }
+    .text-grey{
+      color : #8b8b8b;
+      padding : 10px 0px;
     }
 
-    .row-add-child{
-        font-size:12px;
-    }
-    .mb-4, .my-4 {
-      margin-bottom: 0 !important;
+    .total {
+      font-weight: bold;
     }
 
-    .btn-warning {
-      color: #ffffff;
+    .dt-buttons {
+      margin-bottom:15px;
     }
-</style>
+  </style>
