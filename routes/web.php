@@ -100,6 +100,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/updaterole/{role}', 'App\Http\Controllers\RoleController@update');
         Route::post('/deleterole', 'App\Http\Controllers\RoleController@destroy');
         Route::post('/getdataassignmenurole', 'App\Http\Controllers\RoleController@getdataassignmenurole');
+        Route::post('/updateassignmenurole/{role}', 'App\Http\Controllers\RoleController@updateassignmenu');
         Route::get('/assignmenurole/{role}/edit', 'App\Http\Controllers\RoleController@assignmenu');
         Route::get('/getrolemenu', 'App\Http\Controllers\RoleController@getRoleMenu');
 

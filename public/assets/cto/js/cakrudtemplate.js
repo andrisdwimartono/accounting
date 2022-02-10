@@ -19,7 +19,7 @@ $(document).ready(function () {
             $("#cakmenu-"+data.data.user_menus[i].mainmenu).removeClass("d-none");
           }
           var current_url = $("#cakcurrent_url").val();
-          if(['user', 'unitkerja', 'coa'].includes(current_url)){
+          if(['user', 'unitkerja', 'coa', 'role'].includes(current_url)){
             $("#caknav-master").addClass("active");
             $("#cakmenu-master").addClass(" show active");
           }else if(['jurnal','jurnalbkk','jurnalbkm','jurnalbbm','jurnalbbk'].includes(current_url)){

@@ -1,5 +1,5 @@
     <!-- Required vendors -->
-<script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
+    <script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
 	<!-- <script src="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/js/bootstrap-select.min.js") }} "></script> -->
     <script src="{{ asset ("/assets/motaadmin/vendor/chart.js/Chart.bundle.min.js") }}"></script>
     <script src="{{ asset ("/assets/motaadmin/js/custom.min.js") }}"></script>
@@ -1127,6 +1127,66 @@ $(document).keydown(function(event) {
                 cache: true
             }
         });
+<<<<<<< HEAD
+=======
+
+    //     $("#status_"+rowlen).select2({
+    //         ajax: {
+    //             url: "/getoptions{{$page_data["page_data_urlname"]}}",
+    //             type: "post",
+    //             dataType: "json",
+    //             data: {
+    //                 fieldname: "status",
+    //                 _token: $("input[name=_token]").val()
+    //             },
+    //             success: function(data){
+                    
+    //                 for(var i = 0; i < data.length; i++){
+                        
+<<<<<<< HEAD
+                        var newState = new Option(data[i].label, data[i].name, true, false);
+                        console.log($("#status_"+rowlen).val())
+                        console.log(newState)
+                        $("#status_"+rowlen).append(newState).trigger("change");
+                        // $("#status_"+rowlen).append('<option value=' + data[i].label + '>' + data[i].name + '</option>');
+                    }
+                },
+                error: function (err) {
+                    if (err.status == 422) {
+                        $.each(err.responseJSON.errors, function (i, error) {
+                            var validator = $("#quickForm").validate();
+                            var errors = {}
+                            errors[i] = error[0];
+                            validator.showErrors(errors);
+                        });
+                    }
+                },
+                cache: true
+            }
+        });
+=======
+    //                     var newState = new Option(data[i].label, data[i].name, true, false);
+    //                     console.log($("#status_"+rowlen).val())
+    //                     console.log(newState)
+    //                     $("#status_"+rowlen).append(newState);
+    //                     // $("#status_"+rowlen).append('<option value=' + data[i].label + '>' + data[i].name + '</option>');
+    //                 }
+    //             },
+    //             error: function (err) {
+    //                 if (err.status == 422) {
+    //                     $.each(err.responseJSON.errors, function (i, error) {
+    //                         var validator = $("#quickForm").validate();
+    //                         var errors = {}
+    //                         errors[i] = error[0];
+    //                         validator.showErrors(errors);
+    //                     });
+    //                 }
+    //             },
+    //             cache: true
+    //         }
+    //     });
+>>>>>>> 9a68234432b0824d5c9c6ca77c1e02e9f5837e8f
+>>>>>>> 955cb0c16682787291560a9a133ef20e3f739263
     }
 
     

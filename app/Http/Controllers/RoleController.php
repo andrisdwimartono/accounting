@@ -334,6 +334,61 @@ class RoleController extends Controller
         }
     }
 
+    public function updateassignmenu(Request $request, $role)
+    {
+        $page_data = $this->tabledesign();
+        
+        
+        foreach(Menu::whereNull("is_group_menu")->get() as $menu){
+            if(User_role_menu::where("role", $role)->where("menu_id", $menu->id)->first()){
+                User_role_menu::where("role", $role)->where("menu_id", $menu->id)->update([
+                    "is_granted" => $request["menu_".$menu->id],
+                ]);
+            }else{
+                User_role_menu::create([
+                    "role" => $role,
+                    "menu_id" => $menu->id,
+                    "is_granted" => $request["menu_".$menu->id],
+                ]);
+            }
+        }
+
+        foreach(Menu::whereNotNull("is_group_menu")->get() as $menu){
+            if(User_role_menu::where("role", $role)->where("is_granted", 'on')){
+                if(User_role_menu::where("role", $role)->where("menu_id", $menu->id)->first()){
+                    User_role_menu::where("role", $role)->where("menu_id", $menu->id)->update([
+                        "is_granted" => 'on',
+                    ]);
+                }else{
+                    User_role_menu::create([
+                        "role" => $role,
+                        "menu_id" => $menu->id,
+                        "is_granted" => $request["menu_".$menu->id],
+                    ]);
+                }
+            }else{
+                if(User_role_menu::where("role", $role)->where("menu_id", $menu->id)->first()){
+                    User_role_menu::where("role", $role)->where("menu_id", $menu->id)->update([
+                        "is_granted" => null,
+                    ]);
+                }else{
+                    User_role_menu::create([
+                        "role" => $role,
+                        "menu_id" => $menu->id,
+                        "is_granted" => $request["menu_".$menu->id],
+                    ]);
+                }
+            }
+        }
+            
+        return response()->json([
+            'status' => 201,
+            'message' => 'ID '.$role.' successfully updated',
+            'data' => ['id' => $role]
+        ]);
+        
+    }
+
     public function getRoleMenu(){
         if(Auth::user()){
             $user_menus = User_role_menu::find(1)

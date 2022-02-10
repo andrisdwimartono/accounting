@@ -583,7 +583,6 @@ class UserController extends Controller
             'message' => 'ID '.$id.' successfully updated',
             'data' => ['id' => $id]
         ]);
-        
     }
 
     public function editprofile()
