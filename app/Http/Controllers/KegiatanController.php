@@ -177,6 +177,16 @@ class KegiatanController extends Controller
         return view("kegiatan.list", ["page_data" => $page_data]);
     }
 
+    public function laporan()
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "Laporan";
+        $page_data["footer_js_page_specific_script"] = ["kegiatan.page_specific_script.footer_js_laporan"];
+        $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_list"];
+        
+        return view("kegiatan.laporan", ["page_data" => $page_data]);
+    }
+
     /**
     * Show the form for creating a new resource.
     *
@@ -450,6 +460,55 @@ class KegiatanController extends Controller
             <button type="button" class="row-delete btn btn-danger shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
 
             array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $kegiatan->output, $act));
+        }
+
+
+        $output = array(
+            "draw" => intval($request->draw),
+            "recordsTotal" => Kegiatan::get()->count(),
+            "recordsFiltered" => intval(Kegiatan::where(function($q) use ($keyword) {
+                $q->where("unit_pelaksana_label", "LIKE", "%" . $keyword. "%")->orWhere("tahun_label", "LIKE", "%" . $keyword. "%")->orWhere("iku_label", "LIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "LIKE", "%" . $keyword. "%")->orWhere("output", "LIKE", "%" . $keyword. "%");
+            })->orderBy($orders[0], $orders[1])->get()->count()),
+            "data" => $dt
+        );
+
+        echo json_encode($output);
+    }
+
+    public function get_list_laporan(Request $request)
+    {
+        $list_column = array("id", "unit_pelaksana_label", "tanggal", "kegiatan_name", "output", "id");
+        $keyword = null;
+        if(isset($request->search["value"])){
+            $keyword = $request->search["value"];
+        }
+
+        $orders = array("id", "ASC");
+        if(isset($request->order)){
+            $orders = array($list_column[$request->order["0"]["column"]], $request->order["0"]["dir"]);
+        }
+
+        $limit = null;
+        if(isset($request->length) && $request->length != -1){
+            $limit = array(intval($request->start), intval($request->length));
+        }
+
+        $dt = array();
+        $no = 0;
+        foreach(Kegiatan::where(function($q) use ($keyword) {
+            $q->where("unit_pelaksana_label", "LIKE", "%" . $keyword. "%")->orWhere("tahun_label", "LIKE", "%" . $keyword. "%")->orWhere("iku_label", "LIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "LIKE", "%" . $keyword. "%")->orWhere("output", "LIKE", "%" . $keyword. "%");
+        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output"]) as $kegiatan){
+            $no = $no+1;
+            $act = '
+            <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
+
+            <a href="/kegiatan/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
+
+            <button type="button" class="row-delete btn btn-danger shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
+
+            $detail = Detailbiayakegiatan::whereParentId($kegiatan->id)->get();
+
+            array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $kegiatan->output, $act, $detail));
         }
 
 

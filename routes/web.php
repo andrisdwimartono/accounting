@@ -238,6 +238,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/get_forecast', 'App\Http\Controllers\AruskasController@get_forecast');
 
         Route::get('/ikuunitkerja', 'App\Http\Controllers\IkuunitkerjaController@index')->name('ikuunitkerja');
+        Route::get('/iku/laporan', 'App\Http\Controllers\IkuunitkerjaController@laporan');
         Route::post('/getlistikuunitkerja', 'App\Http\Controllers\IkuunitkerjaController@get_list');
         Route::get('/ikuunitkerja/{ikuunitkerja}', 'App\Http\Controllers\IkuunitkerjaController@show');
         Route::get('/createikuunitkerja', 'App\Http\Controllers\IkuunitkerjaController@create');
@@ -264,7 +265,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/uploadfileiktunitkerja', 'App\Http\Controllers\IkuunitkerjaController@storeUploadFile');
 
         Route::get('/kegiatan', 'App\Http\Controllers\KegiatanController@index')->name('kegiatan');
+        Route::get('/kegiatan/laporan', 'App\Http\Controllers\KegiatanController@laporan');
         Route::post('/getlistkegiatan', 'App\Http\Controllers\KegiatanController@get_list');
+        Route::post('/getlistlaporankegiatan', 'App\Http\Controllers\KegiatanController@get_list_laporan');
         Route::get('/kegiatan/{kegiatan}', 'App\Http\Controllers\KegiatanController@show');
         Route::get('/createkegiatan', 'App\Http\Controllers\KegiatanController@create');
         Route::post('/storekegiatan', 'App\Http\Controllers\KegiatanController@store');
