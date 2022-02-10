@@ -357,7 +357,7 @@ $("#quickModalForm_ct1_detailbiayakegiatan").validate({
 $(document).ready(function() {
     @if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")
     getdata();
-    @endif
+    @endif    
 } );
 
 @if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")
@@ -414,7 +414,6 @@ function getdata(){
             //     }
             // }
             
-            console.log(data.data.ct1_detailbiayakegiatan.length)
             if(data.data.ct1_detailbiayakegiatan.length > 0){
                 $("#caktable1 > tbody > tr").each(function(index){
                     var row_index = parseInt($(this).attr("row-seq"));
@@ -446,7 +445,7 @@ function getdata(){
                             for(var x = 0; x < data.length; x++){
                                 if(data[x].name){
                                     var newState = new Option(data[x].label, data[x].name, true, false);
-                                    $("#status_"+this.indexValue).append(newState).trigger("change");
+                                    $("#status_"+this.indexValue).append(newState);
                                 }
                             }
                         },
@@ -461,6 +460,7 @@ function getdata(){
                             }
                         }
                     });
+
                     $("#caktable1 > tbody").find("[row-seq="+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"]").find("td:eq(0)").text(data.data.ct1_detailbiayakegiatan[i].coa);
                     $("select[name='coa_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"']").empty();
                     var newState = new Option(data.data.ct1_detailbiayakegiatan[i].coa_label, data.data.ct1_detailbiayakegiatan[i].coa, true, false);
@@ -471,14 +471,34 @@ function getdata(){
 
                     $("input[name='deskripsi_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"']").val(data.data.ct1_detailbiayakegiatan[i].deskripsibiaya);
 
-                    AutoNumeric.getAutoNumericElement('#nom_'+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)).set(data.data.ct1_detailbiayakegiatan[i].nominalbiaya);
+                    // AutoNumeric.getAutoNumericElement('#nom_'+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)).set(data.data.ct1_detailbiayakegiatan[i].nominalbiaya);
                     $("input[name='nom_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"']").trigger("change");
-                    $("#caktable1 > tbody > tr[row-seq="+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"]").find("td:eq(6)").text(data.data.ct1_detailbiayakegiatan[i].id);
+                    $("#caktable1 > tbody > tr[row-seq="+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"]").find("td:eq(8)").text(data.data.ct1_detailbiayakegiatan[i].id);
                     
-                    $("select[name='status_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"']").empty();
-                    var newState = new Option(data.data.ct1_detailbiayakegiatan[i].status, data.data.ct1_detailbiayakegiatan[i].status, true, false);
-                    $("#status_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"").append(newState).trigger('change');
+                    $("#status_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)).val(data.data.ct1_detailbiayakegiatan[i].status);
+                    
+                    $("#status_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)).select2().trigger("change");
+
+                    // $("#status_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)).on("change", function() {
+                    //     console.log($(this));
+                    //     var $td = $(this).parent();
+                    //     var $tr = $($td).parent();
+                    //     console.log($($tr).find("td:eq(0)").html());
+                    //     console.log($($tr).find("td:eq(1)").html());
+                    //     console.log((parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1));
+                    //     $("input[name='komentarrevisi_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"']").attr("readonly", false);
+                    // }(data));
+                    
+                    $("input[name='komentarrevisi_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"']").val(data.data.ct1_detailbiayakegiatan[i].komentarrevisi);
                 }
+
+                $(".row-show-history").on("click", function() {
+                    var $td = $(this).parent();
+                    var $tr = $($td).parent();
+                    console.log($($tr).find("td:eq(8)").html());
+                    
+                    // $($tr).find("td:eq(0)").text($(this).val());
+                });
             }
         cto_loading_hide();
     },
@@ -949,7 +969,7 @@ $(document).keydown(function(event) {
         $($tr).remove();
         calcTotal();
     });
-    
+
     $(".addnewrowselect").select2({
         ajax: {
             url: "/getlinks{{$page_data["page_data_urlname"]}}",
@@ -1017,7 +1037,9 @@ $(document).keydown(function(event) {
                     +"<td class=\"p-0\"><input type=\"text\" name=\"deskripsi_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"deskripsi_"+rowlen+"\" readonly></td>"
                     +"<td class=\"p-0\"><input type=\"text\" name=\"nom_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"nom_"+rowlen+"\" placeholder=\"Enter Nominal\" readonly></td>"
                     +"<td class=\"column-hidden\"></td>"
-                    +"<td class=\"p-0\"><select name=\"status_"+rowlen+"\" id=\"status_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
+                    +"<td class=\"p-0\"><select name=\"status_"+rowlen+"\" id=\"status_"+rowlen+"\" class=\"status_acc form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
+                    +"<td class=\"p-0\"><input type=\"text\" name=\"komentarrevisi_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"komentarrevisi_"+rowlen+"\" readonly></td>"
+                    +"<td class=\"p-0 text-center\"><button type=\"button\" id=\"row_show_history_"+rowlen+"\" class=\"bg-white border-0 row-show-history\"><i class=\"text-info fas fa-list\" style=\"cursor: pointer;\"></i></button></td>"
                     +"</tr>"
                 @else 
                     "<tr row-seq=\""+rowlen+"\" class=\"addnewrow\">"
@@ -1031,7 +1053,7 @@ $(document).keydown(function(event) {
                 @endif
             );
         rowaddlen = $('#caktable1 tr.addnewrow').length;
-        
+
         $("#row_delete_"+rowlen).on('click', function(){
             var $td = $(this).parent();
             var $tr = $($td).parent();
@@ -1045,6 +1067,23 @@ $(document).keydown(function(event) {
             $($tr).find("td:eq(0)").text($(this).val());
         });
 
+        $('#caktable1 > tbody > tr').each(function(index, tr){
+            var rownum = index+1;
+            $("#status_"+rownum+"").on("change", function() {
+                if($("#status_"+rownum+"").val() == "revisi"){
+                    $("#coa_"+rownum+"").prop("readonly", false);
+                    $("#deskripsi_"+rownum+"").prop("readonly", false);
+                    $("#nom_"+rownum+"").prop("readonly", false);
+                    $("#komentarrevisi_"+rownum+"").prop("readonly", false);
+                }else{
+                    $("#coa_"+rownum+"").prop("readonly", true);
+                    $("#deskripsi_"+rownum+"").prop("readonly", true);
+                    $("#nom_"+rownum+"").prop("readonly", true);
+                    $("#komentarrevisi_"+rownum+"").prop("readonly", true);
+                }
+            });
+        });
+        
         var noms = new AutoNumeric("#nom_"+rowlen, {
             currencySymbol : 'Rp ',
             decimalCharacter : ',',
@@ -1088,40 +1127,6 @@ $(document).keydown(function(event) {
                 cache: true
             }
         });
-
-    //     $("#status_"+rowlen).select2({
-    //         ajax: {
-    //             url: "/getoptions{{$page_data["page_data_urlname"]}}",
-    //             type: "post",
-    //             dataType: "json",
-    //             data: {
-    //                 fieldname: "status",
-    //                 _token: $("input[name=_token]").val()
-    //             },
-    //             success: function(data){
-                    
-    //                 for(var i = 0; i < data.length; i++){
-                        
-    //                     var newState = new Option(data[i].label, data[i].name, true, false);
-    //                     console.log($("#status_"+rowlen).val())
-    //                     console.log(newState)
-    //                     $("#status_"+rowlen).append(newState);
-    //                     // $("#status_"+rowlen).append('<option value=' + data[i].label + '>' + data[i].name + '</option>');
-    //                 }
-    //             },
-    //             error: function (err) {
-    //                 if (err.status == 422) {
-    //                     $.each(err.responseJSON.errors, function (i, error) {
-    //                         var validator = $("#quickForm").validate();
-    //                         var errors = {}
-    //                         errors[i] = error[0];
-    //                         validator.showErrors(errors);
-    //                     });
-    //                 }
-    //             },
-    //             cache: true
-    //         }
-    //     });
     }
 
     

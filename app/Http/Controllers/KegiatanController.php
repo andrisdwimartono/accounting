@@ -238,8 +238,7 @@ class KegiatanController extends Controller
                     "coa_label"=> $ct_request["coa_label"],
                     "deskripsibiaya"=> $ct_request["deskripsibiaya"],
                     "nominalbiaya"=> $ct_request["nominalbiaya"],
-                    "user_creator_id" => Auth::user()->id,
-                    "status" => "pengajuan",
+                    "user_creator_id" => Auth::user()->id
                 ]);
             }
 

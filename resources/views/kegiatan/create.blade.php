@@ -94,12 +94,14 @@
                                                         <thead>
                                                             <tr>
                                                                 <th class="column-hidden" scope="col">No</th>
-                                                                <th scope="col" style="width: 30%; overflow: hidden;">Kode Rekening</th>
-                                                                <th scope="col" style="width: 40%;">Deskripsi</th>
-                                                                <th scope="col" style="width: 20%;">Nominal</th>
+                                                                <th scope="col" style="width: 25%; overflow: hidden;">Kode Rekening</th>
+                                                                <th scope="col" style="width: 25%; overflow: hidden;">Deskripsi</th>
+                                                                <th scope="col" style="width: 15%;">Nominal</th>
                                                                 <!-- <th scope="col" style="width: 20%;">Deskripsi PJK</th> -->
                                                                 @if($page_data["page_method_name"] == "View")
-                                                                    <th scope="col" style="width: 20%;">Status</th>
+                                                                    <th scope="col" style="width: 15%;">Status</th>
+                                                                    <th scope="col" style="width: 15%;">Komentar Revisi</th>
+                                                                    <th scope="col" style="width: 5%;"></th>
                                                                 @else
                                                                 <th scope="col" style="width: 10%;"></th>
                                                                 @endif
