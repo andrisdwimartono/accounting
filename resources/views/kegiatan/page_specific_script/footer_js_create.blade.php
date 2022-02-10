@@ -1,5 +1,5 @@
     <!-- Required vendors -->
-    <script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
+<script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
 	<!-- <script src="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/js/bootstrap-select.min.js") }} "></script> -->
     <script src="{{ asset ("/assets/motaadmin/vendor/chart.js/Chart.bundle.min.js") }}"></script>
     <script src="{{ asset ("/assets/motaadmin/js/custom.min.js") }}"></script>
@@ -371,7 +371,6 @@ function getdata(){
             _token: $("#quickForm input[name=_token]").val()
         },
         success: function(data){
-            console.log()
             for(var i = 0; i < Object.keys(data.data.{{$page_data["page_data_urlname"]}}).length; i++){
                 if(Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i] == "unit_pelaksana" || Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i] == "iku"){
                     if(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]){
@@ -430,7 +429,7 @@ function getdata(){
                     }
                     $(this).remove();
                 });
-                // addRow();
+                
                 for(var i = 0; i < data.data.ct1_detailbiayakegiatan.length; i++){
                     addRow();
                     $.ajax({
@@ -471,7 +470,7 @@ function getdata(){
 
                     $("input[name='deskripsi_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"']").val(data.data.ct1_detailbiayakegiatan[i].deskripsibiaya);
 
-                    // AutoNumeric.getAutoNumericElement('#nom_'+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)).set(data.data.ct1_detailbiayakegiatan[i].nominalbiaya);
+                    AutoNumeric.getAutoNumericElement('#nom_'+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)).set(data.data.ct1_detailbiayakegiatan[i].nominalbiaya);
                     $("input[name='nom_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"']").trigger("change");
                     $("#caktable1 > tbody > tr[row-seq="+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"]").find("td:eq(8)").text(data.data.ct1_detailbiayakegiatan[i].id);
                     
@@ -479,6 +478,7 @@ function getdata(){
                     
                     $("#status_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)).select2().trigger("change");
 
+                    
                     // $("#status_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)).on("change", function() {
                     //     console.log($(this));
                     //     var $td = $(this).parent();
@@ -1039,7 +1039,7 @@ $(document).keydown(function(event) {
                     +"<td class=\"column-hidden\"></td>"
                     +"<td class=\"p-0\"><select name=\"status_"+rowlen+"\" id=\"status_"+rowlen+"\" class=\"status_acc form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
                     +"<td class=\"p-0\"><input type=\"text\" name=\"komentarrevisi_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"komentarrevisi_"+rowlen+"\" readonly></td>"
-                    +"<td class=\"p-0 text-center\"><button type=\"button\" id=\"row_show_history_"+rowlen+"\" class=\"bg-white border-0 row-show-history\"><i class=\"text-info fas fa-list\" style=\"cursor: pointer;\"></i></button></td>"
+                    // +"<td class=\"p-0 text-center\"><button type=\"button\" id=\"row_show_history_"+rowlen+"\" class=\"bg-white border-0 row-show-history\"><i class=\"text-info fas fa-list\" style=\"cursor: pointer;\"></i></button></td>"
                     +"</tr>"
                 @else 
                     "<tr row-seq=\""+rowlen+"\" class=\"addnewrow\">"
@@ -1052,7 +1052,7 @@ $(document).keydown(function(event) {
                     +"</tr>"
                 @endif
             );
-        rowaddlen = $('#caktable1 tr.addnewrow').length;
+        rowaddlen = $('#caktable1 tr.addnewrow').length
 
         $("#row_delete_"+rowlen).on('click', function(){
             var $td = $(this).parent();
@@ -1067,23 +1067,6 @@ $(document).keydown(function(event) {
             $($tr).find("td:eq(0)").text($(this).val());
         });
 
-        $('#caktable1 > tbody > tr').each(function(index, tr){
-            var rownum = index+1;
-            $("#status_"+rownum+"").on("change", function() {
-                if($("#status_"+rownum+"").val() == "revisi"){
-                    $("#coa_"+rownum+"").prop("readonly", false);
-                    $("#deskripsi_"+rownum+"").prop("readonly", false);
-                    $("#nom_"+rownum+"").prop("readonly", false);
-                    $("#komentarrevisi_"+rownum+"").prop("readonly", false);
-                }else{
-                    $("#coa_"+rownum+"").prop("readonly", true);
-                    $("#deskripsi_"+rownum+"").prop("readonly", true);
-                    $("#nom_"+rownum+"").prop("readonly", true);
-                    $("#komentarrevisi_"+rownum+"").prop("readonly", true);
-                }
-            });
-        });
-        
         var noms = new AutoNumeric("#nom_"+rowlen, {
             currencySymbol : 'Rp ',
             decimalCharacter : ',',
@@ -1093,7 +1076,7 @@ $(document).keydown(function(event) {
             unformatOnSubmit : true
         });
 
-        $("#nom_"+rowlen).on("change", function(){
+        $("#nom_"+rowlen+"").on("change", function(){
             calcTotal();
         });
 
@@ -1127,68 +1110,24 @@ $(document).keydown(function(event) {
                 cache: true
             }
         });
-<<<<<<< HEAD
-=======
 
-    //     $("#status_"+rowlen).select2({
-    //         ajax: {
-    //             url: "/getoptions{{$page_data["page_data_urlname"]}}",
-    //             type: "post",
-    //             dataType: "json",
-    //             data: {
-    //                 fieldname: "status",
-    //                 _token: $("input[name=_token]").val()
-    //             },
-    //             success: function(data){
-                    
-    //                 for(var i = 0; i < data.length; i++){
-                        
-<<<<<<< HEAD
-                        var newState = new Option(data[i].label, data[i].name, true, false);
-                        console.log($("#status_"+rowlen).val())
-                        console.log(newState)
-                        $("#status_"+rowlen).append(newState).trigger("change");
-                        // $("#status_"+rowlen).append('<option value=' + data[i].label + '>' + data[i].name + '</option>');
-                    }
-                },
-                error: function (err) {
-                    if (err.status == 422) {
-                        $.each(err.responseJSON.errors, function (i, error) {
-                            var validator = $("#quickForm").validate();
-                            var errors = {}
-                            errors[i] = error[0];
-                            validator.showErrors(errors);
-                        });
-                    }
-                },
-                cache: true
-            }
+        $("#caktable1 > tbody > tr").each(function(index, tr){
+            var rownum = $(tr).attr("row-seq");
+            $("#status_"+rownum+"").on("change", function(){
+                if($("#status_"+rownum+"").val() == "revisi"){
+                    $("#coa_"+rownum+"").prop("disabled", false);
+                    $("#deskripsi_"+rownum+"").prop("readonly", false);
+                    $("#nom_"+rownum+"").prop("readonly", false);
+                    $("#komentarrevisi_"+rownum+"").prop("readonly", false);
+                }else{
+                    $("#coa_"+rownum+"").prop("disabled", true);
+                    $("#deskripsi_"+rownum+"").prop("readonly", true);
+                    $("#nom_"+rownum+"").prop("readonly", true);
+                    $("#komentarrevisi_"+rownum+"").prop("readonly", true);
+                }
+            });
         });
-=======
-    //                     var newState = new Option(data[i].label, data[i].name, true, false);
-    //                     console.log($("#status_"+rowlen).val())
-    //                     console.log(newState)
-    //                     $("#status_"+rowlen).append(newState);
-    //                     // $("#status_"+rowlen).append('<option value=' + data[i].label + '>' + data[i].name + '</option>');
-    //                 }
-    //             },
-    //             error: function (err) {
-    //                 if (err.status == 422) {
-    //                     $.each(err.responseJSON.errors, function (i, error) {
-    //                         var validator = $("#quickForm").validate();
-    //                         var errors = {}
-    //                         errors[i] = error[0];
-    //                         validator.showErrors(errors);
-    //                     });
-    //                 }
-    //             },
-    //             cache: true
-    //         }
-    //     });
->>>>>>> 9a68234432b0824d5c9c6ca77c1e02e9f5837e8f
->>>>>>> 955cb0c16682787291560a9a133ef20e3f739263
     }
-
     
     
     $("#staticBackdropClose_transaksi").click(function(){

@@ -101,7 +101,6 @@
                                                                 @if($page_data["page_method_name"] == "View")
                                                                     <th scope="col" style="width: 15%;">Status</th>
                                                                     <th scope="col" style="width: 15%;">Komentar Revisi</th>
-                                                                    <th scope="col" style="width: 5%;"></th>
                                                                 @else
                                                                 <th scope="col" style="width: 10%;"></th>
                                                                 @endif
