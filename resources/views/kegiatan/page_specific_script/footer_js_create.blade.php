@@ -355,6 +355,73 @@ $("#quickModalForm_ct1_detailbiayakegiatan").validate({
 
 });
 $(document).ready(function() {
+    var table_ct2_approval = $("#ctct2_approval").DataTable({
+        bFilter: false,
+        aoColumnDefs: [{
+            aTargets: [],
+            mRender: function (data, type, full){
+                var formattedvalue = parseFloat(data).toFixed(2);
+                formattedvalue = formattedvalue.toString().replace(".", ",");
+                formattedvalue = formattedvalue.toString().replace(/(\d+)(\d{3})/, '$1'+'.'+'$2');
+                return formattedvalue;
+            }
+        }],
+        //add button
+        dom: "Bfrtip" @if($page_data["page_method_name"] != "View") ,
+        buttons: [
+            {
+                text: "New",
+                action: function ( e, dt, node, config ) {
+                    $("#staticBackdrop_ct2_approval").modal({"show": true});
+                    addChildTable_ct2_approval("staticBackdrop_ct2_approval");
+                }
+            }
+        ]
+        @endif
+    });
+
+    table_ct2_approval.column(table_ct2_approval.columns().header().length-1).visible(false);
+    table_ct2_approval.column(1).visible(false);
+    table_ct2_approval.column(3).visible(false);
+    table_ct2_approval.column(4).visible(false);
+    table_ct2_approval.column(7).visible(false);
+    table_ct2_approval.column(9).visible(false);
+
+    $("#staticBackdropClose_ct2_approval").click(function(){
+        $("#staticBackdrop_ct2_approval").modal("hide");
+    });
+
+    $("#approverka").click(function(){
+        $("#modal-accept").modal("show");
+    });
+    
+    $("#rejectrka").click(function(){
+        $("#alasan_tolak_error").val("");
+        $("#modal-reject").modal("show");
+    });
+
+    $("#historyrka").click(function(){
+        $("#modal-history").modal("show");
+    });
+
+    $("#rejectrka-confirmed").click(function(){
+        if($("#alasan_tolak").val() == ""){
+            $("#alasan_tolak_error").html("Harus diisi");
+            $("#alasan_tolak_error").removeClass("d-none");
+            return false;
+        }
+        $("#modal-reject").modal("hide");
+        $("#alasan_tolak_error").val("");
+        cto_loading_show();
+        processapprove("reject", $("#alasan_tolak").val());
+    });
+
+    $("#approverka-confirmed").click(function(){
+        $("#modal-accept").modal("hide");
+        cto_loading_show();
+        processapprove("approve");
+    });
+
     @if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")
     getdata();
     @endif    
@@ -402,16 +469,16 @@ function getdata(){
                 }
             }
             
-            // $("#ctct2_approval").DataTable().clear().draw();
-            // if(data.data.ct2_approval.length > 0){
-            //     for(var i = 0; i < data.data.ct2_approval.length; i++){
-            //         var dttb = $('#ctct2_approval').DataTable();
-            //         var child_table_data = [data.data.ct2_approval[i].no_seq, data.data.ct2_approval[i].role, data.data.ct2_approval[i].role_label, data.data.ct2_approval[i].jenismenu, data.data.ct2_approval[i].user, data.data.ct2_approval[i].user_label, data.data.ct2_approval[i].komentar, data.data.ct2_approval[i].status_approval, data.data.ct2_approval[i].status_approval_label, data.data.ct2_approval[i].role=='<?= Auth::user()->role ?>'?'<div class="row-show"><i class="fa fa-list" style="color:blue;cursor: pointer;"></i></div>':'', data.data.ct2_approval[i].id];
-            //         if(dttb.row.add(child_table_data).draw( false )){
+            $("#ctct2_approval").DataTable().clear().draw();
+            if(data.data.ct2_approval.length > 0){
+                for(var i = 0; i < data.data.ct2_approval.length; i++){
+                    var dttb = $('#ctct2_approval').DataTable();
+                    var child_table_data = [data.data.ct2_approval[i].no_seq, data.data.ct2_approval[i].role, data.data.ct2_approval[i].role_label, data.data.ct2_approval[i].jenismenu, data.data.ct2_approval[i].user, data.data.ct2_approval[i].user_label, data.data.ct2_approval[i].komentar, data.data.ct2_approval[i].status_approval, data.data.ct2_approval[i].status_approval_label, data.data.ct2_approval[i].role=='<?= Auth::user()->role ?>'?'<div class="row-show"><i class="fa fa-list" style="color:blue;cursor: pointer;"></i></div>':'', data.data.ct2_approval[i].id];
+                    if(dttb.row.add(child_table_data).draw( false )){
 
-            //         }
-            //     }
-            // }
+                    }
+                }
+            }
             
             if(data.data.ct1_detailbiayakegiatan.length > 0){
                 $("#caktable1 > tbody > tr").each(function(index){
@@ -424,7 +491,7 @@ function getdata(){
                         $("input[name='deskripsi_"+row_index+"']").val("");
 
                         $("input[name='nom_"+row_index+"']").val("0");
-                        $("#caktable1 > tbody > tr[row-seq="+row_index+"]").find("td:eq(6)").text("");
+                        $("#caktable1 > tbody > tr[row-seq="+row_index+"]").find("td:eq(7)").text("");
                         return true;
                     }
                     $(this).remove();
@@ -472,7 +539,7 @@ function getdata(){
 
                     AutoNumeric.getAutoNumericElement('#nom_'+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)).set(data.data.ct1_detailbiayakegiatan[i].nominalbiaya);
                     $("input[name='nom_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"']").trigger("change");
-                    $("#caktable1 > tbody > tr[row-seq="+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"]").find("td:eq(8)").text(data.data.ct1_detailbiayakegiatan[i].id);
+                    $("#caktable1 > tbody > tr[row-seq="+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"]").find("td:eq(7)").text(data.data.ct1_detailbiayakegiatan[i].id);
                     
                     $("#status_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)).val(data.data.ct1_detailbiayakegiatan[i].status);
                     
@@ -495,7 +562,7 @@ function getdata(){
                 $(".row-show-history").on("click", function() {
                     var $td = $(this).parent();
                     var $tr = $($td).parent();
-                    console.log($($tr).find("td:eq(8)").html());
+                    console.log($($tr).find("td:eq(7)").html());
                     
                     // $($tr).find("td:eq(0)").text($(this).val());
                 });
@@ -877,23 +944,74 @@ $("#btn_proposal").on('click', function(){
     }
 });
 
-function processapprove(temp){
+function processapprove(status, komentar = ""){
     <?php if($page_data["page_method_name"] == "View"){ ?>
+    var stop_submit = false;
+    var ctct1_detailbiayakegiatan = [];
+    $("#caktable1 > tbody > tr").each(function(index, tr){
+        if(AutoNumeric.getNumber("#nom_"+$(tr).attr("row-seq")) <= 0 && $("#coa_"+$(tr).attr("row-seq")).val() != null){
+            $("#nom_"+$(tr).attr("row-seq")).addClass("border-danger");
+            cto_loading_hide();
+            stop_submit = true;
+            return;
+        }
+        
+        var iku = 0;
+        var iku_label = $("#iku").val();
+        //var tanggal = $("input[name=tanggal_jurnal]").val();
+        var coa = 0;
+        var coa_label = "";
+        var deskripsibiaya = "";
+        var nominalbiaya = 0;
+        var id = "";
+        var komentarrevisi = "";
+        var status = "";
+        $(tr).find("td").each(function(index, td){
+            if(index == 0){
+                coa = $(td).text();
+            }else if(index == 1){
+                coa_label = $(td).find("select").text();
+                // coa_label = "";
+            }else if(index == 2){
+                deskripsibiaya = $(td).find("input").val();
+            }else if(index == 3){
+                nominalbiaya = AutoNumeric.getNumber("#nom_"+$(tr).attr("row-seq"));
+            }else if(index == 7){
+                id = $(td).text();
+                console.log(id);
+            }else if(index == 5){
+                komentarrevisi = $(td).find("input").val();
+            }else if(index == 4){
+                status = $(td).find("select").text();
+            }
+        });
+        if(coa != '')
+            ctct1_detailbiayakegiatan.push({"no_seq": index, "coa": coa, "coa_label": coa_label, "deskripsibiaya": deskripsibiaya, "nominalbiaya": nominalbiaya, "id": id, "komentarrevisi": komentarrevisi, "status": status});
+    });
+
+    
+    if(stop_submit){
+        return;
+    }
+    
+    var ct1_detailbiayakegiatan = JSON.stringify(ctct1_detailbiayakegiatan);
+
+    var status_approval_label = "";
+    $("#status_approval option").each(function(i, x){
+        if(status == $(x).val())
+            status_approval_label = $(x).text();
+    });
+
     $.ajax({
         url:"/processapprove",
         method:"POST",
         data: {
             _token                  : $("#quickForm input[name=_token]").val(),
-            no_seq                  : temp[0],
-            role                    : temp[1],
-            role_label              : temp[2],
-            jenismenu               : temp[3],
-            user                    : temp[4],
-            user_label              : temp[5],
-            komentar                : temp[6],
-            status_approval         : temp[7],
-            status_approval_label   : temp[8],
-            id                      : {{$page_data["id"]}}
+            status_approval         : status,
+            status_approval_label   : status_approval_label,
+            komentar                : komentar,
+            id                      : {{$page_data["id"]}},
+            ct1_detailbiayakegiatan : ct1_detailbiayakegiatan
         },
         cache: false,
         success:function(data){
@@ -925,6 +1043,7 @@ function processapprove(temp){
             }
         }
     });
+    cto_loading_hide();
     <?php } ?>
 }
 
@@ -1039,6 +1158,7 @@ $(document).keydown(function(event) {
                     +"<td class=\"column-hidden\"></td>"
                     +"<td class=\"p-0\"><select name=\"status_"+rowlen+"\" id=\"status_"+rowlen+"\" class=\"status_acc form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
                     +"<td class=\"p-0\"><input type=\"text\" name=\"komentarrevisi_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"komentarrevisi_"+rowlen+"\" readonly></td>"
+                    +"<td class=\"column-hidden\"></td>"
                     // +"<td class=\"p-0 text-center\"><button type=\"button\" id=\"row_show_history_"+rowlen+"\" class=\"bg-white border-0 row-show-history\"><i class=\"text-info fas fa-list\" style=\"cursor: pointer;\"></i></button></td>"
                     +"</tr>"
                 @else 
@@ -1111,22 +1231,43 @@ $(document).keydown(function(event) {
             }
         });
 
+        @if($page_data["page_method_name"] == "View")
         $("#caktable1 > tbody > tr").each(function(index, tr){
             var rownum = $(tr).attr("row-seq");
+            var dts = [];
             $("#status_"+rownum+"").on("change", function(){
                 if($("#status_"+rownum+"").val() == "revisi"){
                     $("#coa_"+rownum+"").prop("disabled", false);
                     $("#deskripsi_"+rownum+"").prop("readonly", false);
                     $("#nom_"+rownum+"").prop("readonly", false);
                     $("#komentarrevisi_"+rownum+"").prop("readonly", false);
+
+                    var dt = [];
+                    dt["coa"] = $("#coa_"+rownum+"").val();
+                    dt["coa_label"] = $("#coa_"+rownum+"").text();
+                    dt["deskripsi"] = $("#deskripsi_"+rownum+"").val();
+                    dt["nom"] = $("#nom_"+rownum+"").val();
+                    dt["komentarrevisi"] = $("#komentarrevisi_"+rownum+"").val();
+                    dts[rownum] = dt;
                 }else{
+                    if(rownum && dts[rownum]){
+                        var dt = dts[rownum];
+                        $("#coa_"+rownum+"").val(dt["coa"]).trigger("change");
+                        //dt["coa_label"] = $("#coa_"+rownum+"").text();
+                        $("#deskripsi_"+rownum+"").val(dt["deskripsi"]);
+                        AutoNumeric.getAutoNumericElement("#nom_"+rownum+"").set(dt["nom"]);
+                        calcTotal();
+                        $("#komentarrevisi_"+rownum+"").val(dt["komentarrevisi"]);
+                    }
+
                     $("#coa_"+rownum+"").prop("disabled", true);
                     $("#deskripsi_"+rownum+"").prop("readonly", true);
                     $("#nom_"+rownum+"").prop("readonly", true);
-                    $("#komentarrevisi_"+rownum+"").prop("readonly", true);
+                    $("#komentarrevisi_"+rownum+"").prop("readonly", true);                   
                 }
             });
         });
+        @endif
     }
     
     
@@ -1197,7 +1338,7 @@ $(document).keydown(function(event) {
                         deskripsibiaya = $(td).find("input").val();
                     }else if(index == 3){
                         nominalbiaya = AutoNumeric.getNumber("#nom_"+$(tr).attr("row-seq"));
-                    }else if(index == 6){
+                    }else if(index == 7){
                         id = $(td).text();
                     }
                 });
@@ -1205,7 +1346,6 @@ $(document).keydown(function(event) {
                     ctct1_detailbiayakegiatan.push({"no_seq": index, "coa": coa, "coa_label": coa_label, "deskripsibiaya": deskripsibiaya, "nominalbiaya": nominalbiaya, "id": id});
             });
 
-            console.log(ctct1_detailbiayakegiatan)
             
             if(stop_submit){
                 return;

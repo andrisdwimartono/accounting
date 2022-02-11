@@ -285,7 +285,24 @@ class KegiatanController extends Controller
         $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_create"];
         
         $page_data["id"] = $kegiatan->id;
+        $page_data["lastapprove"] = $this->lastapprove($kegiatan->id);
+        $page_data["nextapprove"] = $this->nextapprove($kegiatan->id);
         return view("kegiatan.create", ["page_data" => $page_data]);
+    }
+
+    public function lastapprove($id){
+        $getlastapproval = Approval::where("parent_id", $id)->where("jenismenu", "RKA")->whereNotNull("status_approval")->orderBy("no_seq", "asc")->first();
+        
+        return $getlastapproval;
+    }
+
+    public function nextapprove($id){
+        $getlastapproval = Approval::where("parent_id", $id)->where("jenismenu", "RKA")->where("status_approval", "approve")->orderBy("no_seq", "asc")->first();
+        $getnextapp = Approval::where("parent_id", $id)->where("jenismenu", "RKA")->whereNull("status_approval")->orderBy("no_seq", "desc")->first();
+        if($getlastapproval){
+            $getnextapp = Approval::where("parent_id", $id)->where("jenismenu", "RKA")->whereNull("status_approval")->where("no_seq", ((int) $getlastapproval->no_seq)-1)->orderBy("no_seq", "desc")->first();
+        }
+        return $getnextapp;
     }
 
     /**
@@ -398,7 +415,7 @@ class KegiatanController extends Controller
                 'data' => ['id' => $id]
             ]);
         }
-}
+    }
 
     /**
     * Remove the specified resource from storage.
