@@ -31,7 +31,7 @@ $(document).ready(function () {
           }else if(['saldoawal','opencloseperiode','globalsetting'].includes(current_url)){
             $("#caknav-settings").addClass("active");
             $("#cakmenu-settings").addClass(" show active");
-          }else if(['ikuunitkerja','iktunitkerja','kegiatan'].includes(current_url)){
+          }else if(['ikuunitkerja','iktunitkerja','kegiatan','realisasi','pencairan','pertanggungjawaban'].includes(current_url)){
             $("#caknav-ebudgeting").addClass("active");
             $("#cakmenu-ebudgeting").addClass(" show active");
           }else{
