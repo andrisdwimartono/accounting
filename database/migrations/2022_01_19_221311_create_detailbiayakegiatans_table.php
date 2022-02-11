@@ -23,6 +23,8 @@ class CreateDetailbiayakegiatansTable extends Migration
             $table->double('nominalbiaya', 8, 0);
             $table->string('status')->nullable();
             $table->string('komentarrevisi')->nullable();
+            $table->string('isarchived')->nullable();
+            $table->string('archivedby')->nullable();
             $table->integer('user_creator_id')->nullable();
             $table->integer('user_updater_id')->nullable();
             $table->timestamps();

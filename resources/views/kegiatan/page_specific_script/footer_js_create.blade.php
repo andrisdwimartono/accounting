@@ -503,6 +503,7 @@ function getdata(){
                         url: "/getoptions{{$page_data["page_data_urlname"]}}",
                         type: "post",
                         indexValue: i+1,
+                        datass: data,
                         data: {
                             fieldname: "status",
                             _token: $("#quickForm input[name=_token]").val()
@@ -525,25 +526,29 @@ function getdata(){
                                 });
                             }
                         }
+                    }).then(function(){
+                        $("#status_"+(parseInt(this.datass.data.ct1_detailbiayakegiatan[this.indexValue-1].no_seq)+1)+"").val(this.datass.data.ct1_detailbiayakegiatan[this.indexValue-1].status);
+
+                        
+                        $("#status_"+(parseInt(this.datass.data.ct1_detailbiayakegiatan[this.indexValue-1].no_seq)+1)).val(this.datass.data.ct1_detailbiayakegiatan[this.indexValue-1].status).select2().trigger("change");
                     });
 
                     $("#caktable1 > tbody").find("[row-seq="+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"]").find("td:eq(0)").text(data.data.ct1_detailbiayakegiatan[i].coa);
                     $("select[name='coa_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"']").empty();
                     var newState = new Option(data.data.ct1_detailbiayakegiatan[i].coa_label, data.data.ct1_detailbiayakegiatan[i].coa, true, false);
                     $("#coa_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"").append(newState).trigger('change');
-                    @if($page_data["page_method_name"] == "View")
-                        $("#coa_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"").attr("disabled", true); 
-                    @endif
+                    // @if($page_data["page_method_name"] == "View")
+                    //     $("#coa_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"").attr("disabled", true); 
+                    // @endif
 
                     $("input[name='deskripsi_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"']").val(data.data.ct1_detailbiayakegiatan[i].deskripsibiaya);
 
+                    //console.log(data.data.ct1_detailbiayakegiatan[i].nominalbiaya);
                     AutoNumeric.getAutoNumericElement('#nom_'+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)).set(data.data.ct1_detailbiayakegiatan[i].nominalbiaya);
                     $("input[name='nom_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"']").trigger("change");
                     $("#caktable1 > tbody > tr[row-seq="+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"]").find("td:eq(7)").text(data.data.ct1_detailbiayakegiatan[i].id);
                     
-                    $("#status_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)).val(data.data.ct1_detailbiayakegiatan[i].status);
                     
-                    $("#status_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)).select2().trigger("change");
 
                     
                     // $("#status_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)).on("change", function() {
@@ -979,11 +984,13 @@ function processapprove(status, komentar = ""){
             }else if(index == 7){
                 id = $(td).text();
                 console.log(id);
-            }else if(index == 5){
+            }else if(index == 6){
                 komentarrevisi = $(td).find("input").val();
-            }else if(index == 4){
-                status = $(td).find("select").text();
+            }else if(index == 5){
+                status = $(td).find("select").val();
             }
+            console.log(index);
+            console.log(td);
         });
         if(coa != '')
             ctct1_detailbiayakegiatan.push({"no_seq": index, "coa": coa, "coa_label": coa_label, "deskripsibiaya": deskripsibiaya, "nominalbiaya": nominalbiaya, "id": id, "komentarrevisi": komentarrevisi, "status": status});
@@ -1152,12 +1159,12 @@ $(document).keydown(function(event) {
                 @if($page_data["page_method_name"] == "View")
                     "<tr row-seq=\""+rowlen+"\" class=\"addnewrow\">"
                     +"<td class=\"column-hidden\"></td>"
-                    +"<td class=\"p-0\"><select name=\"coa_"+rowlen+"\" id=\"coa_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\" readonly></select></td>"
-                    +"<td class=\"p-0\"><input type=\"text\" name=\"deskripsi_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"deskripsi_"+rowlen+"\" readonly></td>"
-                    +"<td class=\"p-0\"><input type=\"text\" name=\"nom_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"nom_"+rowlen+"\" placeholder=\"Enter Nominal\" readonly></td>"
+                    +"<td class=\"p-0\"><select name=\"coa_"+rowlen+"\" id=\"coa_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
+                    +"<td class=\"p-0\"><input type=\"text\" name=\"deskripsi_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"deskripsi_"+rowlen+"\"></td>"
+                    +"<td class=\"p-0\"><input type=\"text\" name=\"nom_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"nom_"+rowlen+"\" placeholder=\"Enter Nominal\"></td>"
                     +"<td class=\"column-hidden\"></td>"
                     +"<td class=\"p-0\"><select name=\"status_"+rowlen+"\" id=\"status_"+rowlen+"\" class=\"status_acc form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
-                    +"<td class=\"p-0\"><input type=\"text\" name=\"komentarrevisi_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"komentarrevisi_"+rowlen+"\" readonly></td>"
+                    +"<td class=\"p-0\"><input type=\"text\" name=\"komentarrevisi_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"komentarrevisi_"+rowlen+"\"></td>"
                     +"<td class=\"column-hidden\"></td>"
                     // +"<td class=\"p-0 text-center\"><button type=\"button\" id=\"row_show_history_"+rowlen+"\" class=\"bg-white border-0 row-show-history\"><i class=\"text-info fas fa-list\" style=\"cursor: pointer;\"></i></button></td>"
                     +"</tr>"
@@ -1232,41 +1239,41 @@ $(document).keydown(function(event) {
         });
 
         @if($page_data["page_method_name"] == "View")
-        $("#caktable1 > tbody > tr").each(function(index, tr){
-            var rownum = $(tr).attr("row-seq");
-            var dts = [];
-            $("#status_"+rownum+"").on("change", function(){
-                if($("#status_"+rownum+"").val() == "revisi"){
-                    $("#coa_"+rownum+"").prop("disabled", false);
-                    $("#deskripsi_"+rownum+"").prop("readonly", false);
-                    $("#nom_"+rownum+"").prop("readonly", false);
-                    $("#komentarrevisi_"+rownum+"").prop("readonly", false);
+        // $("#caktable1 > tbody > tr").each(function(index, tr){
+        //     var rownum = $(tr).attr("row-seq");
+        //     var dts = [];
+        //     $("#status_"+rownum+"").on("change", function(){
+        //         if($("#status_"+rownum+"").val() == "revisi"){
+        //             $("#coa_"+rownum+"").prop("disabled", false);
+        //             $("#deskripsi_"+rownum+"").prop("readonly", false);
+        //             $("#nom_"+rownum+"").prop("readonly", false);
+        //             $("#komentarrevisi_"+rownum+"").prop("readonly", false);
 
-                    var dt = [];
-                    dt["coa"] = $("#coa_"+rownum+"").val();
-                    dt["coa_label"] = $("#coa_"+rownum+"").text();
-                    dt["deskripsi"] = $("#deskripsi_"+rownum+"").val();
-                    dt["nom"] = $("#nom_"+rownum+"").val();
-                    dt["komentarrevisi"] = $("#komentarrevisi_"+rownum+"").val();
-                    dts[rownum] = dt;
-                }else{
-                    if(rownum && dts[rownum]){
-                        var dt = dts[rownum];
-                        $("#coa_"+rownum+"").val(dt["coa"]).trigger("change");
-                        //dt["coa_label"] = $("#coa_"+rownum+"").text();
-                        $("#deskripsi_"+rownum+"").val(dt["deskripsi"]);
-                        AutoNumeric.getAutoNumericElement("#nom_"+rownum+"").set(dt["nom"]);
-                        calcTotal();
-                        $("#komentarrevisi_"+rownum+"").val(dt["komentarrevisi"]);
-                    }
+        //             var dt = [];
+        //             dt["coa"] = $("#coa_"+rownum+"").val();
+        //             dt["coa_label"] = $("#coa_"+rownum+"").text();
+        //             dt["deskripsi"] = $("#deskripsi_"+rownum+"").val();
+        //             dt["nom"] = $("#nom_"+rownum+"").val();
+        //             dt["komentarrevisi"] = $("#komentarrevisi_"+rownum+"").val();
+        //             dts[rownum] = dt;
+        //         }else{
+        //             if(rownum && dts[rownum]){
+        //                 var dt = dts[rownum];
+        //                 $("#coa_"+rownum+"").val(dt["coa"]).trigger("change");
+        //                 //dt["coa_label"] = $("#coa_"+rownum+"").text();
+        //                 $("#deskripsi_"+rownum+"").val(dt["deskripsi"]);
+        //                 AutoNumeric.getAutoNumericElement("#nom_"+rownum+"").set(dt["nom"]);
+        //                 calcTotal();
+        //                 $("#komentarrevisi_"+rownum+"").val(dt["komentarrevisi"]);
+        //             }
 
-                    $("#coa_"+rownum+"").prop("disabled", true);
-                    $("#deskripsi_"+rownum+"").prop("readonly", true);
-                    $("#nom_"+rownum+"").prop("readonly", true);
-                    $("#komentarrevisi_"+rownum+"").prop("readonly", true);                   
-                }
-            });
-        });
+        //             $("#coa_"+rownum+"").prop("disabled", true);
+        //             $("#deskripsi_"+rownum+"").prop("readonly", true);
+        //             $("#nom_"+rownum+"").prop("readonly", true);
+        //             $("#komentarrevisi_"+rownum+"").prop("readonly", true);                   
+        //         }
+        //     });
+        // });
         @endif
     }
     

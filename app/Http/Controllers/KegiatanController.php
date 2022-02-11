@@ -248,6 +248,7 @@ class KegiatanController extends Controller
                     "coa_label"=> $ct_request["coa_label"],
                     "deskripsibiaya"=> $ct_request["deskripsibiaya"],
                     "nominalbiaya"=> $ct_request["nominalbiaya"],
+                    "status" => "pengajuan",
                     "user_creator_id" => Auth::user()->id
                 ]);
             }
@@ -291,7 +292,7 @@ class KegiatanController extends Controller
     }
 
     public function lastapprove($id){
-        $getlastapproval = Approval::where("parent_id", $id)->where("jenismenu", "RKA")->whereNotNull("status_approval")->orderBy("no_seq", "asc")->first();
+        $getlastapproval = Approval::where("parent_id", $id)->where("jenismenu", "RKA")->where("status_approval", "approve")->orderBy("no_seq", "asc")->first();
         
         return $getlastapproval;
     }
@@ -391,7 +392,8 @@ class KegiatanController extends Controller
                         "coa_label"=> $ct_request["coa_label"],
                         "deskripsibiaya"=> $ct_request["deskripsibiaya"],
                         "nominalbiaya"=> $ct_request["nominalbiaya"],
-                        "user_creator_id" => Auth::user()->id
+                        "user_creator_id" => Auth::user()->id,
+                        "status" => "pengajuan",
                     ])->id;
                     array_push($new_menu_field_ids, $idct);
                 }
@@ -549,7 +551,19 @@ class KegiatanController extends Controller
                 abort(404, "Data not found");
             }
 
-            $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->get();
+            $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role)->orderBy("no_seq")->get();
+            if(Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role)->orderBy("no_seq")->count() < 1){
+                $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+
+                if(Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->count() < 1){
+                    $lastapp = Approval::where("parent_id", $request->id)->where("role", Auth::user()->role)->first();
+                    $beforeapp = Approval::where("parent_id", $request->id)->where("no_seq", ((int)$lastapp->no_seq)+1)->first();
+                    if($beforeapp){
+                        $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $beforeapp->role)->orderBy("no_seq")->get();
+                    }
+                }
+            }
+            
             $ct2_approvals = Approval::whereParentId($request->id)->where("jenismenu", "RKA")->get();
 
             $results = array(

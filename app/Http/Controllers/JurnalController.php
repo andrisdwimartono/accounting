@@ -3549,7 +3549,7 @@ class JurnalController extends Controller
     }
 
     public function lastapprove($id){
-        $getlastapproval = Approval::where("parent_id", $id)->where("jenismenu", "RKA")->whereNotNull("status_approval")->orderBy("no_seq", "asc")->first();
+        $getlastapproval = Approval::where("parent_id", $id)->where("jenismenu", "RKA")->where("status_approval", "approve")->orderBy("no_seq", "asc")->first();
         
         return $getlastapproval;
     }
@@ -3588,7 +3588,7 @@ class JurnalController extends Controller
             ])){
                 abort(401, "Gagal update");
             }else{
-                //$this->updaterka($request, $request->id);
+                $this->updaterka($request, $request->id);
             }
             
             $tgl = date('Y-m-d');
@@ -3629,8 +3629,9 @@ class JurnalController extends Controller
                     abort(403, "Sudah approved dan terjurnal");
                 }
                 $this->checkOpenPeriode($tgl);
+                $lastapp = Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->orderBy("no_seq", "asc")->first();
                 $kegiatan = Kegiatan::where("id", $request->id)->first();
-                $detailbiayakegiatan = Detailbiayakegiatan::where("parent_id", $request->id)->get();
+                $detailbiayakegiatan = Detailbiayakegiatan::where("parent_id", $request->id)->where("archivedby", $lastapp->role)->get();
                 $nominal = 0;
                 foreach($detailbiayakegiatan as $dbk){
                     $nominal += $dbk->nominalbiaya;
@@ -3733,7 +3734,7 @@ class JurnalController extends Controller
     public function updaterka($request, $id)
     {
         $keg = Kegiatan::where("id",$id)->first();
-        if($keg->status != "process"){
+        if($keg->status != "process" && $keg->status != "approving"){
             abort(403, "tidak dapat diubah, status masih/sudah ".$keg->status);
         }
 
@@ -3750,50 +3751,62 @@ class JurnalController extends Controller
             $child_tb_request->validate($rules_ct1_detailbiayakegiatan, $ct_messages);
         }
 
+        //update
+        //hapus yang lama jika ada
+        Detailbiayakegiatan::where("parent_id", $id)->where("isarchived", "on")->where("archivedby", Auth::user()->role)->delete();
+
+        //jika belum pernah, maka update archived
+        Detailbiayakegiatan::where("parent_id", $id)->whereNull("isarchived")->whereNull("archivedby")->update([
+            "isarchived" => "on",
+            "user_updater_id" => Auth::user()->id
+        ]);
+
         $new_menu_field_ids = array();
         foreach($requests_ct1_detailbiayakegiatan as $ct_request){
-            if(isset($ct_request["id"]) && $ct_request["id"] != ""){
-                Detailbiayakegiatan::where("id", $ct_request["id"])->update([
-                    "no_seq" => $ct_request["no_seq"],
-                    "parent_id" => $id,
-                    "coa"=> $ct_request["coa"],
-                    "coa_label"=> $ct_request["coa_label"],
-                    "deskripsibiaya"=> $ct_request["deskripsibiaya"],
-                    "nominalbiaya"=> $ct_request["nominalbiaya"],
-                    "status" => $ct_request["status"],
-                    "komentarrevisi" => $ct_request["komentarrevisi"],
-                    "user_updater_id" => Auth::user()->id,
-                ]);
-            }else{
-                $idct = Detailbiayakegiatan::create([
-                    "no_seq" => $ct_request["no_seq"],
-                    "parent_id" => $id,
-                    "coa"=> $ct_request["coa"],
-                    "coa_label"=> $ct_request["coa_label"],
-                    "deskripsibiaya"=> $ct_request["deskripsibiaya"],
-                    "nominalbiaya"=> $ct_request["nominalbiaya"],
-                    "status" => "terima",
-                    "user_creator_id" => Auth::user()->id,
-                ])->id;
-                array_push($new_menu_field_ids, $idct);
-            }
+            // if(isset($ct_request["id"]) && $ct_request["id"] != ""){
+            //     Detailbiayakegiatan::where("id", $ct_request["id"])->update([
+            //         "no_seq" => $ct_request["no_seq"],
+            //         "parent_id" => $id,
+            //         "coa"=> $ct_request["coa"],
+            //         "coa_label"=> $ct_request["coa_label"],
+            //         "deskripsibiaya"=> $ct_request["deskripsibiaya"],
+            //         "nominalbiaya"=> $ct_request["nominalbiaya"],
+            //         "status" => $ct_request["status"]=="pengajuan"?"terima": $ct_request["status"],
+            //         "komentarrevisi" => $ct_request["komentarrevisi"],
+            //         "user_updater_id" => Auth::user()->id,
+            //     ]);
+            // }
+            $idct = Detailbiayakegiatan::create([
+                "no_seq" => $ct_request["no_seq"],
+                "parent_id" => $id,
+                "coa"=> $ct_request["coa"],
+                "coa_label"=> $ct_request["coa_label"],
+                "deskripsibiaya"=> $ct_request["deskripsibiaya"],
+                "nominalbiaya"=> $ct_request["nominalbiaya"],
+                "status" => $ct_request["status"]=="pengajuan" || $ct_request["status"]==""?"terima": $ct_request["status"],
+                "komentarrevisi" => $ct_request["komentarrevisi"],
+                "user_creator_id" => Auth::user()->id,
+                "isarchived" => "on",
+                "archivedby" => Auth::user()->role,
+            ])->id;
+            array_push($new_menu_field_ids, $idct);
         }
 
-        foreach(Detailbiayakegiatan::whereParentId($id)->get() as $ch){
-            $is_still_exist = false;
-            foreach($requests_ct1_detailbiayakegiatan as $ct_request){
-                if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
-                    $is_still_exist = true;
-                }
-            }
-            if(!$is_still_exist){
-                //Detailbiayakegiatan::whereId($ch->id)->delete();
-                Detailbiayakegiatan::where("id", $ch->id)->update([
-                    "status" => "tolak",
-                    "user_updater_id" => Auth::user()->id,
-                ]);
-            }
-        }
+        // foreach(Detailbiayakegiatan::whereParentId($id)->get() as $ch){
+        //     $is_still_exist = false;
+        //     foreach($requests_ct1_detailbiayakegiatan as $ct_request){
+        //         if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
+        //             $is_still_exist = true;
+        //         }
+        //     }
+        //     if(!$is_still_exist){
+        //         //Detailbiayakegiatan::whereId($ch->id)->delete();
+        //         // Detailbiayakegiatan::where("id", $ch->id)->update([
+        //         //     "status" => "tolak",
+        //         //     "user_updater_id" => Auth::user()->id,
+        //         // ]);
+        //     }
+        // }
     }
 
     public function processapprovepjk(Request $request){
