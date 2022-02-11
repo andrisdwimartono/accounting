@@ -378,7 +378,7 @@
 									Rencana Kegiatan dan Anggaran (RKA)
 								</a>
 							</li>
-							<li class="d-none" id="cakmenu-realisasi"><a href="{{ env('APP_URL') }}/kegiatan/realisasi">
+							<li class="d-none" id="cakmenu-realisasi"><a href="{{ env('APP_URL') }}/realisasi">
 									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="svg-main-icon">
 										<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
 											<rect x="0" y="0" width="24" height="24"/>
@@ -389,7 +389,7 @@
 									Realisasi Anggaran
 								</a>
 							</li>
-							<li class="d-none" id="cakmenu-pencairan"><a href="{{ env('APP_URL') }}/kegiatan/pencairan">
+							<li class="d-none" id="cakmenu-pencairan"><a href="{{ env('APP_URL') }}/pencairan">
 									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="svg-main-icon">
 										<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
 											<rect x="0" y="0" width="24" height="24"/>
@@ -400,7 +400,7 @@
 									Pencairan Anggaran
 								</a>
 							</li>
-							<li class="d-none" id="cakmenu-pertanggungjawaban"><a href="{{ env('APP_URL') }}/kegiatan/pertanggungjawaban">
+							<li class="d-none" id="cakmenu-pertanggungjawaban"><a href="{{ env('APP_URL') }}/pertanggungjawaban">
 									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="svg-main-icon">
 										<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
 											<rect x="0" y="0" width="24" height="24"/>
