@@ -177,6 +177,42 @@ class KegiatanController extends Controller
         return view("kegiatan.list", ["page_data" => $page_data]);
     }
 
+    public function realisasi()
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "List";
+        $page_data["page_data_name"] = "Realisasi Anggaran";
+        $page_data["page_data_urlname"] = "realisasi";
+        $page_data["footer_js_page_specific_script"] = ["kegiatan.page_specific_script.footer_js_list"];
+        $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_list"];
+        
+        return view("kegiatan.list", ["page_data" => $page_data]);
+    }
+
+    public function pencairan()
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "List";
+        $page_data["page_data_name"] = "Pencairan Anggaran";
+        $page_data["page_data_urlname"] = "pencairan";
+        $page_data["footer_js_page_specific_script"] = ["kegiatan.page_specific_script.footer_js_list"];
+        $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_list"];
+        
+        return view("kegiatan.list", ["page_data" => $page_data]);
+    }
+
+    public function pertanggungjawaban()
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "List";
+        $page_data["page_data_name"] = "Pertanggungjawaban Anggaran";
+        $page_data["page_data_urlname"] = "pertanggungjawaban";
+        $page_data["footer_js_page_specific_script"] = ["kegiatan.page_specific_script.footer_js_list"];
+        $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_list"];
+        
+        return view("kegiatan.list", ["page_data" => $page_data]);
+    }
+
     public function laporan()
     {
         $page_data = $this->tabledesign();
