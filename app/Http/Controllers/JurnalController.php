@@ -264,6 +264,21 @@ class JurnalController extends Controller
             "date_format" => "Format tidak sesuai di :attribute!!"
         ];
 
+        $td["fieldsrules_ct1_detailbiayakegiatan"] = [
+            "coa" => "required|exists:coas,id",
+            "deskripsibiaya" => "nullable",
+            "nominalbiaya" => "required|numeric"
+        ];
+
+        $td["fieldsmessages_ct1_detailbiayakegiatan"] = [
+            "required" => ":attribute harus diisi!!",
+            "min" => ":attribute minimal :min karakter!!",
+            "max" => ":attribute maksimal :max karakter!!",
+            "in" => "Tidak ada dalam pilihan :attribute!!",
+            "exists" => "Tidak ada dalam :attribute!!",
+            "date_format" => "Format tidak sesuai di :attribute!!"
+        ];
+
         return $td;
     }
 
@@ -3533,25 +3548,47 @@ class JurnalController extends Controller
         }
     }
 
+    public function lastapprove($id){
+        $getlastapproval = Approval::where("parent_id", $id)->where("jenismenu", "RKA")->whereNotNull("status_approval")->orderBy("no_seq", "asc")->first();
+        
+        return $getlastapproval;
+    }
+
+    public function nextapprove($id){
+        $getlastapproval = Approval::where("parent_id", $id)->where("jenismenu", "RKA")->where("status_approval", "approve")->orderBy("no_seq", "asc")->first();
+        $getnextapp = Approval::where("parent_id", $id)->where("jenismenu", "RKA")->whereNull("status_approval")->orderBy("no_seq", "desc")->first();
+        if($getlastapproval){
+            $getnextapp = Approval::where("parent_id", $id)->where("jenismenu", "RKA")->whereNull("status_approval")->where("no_seq", ((int) $getlastapproval->no_seq)-1)->orderBy("no_seq", "desc")->first();
+        }
+        
+        return $getnextapp;
+    }
+
     public function processapprove(Request $request){
         if($request->ajax() || $request->wantsJson()){
             $last_approval = Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->where("no_seq", ((int)$request->no_seq)+1)->first();
 
-            if($last_approval && $last_approval->status_approval != "approve"){
-                abort(403, $last_approval->role_label." tidak/belum menerima pengajuan ini!");
+            if(!(($this->lastapprove($request->id) && $this->lastapprove($request->id)->role == Auth::user()->role) || ($this->nextapprove($request->id) && $this->nextapprove($request->id)->role == Auth::user()->role))){
+                //abort(403, $last_approval->role_label." tidak/belum menerima pengajuan ini!");
+                abort(403, " Tidak bisa melakukan approval!");
             }
 
-            if(!Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->where("no_seq", ((int)$request->no_seq))->update([
-                "role"                    => $request->role,
-                "role_label"              => $request->role_label,
-                "jenismenu"               => $request->jenismenu,
-                "user"                    => $request->user,
-                "user_label"              => $request->user_label,
+            // if($last_approval && $last_approval->status_approval != "approve"){
+            //     abort(403, $last_approval->role_label." tidak/belum menerima pengajuan ini!");
+            // }
+
+            if(!Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->where("role", Auth::user()->role)->update([
+                "role"                    => Auth::user()->role,
+                "jenismenu"               => "RKA",
+                "user"                    => Auth::user()->id,
+                "user_label"              => Auth::user()->name,
                 "komentar"                => $request->komentar,
                 "status_approval"         => $request->status_approval,
                 "status_approval_label"   => $request->status_approval_label,
             ])){
                 abort(401, "Gagal update");
+            }else{
+                //$this->updaterka($request, $request->id);
             }
             
             $tgl = date('Y-m-d');
@@ -3684,6 +3721,79 @@ class JurnalController extends Controller
             ]);
         }
         return response()->json(['error'=>$validator->errors()->all()]);
+    }
+
+    /**
+    * Update the specified resource in storage.
+    *
+    * @param \Illuminate\Http\Request $request
+    * @param int $id
+    * @return \Illuminate\Http\Response
+    */
+    public function updaterka($request, $id)
+    {
+        $keg = Kegiatan::where("id",$id)->first();
+        if($keg->status != "process"){
+            abort(403, "tidak dapat diubah, status masih/sudah ".$keg->status);
+        }
+
+        $page_data = $this->tabledesign();
+        $rules_ct1_detailbiayakegiatan = $page_data["fieldsrules_ct1_detailbiayakegiatan"];
+        $requests_ct1_detailbiayakegiatan = json_decode($request->ct1_detailbiayakegiatan, true);
+        foreach($requests_ct1_detailbiayakegiatan as $ct_request){
+            $child_tb_request = new \Illuminate\Http\Request();
+            $child_tb_request->replace($ct_request);
+            $ct_messages = array();
+            foreach($page_data["fieldsmessages_ct1_detailbiayakegiatan"] as $key => $value){
+                $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
+            }
+            $child_tb_request->validate($rules_ct1_detailbiayakegiatan, $ct_messages);
+        }
+
+        $new_menu_field_ids = array();
+        foreach($requests_ct1_detailbiayakegiatan as $ct_request){
+            if(isset($ct_request["id"]) && $ct_request["id"] != ""){
+                Detailbiayakegiatan::where("id", $ct_request["id"])->update([
+                    "no_seq" => $ct_request["no_seq"],
+                    "parent_id" => $id,
+                    "coa"=> $ct_request["coa"],
+                    "coa_label"=> $ct_request["coa_label"],
+                    "deskripsibiaya"=> $ct_request["deskripsibiaya"],
+                    "nominalbiaya"=> $ct_request["nominalbiaya"],
+                    "status" => $ct_request["status"],
+                    "komentarrevisi" => $ct_request["komentarrevisi"],
+                    "user_updater_id" => Auth::user()->id,
+                ]);
+            }else{
+                $idct = Detailbiayakegiatan::create([
+                    "no_seq" => $ct_request["no_seq"],
+                    "parent_id" => $id,
+                    "coa"=> $ct_request["coa"],
+                    "coa_label"=> $ct_request["coa_label"],
+                    "deskripsibiaya"=> $ct_request["deskripsibiaya"],
+                    "nominalbiaya"=> $ct_request["nominalbiaya"],
+                    "status" => "terima",
+                    "user_creator_id" => Auth::user()->id,
+                ])->id;
+                array_push($new_menu_field_ids, $idct);
+            }
+        }
+
+        foreach(Detailbiayakegiatan::whereParentId($id)->get() as $ch){
+            $is_still_exist = false;
+            foreach($requests_ct1_detailbiayakegiatan as $ct_request){
+                if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
+                    $is_still_exist = true;
+                }
+            }
+            if(!$is_still_exist){
+                //Detailbiayakegiatan::whereId($ch->id)->delete();
+                Detailbiayakegiatan::where("id", $ch->id)->update([
+                    "status" => "tolak",
+                    "user_updater_id" => Auth::user()->id,
+                ]);
+            }
+        }
     }
 
     public function processapprovepjk(Request $request){

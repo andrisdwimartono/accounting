@@ -101,8 +101,9 @@
                                                                 @if($page_data["page_method_name"] == "View")
                                                                     <th scope="col" style="width: 15%;">Status</th>
                                                                     <th scope="col" style="width: 15%;">Komentar Revisi</th>
+                                                                    <th class="column-hidden" scope="col" style="width: 10%;"></th>
                                                                 @else
-                                                                <th scope="col" style="width: 10%;"></th>
+                                                                    <th scope="col" style="width: 10%;"></th>
                                                                 @endif
                                                             </tr>
                                                         </thead>
@@ -148,9 +149,6 @@
                                             <?php if($page_data["page_method_name"] != "Create" && $page_data["page_method_name"] != "Update"){ ?>
                                             <div class="form-group">
                                                 <label for="ct2_approval">Approval</label>
-                                                <div id="result">
-                                                    Event result: <?= Auth::user()->role ?>
-                                                </div>
                                                 <table id="ctct2_approval" class="table table-bordered table-striped" style="width:100%">
                                                     <thead>
                                                         <tr>
@@ -178,13 +176,23 @@
                                         @if($page_data["page_method_name"] != "View")
                                         <div class="form-group row">
                                             <div class="col-sm-9 offset-sm-9">
-                                            <button type="submit" class="btn btn-primary" @if($page_data["page_method_name"] == "View") readonly @endif>Submit</button>
+                                                <button type="submit" class="btn btn-primary" @if($page_data["page_method_name"] == "View") readonly @endif>Submit</button>
                                             </div>
                                         </div>
                                         @else
-                                        <div class="form-group row">
-                                            <div class="col-sm-9 offset-sm-9">
-
+                                        <div class="form-group row justify-content-center">
+                                            <div class="col-sm-4">
+                                                @if(($page_data["lastapprove"] && $page_data["lastapprove"]->role == Auth::user()->role) || ($page_data["nextapprove"] && $page_data["nextapprove"]->role == Auth::user()->role))
+                                                <button type="button" class="btn btn-danger" id="rejectrka"><i class="fas fa-trash"></i> Tolak</button>
+                                                @endif
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <button type="button" class="btn btn-success" id="historyrka"><i class="fas fa-list"></i> Histori</button>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                @if(($page_data["lastapprove"] && $page_data["lastapprove"]->role == Auth::user()->role) || ($page_data["nextapprove"] && $page_data["nextapprove"]->role == Auth::user()->role))
+                                                <button type="button" class="btn btn-primary" id="approverka"><i class="fas fa-check"></i> Terima</button>
+                                                @endif
                                             </div>
                                         </div>
                                         @endif
@@ -284,6 +292,72 @@
                                 </div>
                                 <!-- Modal Approval End -->
                                 <?php } ?>
+                                
+                                @if($page_data["page_method_name"] == "View")
+                                <!-- Modal Reject RKA -->
+                                <div class="modal fade" id="modal-reject" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title"><b>Warning!!</b></h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">×</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="form-group row">
+                                                    <textarea name="alasan_tolak" class="form-control m-2" id="alasan_tolak" placeholder="Tulis alasan mengtolak jurnal"></textarea>
+                                                    <span class="d-none text-danger m-2" id="alasan_tolak_error"></span>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-danger" id="rejectrka-confirmed">Tolak</button>
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal Tolak</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Modal Accept RKA -->
+                                <div class="modal fade" id="modal-accept" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title"><b>Warning!!</b></h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">×</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Apakah anda yakin terima RKA ini?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-info" id="approverka-confirmed">Terima</button>
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal Terima</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Modal History RKA -->
+                                <div class="modal fade" id="modal-history" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title"><b>History RKA</b></h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">×</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Apakah anda yakin terima RKA ini?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endif
                                 </div>
                             </div>
                         </div>
