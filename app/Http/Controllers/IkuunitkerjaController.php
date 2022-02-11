@@ -219,6 +219,19 @@ class IkuunitkerjaController extends Controller
         return view("ikuunitkerja.list", ["page_data" => $page_data]);
     }
 
+    public function indexsik()
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "List";
+        $page_data["page_data_name"] = "SIK Unit Kerja";
+        $page_data["page_data_urlname"] = "sikunitkerja";
+        $page_data["sik"] = true;
+        $page_data["footer_js_page_specific_script"] = ["ikuunitkerja.page_specific_script.footer_js_list"];
+        $page_data["header_js_page_specific_script"] = ["ikuunitkerja.page_specific_script.header_js_list"];
+        
+        return view("ikuunitkerja.list", ["page_data" => $page_data]);
+    }
+
     /**
     * Show the form for creating a new resource.
     *
@@ -241,6 +254,19 @@ class IkuunitkerjaController extends Controller
         $page_data["page_data_name"] = "IKT Unit Kerja";
         $page_data["page_data_urlname"] = "iktunitkerja";
         $page_data["ikt"] = true;
+        $page_data["footer_js_page_specific_script"] = ["ikuunitkerja.page_specific_script.footer_js_create"];
+        $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_create"];
+        
+        return view("ikuunitkerja.create", ["page_data" => $page_data]);
+    }
+
+    public function createsik()
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "Create";
+        $page_data["page_data_name"] = "SIK Unit Kerja";
+        $page_data["page_data_urlname"] = "sikunitkerja";
+        $page_data["sik"] = true;
         $page_data["footer_js_page_specific_script"] = ["ikuunitkerja.page_specific_script.footer_js_create"];
         $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_create"];
         
@@ -405,6 +431,83 @@ class IkuunitkerjaController extends Controller
         }
     }
 
+    public function storesik(Request $request)
+    {
+        $page_data = $this->tabledesign();
+        $rules_ct1_iku = $page_data["fieldsrules_ct1_iku"];
+        $requests_ct1_iku = json_decode($request->ct1_iku, true);
+        foreach($requests_ct1_iku as $ct_request){
+            $child_tb_request = new \Illuminate\Http\Request();
+            $child_tb_request->replace($ct_request);
+            $ct_messages = array();
+            foreach($page_data["fieldsmessages_ct1_iku"] as $key => $value){
+                $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
+            }
+            $child_tb_request->validate($rules_ct1_iku, $ct_messages);
+        }
+
+        $rules = $page_data["fieldsrules"];
+        $messages = $page_data["fieldsmessages"];
+        if($request->validate($rules, $messages)){
+            $id = Ikuunitkerja::create([
+                "iku_tahun"=> $request->iku_tahun,
+                "iku_tahun_label"=> $request->iku_tahun_label,
+                "iku_unit_pelaksana"=> $request->iku_unit_pelaksana,
+                "iku_unit_pelaksana_label"=> $request->iku_unit_pelaksana_label,
+                "upload_dokumen"=> $request->upload_dokumen,
+                "is_sik" => "on",
+                "user_creator_id"=> Auth::user()->id
+            ])->id;
+
+            foreach($requests_ct1_iku as $ct_request){
+                Iku::create([
+                    "no_seq" => $ct_request["no_seq"],
+                    "parent_id" => $id,
+                    "jenis_iku"=> $ct_request["jenis_iku"],
+                    "jenis_iku_label"=> $ct_request["jenis_iku_label"],
+                    "iku_name"=> $ct_request["iku_name"],
+                    "unit_pelaksana"=> $ct_request["unit_pelaksana"],
+                    "unit_pendukung"=> $ct_request["unit_pendukung"],
+                    "unit_pendukung_label"=> $ct_request["unit_pendukung_label"],
+                    "nilai_standar"=> $ct_request["nilai_standar"],
+                    "satuan_nilai_standar"=> $ct_request["satuan_nilai_standar"],
+                    "satuan_nilai_standar_label"=> $ct_request["satuan_nilai_standar_label"],
+                    "nilai_standar_opt"=> $ct_request["nilai_standar_opt"],
+                    "nilai_standar_opt_label"=> $ct_request["nilai_standar_opt_label"],
+                    "nilai_baseline"=> $ct_request["nilai_baseline"],
+                    "satuan_nilai_baseline"=> $ct_request["satuan_nilai_baseline"],
+                    "satuan_nilai_baseline_label"=> $ct_request["satuan_nilai_baseline_label"],
+                    "nilai_baseline_opt"=> $ct_request["nilai_baseline_opt"],
+                    "nilai_baseline_opt_label"=> $ct_request["nilai_baseline_opt_label"],
+                    "nilai_renstra"=> $ct_request["nilai_renstra"],
+                    "satuan_nilai_renstra"=> $ct_request["satuan_nilai_renstra"],
+                    "satuan_nilai_renstra_label"=> $ct_request["satuan_nilai_renstra_label"],
+                    "nilai_renstra_opt"=> $ct_request["nilai_renstra_opt"],
+                    "nilai_renstra_opt_label"=> $ct_request["nilai_renstra_opt_label"],
+                    "nilai_target_tahunan"=> $ct_request["nilai_target_tahunan"],
+                    "satuan_nilai_target_tahunan"=> $ct_request["satuan_nilai_target_tahunan"],
+                    "satuan_nilai_target_tahunan_label"=> $ct_request["satuan_nilai_target_tahunan_label"],
+                    "nilai_target_tahunan_opt"=> $ct_request["nilai_target_tahunan_opt"],
+                    "nilai_target_tahunan_opt_label"=> $ct_request["nilai_target_tahunan_opt_label"],
+                    "keterangan"=> $ct_request["keterangan"],
+                    "sumber_data"=> $ct_request["sumber_data"],
+                    "rujukan"=> $ct_request["rujukan"],
+                    "unit_pelaksana_label"=> $ct_request["unit_pelaksana_label"],
+                    "tahun"=> $ct_request["tahun"],
+                    "upload_detail"=> $ct_request["upload_detail"],
+                    "is_sik" => "on",
+                    "user_creator_id" => Auth::user()->id
+                ]);
+            }
+
+            return response()->json([
+                'status' => 201,
+                'message' => 'Created with id '.$id,
+                'data' => ['id' => $id]
+            ]);
+        }
+    }
+
     /**
     * Display the specified resource.
     *
@@ -436,6 +539,20 @@ class IkuunitkerjaController extends Controller
         return view("ikuunitkerja.create", ["page_data" => $page_data]);
     }
 
+    public function showsik(Ikuunitkerja $sikunitkerja)
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "View";
+        $page_data["page_data_name"] = "SIK Unit Kerja";
+        $page_data["page_data_urlname"] = "sikunitkerja";
+        $page_data["sik"] = true;
+        $page_data["footer_js_page_specific_script"] = ["ikuunitkerja.page_specific_script.footer_js_create"];
+        $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_create"];
+        
+        $page_data["id"] = $sikunitkerja->id;
+        return view("ikuunitkerja.create", ["page_data" => $page_data]);
+    }
+
     /**
     * Show the form for editing the specified resource.
     *
@@ -464,6 +581,20 @@ class IkuunitkerjaController extends Controller
         $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_create"];
         
         $page_data["id"] = $iktunitkerja->id;
+        return view("ikuunitkerja.create", ["page_data" => $page_data]);
+    }
+
+    public function editsik(Ikuunitkerja $sikunitkerja)
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "Update";
+        $page_data["page_data_name"] = "SIK Unit Kerja";
+        $page_data["page_data_urlname"] = "sikunitkerja";
+        $page_data["sik"] = true;
+        $page_data["footer_js_page_specific_script"] = ["ikuunitkerja.page_specific_script.footer_js_create"];
+        $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_create"];
+        
+        $page_data["id"] = $sikunitkerja->id;
         return view("ikuunitkerja.create", ["page_data" => $page_data]);
     }
 
@@ -709,6 +840,138 @@ class IkuunitkerjaController extends Controller
                         "tahun"=> $ct_request["tahun"],
                         "upload_detail"=> $ct_request["upload_detail"],
                         "is_ikt"=> "on",
+                        "user_creator_id" => Auth::user()->id
+                    ])->id;
+                    array_push($new_menu_field_ids, $idct);
+                }
+            }
+
+            foreach(Iku::whereParentId($id)->get() as $ch){
+                    $is_still_exist = false;
+                    foreach($requests_ct1_iku as $ct_request){
+                        if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
+                            $is_still_exist = true;
+                        }
+                    }
+                    if(!$is_still_exist){
+                        Iku::whereId($ch->id)->delete();
+                    }
+                }
+
+            return response()->json([
+                'status' => 201,
+                'message' => 'Id '.$id.' is updated',
+                'data' => ['id' => $id]
+            ]);
+        }
+    }
+
+    public function updatesik(Request $request, $id)
+    {
+        $page_data = $this->tabledesign();
+        $rules_ct1_iku = $page_data["fieldsrules_ct1_iku"];
+        $requests_ct1_iku = json_decode($request->ct1_iku, true);
+        foreach($requests_ct1_iku as $ct_request){
+            $child_tb_request = new \Illuminate\Http\Request();
+            $child_tb_request->replace($ct_request);
+            $ct_messages = array();
+            foreach($page_data["fieldsmessages_ct1_iku"] as $key => $value){
+                $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
+            }
+            $child_tb_request->validate($rules_ct1_iku, $ct_messages);
+        }
+
+        $rules = $page_data["fieldsrules"];
+        $messages = $page_data["fieldsmessages"];
+        if($request->validate($rules, $messages)){
+            Ikuunitkerja::where("id", $id)->update([
+                "iku_tahun"=> $request->iku_tahun,
+                "iku_tahun_label"=> $request->iku_tahun_label,
+                "iku_unit_pelaksana"=> $request->iku_unit_pelaksana,
+                "iku_unit_pelaksana_label"=> $request->iku_unit_pelaksana_label,
+                "upload_dokumen"=> $request->upload_dokumen,
+                "is_sik"=> "on",
+                "user_updater_id"=> Auth::user()->id
+            ]);
+
+            $new_menu_field_ids = array();
+            foreach($requests_ct1_iku as $ct_request){
+                if(isset($ct_request["id"])){
+                    Iku::where("id", $ct_request["id"])->update([
+                        "no_seq" => $ct_request["no_seq"],
+                        "parent_id" => $id,
+                        "jenis_iku"=> $ct_request["jenis_iku"],
+                        "jenis_iku_label"=> $ct_request["jenis_iku_label"],
+                        "iku_name"=> $ct_request["iku_name"],
+                        "unit_pelaksana"=> $ct_request["unit_pelaksana"],
+                        "unit_pendukung"=> $ct_request["unit_pendukung"],
+                        "unit_pendukung_label"=> $ct_request["unit_pendukung_label"],
+                        "nilai_standar"=> $ct_request["nilai_standar"],
+                        "satuan_nilai_standar"=> $ct_request["satuan_nilai_standar"]==''?null:$ct_request["satuan_nilai_standar"],
+                        "satuan_nilai_standar_label"=> $ct_request["satuan_nilai_standar_label"],
+                        "nilai_standar_opt"=> $ct_request["nilai_standar_opt"],
+                        "nilai_standar_opt_label"=> $ct_request["nilai_standar_opt_label"],
+                        "nilai_baseline"=> $ct_request["nilai_baseline"],
+                        "satuan_nilai_baseline"=> $ct_request["satuan_nilai_baseline"]==''?null:$ct_request["satuan_nilai_baseline"],
+                        "satuan_nilai_baseline_label"=> $ct_request["satuan_nilai_baseline_label"],
+                        "nilai_baseline_opt"=> $ct_request["nilai_baseline_opt"],
+                        "nilai_baseline_opt_label"=> $ct_request["nilai_baseline_opt_label"],
+                        "nilai_renstra"=> $ct_request["nilai_renstra"],
+                        "satuan_nilai_renstra"=> $ct_request["satuan_nilai_renstra"]==''?null:$ct_request["satuan_nilai_renstra"],
+                        "satuan_nilai_renstra_label"=> $ct_request["satuan_nilai_renstra_label"],
+                        "nilai_renstra_opt"=> $ct_request["nilai_renstra_opt"],
+                        "nilai_renstra_opt_label"=> $ct_request["nilai_renstra_opt_label"],
+                        "nilai_target_tahunan"=> $ct_request["nilai_target_tahunan"],
+                        "satuan_nilai_target_tahunan"=> $ct_request["satuan_nilai_target_tahunan"]==''?null:$ct_request["satuan_nilai_target_tahunan"],
+                        "satuan_nilai_target_tahunan_label"=> $ct_request["satuan_nilai_target_tahunan_label"],
+                        "nilai_target_tahunan_opt"=> $ct_request["nilai_target_tahunan_opt"],
+                        "nilai_target_tahunan_opt_label"=> $ct_request["nilai_target_tahunan_opt_label"],
+                        "keterangan"=> $ct_request["keterangan"],
+                        "sumber_data"=> $ct_request["sumber_data"],
+                        "rujukan"=> $ct_request["rujukan"],
+                        "unit_pelaksana_label"=> $ct_request["unit_pelaksana_label"],
+                        "tahun"=> $ct_request["tahun"],
+                        "upload_detail"=> $ct_request["upload_detail"],
+                        "is_sik"=> "on",
+                        "user_updater_id" => Auth::user()->id
+                    ]);
+                }else{
+                    $idct = Iku::create([
+                        "no_seq" => $ct_request["no_seq"],
+                        "parent_id" => $id,
+                        "jenis_iku"=> $ct_request["jenis_iku"],
+                        "jenis_iku_label"=> $ct_request["jenis_iku_label"],
+                        "iku_name"=> $ct_request["iku_name"],
+                        "unit_pelaksana"=> $ct_request["unit_pelaksana"],
+                        "unit_pendukung"=> $ct_request["unit_pendukung"],
+                        "unit_pendukung_label"=> $ct_request["unit_pendukung_label"],
+                        "nilai_standar"=> $ct_request["nilai_standar"],
+                        "satuan_nilai_standar"=> $ct_request["satuan_nilai_standar"],
+                        "satuan_nilai_standar_label"=> $ct_request["satuan_nilai_standar_label"],
+                        "nilai_standar_opt"=> $ct_request["nilai_standar_opt"],
+                        "nilai_standar_opt_label"=> $ct_request["nilai_standar_opt_label"],
+                        "nilai_baseline"=> $ct_request["nilai_baseline"],
+                        "satuan_nilai_baseline"=> $ct_request["satuan_nilai_baseline"],
+                        "satuan_nilai_baseline_label"=> $ct_request["satuan_nilai_baseline_label"],
+                        "nilai_baseline_opt"=> $ct_request["nilai_baseline_opt"],
+                        "nilai_baseline_opt_label"=> $ct_request["nilai_baseline_opt_label"],
+                        "nilai_renstra"=> $ct_request["nilai_renstra"],
+                        "satuan_nilai_renstra"=> $ct_request["satuan_nilai_renstra"],
+                        "satuan_nilai_renstra_label"=> $ct_request["satuan_nilai_renstra_label"],
+                        "nilai_renstra_opt"=> $ct_request["nilai_renstra_opt"],
+                        "nilai_renstra_opt_label"=> $ct_request["nilai_renstra_opt_label"],
+                        "nilai_target_tahunan"=> $ct_request["nilai_target_tahunan"],
+                        "satuan_nilai_target_tahunan"=> $ct_request["satuan_nilai_target_tahunan"],
+                        "satuan_nilai_target_tahunan_label"=> $ct_request["satuan_nilai_target_tahunan_label"],
+                        "nilai_target_tahunan_opt"=> $ct_request["nilai_target_tahunan_opt"],
+                        "nilai_target_tahunan_opt_label"=> $ct_request["nilai_target_tahunan_opt_label"],
+                        "keterangan"=> $ct_request["keterangan"],
+                        "sumber_data"=> $ct_request["sumber_data"],
+                        "rujukan"=> $ct_request["rujukan"],
+                        "unit_pelaksana_label"=> $ct_request["unit_pelaksana_label"],
+                        "tahun"=> $ct_request["tahun"],
+                        "upload_detail"=> $ct_request["upload_detail"],
+                        "is_sik"=> "on",
                         "user_creator_id" => Auth::user()->id
                     ])->id;
                     array_push($new_menu_field_ids, $idct);

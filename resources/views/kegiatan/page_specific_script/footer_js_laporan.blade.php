@@ -60,14 +60,14 @@
 function format ( d ) {
     // `d` is the original data object for the row
     var table = ''
-    table += '<table cellpadding="5" cellspacing="0" border="0" style="margin-left:50px;width:100%;">'
+    table += '<table cellpadding="5" cellspacing="0" border="0" style="margin-left:50px;width:80%;">'
     table += '<tr><th>Kode Rekening</th><th>Deskripsi</th><th>Nominal</th></tr>'
 
     for(var i=0; i<d[6].length; i++){
       table += '<tr>'
-      table += '<td>'+d[6][i].coa_label+'</td>'
-      table += '<td>'+d[6][i].deskripsibiaya+'</td>'
-      table += '<td>'+d[6][i].nominalbiaya+'</td>'
+      table += '<td>'+d[6][i][0]+'</td>'
+      table += '<td>'+d[6][i][1]+'</td>'
+      table += '<td>'+d[6][i][2]+'</td>'
       table += '</tr>'
     }
     table += '</table>';
@@ -115,7 +115,7 @@ function format ( d ) {
               search : {
                   bulan_periode: $("#bulan_periode").val(),
                   tahun_periode: $("#tahun_periode").val(),
-                  unitkerja: $("#unitkerja").val(),
+                  unit_pelaksana: $("#unitkerja").val(),
               }, 
               _token: $("input[name=_token]").val()
             }
@@ -187,6 +187,7 @@ function format ( d ) {
   }
 
   $("#unitkerja").on("change", function() {
+      fetch_data();
       $("#unitkerja_label").val($("#unitkerja option:selected").text());
   });
 

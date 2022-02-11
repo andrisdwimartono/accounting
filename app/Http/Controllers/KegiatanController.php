@@ -177,6 +177,42 @@ class KegiatanController extends Controller
         return view("kegiatan.list", ["page_data" => $page_data]);
     }
 
+    public function realisasi()
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "List";
+        $page_data["page_data_name"] = "Realisasi Anggaran";
+        $page_data["page_data_urlname"] = "realisasi";
+        $page_data["footer_js_page_specific_script"] = ["kegiatan.page_specific_script.footer_js_list"];
+        $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_list"];
+        
+        return view("kegiatan.list", ["page_data" => $page_data]);
+    }
+
+    public function pencairan()
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "List";
+        $page_data["page_data_name"] = "Pencairan Anggaran";
+        $page_data["page_data_urlname"] = "pencairan";
+        $page_data["footer_js_page_specific_script"] = ["kegiatan.page_specific_script.footer_js_list"];
+        $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_list"];
+        
+        return view("kegiatan.list", ["page_data" => $page_data]);
+    }
+
+    public function pertanggungjawaban()
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "List";
+        $page_data["page_data_name"] = "Pertanggungjawaban Anggaran";
+        $page_data["page_data_urlname"] = "pertanggungjawaban";
+        $page_data["footer_js_page_specific_script"] = ["kegiatan.page_specific_script.footer_js_list"];
+        $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_list"];
+        
+        return view("kegiatan.list", ["page_data" => $page_data]);
+    }
+
     public function laporan()
     {
         $page_data = $this->tabledesign();
@@ -502,6 +538,11 @@ class KegiatanController extends Controller
             $keyword = $request->search["value"];
         }
 
+        $unit_pelaksana = null;
+        if(isset($request->search["unit_pelaksana"])){
+            $unit_pelaksana = $request->search["unit_pelaksana"];
+        }
+
         $orders = array("id", "ASC");
         if(isset($request->order)){
             $orders = array($list_column[$request->order["0"]["column"]], $request->order["0"]["dir"]);
@@ -516,7 +557,14 @@ class KegiatanController extends Controller
         $no = 0;
         foreach(Kegiatan::where(function($q) use ($keyword) {
             $q->where("unit_pelaksana_label", "LIKE", "%" . $keyword. "%")->orWhere("tahun_label", "LIKE", "%" . $keyword. "%")->orWhere("iku_label", "LIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "LIKE", "%" . $keyword. "%")->orWhere("output", "LIKE", "%" . $keyword. "%");
-        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output"]) as $kegiatan){
+        })
+        ->where(function($q) use ($unit_pelaksana) {
+            if(isset($unit_pelaksana)){
+                $q->where("unit_pelaksana", $unit_pelaksana);
+            }
+        })
+        ->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])
+        ->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output"]) as $kegiatan){
             $no = $no+1;
             $act = '
             <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
@@ -525,7 +573,17 @@ class KegiatanController extends Controller
 
             <button type="button" class="row-delete btn btn-danger shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
 
-            $detail = Detailbiayakegiatan::whereParentId($kegiatan->id)->get();
+            $detail = array();
+            $total = 0;
+            foreach(Detailbiayakegiatan::whereParentId($kegiatan->id)->get() as $db){
+                $nom =  "<span class='cak-rp'>Rp</span> <span class='cak-nom'>".number_format($db->nominalbiaya,0,",",".")."</span>";
+                $total += (float) $db->nominalbiaya;
+                array_push($detail, array($db->coa_label, $db->deskripisibiaya, $nom));
+            }
+            $tot =  "<b><span class='cak-rp'>Rp</span> <span class='cak-nom'>".number_format($total,0,",",".")."</span></b>";
+                
+            array_push($detail, array("", "<b>TOTAL</b>", $tot));
+            // $detail = Detailbiayakegiatan::whereParentId($kegiatan->id)->get();
 
             array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $kegiatan->output, $act, $detail));
         }

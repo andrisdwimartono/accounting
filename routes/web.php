@@ -264,8 +264,25 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getlinksiktunitkerja', 'App\Http\Controllers\IkuunitkerjaController@getlinks');
         Route::post('/uploadfileiktunitkerja', 'App\Http\Controllers\IkuunitkerjaController@storeUploadFile');
 
+        Route::get('/sikunitkerja', 'App\Http\Controllers\IkuunitkerjaController@indexikt')->name('sikunitkerja');
+        Route::post('/getlistsikunitkerja', 'App\Http\Controllers\IkuunitkerjaController@get_list');
+        Route::get('/sikunitkerja/{iktunitkerja}', 'App\Http\Controllers\IkuunitkerjaController@showsik');
+        Route::get('/createsikunitkerja', 'App\Http\Controllers\IkuunitkerjaController@createsik');
+        Route::post('/storesikunitkerja', 'App\Http\Controllers\IkuunitkerjaController@storesik');
+        Route::get('/sikunitkerja/{iktunitkerja}/edit', 'App\Http\Controllers\IkuunitkerjaController@editsik');
+        Route::post('/getdatasikunitkerja', 'App\Http\Controllers\IkuunitkerjaController@getdata');
+        Route::post('/updatesikunitkerja/{iktunitkerja}', 'App\Http\Controllers\IkuunitkerjaController@updatesik');
+        Route::post('/deletesikunitkerja', 'App\Http\Controllers\IkuunitkerjaController@destroy');
+        Route::post('/getoptionssikunitkerja', 'App\Http\Controllers\IkuunitkerjaController@getoptions');
+        Route::post('/getlinksikunitkerja', 'App\Http\Controllers\IkuunitkerjaController@getlinks');
+        Route::post('/uploadfilesikunitkerja', 'App\Http\Controllers\IkuunitkerjaController@storeUploadFile');
+
+
         Route::get('/kegiatan', 'App\Http\Controllers\KegiatanController@index')->name('kegiatan');
         Route::get('/kegiatan/laporan', 'App\Http\Controllers\KegiatanController@laporan');
+        Route::get('/realisasi', 'App\Http\Controllers\KegiatanController@realisasi');
+        Route::get('/pencairan', 'App\Http\Controllers\KegiatanController@pencairan');
+        Route::get('/pertanggungjawaban', 'App\Http\Controllers\KegiatanController@pertanggungjawaban');
         Route::post('/getlistkegiatan', 'App\Http\Controllers\KegiatanController@get_list');
         Route::post('/getlistlaporankegiatan', 'App\Http\Controllers\KegiatanController@get_list_laporan');
         Route::get('/kegiatan/{kegiatan}', 'App\Http\Controllers\KegiatanController@show');
