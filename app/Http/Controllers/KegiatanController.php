@@ -503,8 +503,13 @@ class KegiatanController extends Controller
 
         $dt = array();
         $no = 0;
+        $ukl = Auth::user()->unitkerja;
         foreach(Kegiatan::where(function($q) use ($keyword) {
             $q->where("unit_pelaksana_label", "LIKE", "%" . $keyword. "%")->orWhere("tahun_label", "LIKE", "%" . $keyword. "%")->orWhere("iku_label", "LIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "LIKE", "%" . $keyword. "%")->orWhere("output", "LIKE", "%" . $keyword. "%");
+        })->where(function($q) use ($ukl){
+            if($ukl){
+                $q->where("unitkerja", $ukl);
+            }
         })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status"]) as $kegiatan){
             $no = $no+1;
             $act = '
