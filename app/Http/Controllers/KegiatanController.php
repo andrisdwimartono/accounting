@@ -962,4 +962,30 @@ class KegiatanController extends Controller
             return response()->json($results);
         }
     }
+
+    public function getdatahistory(Request $request)
+    {
+        if($request->ajax() || $request->wantsJson()){
+            $kegiatan = Kegiatan::whereId($request->id)->first();
+            if(!$kegiatan){
+                abort(404, "Data not found");
+            }
+
+            $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->orderBy("archivedby")->orderBy("no_seq")->get();
+            
+            $ct2_approvals = Approval::whereParentId($request->id)->where("jenismenu", "RKA")->get();
+
+            $results = array(
+                "status" => 201,
+                "message" => "Data available",
+                "data" => [
+                    "ct1_detailbiayakegiatan" => $ct1_detailbiayakegiatans,
+                    "ct2_approval" => $ct2_approvals,
+                    "kegiatan" => $kegiatan
+                ]
+            );
+
+            return response()->json($results);
+        }
+    }
 }

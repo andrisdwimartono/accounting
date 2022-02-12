@@ -402,6 +402,67 @@ $(document).ready(function() {
 
     $("#historyrka").click(function(){
         $("#modal-history").modal("show");
+        $("#historykegiatan").addClass("spinner-border");
+        $.ajax({
+            url: "/getdatakegiatanhistory",
+            type: "post",
+            data: {
+                id: {{$page_data["id"]}},
+                _token: $("#quickForm input[name=_token]").val()
+            },
+            success: function(data){
+                $("#historykegiatan").removeClass("spinner-border");
+                $("#historykegiatan").append("<table class=\"table table-stripped\" style=\"width: 100%\">");
+                $("#historykegiatan").append("<thead class=\"thead-dark\">");
+                $("#historykegiatan").append("<tr>");
+                $("#historykegiatan").append("<th style=\"width: 30%\">Kode Rekening</th>");
+                $("#historykegiatan").append("<th style=\"width: 20%\">Deskripsi</th>");
+                $("#historykegiatan").append("<th style=\"width: 20%\">Nominal</th>");
+                $("#historykegiatan").append("<th style=\"width: 10%\">Status</th>");
+                $("#historykegiatan").append("<th style=\"width: 20%\">Komentar Revisi</th>");
+                $("#historykegiatan").append("</tr>");
+                $("#historykegiatan").append("</thead>");
+                var ab = "";
+                for(var x = 0; x < data.data.ct1_detailbiayakegiatan.length; x++){
+                    if(ab != data.data.ct1_detailbiayakegiatan[x].archivedby){
+                        $("#historykegiatan").append("<tr>");
+                        var role_label = "";
+                        for(var y = 0; y < data.data.ct2_approval.length; y++){
+                            if(data.data.ct1_detailbiayakegiatan[x].archivedby == data.data.ct2_approval[y].role){
+                                role_label = data.data.ct2_approval[y].role_label;
+                            }
+                        }
+                        $("#historykegiatan").append("<td colspan=\"5\"><b>"+role_label+"</b></td>");
+                        $("#historykegiatan").append("</tr>");
+                    }
+                    ab = data.data.ct1_detailbiayakegiatan[x].archivedby;
+                    $("#historykegiatan").append("<tr>");
+                    $("#historykegiatan").append("<td>"+data.data.ct1_detailbiayakegiatan[x].coa_label+"</td>");
+                    $("#historykegiatan").append("<td>"+data.data.ct1_detailbiayakegiatan[x].deskripsibiaya+"</td>");
+                    $("#historykegiatan").append("<td>"+formatRupiahWNegative(data.data.ct1_detailbiayakegiatan[x].nominalbiaya, "Rp")+"</td>");
+                    $("#historykegiatan").append("<td>"+data.data.ct1_detailbiayakegiatan[x].status+"</td>");
+                    var comm = data.data.ct1_detailbiayakegiatan[x].komentarrevisi?data.data.ct1_detailbiayakegiatan[x].komentarrevisi:"";
+                    $("#historykegiatan").append("<td>"+comm+"</td>");
+                    $("#historykegiatan").append("</tr>");
+                }
+                $("#historykegiatan").append("</table>");
+            },
+            error: function (err) {
+                $("#historykegiatan").removeClass("spinner-border");
+                if (err.status >= 400 && err.status <= 500) {
+                    $.toast({
+                        text: err.status+" "+err.responseJSON.message,
+                        heading: 'Status',
+                        icon: 'warning',
+                        showHideTransition: 'fade',
+                        allowToastClose: true,
+                        hideAfter: 3000,
+                        position: 'mid-center',
+                        textAlign: 'left'
+                    });
+                }
+            }
+        });
     });
 
     $("#rejectrka-confirmed").click(function(){
@@ -565,11 +626,9 @@ function getdata(){
                 }
 
                 $(".row-show-history").on("click", function() {
-                    var $td = $(this).parent();
-                    var $tr = $($td).parent();
-                    console.log($($tr).find("td:eq(7)").html());
                     
-                    // $($tr).find("td:eq(0)").text($(this).val());
+
+
                 });
             }
         cto_loading_hide();

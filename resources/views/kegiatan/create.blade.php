@@ -349,7 +349,9 @@
                                                 </button>
                                             </div>
                                             <div class="modal-body">
-                                                <p>Apakah anda yakin terima RKA ini?</p>
+                                                <div id="historykegiatan" class="justify-content-center">
+                                                    
+                                                </div>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>

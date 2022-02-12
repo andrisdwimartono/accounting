@@ -296,6 +296,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getlinkskegiatan', 'App\Http\Controllers\KegiatanController@getlinks');
         Route::post('/uploadfilekegiatan', 'App\Http\Controllers\KegiatanController@storeUploadFile');
         Route::post('/processapprove', 'App\Http\Controllers\JurnalController@processapprove');
+        Route::post('/getdatakegiatanhistory', 'App\Http\Controllers\KegiatanController@getdatahistory');
 
         
         Route::get('/pjk/{kegiatan}/edit', 'App\Http\Controllers\KegiatanController@createpjk');
