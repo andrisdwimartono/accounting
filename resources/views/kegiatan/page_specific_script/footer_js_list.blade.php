@@ -75,6 +75,7 @@
         { "width": "50px" },
         { "width": "50px" },
         { "width": "50px" },
+        { "width": "50px" },
         ],
         aoColumnDefs: [{
               aTargets: [1],

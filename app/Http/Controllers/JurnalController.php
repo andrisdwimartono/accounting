@@ -3812,24 +3812,36 @@ class JurnalController extends Controller
     public function processapprovepjk(Request $request){
         if($request->ajax() || $request->wantsJson()){
             $kegiatan = Kegiatan::where("id", $request->id)->first();
-            $pjk = Pjk::where("kegiatan_id", $request->id)->first();
-            $last_approval = Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("no_seq", ((int)$request->no_seq)+1)->first();
 
-            if($last_approval && $last_approval->status_approval != "approve"){
-                abort(403, $last_approval->role_label." tidak/belum menerima pengajuan ini!");
+            $last_approval = Approval::where("jenismenu", "PJK")->where("parent_id", $kegiatan->id)->where("no_seq", ((int)$request->no_seq)+1)->first();
+
+            if(!(($this->lastapprovepjk($kegiatan->id) && $this->lastapprovepjk($kegiatan->id)->role == Auth::user()->role) || ($this->nextapprovepjk($kegiatan->id) && $this->nextapprovepjk($kegiatan->id)->role == Auth::user()->role))){
+                abort(403, " Tidak bisa melakukan approval!");
             }
 
-            if(!Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("no_seq", ((int)$request->no_seq))->update([
-                "role"                    => $request->role,
-                "role_label"              => $request->role_label,
-                "jenismenu"               => $request->jenismenu,
-                "user"                    => $request->user,
-                "user_label"              => $request->user_label,
+            // if($last_approval && $last_approval->status_approval != "approve"){
+            //     abort(403, $last_approval->role_label." tidak/belum menerima pengajuan ini!");
+            // }
+
+            $pjk = Pjk::where("kegiatan_id", $kegiatan->id)->first();
+            // $last_approval = Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("no_seq", ((int)$request->no_seq)+1)->first();
+
+            // if($last_approval && $last_approval->status_approval != "approve"){
+            //     abort(403, $last_approval->role_label." tidak/belum menerima pengajuan ini!");
+            // }
+
+            if(!Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("role", Auth::user()->role)->update([
+                "role"                    => Auth::user()->role,
+                "jenismenu"               => "PJK",
+                "user"                    => Auth::user()->id,
+                "user_label"              => Auth::user()->name,
                 "komentar"                => $request->komentar,
                 "status_approval"         => $request->status_approval,
                 "status_approval_label"   => $request->status_approval_label,
             ])){
                 abort(401, "Gagal update");
+            }else{
+                $this->updatepjk($request, $request->id);
             }
             
             $tgl = date('Y-m-d');
@@ -3838,11 +3850,11 @@ class JurnalController extends Controller
             $jurnalkeg = Jurnal::where("id", $transkeg->parent_id)->first();
             if(Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->count() > Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("status_approval", "approve")->count()){
                 if(Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("status_approval", "approve")->count() > 1){
-                    Kegiatan::where("id", $request->id)->update([
+                    PJK::where("id", $request->id)->update([
                         "status" => "approving"
                     ]);
                 }else{
-                    Kegiatan::where("id", $request->id)->update([
+                    PJK::where("id", $request->id)->update([
                         "status" => "process"
                     ]);
                 }
@@ -3873,9 +3885,11 @@ class JurnalController extends Controller
                     abort(403, "Sudah approved dan terjurnal");
                 }
                 $this->checkOpenPeriode($tgl);
+                $lastapp = Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->orderBy("no_seq", "asc")->first();
                 $kegiatan = Kegiatan::where("id", $request->id)->first();
                 $detailbiayakegiatan = Detailbiayakegiatan::where("parent_id", $request->id)->get();
-                $detailbiayapjk = Detailbiayapjk::where("parent_id", $pjk->id)->get();
+                $detailbiayapjk = Detailbiayapjk::where("parent_id", $pjk->id)->where("archivedby", $lastapp->role)->get();
+
                 
                 $id = Jurnal::create([
                     "unitkerja"=> $kegiatan->unit_pelaksana,
@@ -3970,6 +3984,103 @@ class JurnalController extends Controller
             ]);
         }
         return response()->json(['error'=>$validator->errors()->all()]);
+    }
+
+    public function lastapprovepjk($id){
+        $pjk = PJK::where("kegiatan_id", $id)->first();
+        $getlastapproval = Approval::where("parent_id", $pjk->id)->where("jenismenu", "PJK")->where("status_approval", "approve")->orderBy("no_seq", "asc")->first();
+        
+        return $getlastapproval;
+    }
+
+    public function nextapprovepjk($id){
+        $pjk = PJK::where("kegiatan_id", $id)->first();
+        $getlastapproval = Approval::where("parent_id", $pjk->id)->where("jenismenu", "PJK")->where("status_approval", "approve")->orderBy("no_seq", "asc")->first();
+        $getnextapp = Approval::where("parent_id", $pjk->id)->where("jenismenu", "PJK")->whereNull("status_approval")->orderBy("no_seq", "desc")->first();
+        if($getlastapproval){
+            $getnextapp = Approval::where("parent_id", $pjk->id)->where("jenismenu", "PJK")->whereNull("status_approval")->where("no_seq", ((int) $getlastapproval->no_seq)-1)->orderBy("no_seq", "desc")->first();
+        }
+        return $getnextapp;
+    }
+
+    public function updatepjk($request, $id)
+    {
+        $kegiatan = Kegiatan::where("id",$id)->first();
+        $pjk = Pjk::where("kegiatan_id",$id)->first();
+        if($pjk->status != "process" && $pjk->status != "approving"){
+            abort(403, "tidak dapat diubah, status masih/sudah ".$pjk->status);
+        }
+
+        $page_data = $this->tabledesign();
+        $rules_ct1_detailbiayakegiatan = $page_data["fieldsrules_ct1_detailbiayakegiatan"];
+        $requests_ct1_detailbiayakegiatan = json_decode($request->ct1_detailbiayakegiatan, true);
+        foreach($requests_ct1_detailbiayakegiatan as $ct_request){
+            $child_tb_request = new \Illuminate\Http\Request();
+            $child_tb_request->replace($ct_request);
+            $ct_messages = array();
+            foreach($page_data["fieldsmessages_ct1_detailbiayakegiatan"] as $key => $value){
+                $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
+            }
+            $child_tb_request->validate($rules_ct1_detailbiayakegiatan, $ct_messages);
+        }
+
+        //update
+        //hapus yang lama jika ada
+        Detailbiayapjk::where("kegiatan_id", $id)->where("isarchived", "on")->where("archivedby", Auth::user()->role)->delete();
+
+        //jika belum pernah, maka update archived
+        Detailbiayapjk::where("kegiatan_id", $id)->whereNull("isarchived")->whereNull("archivedby")->update([
+            "isarchived" => "on",
+            "user_updater_id" => Auth::user()->id
+        ]);
+
+        $new_menu_field_ids = array();
+        foreach($requests_ct1_detailbiayakegiatan as $ct_request){
+            // if(isset($ct_request["id"]) && $ct_request["id"] != ""){
+            //     Detailbiayapjk::where("id", $ct_request["id"])->update([
+            //         "no_seq" => $ct_request["no_seq"],
+            //         "parent_id" => $id,
+            //         "coa"=> $ct_request["coa"],
+            //         "coa_label"=> $ct_request["coa_label"],
+            //         "deskripsibiaya"=> $ct_request["deskripsibiaya"],
+            //         "nominalbiaya"=> $ct_request["nominalbiaya"],
+            //         "status" => $ct_request["status"]=="pengajuan"?"terima": $ct_request["status"],
+            //         "komentarrevisi" => $ct_request["komentarrevisi"],
+            //         "user_updater_id" => Auth::user()->id,
+            //     ]);
+            // }
+            $idct = Detailbiayapjk::create([
+                "no_seq" => $ct_request["no_seq"],
+                "parent_id" => $pjk->id,
+                "kegiatan_id" => $id,
+                "coa"=> $ct_request["coa"],
+                "coa_label"=> $ct_request["coa_label"],
+                "deskripsibiaya"=> $ct_request["deskripsibiaya"],
+                "nominalbiaya"=> $ct_request["nominalbiaya"],
+                "status" => $ct_request["status"]=="pengajuan" || $ct_request["status"]==""?"terima": $ct_request["status"],
+                "komentarrevisi" => $ct_request["komentarrevisi"],
+                "user_creator_id" => Auth::user()->id,
+                "isarchived" => "on",
+                "archivedby" => Auth::user()->role,
+            ])->id;
+            array_push($new_menu_field_ids, $idct);
+        }
+
+        // foreach(Detailbiayapjk::whereParentId($id)->get() as $ch){
+        //     $is_still_exist = false;
+        //     foreach($requests_ct1_detailbiayakegiatan as $ct_request){
+        //         if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
+        //             $is_still_exist = true;
+        //         }
+        //     }
+        //     if(!$is_still_exist){
+        //         //Detailbiayapjk::whereId($ch->id)->delete();
+        //         // Detailbiayapjk::where("id", $ch->id)->update([
+        //         //     "status" => "tolak",
+        //         //     "user_updater_id" => Auth::user()->id,
+        //         // ]);
+        //     }
+        // }
     }
 
     public function checkOpenPeriode($date){

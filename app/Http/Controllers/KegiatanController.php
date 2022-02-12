@@ -485,7 +485,7 @@ class KegiatanController extends Controller
 
     public function get_list(Request $request)
     {
-        $list_column = array("id", "unit_pelaksana_label", "tanggal", "kegiatan_name", "output", "id");
+        $list_column = array("id", "unit_pelaksana_label", "tanggal", "kegiatan_name", "output", "status", "id");
         $keyword = null;
         if(isset($request->search["value"])){
             $keyword = $request->search["value"];
@@ -505,7 +505,7 @@ class KegiatanController extends Controller
         $no = 0;
         foreach(Kegiatan::where(function($q) use ($keyword) {
             $q->where("unit_pelaksana_label", "LIKE", "%" . $keyword. "%")->orWhere("tahun_label", "LIKE", "%" . $keyword. "%")->orWhere("iku_label", "LIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "LIKE", "%" . $keyword. "%")->orWhere("output", "LIKE", "%" . $keyword. "%");
-        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output"]) as $kegiatan){
+        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status"]) as $kegiatan){
             $no = $no+1;
             $act = '
             <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
@@ -514,7 +514,19 @@ class KegiatanController extends Controller
 
             <button type="button" class="row-delete btn btn-danger shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
 
-            array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $kegiatan->output, $act));
+            $lpjact = "";
+            if($kegiatan->status == "approved"){
+                $pjk = Pjk::where('kegiatan_id', $kegiatan->id)->first();
+                $lpjact = '';
+                if($pjk){
+                    $lpjact .= '
+                    <a href="/pjk/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>';
+                }
+                $lpjact .= '
+                    <a href="/pjk/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>';
+            }
+
+            array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $kegiatan->output, $act, $lpjact));
         }
 
 
@@ -614,8 +626,8 @@ class KegiatanController extends Controller
                 $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
 
                 if(Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->count() < 1){
-                    $lastapp = Approval::where("parent_id", $request->id)->where("role", Auth::user()->role)->first();
-                    $beforeapp = Approval::where("parent_id", $request->id)->where("no_seq", ((int)$lastapp->no_seq)+1)->first();
+                    $lastapp = Approval::where("parent_id", $request->id)->where("role", Auth::user()->role)->where("jenismenu", "RKA")->first();
+                    $beforeapp = Approval::where("parent_id", $request->id)->where("no_seq", ((int)$lastapp->no_seq)+1)->where("jenismenu", "RKA")->first();
                     if($beforeapp){
                         $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $beforeapp->role)->orderBy("no_seq")->get();
                     }
@@ -721,10 +733,28 @@ class KegiatanController extends Controller
         $page_data["footer_js_page_specific_script"] = ["kegiatan.page_specific_script.footer_js_createpjk"];
         $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_create"];
         
+        $page_data["lastapprove"] = $this->lastapprovepjk($kegiatan->id);
+        $page_data["nextapprove"] = $this->nextapprovepjk($kegiatan->id);
         $page_data["id"] = $kegiatan->id;
         return view("kegiatan.createpjk", ["page_data" => $page_data]);
     }
 
+    public function lastapprovepjk($id){
+        $pjk = PJK::where("kegiatan_id", $id)->first();
+        $getlastapproval = Approval::where("parent_id", $pjk->id)->where("jenismenu", "PJK")->where("status_approval", "approve")->orderBy("no_seq", "asc")->first();
+        
+        return $getlastapproval;
+    }
+
+    public function nextapprovepjk($id){
+        $pjk = PJK::where("kegiatan_id", $id)->first();
+        $getlastapproval = Approval::where("parent_id", $pjk->id)->where("jenismenu", "PJK")->where("status_approval", "approve")->orderBy("no_seq", "asc")->first();
+        $getnextapp = Approval::where("parent_id", $pjk->id)->where("jenismenu", "PJK")->whereNull("status_approval")->orderBy("no_seq", "desc")->first();
+        if($getlastapproval){
+            $getnextapp = Approval::where("parent_id", $pjk->id)->where("jenismenu", "PJK")->whereNull("status_approval")->where("no_seq", ((int) $getlastapproval->no_seq)-1)->orderBy("no_seq", "desc")->first();
+        }
+        return $getnextapp;
+    }
     /**
     * Show the form for editing the specified resource.
     *
@@ -793,7 +823,8 @@ class KegiatanController extends Controller
                 'desc_pjk' => $request->desc_pjk == ''?null:$request->desc_pjk,
                 'laporan_pjk' => $request->laporan_pjk == ''?null:$request->laporan_pjk, 
                 'user_pjk' => Auth::user()->id,
-                "user_updater_id"=> Auth::user()->id
+                "user_updater_id"=> Auth::user()->id,
+                "status" =>"process"
             ]);
             
             $new_menu_field_ids = array();
@@ -883,7 +914,8 @@ class KegiatanController extends Controller
                 'desc_pjk' => $request->desc_pjk,
                 'laporan_pjk' => $request->laporan_pjk,
                 'user_pjk' => Auth::user()->id,
-                "user_creator_id"=> Auth::user()->id
+                "user_creator_id"=> Auth::user()->id,
+                "status" =>"process"
             ])->id;
 
             foreach($requests_ct1_detailbiayapjk as $ct_request){
@@ -925,11 +957,26 @@ class KegiatanController extends Controller
             $kegiatan = Kegiatan::whereId($request->id)->first();
             if(!$kegiatan){
                 abort(404, "Data not found");
+            }elseif($kegiatan->status != "approved"){
+                abort(403, "RKA belum di-approved");
             }
 
             $pjk = Pjk::where("kegiatan_id", $request->id)->first();
             if($pjk){
-                $ct1_detailbiayakegiatans = Detailbiayapjk::where("kegiatan_id", $request->id)->get();
+
+                $ct1_detailbiayakegiatans = Detailbiayapjk::whereKegiatanId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role)->orderBy("no_seq")->get();
+                if(Detailbiayapjk::whereKegiatanId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role)->orderBy("no_seq")->count() < 1){
+                    $ct1_detailbiayakegiatans = Detailbiayapjk::whereKegiatanId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+
+                    if(Detailbiayapjk::whereKegiatanId($request->id)->whereNull("isarchived")->orderBy("no_seq")->count() < 1){
+                        $lastapp = Approval::where("parent_id", $pjk->id)->where("role", Auth::user()->role)->where("jenismenu", "PJK")->orderBy("no_seq", "asc")->first();
+                        $beforeapp = Approval::where("parent_id", $pjk->id)->where("no_seq", ((int)$lastapp->no_seq)+1)->where("jenismenu", "PJK")->first();
+                        if($beforeapp){
+                            $ct1_detailbiayakegiatans = Detailbiayapjk::whereKegiatanId($request->id)->where("isarchived", "on")->where("archivedby", $beforeapp->role)->orderBy("no_seq")->get();
+                        }
+                    }
+                }
+            
                 $ct2_approvals = Approval::whereParentId($pjk->id)->where("jenismenu", "PJK")->get();
 
                 $results = array(
@@ -942,11 +989,12 @@ class KegiatanController extends Controller
                     ]
                 );
             }else{
-                $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->get();
-                foreach($ct1_detailbiayakegiatans as $ct1){
-                    $ct1->desc_detail = '';
-                }
-                $ct2_approvals = null;
+                $lastapp = Approval::where("parent_id", $request->id)->where("jenismenu", "RKA")->orderBy("no_seq", "asc")->first();
+                $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("archivedby", $lastapp->role)->get();
+                // foreach($ct1_detailbiayakegiatans as $ct1){
+                //     $ct1->desc_detail = '';
+                // }
+                $ct2_approvals = [];
 
                 $results = array(
                     "status" => 201,
@@ -974,6 +1022,34 @@ class KegiatanController extends Controller
             $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->orderBy("archivedby")->orderBy("no_seq")->get();
             
             $ct2_approvals = Approval::whereParentId($request->id)->where("jenismenu", "RKA")->get();
+
+            $results = array(
+                "status" => 201,
+                "message" => "Data available",
+                "data" => [
+                    "ct1_detailbiayakegiatan" => $ct1_detailbiayakegiatans,
+                    "ct2_approval" => $ct2_approvals,
+                    "kegiatan" => $kegiatan
+                ]
+            );
+
+            return response()->json($results);
+        }
+    }
+
+    public function getdatahistorypjk(Request $request)
+    {
+        if($request->ajax() || $request->wantsJson()){
+            $kegiatan = Kegiatan::whereId($request->id)->first();
+            if(!$kegiatan){
+                abort(404, "Data not found");
+            }
+
+            $pjk = Pjk::where("kegiatan_id", $request->id)->first();
+
+            $ct1_detailbiayakegiatans = Detailbiayapjk::whereParentId($pjk->id)->where("isarchived", "on")->orderBy("archivedby")->orderBy("no_seq")->get();
+            
+            $ct2_approvals = Approval::whereParentId($pjk->id)->where("jenismenu", "PJK")->get();
 
             $results = array(
                 "status" => 201,

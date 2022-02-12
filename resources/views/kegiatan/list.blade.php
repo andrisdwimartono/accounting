@@ -39,6 +39,7 @@
                                                 <th>Nama</th>
                                                 <th>Output</th>
                                                 <th>Action</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                     </table>

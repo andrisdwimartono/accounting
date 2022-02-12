@@ -412,6 +412,7 @@ $(document).ready(function() {
             },
             success: function(data){
                 $("#historykegiatan").removeClass("spinner-border");
+                $("#historykegiatan").html("");
                 $("#historykegiatan").append("<table class=\"table table-stripped\" style=\"width: 100%\">");
                 $("#historykegiatan").append("<thead class=\"thead-dark\">");
                 $("#historykegiatan").append("<tr>");
