@@ -509,6 +509,8 @@ class KegiatanController extends Controller
         })->where(function($q) use ($ukl){
             if($ukl){
                 $q->where("unitkerja", $ukl);
+            }else{
+                $q->where("1 = 1");
             }
         })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status"]) as $kegiatan){
             $no = $no+1;
