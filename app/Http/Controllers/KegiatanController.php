@@ -690,7 +690,7 @@ class KegiatanController extends Controller
             }elseif($request->field == "coa"){
                 $lists = Coa::where(function($q) use ($request) {
                     $q->where("coa_name", "LIKE", "%" . $request->term. "%");
-                })->whereIn("category", ["biaya", "biaya_lainnya"])->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("concat(concat(coa_code, ' '), coa_name) as text")]);
+                })->whereNull("fheader")->whereIn("category", ["biaya", "biaya_lainnya"])->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("concat(concat(coa_code, ' '), coa_name) as text")]);
                 $count = Coa::count();
             }
 
