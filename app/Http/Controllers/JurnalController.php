@@ -1213,7 +1213,7 @@ class JurnalController extends Controller
             }
 
             if(in_array($coa->category, array("pendapatan", "biaya", "biaya_lainnya", "pendapatan_lainnya"))){
-                $coa_sur_def = Coa::where("coa_code", "30300000")->first();
+                $coa_sur_def = Coa::where("coa_code", "30101008")->first();
                 $neraca = Neraca::where("coa", $coa_sur_def->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->first();
                 if($neraca){
                     Neraca::where("coa", $coa_sur_def->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->update([
