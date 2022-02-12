@@ -508,7 +508,7 @@ class KegiatanController extends Controller
             $q->where("unit_pelaksana_label", "LIKE", "%" . $keyword. "%")->orWhere("tahun_label", "LIKE", "%" . $keyword. "%")->orWhere("iku_label", "LIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "LIKE", "%" . $keyword. "%")->orWhere("output", "LIKE", "%" . $keyword. "%");
         })->where(function($q) use ($ukl){
             if($ukl){
-                $q->where("unitkerja", $ukl);
+                $q->where("unit_pelaksana", $ukl);
             }else{
                 $q->where("1 = 1");
             }
