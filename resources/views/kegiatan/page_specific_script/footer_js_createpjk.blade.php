@@ -400,6 +400,7 @@ $(document).ready(function() {
         $("#modal-reject").modal("show");
     });
 
+    @if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")
     $("#historyrka").click(function(){
         $("#modal-history").modal("show");
         $("#historykegiatan").addClass("spinner-border");
@@ -465,6 +466,7 @@ $(document).ready(function() {
             }
         });
     });
+    @endif
 
     $("#rejectrka-confirmed").click(function(){
         if($("#alasan_tolak").val() == ""){

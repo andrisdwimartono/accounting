@@ -25,6 +25,10 @@ class CreateDetailbiayapjksTable extends Migration
             $table->integer("detailbiayakegiatan_id")->nullable();
             $table->string("status_detail")->nullable();
             $table->string("desc_detail")->nullable();
+            $table->string('status')->nullable();
+            $table->string('komentarrevisi')->nullable();
+            $table->string('isarchived')->nullable();
+            $table->string('archivedby')->nullable();
             $table->integer('user_creator_id')->nullable();
             $table->integer('user_updater_id')->nullable();
             $table->timestamps();
