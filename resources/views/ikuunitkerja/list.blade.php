@@ -29,12 +29,13 @@
                             <div class="card-body">
                                 <div class="table-responsive">
                                  @csrf
-                                    <table id="example1" class="table table-bordered table-striped">
-                                        <thead class="bg-primary">
+                                    <table id="example1" class="display" style="width: 100%">
+                                        <thead>
                                             <tr>
                                                 <th>No</th>
-                                                <th>Tahun</th>
-                                                <th>Unit Pelaksana</th>
+                                                <th>Bab</th>
+                                                <th>Elemen</th>
+                                                <th>Indikator</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>

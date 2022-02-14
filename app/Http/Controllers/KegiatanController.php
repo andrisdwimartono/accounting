@@ -177,12 +177,12 @@ class KegiatanController extends Controller
         return view("kegiatan.list", ["page_data" => $page_data]);
     }
 
-    public function realisasi()
+    public function pengajuan()
     {
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "List";
-        $page_data["page_data_name"] = "Realisasi Anggaran";
-        $page_data["page_data_urlname"] = "realisasi";
+        $page_data["page_data_name"] = "Pengajuan Pencairan Anggaran";
+        $page_data["page_data_urlname"] = "pengajuan";
         $page_data["footer_js_page_specific_script"] = ["kegiatan.page_specific_script.footer_js_list"];
         $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_list"];
         
@@ -359,6 +359,19 @@ class KegiatanController extends Controller
         return view("kegiatan.create", ["page_data" => $page_data]);
     }
 
+    public function edit_pengajuan(Kegiatan $kegiatan)
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "Update";
+        $page_data["page_data_name"] = "Pengajuan Pencairan Anggaran";
+        $page_data["page_data_urlname"] = "pengajuan";
+        $page_data["footer_js_page_specific_script"] = ["kegiatan.page_specific_script.footer_js_create"];
+        $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_create"];
+        
+        $page_data["id"] = $kegiatan->id;
+        return view("kegiatan.create", ["page_data" => $page_data]);
+    }
+
     /**
     * Update the specified resource in storage.
     *
@@ -522,6 +535,34 @@ class KegiatanController extends Controller
 
             <button type="button" class="row-delete btn btn-danger shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
 
+            $status = "";
+            switch ($kegiatan->status) {
+                case "process":
+                    $status = "<span class='badge light badge-secondary' style='width:70px'>".$kegiatan->status."</span>";
+                    break;
+                case "approving":
+                    $status = "<span class='badge light badge-secondary' style='width:70px'>".$kegiatan->status."</span>";
+                    break;
+                case "approved":
+                    $status = "<span class='badge light badge-primary' style='width:70px'>".$kegiatan->status."</span>";
+                    break;
+                case "submiting":
+                    $status = "<span class='badge light badge-secondary' style='width:70px'>".$kegiatan->status."</span>";
+                    break;
+                case "submitted":
+                    $status = "<span class='badge light badge-info' style='width:70px'>".$kegiatan->status."</span>";
+                    break;
+                case "paid":
+                    $status = "<span class='badge light badge-success' style='width:70px'>".$kegiatan->status."</span>";
+                    break;
+                case "reporting":
+                    $status = "<span class='badge light badge-warning' style='width:70px'>".$kegiatan->status."</span>";
+                    break;
+                case "finish":
+                    $status = "<span class='badge light badge-warning' style='width:70px'>".$kegiatan->status."</span>";
+                    break;
+            }
+
             $lpjact = "";
             if($kegiatan->status == "approved"){
                 $pjk = Pjk::where('kegiatan_id', $kegiatan->id)->first();
@@ -534,7 +575,186 @@ class KegiatanController extends Controller
                     <a href="/pjk/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>';
             }
 
-            array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $kegiatan->output, $act, $lpjact));
+            array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $status, $act, $lpjact));
+        }
+
+
+        $output = array(
+            "draw" => intval($request->draw),
+            "recordsTotal" => Kegiatan::get()->count(),
+            "recordsFiltered" => intval(Kegiatan::where(function($q) use ($keyword) {
+                $q->where("unit_pelaksana_label", "LIKE", "%" . $keyword. "%")->orWhere("tahun_label", "LIKE", "%" . $keyword. "%")->orWhere("iku_label", "LIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "LIKE", "%" . $keyword. "%")->orWhere("output", "LIKE", "%" . $keyword. "%");
+            })->orderBy($orders[0], $orders[1])->get()->count()),
+            "data" => $dt
+        );
+
+        echo json_encode($output);
+    }
+
+    public function status($data){
+        $status = "";
+        switch ($data) {
+            case "process":
+                $status = "<span class='badge light badge-secondary' style='width:70px'>".$data."</span>";
+                break;
+            case "approving":
+                $status = "<span class='badge light badge-secondary' style='width:70px'>".$data."</span>";
+                break;
+            case "approved":
+                $status = "<span class='badge light badge-primary' style='width:70px'>".$data."</span>";
+                break;
+            case "submiting":
+                $status = "<span class='badge light badge-secondary' style='width:70px'>".$data."</span>";
+                break;
+            case "submitted":
+                $status = "<span class='badge light badge-info' style='width:70px'>".$data."</span>";
+                break;
+            case "paid":
+                $status = "<span class='badge light badge-success' style='width:70px'>".$data."</span>";
+                break;
+            case "reporting":
+                $status = "<span class='badge light badge-warning' style='width:70px'>".$data."</span>";
+                break;
+            case "finish":
+                $status = "<span class='badge light badge-warning' style='width:70px'>".$data."</span>";
+                break;
+        }
+
+        return $status;
+    }
+
+    public function action($kegiatan){
+        $act = '';
+        if($kegiatan->status == "paid" || $kegiatan->status == "reporting" || $kegiatan->status == "reported"){           
+            $pjk = Pjk::where('kegiatan_id', $kegiatan->id)->first();
+            $act = '';
+            if($pjk){
+                $act .= '
+                <a href="/pjk/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>';
+            }
+            $act .= '
+                <a href="/pjk/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>';
+        } else if($kegiatan->status == "approved" || $kegiatan->status == "submitting"){
+            if($kegiatan->status == "approved"){
+                $act .= '<a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>';        
+            }
+            $act .= '<a href="/pengajuan/'.$kegiatan->id.'/edit"  class="btn btn-info shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Pengajuan"><i class="fas fa-edit text-white"></i></a>';
+        } else {
+            $act = '
+            <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
+
+            <a href="/kegiatan/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
+
+            <button type="button" class="row-delete btn btn-danger shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
+        }
+        return $act;
+    }
+
+    public function get_list_rka(Request $request)
+    {
+        $list_column = array("id", "unit_pelaksana_label", "tanggal", "kegiatan_name", "output", "status", "id");
+        $keyword = null;
+        if(isset($request->search["value"])){
+            $keyword = $request->search["value"];
+        }
+
+        $orders = array("id", "ASC");
+        if(isset($request->order)){
+            $orders = array($list_column[$request->order["0"]["column"]], $request->order["0"]["dir"]);
+        }
+
+        $limit = null;
+        if(isset($request->length) && $request->length != -1){
+            $limit = array(intval($request->start), intval($request->length));
+        }
+
+        $dt = array();
+        $no = 0;
+        $ukl = Auth::user()->unitkerja;
+        $rl = Auth::user()->role;
+        foreach(Kegiatan::where(function($q) use ($keyword) {
+            $q->where("unit_pelaksana_label", "LIKE", "%" . $keyword. "%")->orWhere("tahun_label", "LIKE", "%" . $keyword. "%")->orWhere("iku_label", "LIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "LIKE", "%" . $keyword. "%")->orWhere("output", "LIKE", "%" . $keyword. "%");
+        })->where(function($q) use ($ukl, $rl){
+            if($rl != 'admin'){
+                if($ukl){
+                    $q->where("unit_pelaksana", $ukl);
+                }
+            }
+        })
+        ->whereIn('status', array('process', 'approving', 'approved'))
+        ->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status"]) as $kegiatan){
+            $no = $no+1;
+            $act = '
+            <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
+
+            <a href="/kegiatan/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
+
+            <button type="button" class="row-delete btn btn-danger shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
+
+            $status = $this->status($kegiatan->status);
+            $act = $this->action($kegiatan);
+
+            array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $status, $act));
+        }
+
+
+        $output = array(
+            "draw" => intval($request->draw),
+            "recordsTotal" => Kegiatan::get()->count(),
+            "recordsFiltered" => intval(Kegiatan::where(function($q) use ($keyword) {
+                $q->where("unit_pelaksana_label", "LIKE", "%" . $keyword. "%")->orWhere("tahun_label", "LIKE", "%" . $keyword. "%")->orWhere("iku_label", "LIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "LIKE", "%" . $keyword. "%")->orWhere("output", "LIKE", "%" . $keyword. "%");
+            })->orderBy($orders[0], $orders[1])->get()->count()),
+            "data" => $dt
+        );
+
+        echo json_encode($output);
+    }
+
+    public function get_list_pengajuan(Request $request)
+    {
+        $list_column = array("id", "unit_pelaksana_label", "tanggal", "kegiatan_name", "output", "status", "id");
+        $keyword = null;
+        if(isset($request->search["value"])){
+            $keyword = $request->search["value"];
+        }
+
+        $orders = array("id", "ASC");
+        if(isset($request->order)){
+            $orders = array($list_column[$request->order["0"]["column"]], $request->order["0"]["dir"]);
+        }
+
+        $limit = null;
+        if(isset($request->length) && $request->length != -1){
+            $limit = array(intval($request->start), intval($request->length));
+        }
+
+        $dt = array();
+        $no = 0;
+        $ukl = Auth::user()->unitkerja;
+        $rl = Auth::user()->role;
+        foreach(Kegiatan::where(function($q) use ($keyword) {
+            $q->where("unit_pelaksana_label", "LIKE", "%" . $keyword. "%")->orWhere("tahun_label", "LIKE", "%" . $keyword. "%")->orWhere("iku_label", "LIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "LIKE", "%" . $keyword. "%")->orWhere("output", "LIKE", "%" . $keyword. "%");
+        })->where(function($q) use ($ukl, $rl){
+            if($rl != 'admin'){
+                if($ukl){
+                    $q->where("unit_pelaksana", $ukl);
+                }
+            }
+        })
+        ->whereIn('status', array('approved','submiting', 'submitted'))
+        ->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status"]) as $kegiatan){
+            $no = $no+1;
+            $act = '
+            <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
+
+            <a href="/kegiatan/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
+
+            <button type="button" class="row-delete btn btn-danger shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
+
+            $status = $this->status($kegiatan->status);
+            $act = $this->action($kegiatan);
+
+            array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $status, $act));
         }
 
 
@@ -710,6 +930,343 @@ class KegiatanController extends Controller
 
             return response()->json($results);
         }
+    }
+
+    public function processapprove(Request $request){
+        if($request->ajax() || $request->wantsJson()){
+            $last_approval = Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->where("no_seq", ((int)$request->no_seq)+1)->first();
+
+            if(!(($this->lastapprove($request->id) && $this->lastapprove($request->id)->role == Auth::user()->role) || ($this->nextapprove($request->id) && $this->nextapprove($request->id)->role == Auth::user()->role))){
+                //abort(403, $last_approval->role_label." tidak/belum menerima pengajuan ini!");
+                abort(403, " Tidak bisa melakukan approval!");
+            }
+
+            // if($last_approval && $last_approval->status_approval != "approve"){
+            //     abort(403, $last_approval->role_label." tidak/belum menerima pengajuan ini!");
+            // }
+
+            if(!Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->where("role", Auth::user()->role)->update([
+                "role"                    => Auth::user()->role,
+                "jenismenu"               => "RKA",
+                "user"                    => Auth::user()->id,
+                "user_label"              => Auth::user()->name,
+                "komentar"                => $request->komentar,
+                "status_approval"         => $request->status_approval,
+                "status_approval_label"   => $request->status_approval_label,
+            ])){
+                abort(401, "Gagal update");
+            }else{
+                $this->updaterka($request, $request->id);
+            }
+            
+            $tgl = date('Y-m-d');
+            $kegiatan = Kegiatan::where("id", $request->id)->first();
+            if(Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->count() > Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->where("status_approval", "approve")->count()){
+                if(Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->where("status_approval", "approve")->count() > 1){
+                    Kegiatan::where("id", $request->id)->update([
+                        "status" => "approving"
+                    ]);
+                }else{
+                    Kegiatan::where("id", $request->id)->update([
+                        "status" => "process"
+                    ]);
+                }
+
+                // $this->checkOpenPeriode($tgl);
+                
+                // $trans = Transaction::where("anggaran", $kegiatan->id)->first();
+                // if($trans){
+                //     $jurnal = Jurnal::where("id", $trans->parent_id)->first();
+                //     if($jurnal){
+                //         Jurnal::where("id", $jurnal->id)->whereNull("isdeleted")->update([
+                //             "alasan_hapus" => "Batal Approve",
+                //             "isdeleted" => "on"
+                //         ]);
+
+                //         Transaction::where("parent_id", $jurnal->id)->whereNull("isdeleted")->update([
+                //             "alasan_hapus" => "Batal Approve",
+                //             "isdeleted" => "on"
+                //         ]);
+                //         foreach(Transaction::where("parent_id", $jurnal->id)->get() as $trans){
+                //             $this->summerizeJournal("delete", $trans->id);
+                //         }
+                //     }
+                // }
+            }elseif(Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->count() == Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->where("status_approval", "approve")->count()){
+                // if(Transaction::where("anggaran", $kegiatan->id)->count() > 0){
+                //     abort(403, "Sudah approved dan terjurnal");
+                // }
+                // $this->checkOpenPeriode($tgl);
+                // $lastapp = Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->orderBy("no_seq", "asc")->first();
+                // $kegiatan = Kegiatan::where("id", $request->id)->first();
+                // $detailbiayakegiatan = Detailbiayakegiatan::where("parent_id", $request->id)->where("archivedby", $lastapp->role)->get();
+                // $nominal = 0;
+                // foreach($detailbiayakegiatan as $dbk){
+                //     $nominal += $dbk->nominalbiaya;
+                // }
+                
+                // $id = Jurnal::create([
+                //     "unitkerja"=> $kegiatan->unit_pelaksana,
+                //     "unitkerja_label"=> $kegiatan->unit_pelaksana_label,
+                //     "no_jurnal"=> "JU#####",
+                //     "tanggal_jurnal"=> $tgl,
+                //     "keterangan"=> $kegiatan->kegiatan_name,
+                //     "user_creator_id"=> Auth::user()->id
+                // ])->id;
+    
+                // $no_jurnal = "JU";
+                // for($i = 0; $i < 7-strlen((string)$id); $i++){
+                //     $no_jurnal .= "0";
+                // }
+                // $no_jurnal .= $id;
+                // Jurnal::where("id", $id)->update([
+                //     "no_jurnal"=> $no_jurnal
+                // ]);
+                
+                // $coaum = Coa::where("factive", "on")->whereNull("fheader")->where("kode_jenisbayar", "UMKERJA1")->first();
+                // $coabank = Coa::where("factive", "on")->whereNull("fheader")->where("kode_jenisbayar", "BANKBSIQQ")->first();
+
+                // $no_seq = 0;
+                // $idct = Transaction::create([
+                //     "no_seq" => $no_seq,
+                //     "parent_id" => $id,
+                //     "deskripsi"=> "",
+                //     "debet"=> 0,
+                //     "credit"=> $nominal,
+                //     "unitkerja"=> $kegiatan->unit_pelaksana,
+                //     "unitkerja_label"=> $kegiatan->unit_pelaksana_label,
+                //     "anggaran"=> $kegiatan->id,
+                //     "anggaran_label"=> $kegiatan->kegiatan_name,
+                //     "tanggal"=> $tgl,
+                //     "keterangan"=> $kegiatan->Deskripsi,
+                //     "jenis_transaksi"=> 0,
+                //     "coa"=> $coabank->id,
+                //     "coa_label"=> $this->convertCode($coabank->coa_code)." ".$coabank->coa_name,
+                //     "jenisbayar"=> $coabank->jenisbayar,
+                //     "jenisbayar_label"=> $coabank->jenisbayar_label,
+                //     "fheader"=> null,
+                //     "no_jurnal"=> $no_jurnal,
+                //     "user_creator_id" => Auth::user()->id
+                // ])->id;
+                // $this->summerizeJournal("store", $idct);
+                
+                // $no_seq++;
+                // $idct = Transaction::create([
+                //     "no_seq" => $no_seq,
+                //     "parent_id" => $id,
+                //     "deskripsi"=> "",
+                //     "debet"=> $nominal,
+                //     "credit"=> 0,
+                //     "unitkerja"=> $kegiatan->unit_pelaksana,
+                //     "unitkerja_label"=> $kegiatan->unit_pelaksana_label,
+                //     "anggaran"=> $kegiatan->id,
+                //     "anggaran_label"=> $kegiatan->kegiatan_name,
+                //     "tanggal"=> $tgl,
+                //     "keterangan"=> $kegiatan->Deskripsi,
+                //     "jenis_transaksi"=> 0,
+                //     "coa"=> $coaum->id,
+                //     "coa_label"=> $this->convertCode($coaum->coa_code)." ".$coaum->coa_name,
+                //     "jenisbayar"=> $coaum->jenisbayar,
+                //     "jenisbayar_label"=> $coaum->jenisbayar_label,
+                //     "fheader"=> null,
+                //     "no_jurnal"=> $no_jurnal,
+                //     "user_creator_id" => Auth::user()->id
+                // ])->id;
+                // $this->summerizeJournal("store", $idct);
+
+                Kegiatan::where("id", $request->id)->update([
+                    "status" => "approved"
+                ]);
+
+                return response()->json([
+                    "status" => 200,
+                    "message" => "Membuat Jurnal"
+                ]);
+            }
+
+            return response()->json([
+                "status" => 200,
+                "message" => $request->status_approval_label." berhasil"
+            ]);
+        }
+        return response()->json(['error'=>$validator->errors()->all()]);
+    }
+
+    public function processapprovepjk(Request $request){
+        if($request->ajax() || $request->wantsJson()){
+            $kegiatan = Kegiatan::where("id", $request->id)->first();
+
+            $last_approval = Approval::where("jenismenu", "PJK")->where("parent_id", $kegiatan->id)->where("no_seq", ((int)$request->no_seq)+1)->first();
+
+            if(!(($this->lastapprovepjk($kegiatan->id) && $this->lastapprovepjk($kegiatan->id)->role == Auth::user()->role) || ($this->nextapprovepjk($kegiatan->id) && $this->nextapprovepjk($kegiatan->id)->role == Auth::user()->role))){
+                abort(403, " Tidak bisa melakukan approval!");
+            }
+
+            // if($last_approval && $last_approval->status_approval != "approve"){
+            //     abort(403, $last_approval->role_label." tidak/belum menerima pengajuan ini!");
+            // }
+
+            $pjk = Pjk::where("kegiatan_id", $kegiatan->id)->first();
+            // $last_approval = Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("no_seq", ((int)$request->no_seq)+1)->first();
+
+            // if($last_approval && $last_approval->status_approval != "approve"){
+            //     abort(403, $last_approval->role_label." tidak/belum menerima pengajuan ini!");
+            // }
+
+            if(!Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("role", Auth::user()->role)->update([
+                "role"                    => Auth::user()->role,
+                "jenismenu"               => "PJK",
+                "user"                    => Auth::user()->id,
+                "user_label"              => Auth::user()->name,
+                "komentar"                => $request->komentar,
+                "status_approval"         => $request->status_approval,
+                "status_approval_label"   => $request->status_approval_label,
+            ])){
+                abort(401, "Gagal update");
+            }else{
+                $this->updatepjk($request, $request->id);
+            }
+            
+            $tgl = date('Y-m-d');
+            
+            $transkeg = Transaction::where("anggaran", $kegiatan->id)->first();
+            $jurnalkeg = Jurnal::where("id", $transkeg->parent_id)->first();
+            if(Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->count() > Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("status_approval", "approve")->count()){
+                if(Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("status_approval", "approve")->count() > 1){
+                    PJK::where("id", $request->id)->update([
+                        "status" => "approving"
+                    ]);
+                }else{
+                    PJK::where("id", $request->id)->update([
+                        "status" => "process"
+                    ]);
+                }
+
+                $this->checkOpenPeriode($tgl);
+                $kegiatan = Kegiatan::where("id", $request->id)->first();
+                
+                $trans = Transaction::where("idjurnalreference", $jurnalkeg->id)->first();
+                if($trans){
+                    $jurnal = Jurnal::where("idjurnalreference", $jurnalkeg->id)->first();
+                    if($jurnal){
+                        Jurnal::where("id", $jurnal->id)->whereNull("isdeleted")->update([
+                            "alasan_hapus" => "Batal Approve",
+                            "isdeleted" => "on"
+                        ]);
+
+                        Transaction::where("parent_id", $jurnal->id)->whereNull("isdeleted")->update([
+                            "alasan_hapus" => "Batal Approve",
+                            "isdeleted" => "on"
+                        ]);
+                        foreach(Transaction::where("parent_id", $jurnal->id)->get() as $trans){
+                            $this->summerizeJournal("delete", $trans->id);
+                        }
+                    }
+                }
+            }elseif(Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->count() == Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("status_approval", "approve")->count()){
+                if(Jurnal::where("idjurnalreference", $jurnalkeg->id)->count() > 0){
+                    abort(403, "Sudah approved dan terjurnal");
+                }
+                $this->checkOpenPeriode($tgl);
+                $lastapp = Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->orderBy("no_seq", "asc")->first();
+                $kegiatan = Kegiatan::where("id", $request->id)->first();
+                $detailbiayakegiatan = Detailbiayakegiatan::where("parent_id", $request->id)->get();
+                $detailbiayapjk = Detailbiayapjk::where("parent_id", $pjk->id)->where("archivedby", $lastapp->role)->get();
+
+                
+                $id = Jurnal::create([
+                    "unitkerja"=> $kegiatan->unit_pelaksana,
+                    "unitkerja_label"=> $kegiatan->unit_pelaksana_label,
+                    "no_jurnal"=> "JU#####",
+                    "tanggal_jurnal"=> $tgl,
+                    "keterangan"=> $kegiatan->kegiatan_name,
+                    "idjurnalreference" => $jurnalkeg->id,
+                    "no_jurnalreference" => $jurnalkeg->no_jurnal,
+                    "user_creator_id"=> Auth::user()->id
+                ])->id;
+    
+                $no_jurnal = "JU";
+                for($i = 0; $i < 7-strlen((string)$id); $i++){
+                    $no_jurnal .= "0";
+                }
+                $no_jurnal .= $id;
+                Jurnal::where("id", $id)->update([
+                    "no_jurnal"=> $no_jurnal
+                ]);
+                
+                $coaum = Coa::where("factive", "on")->whereNull("fheader")->where("kode_jenisbayar", "UMKERJA1")->first();
+
+                $nominal = 0;
+                $no_seq = -1;
+                foreach($detailbiayapjk as $dbk){
+                    $nominal += $dbk->nominalbiaya;
+                    $no_seq++;
+                    $idct = Transaction::create([
+                        "no_seq" => $no_seq,
+                        "parent_id" => $id,
+                        "deskripsi"=> "",
+                        "debet"=> $dbk->nominalbiaya,
+                        "credit"=> 0,
+                        "unitkerja"=> $kegiatan->unit_pelaksana,
+                        "unitkerja_label"=> $kegiatan->unit_pelaksana_label,
+                        "anggaran"=> $kegiatan->id,
+                        "anggaran_label"=> $kegiatan->kegiatan_name,
+                        "tanggal"=> $tgl,
+                        "keterangan"=> $kegiatan->Deskripsi,
+                        "jenis_transaksi"=> 0,
+                        "coa"=> $dbk->coa,
+                        "coa_label"=> $dbk->coa_label,
+                        "fheader"=> null,
+                        "no_jurnal"=> $no_jurnal,
+                        "idjurnalreference" => $jurnalkeg->id,
+                        "no_jurnalreference" => $jurnalkeg->no_jurnal,
+                        "user_creator_id" => Auth::user()->id
+                    ])->id;
+                    $this->summerizeJournal("store", $idct);
+                }
+                
+                $no_seq++;
+                $idct = Transaction::create([
+                    "no_seq" => $no_seq,
+                    "parent_id" => $id,
+                    "deskripsi"=> "",
+                    "debet"=> 0,
+                    "credit"=> $nominal,
+                    "unitkerja"=> $kegiatan->unit_pelaksana,
+                    "unitkerja_label"=> $kegiatan->unit_pelaksana_label,
+                    "anggaran"=> $kegiatan->id,
+                    "anggaran_label"=> $kegiatan->kegiatan_name,
+                    "tanggal"=> $tgl,
+                    "keterangan"=> $kegiatan->Deskripsi,
+                    "jenis_transaksi"=> 0,
+                    "coa"=> $coaum->id,
+                    "coa_label"=> $this->convertCode($coaum->coa_code)." ".$coaum->coa_name,
+                    "jenisbayar"=> $coaum->jenisbayar,
+                    "jenisbayar_label"=> $coaum->jenisbayar_label,
+                    "fheader"=> null,
+                    "no_jurnal"=> $no_jurnal,
+                    "idjurnalreference" => $jurnalkeg->id,
+                    "no_jurnalreference" => $jurnalkeg->no_jurnal,
+                    "user_creator_id" => Auth::user()->id
+                ])->id;
+                $this->summerizeJournal("store", $idct);
+
+                Pjk::where("id", $pjk->id)->update([
+                    "status" => "approved"
+                ]);
+
+                return response()->json([
+                    "status" => 200,
+                    "message" => "Membuat Jurnal"
+                ]);
+            }
+
+            return response()->json([
+                "status" => 200,
+                "message" => $request->status_approval_label." berhasil"
+            ]);
+        }
+        return response()->json(['error'=>$validator->errors()->all()]);
     }
 
     public function storeUploadFile(Request $request){

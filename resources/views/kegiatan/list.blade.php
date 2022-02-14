@@ -37,9 +37,8 @@
                                                 <th>Tanggal</th>
                                                 <!-- <th>IKU</th> -->
                                                 <th>Nama</th>
-                                                <th>Output</th>
-                                                <th>Action</th>
-                                                <th>Action</th>
+                                                <th>Status</th>
+                                                <th>Action</th>                                   
                                             </tr>
                                         </thead>
                                     </table>

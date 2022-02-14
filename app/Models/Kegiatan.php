@@ -9,7 +9,7 @@ class Kegiatan extends Model
 {
     use HasFactory;
     protected $table = 'kegiatans';
-    protected $fillable = ['unit_pelaksana', 'unit_pelaksana_label', 'tahun', 'tahun_label', 'iku', 'iku_label', 'kegiatan_name', 'Deskripsi', 'output', 'proposal', 'status', 'user_creator_id', 'user_updater_id', 'updated_at', 'tanggal', 'ikt', 'ikt_label', 'sik', 'sik_label'];
+    protected $fillable = ['unit_pelaksana', 'unit_pelaksana_label', 'tahun', 'tahun_label', 'iku', 'iku_label', 'kegiatan_name', 'Deskripsi', 'output', 'proposal', 'status', 'user_creator_id', 'user_updater_id', 'updated_at', 'tanggal', 'tanggal_pencairan', 'ikt', 'ikt_label', 'sik', 'sik_label'];
 
     function getUnitkerja(){
         return $this->hasOne('App\Models\Unitkerja')->orderBy('no_seq', 'ASC');

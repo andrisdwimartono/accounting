@@ -237,7 +237,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/total-forecast', 'App\Http\Controllers\AruskasController@get_total_forecast');
         Route::post('/get_forecast', 'App\Http\Controllers\AruskasController@get_forecast');
 
-        Route::get('/ikuunitkerja', 'App\Http\Controllers\IkuunitkerjaController@index')->name('ikuunitkerja');
+        Route::get('/iku', 'App\Http\Controllers\IkuunitkerjaController@index')->name('iku');
+        Route::post('/getlistiku', 'App\Http\Controllers\IkuunitkerjaController@get_list');
+        
+        
         Route::get('/iku/laporan', 'App\Http\Controllers\IkuunitkerjaController@laporan');
         Route::post('/getlistikuunitkerja', 'App\Http\Controllers\IkuunitkerjaController@get_list');
         Route::get('/ikuunitkerja/{ikuunitkerja}', 'App\Http\Controllers\IkuunitkerjaController@show');
@@ -277,13 +280,18 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getlinksikunitkerja', 'App\Http\Controllers\IkuunitkerjaController@getlinks');
         Route::post('/uploadfilesikunitkerja', 'App\Http\Controllers\IkuunitkerjaController@storeUploadFile');
 
-
+        Route::get('/pengajuan', 'App\Http\Controllers\KegiatanController@pengajuan');
+        Route::get('/pengajuan/{kegiatan}/edit', 'App\Http\Controllers\KegiatanController@edit_pengajuan');
+        Route::post('/getlistpengajuan', 'App\Http\Controllers\KegiatanController@get_list_pengajuan');
+        Route::post('/getoptionspengajuan', 'App\Http\Controllers\KegiatanController@getoptions');
+        Route::post('/getdatapengajuan', 'App\Http\Controllers\KegiatanController@getdata');
+        Route::post('/getlinkspengajuan', 'App\Http\Controllers\KegiatanController@getlinks');
+        
         Route::get('/kegiatan', 'App\Http\Controllers\KegiatanController@index')->name('kegiatan');
         Route::get('/kegiatan/laporan', 'App\Http\Controllers\KegiatanController@laporan');
-        Route::get('/realisasi', 'App\Http\Controllers\KegiatanController@realisasi');
         Route::get('/pencairan', 'App\Http\Controllers\KegiatanController@pencairan');
         Route::get('/pertanggungjawaban', 'App\Http\Controllers\KegiatanController@pertanggungjawaban');
-        Route::post('/getlistkegiatan', 'App\Http\Controllers\KegiatanController@get_list');
+        Route::post('/getlistkegiatan', 'App\Http\Controllers\KegiatanController@get_list_rka');
         Route::post('/getlistlaporankegiatan', 'App\Http\Controllers\KegiatanController@get_list_laporan');
         Route::get('/kegiatan/{kegiatan}', 'App\Http\Controllers\KegiatanController@show');
         Route::get('/createkegiatan', 'App\Http\Controllers\KegiatanController@create');
@@ -295,16 +303,15 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getoptionskegiatan', 'App\Http\Controllers\KegiatanController@getoptions');
         Route::post('/getlinkskegiatan', 'App\Http\Controllers\KegiatanController@getlinks');
         Route::post('/uploadfilekegiatan', 'App\Http\Controllers\KegiatanController@storeUploadFile');
-        Route::post('/processapprove', 'App\Http\Controllers\JurnalController@processapprove');
+        Route::post('/processapprove', 'App\Http\Controllers\KegiatanController@processapprove');
         Route::post('/getdatakegiatanhistory', 'App\Http\Controllers\KegiatanController@getdatahistory');
         Route::post('/getdatapjkhistory', 'App\Http\Controllers\KegiatanController@getdatahistorypjk');
 
-        
         Route::get('/pjk/{kegiatan}/edit', 'App\Http\Controllers\KegiatanController@createpjk');
         Route::post('/storepjk', 'App\Http\Controllers\KegiatanController@storepjk');
         Route::post('/updatepjk/{kegiatan}', 'App\Http\Controllers\KegiatanController@updatepjk');
         Route::get('/pjk/{kegiatan}', 'App\Http\Controllers\KegiatanController@showpjk');
-        Route::post('/processapprovepjk', 'App\Http\Controllers\JurnalController@processapprovepjk');
+        Route::post('/processapprovepjk', 'App\Http\Controllers\KegiatanController@processapprovepjk');
         Route::post('/getdatapjk', 'App\Http\Controllers\KegiatanController@getdatapjk');
         Route::post('/getdatapjk', 'App\Http\Controllers\KegiatanController@getdatapjk');
         

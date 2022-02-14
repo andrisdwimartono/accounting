@@ -58,7 +58,7 @@
       //"searching": false,
       buttons: [
             {
-                text: "Tambah IKU <span class='btn-icon-right'><i class='fa fa-plus'></i></span>",
+                text: "Tambah Unit Kerja <span class='btn-icon-right'><i class='fa fa-plus'></i></span>",
                 className: "btn btn-primary",
                 init: function(api, node, config) {
                   $(node).removeClass('dt-button')
@@ -71,8 +71,8 @@
         "columns": [
         { "width": "5px" },
         { "width": "5px" },
-        { "width": "200px" },
-        { "width": "100px" },
+        { "width": "550px" },
+        { "width": "20px" },
         ],
         aoColumnDefs: [{
               aTargets: [1, 2],

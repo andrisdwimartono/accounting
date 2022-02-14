@@ -200,9 +200,11 @@ class IkuunitkerjaController extends Controller
     {
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "List";
+        $page_data["page_data_urlname"] = "iku";
         $page_data["footer_js_page_specific_script"] = ["ikuunitkerja.page_specific_script.footer_js_list"];
         $page_data["header_js_page_specific_script"] = ["ikuunitkerja.page_specific_script.header_js_list"];
         
+
         return view("ikuunitkerja.list", ["page_data" => $page_data]);
     }
 
@@ -1028,7 +1030,7 @@ class IkuunitkerjaController extends Controller
 
     public function get_list(Request $request)
     {
-        $list_column = array("id", "iku_tahun_label", "iku_unit_pelaksana_label", "id");
+        $list_column = array("id", "bab","elemen","indikator", "id");
         $keyword = null;
         if(isset($request->search["value"])){
             $keyword = $request->search["value"];
@@ -1046,40 +1048,26 @@ class IkuunitkerjaController extends Controller
 
         $dt = array();
         $no = 0;
-        foreach(Ikuunitkerja::where(function($q) use ($keyword) {
-            $q->where("iku_tahun_label", "LIKE", "%" . $keyword. "%")->orWhere("iku_unit_pelaksana_label", "LIKE", "%" . $keyword. "%");
-        })->where(function($q) use ($request){
-            if($request->is_ikt == "on"){
-                $q->where("is_ikt", "on");
-            }else{
-                $q->whereNull("is_ikt");
-            }
-        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "iku_tahun_label", "iku_unit_pelaksana_label"]) as $ikuunitkerja){
+        foreach(Iku::where(function($q) use ($keyword) {
+            $q->where("bab", "LIKE", "%" . $keyword. "%")->orWhere("elemen", "LIKE", "%" . $keyword. "%")->orWhere("indikator", "LIKE", "%" . $keyword. "%");
+        })->where("type", $request->type)
+        ->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "bab", "elemen", "indikator"]) as $ikuunitkerja){
             $no = $no+1;
 
             $act = '
-            <a href="/ikuunitkerja/'.$ikuunitkerja->id.'" class="btn btn-info shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fa fa-eye"></i></a>
+            <a href="/iku/'.$ikuunitkerja->id.'" class="btn btn-info shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fa fa-eye"></i></a>
 
-            <a href="/ikuunitkerja/'.$ikuunitkerja->id.'/edit" class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit User Data"><i class="fa fa-edit"></i></a>
+            <a href="/iku/'.$ikuunitkerja->id.'/edit" class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit User Data"><i class="fa fa-edit"></i></a>
 
             <a class="row-delete btn btn-danger shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Delete User"><i class="fa fa-trash"></i></a>';
 
-            if($request->is_ikt == "on"){
-                $act = '
-                <a href="/iktunitkerja/'.$ikuunitkerja->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
-
-                <a href="/iktunitkerja/'.$ikuunitkerja->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
-
-                <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button>';
-            }
-
-            array_push($dt, array($ikuunitkerja->id, $ikuunitkerja->iku_tahun_label, $ikuunitkerja->iku_unit_pelaksana_label, $act));
+            array_push($dt, array($ikuunitkerja->id, $ikuunitkerja->bab, $ikuunitkerja->elemen, $ikuunitkerja->indikator, $act));
     }
         $output = array(
             "draw" => intval($request->draw),
-            "recordsTotal" => Ikuunitkerja::get()->count(),
-            "recordsFiltered" => intval(Ikuunitkerja::where(function($q) use ($keyword) {
-                $q->where("iku_tahun_label", "LIKE", "%" . $keyword. "%")->orWhere("iku_unit_pelaksana_label", "LIKE", "%" . $keyword. "%");
+            "recordsTotal" => Iku::get()->count(),
+            "recordsFiltered" => intval(Iku::where(function($q) use ($keyword) {
+                $q->where("bab", "LIKE", "%" . $keyword. "%")->orWhere("elemen", "LIKE", "%" . $keyword. "%")->orWhere("indikator", "LIKE", "%" . $keyword. "%");
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
