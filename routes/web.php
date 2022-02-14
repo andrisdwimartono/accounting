@@ -314,7 +314,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/processapprovepjk', 'App\Http\Controllers\KegiatanController@processapprovepjk');
         Route::post('/getdatapjk', 'App\Http\Controllers\KegiatanController@getdatapjk');
         Route::post('/getdatapjk', 'App\Http\Controllers\KegiatanController@getdatapjk');
-        
+
+        Route::post('/getlistpencairan', 'App\Http\Controllers\PencairanController@get_list');
+        Route::get('/createpencairan', 'App\Http\Controllers\PencairanController@create');
+        Route::post('/getlinkspencairan', 'App\Http\Controllers\PencairanController@getlinks');
+        Route::post('/getbiayakegiatan', 'App\Http\Controllers\PencairanController@getbiayakegiatan');
     });
 });
 
