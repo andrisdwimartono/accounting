@@ -4200,6 +4200,8 @@ class JurnalController extends Controller
         var_dump($pecahkan[0]);
         var_dump($pecahkan[1]);
         var_dump($pecahkan[2]);
+        $tgl = $pecahkan[2].'-'.$pecahkan[1].'-'.$pecahkan[0];
+        var_dump($tgl);
         die();
         //dd($pecahkan);
         
