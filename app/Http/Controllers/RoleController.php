@@ -391,11 +391,11 @@ class RoleController extends Controller
 
     public function getRoleMenu(){
         if(Auth::user()){
-            // dd(Auth::user()->role);
+            // dd(Auth::user()->role_label);
             $user_menus = User_role_menu::find(1)
             ->select(['menus.*'])
             ->leftJoin('menus','menus.id','user_role_menus.menu_id')
-            ->where("role_label",Auth::user()->role_label)->where("is_granted", "on")
+            ->where("role",Auth::user()->role_label)->where("is_granted", "on")
             ->where("is_shown_at_side_menu", "on")->orderBy("mp_sequence", "ASC")->orderBy("m_sequence", "ASC")
             ->get();
 
