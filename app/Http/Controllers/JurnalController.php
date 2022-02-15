@@ -4192,20 +4192,7 @@ class JurnalController extends Controller
     }
 
     public function tgl_dbs($tanggal, $sep,$d1,$d2,$d3){
-        $bulan = array (
-            1 =>   'Januari',
-            'Februari',
-            'Maret',
-            'April',
-            'Mei',
-            'Juni',
-            'Juli',
-            'Agustus',
-            'September',
-            'Oktober',
-            'November',
-            'Desember'
-        );
+    
         $pecahkan = explode($sep, $tanggal);
 
         //dd($pecahkan);
@@ -4214,7 +4201,7 @@ class JurnalController extends Controller
         // variabel pecahkan 1 = bulan
         // variabel pecahkan 2 = tanggal
      
-        return $pecahkan[2] . '-' . $pecahkan[1] . '-' . $pecahkan[0];
+        return $pecahkan[1] . '-' . $pecahkan[1] . '-' . $pecahkan[0];
     }
 }
 
