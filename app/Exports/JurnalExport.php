@@ -57,8 +57,8 @@ class JurnalExport implements FromView, WithStyles
         $query = [];
         if(isset($request->search['jurnal_type'])){
             $query = Jurnal::where(function($q) use ($request) {
-                $q->where("no_jurnal", "LIKE", "%" . $request->search['no_jurnal_search']. "%");
-            })->where("no_jurnal", "LIKE", $request->search['jurnal_type']. "%")->whereNull("isdeleted")->whereBetween("tanggal_jurnal", [$this->tgl_dbs($request->search['tanggal_jurnal_from'], "/", 2,1,0), $this->tgl_dbs($request->search['tanggal_jurnal_to'], "/", 2,1,0)])->orderBy("no_jurnal", $request->search['ordering'])->get(["id", "keterangan", "no_jurnal", "tanggal_jurnal"]);
+                $q->where("jurnals.no_jurnal", "LIKE", "%" . $request->search['no_jurnal_search']. "%");
+            })->where("jurnals.no_jurnal", "LIKE", $request->search['jurnal_type']. "%")->whereNull("jurnals.isdeleted")->whereBetween("jurnals.tanggal_jurnal", [$this->tgl_dbs($request->search['tanggal_jurnal_from'], "/", 2,1,0), $this->tgl_dbs($request->search['tanggal_jurnal_to'], "/", 2,1,0)])->leftJoin('transactions', 'jurnals.no_jurnal', '=', 'transactions.no_jurnal')->orderBy("jurnals.no_jurnal", $request->search['ordering'])->get(["jurnals.id", "jurnals.no_jurnal", "jurnals.tanggal_jurnal", "transactions.coa_label", "transactions.deskripsi", "transactions.debet", "transactions.credit"]);
         } else {
             $query = Jurnal::where(function($q) use ($request) {
                 $q->where("jurnals.no_jurnal", "LIKE", "%" . $request->search['no_jurnal_search']. "%");
