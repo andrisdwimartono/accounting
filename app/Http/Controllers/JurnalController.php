@@ -4207,6 +4207,8 @@ class JurnalController extends Controller
             'Desember'
         );
         $pecahkan = explode($sep, $tanggal);
+
+        dd($pecahkan);
         
         // variabel pecahkan 0 = tahun
         // variabel pecahkan 1 = bulan
