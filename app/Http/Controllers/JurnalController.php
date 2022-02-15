@@ -4208,13 +4208,13 @@ class JurnalController extends Controller
         );
         $pecahkan = explode($sep, $tanggal);
 
-        dd($pecahkan);
+        //dd($pecahkan);
         
         // variabel pecahkan 0 = tahun
         // variabel pecahkan 1 = bulan
         // variabel pecahkan 2 = tanggal
      
-        return $pecahkan[$d1] . '-' . $pecahkan[$d2] . '-' . $pecahkan[$d3];
+        return $pecahkan[2] . '-' . $pecahkan[1] . '-' . $pecahkan[0];
     }
 }
 
