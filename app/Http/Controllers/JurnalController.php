@@ -4112,7 +4112,7 @@ class JurnalController extends Controller
             array_push($dt, array($jurnal->id, $tanggal, $jurnal->no_jurnal, $jurnal->coa_label, $jurnal->deskripsi, $deb, $cre));
         }
 
-        $tanggal_jurnal = $this->tgl_indo($request->search['tanggal_jurnal_from'],"/",2,1,0). " - " . $this->tgl_indo($request->search['tanggal_jurnal_to'],"/",2,1,0);
+        $tanggal_jurnal = $this->tgl_indo($request->search['tanggal_jurnal_from'],"/",0,1,2). " - " . $this->tgl_indo($request->search['tanggal_jurnal_to'],"/",0,1,2);
 
         $output = array(
             "draw" => intval($request->draw),
