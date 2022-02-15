@@ -4194,7 +4194,9 @@ class JurnalController extends Controller
     public function tgl_dbs($tanggal, $sep,$d1,$d2,$d3){
     
         $pecahkan = explode($sep, $tanggal);
-
+        var_dump($sep);
+        var_dump($tanggal);
+        die();
         //dd($pecahkan);
         
         // variabel pecahkan 0 = tahun
