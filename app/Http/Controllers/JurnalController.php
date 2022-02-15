@@ -4108,11 +4108,11 @@ class JurnalController extends Controller
             $tanggal = $jurnal->tanggal_jurnal;
             $deb = "<td class='rp'>Rp</td><td class='nom'><b>".number_format($jurnal->debet,0,",",".")."</td>";
             $cre = "<td class='rp'>Rp</td><td class='nom'><b>".number_format($jurnal->credit,0,",",".")."</td>";
-            // $tanggal = $this->tgl_indo($jurnal->tanggal_jurnal,"-",2,1,0);        
+            // $tanggal = $this->tgl_dbs($jurnal->tanggal_jurnal,"-",2,1,0);        
             array_push($dt, array($jurnal->id, $tanggal, $jurnal->no_jurnal, $jurnal->coa_label, $jurnal->deskripsi, $deb, $cre));
         }
 
-        $tanggal_jurnal = $this->tgl_indo($request->search['tanggal_jurnal_from'],"/",0,1,2). " - " . $this->tgl_indo($request->search['tanggal_jurnal_to'],"/",0,1,2);
+        $tanggal_jurnal = $this->tgl_dbs($request->search['tanggal_jurnal_from'],"/",2,1,0). " - " . $this->tgl_dbs($request->search['tanggal_jurnal_to'],"/",2,1,0);
 
         $output = array(
             "draw" => intval($request->draw),
@@ -4164,7 +4164,7 @@ class JurnalController extends Controller
             "data" => $dt
         );
 
-        $tanggal_jurnal = $this->tgl_indo($request->search['tanggal_jurnal_from'],"/",0,1,2). " - " . $this->tgl_indo($request->search['tanggal_jurnal_to'],"/",0,1,2);
+        $tanggal_jurnal = $this->tgl_dbs($request->search['tanggal_jurnal_from'],"/",2,1,0). " - " . $this->tgl_dbs($request->search['tanggal_jurnal_to'],"/",2,1,0);
 
         $gs = Session::get('global_setting');
         $image =  base_path() . '/public/logo_instansi/'.$gs->logo_instansi;
@@ -4191,7 +4191,7 @@ class JurnalController extends Controller
         return Excel::download(new JurnalExport($request), 'laporan_jurnal_'.$date.'.xlsx');
     }
 
-    public function tgl_indo($tanggal, $sep,$d1,$d2,$d3){
+    public function tgl_dbs($tanggal, $sep,$d1,$d2,$d3){
         $bulan = array (
             1 =>   'Januari',
             'Februari',
@@ -4215,7 +4215,29 @@ class JurnalController extends Controller
         return $pecahkan[$d1] . ' ' . $bulan[ (int)$pecahkan[$d2] ] . ' ' . $pecahkan[$d3];
     }
 
-    
+    public function tgl_dbs($tanggal, $sep,$d1,$d2,$d3){
+        $bulan = array (
+            1 =>   'Januari',
+            'Februari',
+            'Maret',
+            'April',
+            'Mei',
+            'Juni',
+            'Juli',
+            'Agustus',
+            'September',
+            'Oktober',
+            'November',
+            'Desember'
+        );
+        $pecahkan = explode($sep, $tanggal);
+        
+        // variabel pecahkan 0 = tahun
+        // variabel pecahkan 1 = bulan
+        // variabel pecahkan 2 = tanggal
+     
+        return $pecahkan[$d1] . '-' . $bulan[ (int)$pecahkan[$d2] ] . '-' . $pecahkan[$d3];
+    }
 }
 
     
