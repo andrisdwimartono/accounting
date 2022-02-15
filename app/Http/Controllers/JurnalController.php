@@ -4144,9 +4144,9 @@ class JurnalController extends Controller
         $no = 0;
         foreach(Jurnal::where(function($q) use ($request) {
             if(!$request->search['no_jurnal_search']){
-                //$q->where("jurnals.no_jurnal", "LIKE", "%" . $request->search['no_jurnal_search']. "%")->where("jurnals.no_jurnal", "LIKE", $request->jurnal_type."%");
+                $q->where("jurnals.no_jurnal", "LIKE", "%" . $request->search['no_jurnal_search']. "%")->where("jurnals.no_jurnal", "LIKE", $request->search['jurnal_type']."%");
             }else{
-                $q->where("jurnals.no_jurnal", "LIKE", $request->jurnal_type."%");
+                $q->where("jurnals.no_jurnal", "LIKE", $request->search['jurnal_type']."%");
             }
         })->whereNull("jurnals.isdeleted")->whereBetween("jurnals.tanggal_jurnal", [$this->tgl_dbs($request->search['tanggal_jurnal_from'], "/",2,1,0), $this->tgl_dbs($request->search['tanggal_jurnal_to'], "/",2,1,0)])
         ->leftJoin('transactions', 'jurnals.no_jurnal', '=', 'transactions.no_jurnal')
