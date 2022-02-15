@@ -4144,7 +4144,7 @@ class JurnalController extends Controller
         $no = 0;
         foreach(Jurnal::where(function($q) use ($request) {
             if($request->search['no_jurnal_search'] != ""){
-                $q->where("jurnals.no_jurnal", "LIKE", "%" . $request->search['no_jurnal_search']. "%")->where("jurnals.no_jurnal", "LIKE", $request->jurnal_type."%");
+                //$q->where("jurnals.no_jurnal", "LIKE", "%" . $request->search['no_jurnal_search']. "%")->where("jurnals.no_jurnal", "LIKE", $request->jurnal_type."%");
             }else{
                 $q->where("jurnals.no_jurnal", "LIKE", $request->jurnal_type."%");
             }
