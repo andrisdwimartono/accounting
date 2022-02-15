@@ -4196,6 +4196,7 @@ class JurnalController extends Controller
         $pecahkan = explode($sep, $tanggal);
         var_dump($sep);
         var_dump($tanggal);
+        var_dump($pecahkan);
         die();
         //dd($pecahkan);
         
