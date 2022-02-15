@@ -4199,8 +4199,10 @@ class JurnalController extends Controller
         // var_dump($pecahkan);
         // var_dump($pecahkan[0]);
         // var_dump($pecahkan[1]);
-        // var_dump($pecahkan[2]);
-        $tgl = $pecahkan[2].'-'.$pecahkan[1].'-'.$pecahkan[0];
+        $tahun = $pecahkan[2];
+        $bulan = $pecahkan[1];
+        $tanggal = $pecahkan[0];
+        $tgl = $tahun.'-'.$bulan.'-'.$tanggal;
         // var_dump($tgl);
         return $tgl;
         //die();
