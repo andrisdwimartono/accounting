@@ -937,7 +937,7 @@ class JurnalController extends Controller
         $no = 0;
         foreach(Jurnal::where(function($q) use ($request) {
             $q->where("no_jurnal", "LIKE", "%" . $request->no_jurnal_search. "%");
-        })->whereNull("isdeleted")->whereBetween("tanggal_jurnal", [$this->tgl_dbs($request->tanggal_jurnal_from, "/",2,1,0), $this->tgl_dbs($request->tanggal_jurnal_to, "/",2,1,0)])->orderBy("no_jurnal", $request->ordering)->get(["id", "keterangan", "no_jurnal", "tanggal_jurnal"]) as $jurnal){
+        })->whereNull("isdeleted")->whereBetween("tanggal_jurnal", [$request->tanggal_jurnal_from, $request->tanggal_jurnal_to])->orderBy("no_jurnal", $request->ordering)->get(["id", "keterangan", "no_jurnal", "tanggal_jurnal"]) as $jurnal){
             $no = $no+1;
             $act = '
             <a href="/jurnal/'.$jurnal->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
@@ -953,7 +953,7 @@ class JurnalController extends Controller
             "recordsTotal" => Jurnal::get()->count(),
             "recordsFiltered" => intval(Jurnal::where(function($q) use ($request) {
                 $q->where("no_jurnal", "LIKE", "%" . $request->no_jurnal_search. "%");
-            })->whereBetween("tanggal_jurnal", [$this->tgl_dbs($request->tanggal_jurnal_from, "/",2,1,0), $this->tgl_dbs($request->tanggal_jurnal_to, "/",2,1,0)])->orderBy("tanggal_jurnal", "asc")->get()->count()),
+            })->whereBetween("tanggal_jurnal", [$request->tanggal_jurnal_from, $request->tanggal_jurnal_to])->orderBy("tanggal_jurnal", "asc")->get()->count()),
             "data" => $dt
         );
 
@@ -984,7 +984,7 @@ class JurnalController extends Controller
             "recordsTotal" => Jurnal::get()->count(),
             "recordsFiltered" => intval(Jurnal::where(function($q) use ($request) {
                 $q->where("no_jurnal", "LIKE", "%" . $request->no_jurnal_search. "%");
-            })->whereBetween("tanggal_jurnal", [$this->tgl_dbs($request->tanggal_jurnal_from, "/",2,1,0), $this->tgl_dbs($request->tanggal_jurnal_to, "/",2,1,0)])->orderBy("tanggal_jurnal", "asc")->get()->count()),
+            })->whereBetween("tanggal_jurnal", [$request->tanggal_jurnal_from, $request->tanggal_jurnal_to])->orderBy("tanggal_jurnal", "asc")->get()->count()),
             "data" => $dt
         );
 
