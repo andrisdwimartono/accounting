@@ -4192,7 +4192,10 @@ class JurnalController extends Controller
     }
 
     public function tgl_dbs($tanggal, $sep,$d1,$d2,$d3){
-    
+        
+        $var = '20/04/2012';
+        $date = str_replace('/', '-', $var);
+        return date('Y-m-d', strtotime($date));
         $pecahkan = explode($sep, $tanggal);
         var_dump($sep);
         var_dump($tanggal);
