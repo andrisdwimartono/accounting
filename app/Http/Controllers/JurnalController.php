@@ -4139,22 +4139,27 @@ class JurnalController extends Controller
     public function bkmkprint(Request $request)
     {
         $list_column = array("id", "keterangan", "no_jurnal", "tanggal_jurnal", "id");
-        // dd($request->ordering);
+        
         $dt = array();
         $no = 0;
         foreach(Jurnal::where(function($q) use ($request) {
-            $q->where("no_jurnal", "LIKE", "%" . $request->search['no_jurnal_search']. "%");
-        })->where("no_jurnal", "LIKE", $request->search['jurnal_type']. "%")->whereNull("isdeleted")->whereBetween("tanggal_jurnal", [$this->tgl_dbs($request->search['tanggal_jurnal_from'], "/",2,1,0), $this->tgl_dbs($request->search['tanggal_jurnal_to'], "/",2,1,0)])->orderBy("no_jurnal", $request->search['ordering'])->get(["id", "keterangan", "no_jurnal", "tanggal_jurnal"]) as $jurnal){
+            $q->where("jurnals.no_jurnal", "LIKE", "%" . $request->search['no_jurnal_search']. "%");
+        })->where(function($q) use ($request){
+            $q->where("jurnals.no_jurnal", "LIKE", $request->jurnal_type."%");
+        })->whereNull("jurnals.isdeleted")->whereBetween("jurnals.tanggal_jurnal", [$this->tgl_dbs($request->search['tanggal_jurnal_from'], "/",2,1,0), $this->tgl_dbs($request->search['tanggal_jurnal_to'], "/",2,1,0)])
+        ->leftJoin('transactions', 'jurnals.no_jurnal', '=', 'transactions.no_jurnal')
+        ->orderBy("no_jurnal", $request->search['ordering'])
+        ->get(["jurnals.id", "jurnals.no_jurnal", "jurnals.tanggal_jurnal", "transactions.coa_label", "transactions.deskripsi", "transactions.debet", "transactions.credit"]) as $jurnal){
             $no = $no+1;
-            $act = '
-            <a href="/jurnal/'.$jurnal->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
-
-            <a href="/jurnal/'.$jurnal->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
-
-            <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button>';
-
-            array_push($dt, array($jurnal->id, $jurnal->tanggal_jurnal, $jurnal->no_jurnal, $jurnal->keterangan, $act));
+            $tanggal = $jurnal->tanggal_jurnal;
+            $deb = "<td class='rp'>Rp</td><td class='nom'><b>".number_format($jurnal->debet,0,",",".")."</td>";
+            $cre = "<td class='rp'>Rp</td><td class='nom'><b>".number_format($jurnal->credit,0,",",".")."</td>";
+            // $tanggal = $this->tgl_indo($jurnal->tanggal_jurnal,"-",2,1,0);        
+            array_push($dt, array($jurnal->id, $tanggal, $jurnal->no_jurnal, $jurnal->coa_label, $jurnal->deskripsi, $deb, $cre));
         }
+
+        $tanggal_jurnal = $this->tgl_indo($request->search['tanggal_jurnal_from'],"/",0,1,2). " - " . $this->tgl_indo($request->search['tanggal_jurnal_to'],"/",0,1,2);
+
         $output = array(
             "draw" => intval($request->draw),
             "recordsTotal" => Jurnal::get()->count(),
@@ -4163,8 +4168,6 @@ class JurnalController extends Controller
             })->whereBetween("tanggal_jurnal", [$this->tgl_dbs($request->tanggal_jurnal_from, "/",2,1,0), $this->tgl_dbs($request->tanggal_jurnal_to, "/",2,1,0)])->orderBy("tanggal_jurnal", "asc")->get()->count()),
             "data" => $dt
         );
-
-        $tanggal_jurnal = $this->tgl_indo($request->search['tanggal_jurnal_from'],"/",2,1,0). " - " . $this->tgl_indo($request->search['tanggal_jurnal_to'],"/",2,1,0);
 
         $gs = Session::get('global_setting');
         $image =  base_path() . '/public/logo_instansi/'.$gs->logo_instansi;
@@ -4177,6 +4180,46 @@ class JurnalController extends Controller
         $pdf->getDomPDF();
         $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
         return $pdf->stream('jurnal.pdf');
+
+        // $list_column = array("id", "keterangan", "no_jurnal", "tanggal_jurnal", "id");
+        // // dd($request->ordering);
+        // $dt = array();
+        // $no = 0;
+        // foreach(Jurnal::where(function($q) use ($request) {
+        //     $q->where("no_jurnal", "LIKE", "%" . $request->search['no_jurnal_search']. "%");
+        // })->where("no_jurnal", "LIKE", $request->search['jurnal_type']. "%")->whereNull("isdeleted")->whereBetween("tanggal_jurnal", [$this->tgl_dbs($request->search['tanggal_jurnal_from'], "/",2,1,0), $this->tgl_dbs($request->search['tanggal_jurnal_to'], "/",2,1,0)])->orderBy("no_jurnal", $request->search['ordering'])->get(["id", "keterangan", "no_jurnal", "tanggal_jurnal"]) as $jurnal){
+        //     $no = $no+1;
+        //     $act = '
+        //     <a href="/jurnal/'.$jurnal->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
+
+        //     <a href="/jurnal/'.$jurnal->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
+
+        //     <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button>';
+
+        //     array_push($dt, array($jurnal->id, $jurnal->tanggal_jurnal, $jurnal->no_jurnal, $jurnal->keterangan, $act));
+        // }
+        // $output = array(
+        //     "draw" => intval($request->draw),
+        //     "recordsTotal" => Jurnal::get()->count(),
+        //     "recordsFiltered" => intval(Jurnal::where(function($q) use ($request) {
+        //         $q->where("no_jurnal", "LIKE", "%" . $request->no_jurnal_search. "%");
+        //     })->whereBetween("tanggal_jurnal", [$this->tgl_dbs($request->tanggal_jurnal_from, "/",2,1,0), $this->tgl_dbs($request->tanggal_jurnal_to, "/",2,1,0)])->orderBy("tanggal_jurnal", "asc")->get()->count()),
+        //     "data" => $dt
+        // );
+
+        // $tanggal_jurnal = $this->tgl_indo($request->search['tanggal_jurnal_from'],"/",2,1,0). " - " . $this->tgl_indo($request->search['tanggal_jurnal_to'],"/",2,1,0);
+
+        // $gs = Session::get('global_setting');
+        // $image =  base_path() . '/public/logo_instansi/'.$gs->logo_instansi;
+        // $type = pathinfo($image, PATHINFO_EXTENSION);
+        // $data = file_get_contents($image);
+        // $dataUri = 'data:image/' . $type . ';base64,' . base64_encode($data);
+
+        // $pdf = PDF::loadview("jurnal.print", ["jurnal" => $output,"data" => $request, "globalsetting" => Session::get('global_setting'), "tanggal" => $tanggal_jurnal, "logo" => $dataUri]);
+        // $pdf->setPaper('A4', 'Landscape');
+        // $pdf->getDomPDF();
+        // $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
+        // return $pdf->stream('jurnal.pdf');
     }
 
     public function excel(Request $request)
