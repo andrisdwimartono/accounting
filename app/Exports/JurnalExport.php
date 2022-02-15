@@ -58,11 +58,11 @@ class JurnalExport implements FromView, WithStyles
         if(isset($request->search['jurnal_type'])){
             $query = Jurnal::where(function($q) use ($request) {
                 $q->where("no_jurnal", "LIKE", "%" . $request->search['no_jurnal_search']. "%");
-            })->where("no_jurnal", "LIKE", $request->search['jurnal_type']. "%")->whereNull("isdeleted")->whereBetween("tanggal_jurnal", [$request->search['tanggal_jurnal_from'], $request->search['tanggal_jurnal_to']])->orderBy("no_jurnal", $request->search['ordering'])->get(["id", "keterangan", "no_jurnal", "tanggal_jurnal"]);
+            })->where("no_jurnal", "LIKE", $request->search['jurnal_type']. "%")->whereNull("isdeleted")->whereBetween("tanggal_jurnal", [$this->tgl_dbs($request->search['tanggal_jurnal_from'], "/", 2,1,0), $this->tgl_dbs($request->search['tanggal_jurnal_to'], "/", 2,1,0)])->orderBy("no_jurnal", $request->search['ordering'])->get(["id", "keterangan", "no_jurnal", "tanggal_jurnal"]);
         } else {
             $query = Jurnal::where(function($q) use ($request) {
                 $q->where("jurnals.no_jurnal", "LIKE", "%" . $request->search['no_jurnal_search']. "%");
-            })->whereNull("jurnals.isdeleted")->whereBetween("jurnals.tanggal_jurnal", [$request->search['tanggal_jurnal_from'], $request->search['tanggal_jurnal_to']])
+            })->whereNull("jurnals.isdeleted")->whereBetween("jurnals.tanggal_jurnal", [$this->tgl_dbs($request->search['tanggal_jurnal_from'], "/", 2,1,0), $this->tgl_dbs($request->search['tanggal_jurnal_to'], "/", 2,1,0)])
             ->leftJoin('transactions', 'jurnals.no_jurnal', '=', 'transactions.no_jurnal')
             ->orderBy("no_jurnal", $request->search['ordering'])
             ->get(["jurnals.id", "jurnals.no_jurnal", "jurnals.tanggal_jurnal", "transactions.coa_label", "transactions.deskripsi", "transactions.debet", "transactions.credit"]);
@@ -84,7 +84,7 @@ class JurnalExport implements FromView, WithStyles
             "recordsTotal" => Jurnal::get()->count(),
             "recordsFiltered" => intval(Jurnal::where(function($q) use ($request) {
                 $q->where("no_jurnal", "LIKE", "%" . $request->no_jurnal_search. "%");
-            })->whereBetween("tanggal_jurnal", [$request->tanggal_jurnal_from, $request->tanggal_jurnal_to])->orderBy("tanggal_jurnal", "asc")->get()->count()),
+            })->whereBetween("tanggal_jurnal", [$this->tgl_dbs($request->tanggal_jurnal_from, "/", 2,1,0), $this->tgl_dbs($request->tanggal_jurnal_to, "/", 2,1,0)])->orderBy("tanggal_jurnal", "asc")->get()->count()),
             "data" => $dt,
             "tanggal" => $tanggal_jurnal
         );
@@ -143,5 +143,12 @@ class JurnalExport implements FromView, WithStyles
         // variabel pecahkan 2 = tanggal
      
         return $pecahkan[$d1] . ' ' . $bulan[ (int)$pecahkan[$d2] ] . ' ' . $pecahkan[$d3];
+    }
+
+    public function tgl_dbs($tanggal, $sep,$d1,$d2,$d3){
+    
+        $date = str_replace('/', '-', $tanggal);
+        return date('Y-m-d', strtotime($date));
+
     }
 }
