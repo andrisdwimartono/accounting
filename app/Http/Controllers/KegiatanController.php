@@ -468,6 +468,84 @@ class KegiatanController extends Controller
         }
     }
 
+    public function updaterka($request, $id)
+    {
+        $keg = Kegiatan::where("id",$id)->first();
+        if($keg->status != "process" && $keg->status != "approving"){
+            abort(403, "tidak dapat diubah, status masih/sudah ".$keg->status);
+        }
+
+        $page_data = $this->tabledesign();
+        $rules_ct1_detailbiayakegiatan = $page_data["fieldsrules_ct1_detailbiayakegiatan"];
+        $requests_ct1_detailbiayakegiatan = json_decode($request->ct1_detailbiayakegiatan, true);
+        foreach($requests_ct1_detailbiayakegiatan as $ct_request){
+            $child_tb_request = new \Illuminate\Http\Request();
+            $child_tb_request->replace($ct_request);
+            $ct_messages = array();
+            foreach($page_data["fieldsmessages_ct1_detailbiayakegiatan"] as $key => $value){
+                $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
+            }
+            $child_tb_request->validate($rules_ct1_detailbiayakegiatan, $ct_messages);
+        }
+
+        //update
+        //hapus yang lama jika ada
+        Detailbiayakegiatan::where("parent_id", $id)->where("isarchived", "on")->where("archivedby", Auth::user()->role)->delete();
+
+        //jika belum pernah, maka update archived
+        Detailbiayakegiatan::where("parent_id", $id)->whereNull("isarchived")->whereNull("archivedby")->update([
+            "isarchived" => "on",
+            "user_updater_id" => Auth::user()->id
+        ]);
+
+        $new_menu_field_ids = array();
+        foreach($requests_ct1_detailbiayakegiatan as $ct_request){
+            // if(isset($ct_request["id"]) && $ct_request["id"] != ""){
+            //     Detailbiayakegiatan::where("id", $ct_request["id"])->update([
+            //         "no_seq" => $ct_request["no_seq"],
+            //         "parent_id" => $id,
+            //         "coa"=> $ct_request["coa"],
+            //         "coa_label"=> $ct_request["coa_label"],
+            //         "deskripsibiaya"=> $ct_request["deskripsibiaya"],
+            //         "nominalbiaya"=> $ct_request["nominalbiaya"],
+            //         "status" => $ct_request["status"]=="pengajuan"?"terima": $ct_request["status"],
+            //         "komentarrevisi" => $ct_request["komentarrevisi"],
+            //         "user_updater_id" => Auth::user()->id,
+            //     ]);
+            // }
+            $idct = Detailbiayakegiatan::create([
+                "no_seq" => $ct_request["no_seq"],
+                "parent_id" => $id,
+                "coa"=> $ct_request["coa"],
+                "coa_label"=> $ct_request["coa_label"],
+                "deskripsibiaya"=> $ct_request["deskripsibiaya"],
+                "nominalbiaya"=> $ct_request["nominalbiaya"],
+                "status" => $ct_request["status"]=="pengajuan" || $ct_request["status"]==""?"terima": $ct_request["status"],
+                "komentarrevisi" => $ct_request["komentarrevisi"],
+                "user_creator_id" => Auth::user()->id,
+                "isarchived" => "on",
+                "archivedby" => Auth::user()->role,
+            ])->id;
+            array_push($new_menu_field_ids, $idct);
+        }
+
+        // foreach(Detailbiayakegiatan::whereParentId($id)->get() as $ch){
+        //     $is_still_exist = false;
+        //     foreach($requests_ct1_detailbiayakegiatan as $ct_request){
+        //         if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
+        //             $is_still_exist = true;
+        //         }
+        //     }
+        //     if(!$is_still_exist){
+        //         //Detailbiayakegiatan::whereId($ch->id)->delete();
+        //         // Detailbiayakegiatan::where("id", $ch->id)->update([
+        //         //     "status" => "tolak",
+        //         //     "user_updater_id" => Auth::user()->id,
+        //         // ]);
+        //     }
+        // }
+    }
+
     /**
     * Remove the specified resource from storage.
     *
@@ -517,7 +595,7 @@ class KegiatanController extends Controller
         $dt = array();
         $no = 0;
         $ukl = Auth::user()->unitkerja;
-        $rl = Auth::user()->role;
+        $rl = Auth::user()->role_label;
         foreach(Kegiatan::where(function($q) use ($keyword) {
             $q->where("unit_pelaksana_label", "LIKE", "%" . $keyword. "%")->orWhere("tahun_label", "LIKE", "%" . $keyword. "%")->orWhere("iku_label", "LIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "LIKE", "%" . $keyword. "%")->orWhere("output", "LIKE", "%" . $keyword. "%");
         })->where(function($q) use ($ukl, $rl){
@@ -638,7 +716,8 @@ class KegiatanController extends Controller
             if($kegiatan->status == "approved"){
                 $act .= '<a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>';        
             }
-            $act .= '<a href="/pengajuan/'.$kegiatan->id.'/edit"  class="btn btn-info shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Pengajuan"><i class="fas fa-edit text-white"></i></a>';
+            $act .= '
+                <a href="/pengajuan/'.$kegiatan->id.'/edit"  class="btn btn-info shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Pengajuan"><i class="fas fa-edit text-white"></i></a>';
         } else {
             $act = '
             <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
@@ -671,7 +750,7 @@ class KegiatanController extends Controller
         $dt = array();
         $no = 0;
         $ukl = Auth::user()->unitkerja;
-        $rl = Auth::user()->role;
+        $rl = Auth::user()->role_label;
         foreach(Kegiatan::where(function($q) use ($keyword) {
             $q->where("unit_pelaksana_label", "LIKE", "%" . $keyword. "%")->orWhere("tahun_label", "LIKE", "%" . $keyword. "%")->orWhere("iku_label", "LIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "LIKE", "%" . $keyword. "%")->orWhere("output", "LIKE", "%" . $keyword. "%");
         })->where(function($q) use ($ukl, $rl){
@@ -731,7 +810,7 @@ class KegiatanController extends Controller
         $dt = array();
         $no = 0;
         $ukl = Auth::user()->unitkerja;
-        $rl = Auth::user()->role;
+        $rl = Auth::user()->role_label;
         foreach(Kegiatan::where(function($q) use ($keyword) {
             $q->where("unit_pelaksana_label", "LIKE", "%" . $keyword. "%")->orWhere("tahun_label", "LIKE", "%" . $keyword. "%")->orWhere("iku_label", "LIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "LIKE", "%" . $keyword. "%")->orWhere("output", "LIKE", "%" . $keyword. "%");
         })->where(function($q) use ($ukl, $rl){
@@ -849,8 +928,8 @@ class KegiatanController extends Controller
                 abort(404, "Data not found");
             }
 
-            $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role)->orderBy("no_seq")->get();
-            if(Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role)->orderBy("no_seq")->count() < 1){
+            $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->get();
+            if(Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->count() < 1){
                 $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
 
                 if(Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->count() < 1){
@@ -906,7 +985,7 @@ class KegiatanController extends Controller
             }elseif($request->field == "iku"){
                 $lists = Iku::where(function($q) use ($request) {
                     $q->where("iku_name", "LIKE", "%" . $request->term. "%");
-                })->where("unit_pelaksana", $request->unit_pelaksana)->where("tahun", $request->tahun)->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("iku_name as text")]);
+                })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("iku_name as text")]);
                 $count = Iku::count();
             }elseif($request->field == "coa"){
                 $lists = Coa::where(function($q) use ($request) {
@@ -936,7 +1015,7 @@ class KegiatanController extends Controller
         if($request->ajax() || $request->wantsJson()){
             $last_approval = Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->where("no_seq", ((int)$request->no_seq)+1)->first();
 
-            if(!(($this->lastapprove($request->id) && $this->lastapprove($request->id)->role == Auth::user()->role) || ($this->nextapprove($request->id) && $this->nextapprove($request->id)->role == Auth::user()->role))){
+            if(!(($this->lastapprove($request->id) && $this->lastapprove($request->id)->role == Auth::user()->role_label) || ($this->nextapprove($request->id) && $this->nextapprove($request->id)->role == Auth::user()->role_label))){
                 //abort(403, $last_approval->role_label." tidak/belum menerima pengajuan ini!");
                 abort(403, " Tidak bisa melakukan approval!");
             }
@@ -945,8 +1024,8 @@ class KegiatanController extends Controller
             //     abort(403, $last_approval->role_label." tidak/belum menerima pengajuan ini!");
             // }
 
-            if(!Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->where("role", Auth::user()->role)->update([
-                "role"                    => Auth::user()->role,
+            if(!Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->where("role", Auth::user()->role_label)->update([
+                "role"                    => Auth::user()->role_label,
                 "jenismenu"               => "RKA",
                 "user"                    => Auth::user()->id,
                 "user_label"              => Auth::user()->name,

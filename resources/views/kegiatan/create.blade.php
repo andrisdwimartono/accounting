@@ -28,6 +28,14 @@
                                     <form id="quickForm" action="#">
                                         @csrf
                                             <div class="card-body">
+                                                @if($page_data["page_data_urlname"] == "pengajuan" && $page_data["page_method_name"] == "Update")
+                                                <div class="form-group row m-0">
+                                                    <label for="tanggal_kegiatan" class="col-sm-4 col-form-label">Tanggal Pencairan</label>
+                                                    <div class="col-sm-6 cakfield">
+                                                        <input name="tanggal_pencairan" class="datepicker-default form-control form-control-sm tanggaljurnal1" id="datepicker" <?=$page_data["page_method_name"] == "View"?"readonly":""?>>
+                                                    </div>
+                                                </div>
+                                                @else                                                
                                                 <div class="form-group row m-0">
                                                     <label class="col-sm-4 col-form-label" for="unit_pelaksana">Unit Pelaksana</label>
                                                     <div class="col-sm-6 cakfield">
@@ -43,28 +51,26 @@
                                                         <input name="tanggal_kegiatan" class="datepicker-default form-control form-control-sm tanggaljurnal1" id="datepicker" <?=$page_data["page_method_name"] == "View"?"readonly":""?>>
                                                     </div>
                                                 </div>
-                                                <!-- <div class="form-group row m-0">
-                                                    <label class="col-sm-4 col-form-label" for="iku">Indikator</label>
+                                                
+                                                <div class="form-group row m-0">
+                                                    <label class="col-sm-4 col-form-label" for="iku">IKU</label>
                                                     <div class="col-sm-6 cakfield">
-                                                        <select name="iku" id="iku" class="form-control select2bs4" style="width: 100%;" @if($page_data["page_method_name"] == "View") readonly @endif>
-                                                        
-
-                                                        </select>
+                                                        <select name="iku" id="iku" class="form-control select2bs4" style="width: 100%;" @if($page_data["page_method_name"] == "View") readonly @endif></select>
                                                         <input type="hidden" name="iku_label" id="iku_label">
                                                     </div>
-                                                </div> -->
+                                                </div>
                                                 <div class="form-group row m-0">
                                                     <label class="col-sm-4 col-form-label" for="kegiatan_name">Nama Kegiatan</label>
                                                     <div class="col-sm-6 cakfield">
                                                         <input type="text" name="kegiatan_name" class="form-control" id="kegiatan_name" placeholder="Enter Nama" @if($page_data["page_method_name"] == "View") readonly @endif>
                                                     </div>
                                                 </div>
-                                            <div class="form-group row m-0">
-                                                <label class="col-sm-4 col-form-label" for="Deskripsi">Deksripsi Kegiatan</label>
-                                                <div class="col-sm-6 cakfield">
-                                                    <textarea name="Deskripsi" class="form-control" id="Deskripsi" placeholder="Enter deskripsi" @if($page_data["page_method_name"] == "View") readonly @endif></textarea>
+                                                <div class="form-group row m-0">
+                                                    <label class="col-sm-4 col-form-label" for="Deskripsi">Deksripsi Kegiatan</label>
+                                                    <div class="col-sm-6 cakfield">
+                                                        <textarea name="Deskripsi" class="form-control" id="Deskripsi" placeholder="Enter deskripsi" @if($page_data["page_method_name"] == "View") readonly @endif></textarea>
+                                                    </div>
                                                 </div>
-                                            </div>
                                                 <div class="form-group row m-0">
                                                     <label class="col-sm-4 col-form-label" for="output">Output Kegiatan</label>
                                                     <div class="col-sm-6 cakfield">
@@ -84,67 +90,69 @@
                                                     </div>
                                                     <input type="hidden" class="custom-file-input" id="proposal" name="proposal">    
                                                 </div>
-                                            <div class="form-group">
-                                                <label for="ct1_detailbiayakegiatan">Detail Biaya</label>
-                                                <div id="result">
-                                                    Event result:
-                                                </div>
-                                                <div class="table-responsive">
-                                                    <table id="caktable1" class="display" style="width: 100%">
-                                                        <thead>
-                                                            <tr>
-                                                                <th class="column-hidden" scope="col">No</th>
-                                                                <th scope="col" style="width: 25%; overflow: hidden;">Kode Rekening</th>
-                                                                <th scope="col" style="width: 25%; overflow: hidden;">Deskripsi</th>
-                                                                <th scope="col" style="width: 15%;">Nominal</th>
-                                                                <!-- <th scope="col" style="width: 20%;">Deskripsi PJK</th> -->
-                                                                @if($page_data["page_method_name"] == "View")
-                                                                    <th scope="col" style="width: 15%;">Status</th>
-                                                                    <th scope="col" style="width: 15%;">Komentar Revisi</th>
-                                                                    <th class="column-hidden" scope="col" style="width: 10%;"></th>
-                                                                @else
-                                                                    <th scope="col" style="width: 10%;"></th>
-                                                                @endif
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <!-- <tr row-seq="1">
-                                                                <td class="column-hidden"></td>
-                                                                <td class="p-0"><select name="coa_1" id="coa_1" class="form-control form-control-sm select2bs4staticBackdrop addnewrowselect" data-row="1" style="width: 100%;"></select></td>
-                                                                <td class="p-0"><input type="text" name="deskripsi_1" class="form-control form-control-sm" id="deskripsi_1"></td>
-                                                                <td class="p-0"><input type="text" name="nominal_1" value="0" class="form-control form-control-sm cakautonumeric cakautonumeric-float text-right" id="debet_1" placeholder="Enter Debet"></td>
-                                                                <td class="p-0 text-center"><i class="text-danger fas fa-minus-circle row-delete" id="row_delete_1" style="cursor: pointer;"></i></td>
-                                                            </tr> -->
-                                                        </tbody>
-                                                        <tfoot>
-                                                            <tr class="p-0">
-                                                                <td class="column-hidden"></td>
-                                                                    <td class="text-center">
-                                                                        <div class="form-group row m-0 p-0 properties">
-                                                                            <!-- <button type="button" id="createnew" class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Reset Tabel"><i class="fa fa-trash"></i></button>
-                                                                            <button type="button" class="btn btn-success shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Simpan Anggaran" id="submit-form" @if($page_data["page_method_name"] == "View") readonly @endif><i class="fa fa-save"></i></button> -->
-                                                                            @if($page_data["page_method_name"] == "Create"  || $page_data["page_method_name"] == "Update"  ||($page_data["lastapprove"] && $page_data["lastapprove"]->role == Auth::user()->role) || ($page_data["nextapprove"] && $page_data["nextapprove"]->role == Auth::user()->role)) 
-                                                                                <button type="button" id="addrow" class="btn btn-primary shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Tambah Anggaran"><i class="fa fa-plus"></i></button>
-                                                                            @endif
-                                                                        </div>
-                                                                    </td>
-                                                                    <td class="p-0 text-right">Total : </td>
-                                                                    <td class="p-0 text-right" id="totalnom"></td>
-                                                                    <!-- <td class="p-0 text-right" id="totalkredit"></td> -->
+                                                @endif
+                                                <div class="form-group @if($page_data["page_data_urlname"] == "pengajuan" && $page_data["page_method_name"] == "Update") column-hidden @endif" >
+                                                    <label for="ct1_detailbiayakegiatan">Detail Biaya</label>
+                                                    <div id="result">
+                                                        Event result:
+                                                    </div>
+                                                    <div class="table-responsive">
+                                                        <table id="caktable1" class="display" style="width: 100%">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="column-hidden" scope="col">No</th>
+                                                                    <th scope="col" style="width: 25%; overflow: hidden;">Kode Rekening</th>
+                                                                    <th scope="col" style="width: 25%; overflow: hidden;">Deskripsi</th>
+                                                                    <th scope="col" style="width: 15%;">Nominal</th>
+                                                                    <!-- <th scope="col" style="width: 20%;">Deskripsi PJK</th> -->
                                                                     @if($page_data["page_method_name"] == "View")
-                                                                        <td class="p-0"></td>
+                                                                        <th scope="col" style="width: 15%;">Status</th>
+                                                                        <th scope="col" style="width: 15%;">Komentar Revisi</th>
+                                                                        <th class="column-hidden" scope="col" style="width: 10%;"></th>
                                                                     @else
-                                                                        <td class="p-0"></td>
+                                                                        <th scope="col" style="width: 10%;"></th>
                                                                     @endif
-                                                                    <td class="column-hidden"></td>
-                                                                    
                                                                 </tr>
-                                                        </tfoot>
-                                                    </table>
+                                                            </thead>
+                                                            <tbody>
+                                                                <!-- <tr row-seq="1">
+                                                                    <td class="column-hidden"></td>
+                                                                    <td class="p-0"><select name="coa_1" id="coa_1" class="form-control form-control-sm select2bs4staticBackdrop addnewrowselect" data-row="1" style="width: 100%;"></select></td>
+                                                                    <td class="p-0"><input type="text" name="deskripsi_1" class="form-control form-control-sm" id="deskripsi_1"></td>
+                                                                    <td class="p-0"><input type="text" name="nominal_1" value="0" class="form-control form-control-sm cakautonumeric cakautonumeric-float text-right" id="debet_1" placeholder="Enter Debet"></td>
+                                                                    <td class="p-0 text-center"><i class="text-danger fas fa-minus-circle row-delete" id="row_delete_1" style="cursor: pointer;"></i></td>
+                                                                </tr> -->
+                                                            </tbody>
+                                                            <tfoot>
+                                                                <tr class="p-0">
+                                                                    <td class="column-hidden"></td>
+                                                                        <td class="text-center">
+                                                                            <div class="form-group row m-0 p-0 properties">
+                                                                                <!-- <button type="button" id="createnew" class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Reset Tabel"><i class="fa fa-trash"></i></button>
+                                                                                <button type="button" class="btn btn-success shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Simpan Anggaran" id="submit-form" @if($page_data["page_method_name"] == "View") readonly @endif><i class="fa fa-save"></i></button> -->
+                                                                                @if($page_data["page_method_name"] == "Create"  || $page_data["page_method_name"] == "Update"  ||($page_data["lastapprove"] && $page_data["lastapprove"]->role == Auth::user()->role) || ($page_data["nextapprove"] && $page_data["nextapprove"]->role == Auth::user()->role)) 
+                                                                                    <button type="button" id="addrow" class="btn btn-primary shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Tambah Anggaran"><i class="fa fa-plus"></i></button>
+                                                                                @endif
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="p-0 text-right">Total : </td>
+                                                                        <td class="p-0 text-right" id="totalnom"></td>
+                                                                        <!-- <td class="p-0 text-right" id="totalkredit"></td> -->
+                                                                        @if($page_data["page_method_name"] == "View")
+                                                                            <td class="p-0"></td>
+                                                                        @else
+                                                                            <td class="p-0"></td>
+                                                                        @endif
+                                                                        <td class="column-hidden"></td>
+                                                                        
+                                                                    </tr>
+                                                            </tfoot>
+                                                        </table>
+                                                    </div>
+                                                    <!-- <div class="text-danger col-sm-12" id="caktable1_message"></div> -->
+                                                    <input type="hidden" name="ct1_detailbiayakegiatan" class="form-control" id="ct1_detailbiayakegiatan" placeholder="Enter Menu Field" @if($page_data["page_method_name"] == "View") readonly @endif>
                                                 </div>
-                                                <!-- <div class="text-danger col-sm-12" id="caktable1_message"></div> -->
-                                                <input type="hidden" name="ct1_detailbiayakegiatan" class="form-control" id="ct1_detailbiayakegiatan" placeholder="Enter Menu Field" @if($page_data["page_method_name"] == "View") readonly @endif>
-                                            </div>
+                                                
 
                                             <?php if($page_data["page_method_name"] != "Create" && $page_data["page_method_name"] != "Update"){ ?>
                                             <div class="form-group">
@@ -182,7 +190,7 @@
                                         @else
                                         <div class="form-group row justify-content-center">
                                             <div class="col-sm-4">
-                                                @if(($page_data["lastapprove"] && $page_data["lastapprove"]->role == Auth::user()->role) || ($page_data["nextapprove"] && $page_data["nextapprove"]->role == Auth::user()->role))
+                                                @if(($page_data["lastapprove"] && $page_data["lastapprove"]->role == Auth::user()->role_label) || ($page_data["nextapprove"] && $page_data["nextapprove"]->role == Auth::user()->role_label))
                                                 <button type="button" class="btn btn-danger" id="rejectrka"><i class="fas fa-trash"></i> Tolak</button>
                                                 @endif
                                             </div>
@@ -190,7 +198,7 @@
                                                 <button type="button" class="btn btn-success" id="historyrka"><i class="fas fa-list"></i> Histori</button>
                                             </div>
                                             <div class="col-sm-4">
-                                                @if(($page_data["lastapprove"] && $page_data["lastapprove"]->role == Auth::user()->role) || ($page_data["nextapprove"] && $page_data["nextapprove"]->role == Auth::user()->role))
+                                                @if(($page_data["lastapprove"] && $page_data["lastapprove"]->role == Auth::user()->role_label) || ($page_data["nextapprove"] && $page_data["nextapprove"]->role == Auth::user()->role_label))
                                                 <button type="button" class="btn btn-primary" id="approverka"><i class="fas fa-check"></i> Terima</button>
                                                 @endif
                                             </div>

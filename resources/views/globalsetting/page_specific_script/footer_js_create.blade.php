@@ -62,6 +62,10 @@ $(function () {
             for(var i = 0; i < table.length; i++){
                 ctct2_approval_setting.push({"no_seq": table[i][0], "role": table[i][1], "role_label": table[i][2], "jenismenu": table[i][3], "id": table[i][table.columns().header().length-1]});
             }
+            var table = $("#ctct2_approval_setting_pengajuan").DataTable().rows().data();
+            for(var i = 0; i < table.length; i++){
+                ctct2_approval_setting.push({"no_seq": table[i][0], "role": table[i][1], "role_label": table[i][2], "jenismenu": table[i][3], "id": table[i][table.columns().header().length-1]});
+            }
             $("#ct2_approval_setting").val(JSON.stringify(ctct2_approval_setting));
             var id_{{$page_data["page_data_urlname"]}} = 0;
             var values = $("#quickForm").serialize();
@@ -105,6 +109,7 @@ $(function () {
                             }else if(i == "role" || i == "role_label" || i == "jenismenu"){
                                 errors["ct2_approval_setting"] = error[0];
                                 errors["ct2_approval_settingpjk"] = error[0];
+                                errors["ct2_approval_setting_pengajuan"] = error[0];
                             }else{
                                 errors[i] = error[0];
                             }
@@ -374,6 +379,10 @@ $(document).ready(function() {
         table_ct1_bank_va.row($(this).parents("tr")).remove().draw();
     });
 
+    // =================================================================
+    // =========================== SETTING =============================
+    // =================================================================
+
     var table_ct2_approval_setting = $("#ctct2_approval_setting").DataTable({
         @if($page_data["page_method_name"] != "View")
         rowReorder: true,
@@ -427,6 +436,10 @@ $(document).ready(function() {
         table_ct2_approval_setting.row($(this).parents("tr")).remove().draw();
     });
 
+    // =================================================================
+    // ========================== SETTING PJK ==========================
+    // =================================================================
+    
     var table_ct2_approval_settingpjk = $("#ctct2_approval_settingpjk").DataTable({
         @if($page_data["page_method_name"] != "View")
         rowReorder: true,
@@ -478,6 +491,63 @@ $(document).ready(function() {
     } );
     $("#ctct2_approval_settingpjk tbody").on("click", ".row-delete", function () {
         table_ct2_approval_settingpjk.row($(this).parents("tr")).remove().draw();
+    });
+
+    // =================================================================
+    // ====================== SETTING Pengajuan ========================
+    // =================================================================
+    
+    var table_ct2_approval_setting_pengajuan = $("#ctct2_approval_setting_pengajuan").DataTable({
+        @if($page_data["page_method_name"] != "View")
+        rowReorder: true,
+        @endif
+        aoColumnDefs: [{
+            aTargets: [],
+            mRender: function (data, type, full){
+                var formattedvalue = parseFloat(data).toFixed(2);
+                formattedvalue = formattedvalue.toString().replace(".", ",");
+                formattedvalue = formattedvalue.toString().replace(/(\d+)(\d{3})/, '$1'+'.'+'$2');
+                return formattedvalue;
+            }
+        }],
+        //add button
+        dom: "Bfrtip" @if($page_data["page_method_name"] != "View") ,
+        buttons: [
+            {
+                text: "New",
+                action: function ( e, dt, node, config ) {
+                    $("#staticBackdrop_ct2_approval_setting").modal({"show": true});
+                    addChildTable_ct2_approval_setting_pengajuan("staticBackdrop_ct2_approval_setting");
+                }
+            }
+        ]
+        @endif
+    });
+
+    table_ct2_approval_setting_pengajuan.column(table_ct2_approval_setting_pengajuan.columns().header().length-1).visible(false);
+    table_ct2_approval_setting_pengajuan.column(1).visible(false);
+    table_ct2_approval_setting_pengajuan.column(3).visible(false);
+
+    $("#ctct2_approval_setting_pengajuan tbody").on( "click", ".row-show", function () {
+        $("#staticBackdrop_ct2_approval_setting").modal({"show": true});
+        showChildTable_ct2_approval_setting_pengajuan("staticBackdrop_ct2_approval_setting", table_ct2_approval_setting_pengajuan.row( $(this).parents("tr") ));
+    } );
+
+    $("#staticBackdropClose_ct2_approval_setting_pengajuan").click(function(){
+        $("#staticBackdrop_ct2_approval_setting").modal("hide");
+    });
+
+    table_ct2_approval_setting_pengajuan.on( "row-reorder", function ( e, diff, edit ) {
+            var result = "Reorder started on row: "+edit.triggerRow.data()[1]+"<br>";
+            for ( var i=0, ien=diff.length ; i<ien ; i++ ) {
+                var rowData = table_ct2_approval_setting_pengajuan.row( diff[i].node ).data();
+                result += rowData[1]+" updated to be in position "+
+                    diff[i].newData+" (was "+diff[i].oldData+")<br>";
+            }
+        $("#result").html( "Event result:<br>"+result );
+    } );
+    $("#ctct2_approval_setting_pengajuan tbody").on("click", ".row-delete", function () {
+        table_ct2_approval_setting_pengajuan.row($(this).parents("tr")).remove().draw();
     });
 
     @if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")
@@ -546,6 +616,17 @@ function getdata(){
                 for(var i = 0; i < data.data.ct2_approval_settingpjk.length; i++){
                     var dttb = $('#ctct2_approval_settingpjk').DataTable();
                     var child_table_data = [data.data.ct2_approval_settingpjk[i].no_seq, data.data.ct2_approval_settingpjk[i].role, data.data.ct2_approval_settingpjk[i].role_label, data.data.ct2_approval_settingpjk[i].jenismenu, @if($page_data["page_method_name"] != "View") '<div class="row-show"><i class="fa fa-eye" style="color:blue;cursor: pointer;"></i></div>     <div class="row-delete"><i class="fa fa-trash" style="color:red;cursor: pointer;"></i></div>' @else '<div class="row-show"><i class="fa fa-eye" style="color:blue;cursor: pointer;"></i></div>' @endif, data.data.ct2_approval_settingpjk[i].id];
+                    if(dttb.row.add(child_table_data).draw( false )){
+
+                    }
+                }
+            }
+
+            $("#ctct2_approval_setting_pengajuan").DataTable().clear().draw();
+            if(data.data.ct2_approval_setting_pengajuan.length > 0){
+                for(var i = 0; i < data.data.ct2_approval_setting_pengajuan.length; i++){
+                    var dttb = $('#ctct2_approval_setting_pengajuan').DataTable();
+                    var child_table_data = [data.data.ct2_approval_setting_pengajuan[i].no_seq, data.data.ct2_approval_setting_pengajuan[i].role, data.data.ct2_approval_setting_pengajuan[i].role_label, data.data.ct2_approval_setting_pengajuan[i].jenismenu, @if($page_data["page_method_name"] != "View") '<div class="row-show"><i class="fa fa-eye" style="color:blue;cursor: pointer;"></i></div>     <div class="row-delete"><i class="fa fa-trash" style="color:red;cursor: pointer;"></i></div>' @else '<div class="row-show"><i class="fa fa-eye" style="color:blue;cursor: pointer;"></i></div>' @endif, data.data.ct2_approval_setting_pengajuan[i].id];
                     if(dttb.row.add(child_table_data).draw( false )){
 
                     }
@@ -717,6 +798,62 @@ function addChildTable_ct2_approval_settingpjk(childtablename){
 }
 
 function showChildTable_ct2_approval_settingpjk(childtablename, data){
+    $("select[name='role']").val(data.data()[1]);
+    $("select[name='role']").select2().trigger('change');
+    $("input[name='role_label']").val(data.data()[2]);
+    $("input[name='jenismenu']").val(data.data()[3]);
+
+    @if($page_data["page_method_name"] != "View")
+    $("#"+childtablename+" .modal-footer").html('<button type="button" id="staticBackdropUpdate_ct2_approval_setting" class="btn btn-primary">Update</button>');
+    @endif
+
+    $("#staticBackdropUpdate_ct2_approval_setting").click(function(e){
+        var temp = data.data();
+        temp[1] = $("select[name='role'] option").filter(':selected').val();
+        if(!role){
+            role = null;
+        }
+        temp[2] = $("input[name='role_label']").val();
+        temp[3] = $("input[name='jenismenu']").val();
+        if( validatequickModalForm_ct2_approval_setting() ){
+            data.data(temp).invalidate();
+            $("#staticBackdrop_ct2_approval_setting").modal("hide");
+        }
+    });
+}
+
+function addChildTable_ct2_approval_setting_pengajuan(childtablename){
+    $("select[name='role']").val(null).trigger('change')
+    $("input[name='role_label']").val("");
+    $("input[name='jenismenu']").val("Pengajuan");
+
+    @if($page_data["page_method_name"] != "View")
+    $("#"+childtablename+" .modal-footer").html('<button type="button" id="staticBackdropAdd_ct2_approval_setting" class="btn btn-primary">Add Row</button>');
+    @endif
+
+    $("#staticBackdropAdd_ct2_approval_setting").click(function(e){
+        e.preventDefault;
+        var dttb = $('#ctct2_approval_setting_pengajuan').DataTable();
+
+        var no_seq = dttb.rows().count();
+        var role = $("select[name='role'] option").filter(':selected').val();
+        if(!role){
+            role = null;
+        }
+        var role_label = $("input[name='role_label']").val();
+        var jenismenu = $("input[name='jenismenu']").val();
+
+        var child_table_data = [no_seq+1, role, role_label, jenismenu, '<div class="row-show"><i class="fa fa-eye" style="color:blue;cursor: pointer;"></i></div>     <div class="row-delete"><i class="fa fa-trash" style="color:red;cursor: pointer;"></i></div>', null];
+
+        if(validatequickModalForm_ct2_approval_setting()){
+            if(dttb.row.add(child_table_data).draw( false )){
+                $('#staticBackdrop_ct2_approval_setting').modal('hide');
+            }
+        }
+    });
+}
+
+function showChildTable_ct2_approval_setting_pengajuan(childtablename, data){
     $("select[name='role']").val(data.data()[1]);
     $("select[name='role']").select2().trigger('change');
     $("input[name='role_label']").val(data.data()[2]);

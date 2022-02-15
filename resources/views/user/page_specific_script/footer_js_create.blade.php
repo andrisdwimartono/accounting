@@ -142,7 +142,7 @@ $("#role").select2({
             return {
                 results: data.items,
                 pagination: {
-                more: (params.page * 25) < data.total_count
+                    more: (params.page * 25) < data.total_count
                 }
             };
         },
@@ -231,8 +231,8 @@ function getdata(){
             _token: $("#quickForm input[name=_token]").val()
         },
         success: function(data){
-            for(var i = 0; i < Object.keys(data.data.{{$page_data["page_data_urlname"]}}).length; i++){
-                if(Object.keys(data.data.user)[i] == "unitkerja" || data.data.user)[i] == "role"){
+            for(var i = 0; i < Object.keys(data.data.{{$page_data['page_data_urlname']}}).length; i++){
+                if(Object.keys(data.data.user)[i] == "unitkerja" || Object.keys(data.data.user)[i] == "role"){
                     if(data.data.user[Object.keys(data.data.user)[i]]){
                         var newState = new Option(data.data.user[Object.keys(data.data.user)[i]+"_label"], data.data.user[Object.keys(data.data.user)[i]], true, false);
                         $("#"+Object.keys(data.data.user)[i]).append(newState).trigger("change");

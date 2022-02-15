@@ -319,28 +319,14 @@ class UserController extends Controller
                 ->orWhere('email', 'like', '%'.$keyword.'%');
         })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get($list_column) as $user){
             $no = $no+1;
-            $act = '
-            <a href="/assignmenu/'.$user->id.'/edit" data-bs-toggle="tooltip" data-bs-placement="top" title="Assign Menus to this user"><i class="fas fa-bars text-success"></i></a>
 
-            <a href="/user/'.$user->id.'" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-primary"></i></a>
-            
-            <a href="/user/'.$user->id.'/edit" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-warning"></i></a>
-            
-            <button type="button" class="btn row-delete">
-                <i class="fas fa-minus-circle text-danger"></i>
-            </button>';
-
-            $act = '
-            <a href="/assignmenu/'.$user->id.'/edit" class="btn btn-success shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="Assign Menus to this user"><i class="fa fa-bars"></i></a>
-            
+            $act = '            
             <a href="/user/'.$user->id.'" class="btn btn-info shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fa fa-eye"></i></a>
 
             <a href="/user/'.$user->id.'/edit" class="btn btn-warning shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit User Data"><i class="fa fa-edit"></i></a>
 
             <a class="row-delete btn btn-danger shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete User"><i class="fa fa-trash" ></i></a>';
             
-
-            //array_push($dt, array($no+$limit[0], $user->nama, $user->email, $act));
             array_push($dt, array($user->id, $user->name, $user->email, $act));
         }
 		$output = array(
@@ -405,7 +391,7 @@ class UserController extends Controller
             } else if($request->field == "role"){
                 $lists = Role::where(function($q) use ($request) {
                     $q->where("nama", "LIKE", "%" . $request->term. "%");
-                })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("nama as text")]);
+                })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("alias as text")]);
                 $count = Role::count();
             }
 
@@ -723,6 +709,7 @@ class UserController extends Controller
 
     public function getRoleMenu(){
         if(Auth::user()){
+            
             $user_menus = User_role_menu::find(1)
             ->select(['menus.*'])
             ->leftJoin('menus','menus.id','user_role_menus.menu_id')

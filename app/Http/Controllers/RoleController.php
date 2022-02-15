@@ -214,7 +214,7 @@ class RoleController extends Controller
         })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "nama", "alias"]) as $role){
             $no = $no+1;
             $act = '
-            <a href="/assignmenurole/'.$role->alias.'/edit"  class="btn btn-success shadow btn-xs sharp"   data-bs-toggle="tooltip" data-bs-placement="top" title="Assign Menus to this role"><i class="fa fa-bars"></i></a>
+            <a href="/assignmenurole/'.$role->id.'/edit"  class="btn btn-success shadow btn-xs sharp"   data-bs-toggle="tooltip" data-bs-placement="top" title="Assign Menus to this role"><i class="fa fa-bars"></i></a>
 
             <a href="/role/'.$role->id.'" class="btn btn-info shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fa fa-eye"></i></a>
 
@@ -391,6 +391,7 @@ class RoleController extends Controller
 
     public function getRoleMenu(){
         if(Auth::user()){
+            // dd(Auth::user()->role);
             $user_menus = User_role_menu::find(1)
             ->select(['menus.*'])
             ->leftJoin('menus','menus.id','user_role_menus.menu_id')

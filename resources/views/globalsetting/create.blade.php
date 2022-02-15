@@ -154,6 +154,29 @@
                                         </div>
 
                                         <div class="form-group">
+                                            <label for="ct2_approval_setting_pengajuan">Approval Pengajuan</label>
+                                            <div id="result">
+                                                Event result:
+                                            </div>
+                                            <table id="ctct2_approval_setting_pengajuan" class="table table-bordered table-striped" style="width:100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th>Jabatan</th>
+                                                        <th>Jabatan Label</th>
+                                                        <th>Menu</th>
+                                                        <th>Action</th>
+                                                        <th>id</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                </tbody>
+                                            </table>
+                                            <input type="hidden" name="ct2_approval_setting_pengajuan" class="form-control" id="ct2_approval_setting_pengajuan" placeholder="Enter Menu Field" @if($page_data["page_method_name"] == "View") readonly @endif>
+                                        </div>
+
+                                        <div class="form-group">
                                             <label for="ct2_approval_settingpjk">Approval PJK</label>
                                             <div id="result">
                                                 Event result:

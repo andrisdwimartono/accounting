@@ -495,41 +495,42 @@ $(document).ready(function() {
 function getdata(){
     cto_loading_show();
     $.ajax({
-        url: "/getdata{{$page_data["page_data_urlname"]}}",
+        url: "/getdatakegiatan",
         type: "post",
         data: {
             id: {{$page_data["id"]}},
             _token: $("#quickForm input[name=_token]").val()
         },
         success: function(data){
-            for(var i = 0; i < Object.keys(data.data.{{$page_data["page_data_urlname"]}}).length; i++){
-                if(Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i] == "unit_pelaksana" || Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i] == "iku"){
-                    if(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]){
-                        var newState = new Option(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"_label"], data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]], true, false);
-                        $("#"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]).append(newState).trigger("change");
+            console.log(data.data)
+            for(var i = 0; i < Object.keys(data.data.kegiatan).length; i++){
+                if(Object.keys(data.data.kegiatan)[i] == "unit_pelaksana" || Object.keys(data.data.kegiatan)[i] == "iku"){
+                    if(data.data.kegiatan[Object.keys(data.data.kegiatan)[i]]){
+                        var newState = new Option(data.data.kegiatan[Object.keys(data.data.kegiatan)[i]+"_label"], data.data.kegiatan[Object.keys(data.data.kegiatan)[i]], true, false);
+                        $("#"+Object.keys(data.data.kegiatan)[i]).append(newState).trigger("change");
                     }
                 }else{
-                    if(["ewfsdfsafdsafasdfasdferad"].includes(Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i])){
-                        $("input[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").prop("checked", data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
+                    if(["ewfsdfsafdsafasdfasdferad"].includes(Object.keys(data.data.kegiatan)[i])){
+                        $("input[name="+Object.keys(data.data.kegiatan)[i]+"]").prop("checked", data.data.kegiatan[Object.keys(data.data.kegiatan)[i]]);
                     }else{
                         try{
-                            anObject[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]].set(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
+                            anObject[Object.keys(data.data.kegiatan)[i]].set(data.data.kegiatan[Object.keys(data.data.kegiatan)[i]]);
                         }catch(err){
-                            $("input[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").val(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
+                            $("input[name="+Object.keys(data.data.kegiatan)[i]+"]").val(data.data.kegiatan[Object.keys(data.data.kegiatan)[i]]);
                         }
-                        $("textarea[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").val(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
-                        if(["proposal"].includes(Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i])){
-                            if(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]] != null){
-                                $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").removeAttr("disabled");
-                                $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").addClass("btn-success text-white");
-                                $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").removeClass("btn-primary");
-                                var filename = Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i];
-                                $("label[for=upload_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").html(filename);
-                                $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").html("Download");
+                        $("textarea[name="+Object.keys(data.data.kegiatan)[i]+"]").val(data.data.kegiatan[Object.keys(data.data.kegiatan)[i]]);
+                        if(["proposal"].includes(Object.keys(data.data.kegiatan)[i])){
+                            if(data.data.kegiatan[Object.keys(data.data.kegiatan)[i]] != null){
+                                $("#btn_"+Object.keys(data.data.kegiatan)[i]+"").removeAttr("disabled");
+                                $("#btn_"+Object.keys(data.data.kegiatan)[i]+"").addClass("btn-success text-white");
+                                $("#btn_"+Object.keys(data.data.kegiatan)[i]+"").removeClass("btn-primary");
+                                var filename = Object.keys(data.data.kegiatan)[i];
+                                $("label[for=upload_"+Object.keys(data.data.kegiatan)[i]+"]").html(filename);
+                                $("#btn_"+Object.keys(data.data.kegiatan)[i]+"").html("Download");
                             }
                         }
                     }
-                    $("select[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").val(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]).change();
+                    $("select[name="+Object.keys(data.data.kegiatan)[i]+"]").val(data.data.kegiatan[Object.keys(data.data.kegiatan)[i]]).change();
                 }
             }
             
@@ -1355,6 +1356,22 @@ $(document).keydown(function(event) {
     }
     
     $('input[name=tanggal_kegiatan]').pickadate({
+        format: 'dd/mm/yyyy',
+        formatSubmit: 'yyyy-mm-dd',
+        //hiddenName: true,
+        onStart: function(){
+            var date = new Date();
+                this.set('select', date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate(), { format: 'yyyy-mm-dd' });
+        },
+        onOpen: function(){
+            var $input = $('.datepicker-default');
+            if ($input.hasClass('picker__input--target')) {
+                $input.pickadate().pickadate('picker').close(true);
+            }
+        }
+    });
+
+    $('input[name=tanggal_pencairan]').pickadate({
         format: 'dd/mm/yyyy',
         formatSubmit: 'yyyy-mm-dd',
         //hiddenName: true,
