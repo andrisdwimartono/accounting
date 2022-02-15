@@ -4212,30 +4212,6 @@ class JurnalController extends Controller
         // variabel pecahkan 1 = bulan
         // variabel pecahkan 2 = tanggal
      
-        return $pecahkan[$d1] . ' ' . $bulan[ (int)$pecahkan[$d2] ] . ' ' . $pecahkan[$d3];
-    }
-
-    public function tgl_dbs($tanggal, $sep,$d1,$d2,$d3){
-        $bulan = array (
-            1 =>   'Januari',
-            'Februari',
-            'Maret',
-            'April',
-            'Mei',
-            'Juni',
-            'Juli',
-            'Agustus',
-            'September',
-            'Oktober',
-            'November',
-            'Desember'
-        );
-        $pecahkan = explode($sep, $tanggal);
-        
-        // variabel pecahkan 0 = tahun
-        // variabel pecahkan 1 = bulan
-        // variabel pecahkan 2 = tanggal
-     
         return $pecahkan[$d1] . '-' . $bulan[ (int)$pecahkan[$d2] ] . '-' . $pecahkan[$d3];
     }
 }
