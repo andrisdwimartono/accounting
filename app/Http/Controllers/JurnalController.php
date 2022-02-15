@@ -4212,7 +4212,7 @@ class JurnalController extends Controller
         // variabel pecahkan 1 = bulan
         // variabel pecahkan 2 = tanggal
      
-        return $pecahkan[$d1] . '-' . $bulan[ (int)$pecahkan[$d2] ] . '-' . $pecahkan[$d3];
+        return $pecahkan[$d1] . '-' . $pecahkan[$d2] . '-' . $pecahkan[$d3];
     }
 }
 
