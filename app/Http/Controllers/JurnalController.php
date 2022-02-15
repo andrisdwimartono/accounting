@@ -4198,6 +4198,8 @@ class JurnalController extends Controller
         var_dump($tanggal);
         var_dump($pecahkan);
         var_dump($pecahkan[0]);
+        var_dump($pecahkan[1]);
+        var_dump($pecahkan[2]);
         die();
         //dd($pecahkan);
         
