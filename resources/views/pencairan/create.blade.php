@@ -96,54 +96,11 @@
                                                 <!-- <div class="text-danger col-sm-12" id="caktable1_message"></div> -->
                                                 <input type="hidden" name="ct1_pencairanrka" class="form-control" id="ct1_pencairanrka" placeholder="Enter Menu Field" @if($page_data["page_method_name"] == "View") readonly @endif>
                                             </div>
-
-                                            <?php if($page_data["page_method_name"] != "Create" && $page_data["page_method_name"] != "Update"){ ?>
-                                            <div class="form-group">
-                                                <label for="ct2_approval">Approval</label>
-                                                <table id="ctct2_approval" class="table table-bordered table-striped" style="width:100%">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>No</th>
-                                                            <th>Jabatan</th>
-                                                            <th>Jabatan</th>
-                                                            <th>Menu</th>
-                                                            <th>Pejabat</th>
-                                                            <th>Pejabat</th>
-                                                            <th>Komentar</th>
-                                                            <th>Status Approval</th>
-                                                            <th>Status Approval</th>
-                                                            <th>Action</th>
-                                                            <th>id</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-
-                                                    </tbody>
-                                                </table>
-                                                <input type="hidden" name="ct2_approval" class="form-control" id="ct2_approval" placeholder="Enter Menu Field" @if($page_data["page_method_name"] == "View") readonly @endif>
-                                            </div>
-                                            <?php } ?>
                                         </div>
                                         @if($page_data["page_method_name"] != "View")
                                         <div class="form-group row">
                                             <div class="col-sm-9 offset-sm-9">
-                                                <button type="submit" class="btn btn-primary" @if($page_data["page_method_name"] == "View") readonly @endif>Submit</button>
-                                            </div>
-                                        </div>
-                                        @else
-                                        <div class="form-group row justify-content-center">
-                                            <div class="col-sm-4">
-                                                @if(($page_data["lastapprove"] && $page_data["lastapprove"]->role == Auth::user()->role) || ($page_data["nextapprove"] && $page_data["nextapprove"]->role == Auth::user()->role))
-                                                <button type="button" class="btn btn-danger" id="rejectrka"><i class="fas fa-trash"></i> Tolak</button>
-                                                @endif
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <button type="button" class="btn btn-success" id="historyrka"><i class="fas fa-list"></i> Histori</button>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                @if(($page_data["lastapprove"] && $page_data["lastapprove"]->role == Auth::user()->role) || ($page_data["nextapprove"] && $page_data["nextapprove"]->role == Auth::user()->role))
-                                                <button type="button" class="btn btn-primary" id="approverka"><i class="fas fa-check"></i> Terima</button>
-                                                @endif
+                                                <button type="button" id="trysubmit" class="btn btn-primary" @if($page_data["page_method_name"] == "View") readonly @endif>Submit</button>
                                             </div>
                                         </div>
                                         @endif
@@ -244,9 +201,8 @@
                                 <!-- Modal Approval End -->
                                 <?php } ?>
                                 
-                                @if($page_data["page_method_name"] == "View")
-                                <!-- Modal Reject RKA -->
-                                <div class="modal fade" id="modal-reject" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                                <!-- Modal Try Submit -->
+                                <div class="modal fade" id="modal-trysubmit" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                                     <div class="modal-dialog modal-lg">
                                         <div class="modal-content">
                                             <div class="modal-header">
@@ -256,61 +212,17 @@
                                                 </button>
                                             </div>
                                             <div class="modal-body">
-                                                <div class="form-group row">
-                                                    <textarea name="alasan_tolak" class="form-control m-2" id="alasan_tolak" placeholder="Tulis alasan mengtolak jurnal"></textarea>
-                                                    <span class="d-none text-danger m-2" id="alasan_tolak_error"></span>
-                                                </div>
+                                                <p>Ya, berarti anda setuju untuk dibuatkan <b><u>JURNAL</u></b>!, Apakah anda yakin?</p>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-danger" id="rejectrka-confirmed">Tolak</button>
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal Tolak</button>
+                                                <button type="button" class="btn btn-info" id="trysubmit-confirmed">Ya</button>
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Modal Accept RKA -->
-                                <div class="modal fade" id="modal-accept" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title"><b>Warning!!</b></h5>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">×</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p>Apakah anda yakin terima RKA ini?</p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-info" id="approverka-confirmed">Terima</button>
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal Terima</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Modal History RKA -->
-                                <div class="modal fade" id="modal-history" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title"><b>History RKA</b></h5>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">×</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div id="historykegiatan" class="justify-content-center">
-                                                    
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                @endif
+                                <!-- Modal Try Submit End -->
+                                
                                 </div>
                             </div>
                         </div>

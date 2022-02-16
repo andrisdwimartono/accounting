@@ -26,6 +26,8 @@ use App\Models\Approval;
 use App\Models\Approvalsetting;
 use App\Models\Pjk;
 use App\Models\Detailbiayapjk;
+use App\Models\Pencairan;
+use App\Models\Pencairanrka;
 
 use App\Exports\JurnalExport;
 use PDF;
@@ -271,6 +273,34 @@ class JurnalController extends Controller
         ];
 
         $td["fieldsmessages_ct1_detailbiayakegiatan"] = [
+            "required" => ":attribute harus diisi!!",
+            "min" => ":attribute minimal :min karakter!!",
+            "max" => ":attribute maksimal :max karakter!!",
+            "in" => "Tidak ada dalam pilihan :attribute!!",
+            "exists" => "Tidak ada dalam :attribute!!",
+            "date_format" => "Format tidak sesuai di :attribute!!"
+        ];
+
+        $td["fieldsrules_pencairan"] = [
+            "tanggal_pencairan" => "required",
+            "catatan" => "required"
+        ];
+
+        $td["fieldsmessages_pencairan"] = [
+            "required" => ":attribute harus diisi!!",
+            "min" => ":attribute minimal :min karakter!!",
+            "max" => ":attribute maksimal :max karakter!!",
+            "in" => "Tidak ada dalam pilihan :attribute!!",
+            "exists" => "Tidak ada dalam :attribute!!",
+            "date_format" => "Format tidak sesuai di :attribute!!"
+        ];
+
+        $td["fieldsrules_pencairanrka"] = [
+            "kegiatan" => "required|exists:kegiatans,id",
+            "nominalbiaya" => "required|numeric"
+        ];
+
+        $td["fieldsmessages_pencairanrka"] = [
             "required" => ":attribute harus diisi!!",
             "min" => ":attribute minimal :min karakter!!",
             "max" => ":attribute maksimal :max karakter!!",
@@ -4081,6 +4111,163 @@ class JurnalController extends Controller
         //         // ]);
         //     }
         // }
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function storepencairan(Request $request)
+    {
+        $page_data = $this->tabledesign();
+        $rules_transaksi = $page_data["fieldsrules_pencairanrka"];
+        $requests_transaksi = json_decode($request->ct1_pencairanrka, true);
+        $listkeg = array();
+        foreach($requests_transaksi as $ct_request){
+            $child_tb_request = new \Illuminate\Http\Request();
+            $child_tb_request->replace($ct_request);
+            $ct_messages = array();
+            $no_seq = 1;
+            foreach($page_data["fieldsmessages_pencairanrka"] as $key => $value){
+                $ct_messages[$key] = "No ".$no_seq++." ".$value;
+            }
+            if(in_array($ct_request["kegiatan"], $listkeg)){
+                abort(404, "Kegiatan ".$ct_request["kegiatan_label"]." dobel ");
+                die();
+            }else{
+                array_push($listkeg, $ct_request["kegiatan"]);
+            }
+            // if(Transaction::where("anggaran", $ct_request["kegiatan"])->count() > 0){
+            //     $tr = Transaction::where("anggaran", $ct_request["kegiatan"])->first();
+            //     abort(403, "Sudah terjurnal dengan nomor ".$tr->no_jurnal);
+            // }
+            $child_tb_request->validate($rules_transaksi, $ct_messages);
+        }
+        $tgl = $this->tgl_dbs($request->tanggal_pencairan, "/",0,1,2);
+        $this->checkOpenPeriode($tgl);
+
+        $rules = $page_data["fieldsrules_pencairan"];
+        $messages = $page_data["fieldsmessages_pencairan"];
+        if($request->validate($rules, $messages)){
+            $id = Pencairan::create([
+                "tanggal_pencairan"=> $tgl,
+                "catatan"=> $request->catatan,
+                "status"=> "process",
+                "user_creator_id"=> Auth::user()->id
+            ])->id;
+
+            $id_jurnal = Jurnal::create([
+                "unitkerja"=> Auth::user()->unitkerja,
+                "unitkerja_label"=> Auth::user()->unitkerja_label,
+                "no_jurnal"=> "JU#####",
+                "tanggal_jurnal"=> $tgl,
+                "keterangan"=> "Pencairan Dana",
+                "user_creator_id"=> Auth::user()->id
+            ])->id;
+
+            $no_jurnal = "JU";
+            for($i = 0; $i < 7-strlen((string)$id); $i++){
+                $no_jurnal .= "0";
+            }
+            $no_jurnal .= $id;
+            Jurnal::where("id", $id_jurnal)->update([
+                "no_jurnal"=> $no_jurnal
+            ]);
+            
+            $no_seq = 1;
+            $totalbiaya = 0;
+            $coaum = Coa::where("factive", "on")->whereNull("fheader")->where("kode_jenisbayar", "UMKERJA1")->first();
+            $coabank = Coa::where("factive", "on")->whereNull("fheader")->where("kode_jenisbayar", "BANKBSIQQ")->first();
+            foreach($requests_transaksi as $ct_request){
+                $nominalbiaya = $this->getbiayakegiatansingle($ct_request["kegiatan"]);
+                $totalbiaya += $nominalbiaya;
+                $idct = Pencairanrka::create([
+                    "no_seq" => $no_seq++,
+                    "parent_id" => $id,
+                    "kegiatan"=> $ct_request["kegiatan"],
+                    "kegiatan_label"=> $ct_request["kegiatan_label"],
+                    "nominalbiaya"=> $nominalbiaya
+                ])->id;
+                
+                $kegiatan = Kegiatan::where("id", $ct_request["kegiatan"])->first();
+                $idct_trans = Transaction::create([
+                    "no_seq" => $no_seq,
+                    "parent_id" => $id_jurnal,
+                    "deskripsi"=> "",
+                    "debet"=> $nominalbiaya,
+                    "credit"=> 0,
+                    "unitkerja"=> $kegiatan->unit_pelaksana,
+                    "unitkerja_label"=> $kegiatan->unit_pelaksana_label,
+                    "anggaran"=> $kegiatan->id,
+                    "anggaran_label"=> $kegiatan->kegiatan_name,
+                    "tanggal"=> $tgl,
+                    "keterangan"=> $kegiatan->Deskripsi,
+                    "jenis_transaksi"=> 0,
+                    "coa"=> $coaum->id,
+                    "coa_label"=> $this->convertCode($coaum->coa_code)." ".$coaum->coa_name,
+                    "jenisbayar"=> $coaum->jenisbayar,
+                    "jenisbayar_label"=> $coaum->jenisbayar_label,
+                    "fheader"=> null,
+                    "no_jurnal"=> $no_jurnal,
+                    "user_creator_id" => Auth::user()->id
+                ])->id;
+                $this->summerizeJournal("store", $idct);
+            }
+
+            $no_seq = 0;
+            $idct_trans = Transaction::create([
+                "no_seq" => $no_seq,
+                "parent_id" => $id_jurnal,
+                "deskripsi"=> "",
+                "debet"=> 0,
+                "credit"=> $totalbiaya,
+                "unitkerja"=> Auth::user()->unitkerja,
+                "unitkerja_label"=> Auth::user()->unitkerja_label,
+                "tanggal"=> $tgl,
+                "keterangan"=> "Pencairan RKA",
+                "jenis_transaksi"=> 0,
+                "coa"=> $coabank->id,
+                "coa_label"=> $this->convertCode($coabank->coa_code)." ".$coabank->coa_name,
+                "jenisbayar"=> $coabank->jenisbayar,
+                "jenisbayar_label"=> $coabank->jenisbayar_label,
+                "fheader"=> null,
+                "no_jurnal"=> $no_jurnal,
+                "user_creator_id" => Auth::user()->id
+            ])->id;
+            $this->summerizeJournal("store", $idct);
+
+            Pencairan::where("id", $request->id)->update([
+                "status" => "finished"
+            ]);
+
+            return response()->json([
+                'status' => 201,
+                'message' => 'Buat Jurnal '.$no_jurnal.' Berhasil!'
+            ]);
+        }
+    }
+
+    public function getbiayakegiatansingle($id){
+        $kegiatan = Kegiatan::whereId($id)->first();
+        if(!$kegiatan){
+            abort(404, "Data not found");
+        }
+
+        $finalappr = Approval::where("parent_id", $id)->orderBy("no_seq", "asc")->first();
+        $total_biaya = 0;
+        if($finalappr){
+            $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($id)->where("isarchived", "on")->where("archivedby", $finalappr->role)->orderBy("no_seq")->get();
+            
+            if(Detailbiayakegiatan::whereParentId($id)->where("isarchived", "on")->where("archivedby", $finalappr->role)->orderBy("no_seq")->count() > 1){
+                foreach($ct1_detailbiayakegiatans as $detailbiayakegiatans){
+                    $total_biaya += $detailbiayakegiatans->nominalbiaya;
+                }
+            }
+        }
+
+        return $total_biaya;
     }
 
     public function checkOpenPeriode($date){
