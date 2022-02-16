@@ -1177,11 +1177,7 @@ class JurnalController extends Controller
         $array = str_split($data);
         $i = 0;
         foreach ($array as $char) {
-            if($i == 0){
-                $val = $val.$char."-";
-            }else if($i == 2 || $i == 4){
-                $val = $val.$char."-";
-            }else if($i > 4 && ($i-4)%3 == 0 && $i != strlen($data)-1){
+            if($i == 2 || $i == 6){
                 $val = $val.$char."-";
             }else{
                 $val = $val.$char;
@@ -1243,7 +1239,8 @@ class JurnalController extends Controller
             }
 
             if(in_array($coa->category, array("pendapatan", "biaya", "biaya_lainnya", "pendapatan_lainnya"))){
-                $coa_sur_def = Coa::where("coa_code", "30101008")->first();
+                //$coa_sur_def = Coa::where("coa_code", "30101008")->first();
+                $coa_sur_def = Coa::where("coa_code", "30300001")->first();
                 $neraca = Neraca::where("coa", $coa_sur_def->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->first();
                 if($neraca){
                     Neraca::where("coa", $coa_sur_def->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->update([
@@ -4141,7 +4138,10 @@ class JurnalController extends Controller
             }
             // if(Transaction::where("anggaran", $ct_request["kegiatan"])->count() > 0){
             //     $tr = Transaction::where("anggaran", $ct_request["kegiatan"])->first();
-            //     abort(403, "Sudah terjurnal dengan nomor ".$tr->no_jurnal);
+            //     $jr = Jurnal::where("id", $tr->parent_id)->first();
+            //     if($jr->isdeleted != "on"){
+            //         abort(403, "Sudah terjurnal dengan nomor ".$jr->no_jurnal);
+            //     }
             // }
             $child_tb_request->validate($rules_transaksi, $ct_messages);
         }
@@ -4221,7 +4221,7 @@ class JurnalController extends Controller
                 Pencairanrka::where("id", $idct)->update([
                     "transaction" => $idct_trans
                 ]);
-                $this->summerizeJournal("store", $idct);
+                $this->summerizeJournal("store", $idct_trans);
             }
 
             $no_seq = 0;
@@ -4244,7 +4244,7 @@ class JurnalController extends Controller
                 "no_jurnal"=> $no_jurnal,
                 "user_creator_id" => Auth::user()->id
             ])->id;
-            $this->summerizeJournal("store", $idct);
+            $this->summerizeJournal("store", $idct_trans);
 
             Pencairan::where("id", $request->id)->update([
                 "status" => "finished"

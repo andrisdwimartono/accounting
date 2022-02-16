@@ -312,7 +312,6 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/pjk/{kegiatan}', 'App\Http\Controllers\KegiatanController@showpjk');
         Route::post('/processapprovepjk', 'App\Http\Controllers\KegiatanController@processapprovepjk');
         Route::post('/getdatapjk', 'App\Http\Controllers\KegiatanController@getdatapjk');
-        Route::post('/getdatapjk', 'App\Http\Controllers\KegiatanController@getdatapjk');
 
         Route::get('/pencairan', 'App\Http\Controllers\PencairanController@index');
         Route::post('/getlistpencairan', 'App\Http\Controllers\PencairanController@get_list');
@@ -321,7 +320,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getbiayakegiatan', 'App\Http\Controllers\PencairanController@getbiayakegiatan');
         Route::post('/getlistrka', 'App\Http\Controllers\PencairanController@getlistrka');
         Route::post('/storepencairan', 'App\Http\Controllers\JurnalController@storepencairan');
-
+        Route::post('/deletepencairan', 'App\Http\Controllers\PencairanController@destroy');
+        Route::get('/pencairan/{pencairan}', 'App\Http\Controllers\PencairanController@show');
+        Route::post('/getdatapencairan', 'App\Http\Controllers\PencairanController@getdata');
     });
 });
 

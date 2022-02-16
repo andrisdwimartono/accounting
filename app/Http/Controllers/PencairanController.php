@@ -10,6 +10,8 @@ use App\Models\Pencairanrka;
 use App\Models\Kegiatan;
 use App\Models\Approval;
 use App\Models\Detailbiayakegiatan;
+use App\Models\Transaction;
+use App\Models\Jurnal;
 
 class PencairanController extends Controller
 {
@@ -198,14 +200,32 @@ class PencairanController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        if(Transaction::where("anggaran", $request->id)->count() > 0){
+            $tr = Transaction::where("anggaran", $request->id)->first();
+            $jr = Jurnal::where("id", $tr->parent_id)->first();
+            if($jr->isdeleted != "on"){
+                abort(403, "Hapus jurnal ".$jr->no_jurnal." terlebih dahulu sebelum menghapus pencairan!");
+            }
+        }
+
+        if(Pencairan::where("id", $request->id)->update([
+            "status" => "deleted"
+        ])){
+            $results = array(
+                "status" => 201,
+                "message" => "Berhasil dihapus",
+            );
+
+            return response()->json($results);
+        }
+
     }
 
     public function get_list(Request $request)
     {
-        $list_column = array("id", "tanggal_pencairan", "catatan", "id");
+        $list_column = array("id", "tanggal_pencairan", "catatan", "status", "id");
         $keyword = null;
         if(isset($request->search["value"])){
             $keyword = $request->search["value"];
@@ -225,16 +245,18 @@ class PencairanController extends Controller
         $no = 0;
         foreach(Pencairan::where(function($q) use ($keyword) {
             $q->where("tanggal_pencairan", "ILIKE", "%" . $keyword. "%")->orWhere("catatan", "ILIKE", "%" . $keyword. "%");
-        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "tanggal_pencairan", "catatan"]) as $pencairan){
+        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "tanggal_pencairan", "catatan", "status"]) as $pencairan){
             $no = $no+1;
-            $act = '
-            <a href="/pencairan/'.$pencairan->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
+            $act = '<a href="/pencairan/'.$pencairan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>';
+            if($pencairan->status != "deleted"){
+                $act .= '<button type="button" class="btn btn-danger row-delete shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
+            }
+            // $act .= '
+            // <!-- <a href="/pencairan/'.$pencairan->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a> -->
 
-            <!-- <a href="/pencairan/'.$pencairan->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a> -->
-
-            <!-- <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button> -->';
+            // ';
             
-            array_push($dt, array($pencairan->id, $this->tgl_indo($pencairan->tanggal_pencairan, "-", 2,1,0), $pencairan->catatan, $act));
+            array_push($dt, array($pencairan->id, $this->tgl_indo($pencairan->tanggal_pencairan, "-", 2,1,0), $pencairan->catatan, $pencairan->status, $act));
         }
         
         $output = array(
@@ -381,5 +403,27 @@ class PencairanController extends Controller
         $pecahkan = explode($sep, $tanggal);
      
         return $pecahkan[$d1] . ' ' . $bulan[ (int)$pecahkan[$d2] ] . ' ' . $pecahkan[$d3];
+    }
+
+    public function getdata(Request $request){
+        if($request->ajax() || $request->wantsJson()){
+            $pencairan = Pencairan::whereId($request->id)->first();
+            if(!$pencairan){
+                abort(404, "Data not found");
+            }
+
+            $pencairanrkas = Pencairanrka::whereParentId($request->id)->orderBy("no_seq", "asc")->get();
+
+            $results = array(
+                "status" => 201,
+                "message" => "Data available",
+                "data" => [
+                    "ct1_pencairanrka" => $pencairanrkas,
+                    "pencairan" => $pencairan
+                ]
+            );
+
+            return response()->json($results);
+        }
     }
 }
