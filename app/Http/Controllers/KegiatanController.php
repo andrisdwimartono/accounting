@@ -937,6 +937,66 @@ class KegiatanController extends Controller
         echo json_encode($output);
     }
 
+    public function get_list_pertanggungjawaban(Request $request)
+    {
+        $list_column = array("id", "unit_pelaksana_label", "tanggal", "kegiatan_name", "output", "status", "id");
+        $keyword = null;
+        if(isset($request->search["value"])){
+            $keyword = $request->search["value"];
+        }
+
+        $orders = array("id", "ASC");
+        if(isset($request->order)){
+            $orders = array($list_column[$request->order["0"]["column"]], $request->order["0"]["dir"]);
+        }
+
+        $limit = null;
+        if(isset($request->length) && $request->length != -1){
+            $limit = array(intval($request->start), intval($request->length));
+        }
+
+        $dt = array();
+        $no = 0;
+        $ukl = Auth::user()->unitkerja;
+        $rl = Auth::user()->role_label;
+        foreach(Kegiatan::where(function($q) use ($keyword) {
+            $q->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+        })->where(function($q) use ($ukl, $rl){
+            if($rl != 'admin'){
+                if($ukl){
+                    $q->where("unit_pelaksana", $ukl);
+                }
+            }
+        })
+        ->whereIn('status', array('finish'))
+        ->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status"]) as $kegiatan){
+            $no = $no+1;
+            $act = '
+            <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
+
+            <a href="/kegiatan/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
+
+            <button type="button" class="row-delete btn btn-danger shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
+
+            $status = $this->status($kegiatan->status);
+            $act = $this->action($kegiatan);
+
+            array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $status, $act));
+        }
+
+
+        $output = array(
+            "draw" => intval($request->draw),
+            "recordsTotal" => Kegiatan::get()->count(),
+            "recordsFiltered" => intval(Kegiatan::where(function($q) use ($keyword) {
+                $q->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+            })->orderBy($orders[0], $orders[1])->get()->count()),
+            "data" => $dt
+        );
+
+        echo json_encode($output);
+    }
+
     public function get_list_laporan(Request $request)
     {
         $list_column = array("id", "unit_pelaksana_label", "tanggal", "kegiatan_name", "output", "id");

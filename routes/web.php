@@ -290,9 +290,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/pengajuan/{kegiatan}', 'App\Http\Controllers\KegiatanController@show_pengajuan');
         Route::post('/processapprovepengajuan', 'App\Http\Controllers\KegiatanController@processapprove_pengajuan');
         
-        Route::get('/kegiatan', 'App\Http\Controllers\KegiatanController@index')->name('kegiatan');
-        Route::get('/kegiatan/laporan', 'App\Http\Controllers\KegiatanController@laporan');
         Route::get('/pertanggungjawaban', 'App\Http\Controllers\KegiatanController@pertanggungjawaban');
+        Route::post('/getlistpertanggungjawaban', 'App\Http\Controllers\KegiatanController@get_list_pertanggungjawaban');
+        
+        Route::get('/kegiatan', 'App\Http\Controllers\KegiatanController@index')->name('kegiatan');
+        Route::get('/kegiatan/laporan', 'App\Http\Controllers\KegiatanController@laporan');        
         Route::post('/getlistkegiatan', 'App\Http\Controllers\KegiatanController@get_list_rka');
         Route::post('/getlistlaporankegiatan', 'App\Http\Controllers\KegiatanController@get_list_laporan');
         Route::get('/kegiatan/{kegiatan}', 'App\Http\Controllers\KegiatanController@show');
