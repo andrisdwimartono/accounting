@@ -291,11 +291,7 @@
     function convertCode(data){
       var val = "";
       for(var i = 0; i < data.length; i++){
-          if(i == 0){
-            val = val+data.charAt(i)+"-";
-          }else if(i == 2 || i == 4){
-            val = val+data.charAt(i)+"-";
-          }else if(i > 4 && (i-4)%3 == 0 && i != data.length-1){
+          if(i == 2 || i == 6){
             val = val+data.charAt(i)+"-";
           }else{
             val = val+data.charAt(i);
