@@ -4175,6 +4175,10 @@ class JurnalController extends Controller
             Jurnal::where("id", $id_jurnal)->update([
                 "no_jurnal"=> $no_jurnal
             ]);
+
+            Pencairan::where("id", $id)->update([
+                "jurnal" => $id_jurnal
+            ]);
             
             $no_seq = 1;
             $totalbiaya = 0;
@@ -4213,6 +4217,10 @@ class JurnalController extends Controller
                     "no_jurnal"=> $no_jurnal,
                     "user_creator_id" => Auth::user()->id
                 ])->id;
+                
+                Pencairanrka::where("id", $idct)->update([
+                    "transaction" => $idct_trans
+                ]);
                 $this->summerizeJournal("store", $idct);
             }
 
