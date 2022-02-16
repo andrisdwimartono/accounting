@@ -825,7 +825,7 @@ function showChildTable_ct2_approval_settingpjk(childtablename, data){
 function addChildTable_ct2_approval_setting_pengajuan(childtablename){
     $("select[name='role']").val(null).trigger('change')
     $("input[name='role_label']").val("");
-    $("input[name='jenismenu']").val("Pengajuan");
+    $("input[name='jenismenu']").val("pengajuan");
 
     @if($page_data["page_method_name"] != "View")
     $("#"+childtablename+" .modal-footer").html('<button type="button" id="staticBackdropAdd_ct2_approval_setting" class="btn btn-primary">Add Row</button>');

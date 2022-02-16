@@ -394,6 +394,10 @@ $(document).ready(function() {
     $("#approverka").click(function(){
         $("#modal-accept").modal("show");
     });
+
+    $("#approvepengajuan").click(function(){
+        $("#modal-accept").modal("show");
+    });
     
     $("#rejectrka").click(function(){
         $("#alasan_tolak_error").val("");
@@ -480,10 +484,28 @@ $(document).ready(function() {
         processapprove("reject", $("#alasan_tolak").val());
     });
 
+    $("#rejectpengajuan-confirmed").click(function(){
+        if($("#alasan_tolak").val() == ""){
+            $("#alasan_tolak_error").html("Harus diisi");
+            $("#alasan_tolak_error").removeClass("d-none");
+            return false;
+        }
+        $("#modal-reject").modal("hide");
+        $("#alasan_tolak_error").val("");
+        cto_loading_show();
+        processapprove_pengajuan("reject", $("#alasan_tolak").val());
+    });
+
     $("#approverka-confirmed").click(function(){
         $("#modal-accept").modal("hide");
         cto_loading_show();
         processapprove("approve");
+    });
+
+    $("#approvepengajuan-confirmed").click(function(){
+        $("#modal-accept").modal("hide");
+        cto_loading_show();
+        processapprove_pengajuan("approve");
     });
 
     @if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")
@@ -495,7 +517,7 @@ $(document).ready(function() {
 function getdata(){
     cto_loading_show();
     $.ajax({
-        url: "/getdatakegiatan",
+        url: "/getdata{{$page_data["page_data_urlname"]}}",
         type: "post",
         data: {
             id: {{$page_data["id"]}},
@@ -1074,6 +1096,111 @@ function processapprove(status, komentar = ""){
 
     $.ajax({
         url:"/processapprove",
+        method:"POST",
+        data: {
+            _token                  : $("#quickForm input[name=_token]").val(),
+            status_approval         : status,
+            status_approval_label   : status_approval_label,
+            komentar                : komentar,
+            id                      : {{$page_data["id"]}},
+            ct1_detailbiayakegiatan : ct1_detailbiayakegiatan
+        },
+        cache: false,
+        success:function(data){
+            if(data.status >= 200 && data.status <= 299){
+                $.toast({
+                    text: data.message,
+                    heading: 'Status',
+                    icon: 'success',
+                    showHideTransition: 'fade',
+                    allowToastClose: true,
+                    hideAfter: 3000,
+                    position: 'mid-center',
+                    textAlign: 'left'
+                });
+            }
+        },
+        error: function (err) {
+            if (err.status >= 400) {
+                $.toast({
+                    text: err.status+" "+err.responseJSON.message,
+                    heading: 'Status',
+                    icon: 'warning',
+                    showHideTransition: 'fade',
+                    allowToastClose: true,
+                    hideAfter: 3000,
+                    position: 'mid-center',
+                    textAlign: 'left'
+                });
+            }
+        }
+    });
+    cto_loading_hide();
+    <?php } ?>
+}
+
+function processapprove_pengajuan(status, komentar = ""){
+    <?php if($page_data["page_method_name"] == "View"){ ?>
+    var stop_submit = false;
+    var ctct1_detailbiayakegiatan = [];
+    $("#caktable1 > tbody > tr").each(function(index, tr){
+        if(AutoNumeric.getNumber("#nom_"+$(tr).attr("row-seq")) <= 0 && $("#coa_"+$(tr).attr("row-seq")).val() != null){
+            $("#nom_"+$(tr).attr("row-seq")).addClass("border-danger");
+            cto_loading_hide();
+            stop_submit = true;
+            return;
+        }
+        
+        var iku = 0;
+        var iku_label = $("#iku").val();
+        //var tanggal = $("input[name=tanggal_jurnal]").val();
+        var coa = 0;
+        var coa_label = "";
+        var deskripsibiaya = "";
+        var nominalbiaya = 0;
+        var id = "";
+        var komentarrevisi = "";
+        var status = "";
+        $(tr).find("td").each(function(index, td){
+            if(index == 0){
+                coa = $(td).text();
+            }else if(index == 1){
+                coa_label = $(td).find("select").text();
+                // coa_label = "";
+            }else if(index == 2){
+                deskripsibiaya = $(td).find("input").val();
+            }else if(index == 3){
+                nominalbiaya = AutoNumeric.getNumber("#nom_"+$(tr).attr("row-seq"));
+            }else if(index == 7){
+                id = $(td).text();
+                console.log(id);
+            }else if(index == 6){
+                komentarrevisi = $(td).find("input").val();
+            }else if(index == 5){
+                status = $(td).find("select").val();
+            }
+            console.log(index);
+            console.log(td);
+        });
+        if(coa != '')
+            ctct1_detailbiayakegiatan.push({"no_seq": index, "coa": coa, "coa_label": coa_label, "deskripsibiaya": deskripsibiaya, "nominalbiaya": nominalbiaya, "id": id, "komentarrevisi": komentarrevisi, "status": status});
+    });
+
+    
+    if(stop_submit){
+        return;
+    }
+    
+    var ct1_detailbiayakegiatan = JSON.stringify(ctct1_detailbiayakegiatan);
+
+    var status_approval_label = "";
+    $("#status_approval option").each(function(i, x){
+        if(status == $(x).val())
+            status_approval_label = $(x).text();
+    });
+
+    $.ajax({
+        url:"/processapprovepengajuan",
         method:"POST",
         data: {
             _token                  : $("#quickForm input[name=_token]").val(),
