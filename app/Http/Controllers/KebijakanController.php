@@ -205,7 +205,7 @@ class KebijakanController extends Controller
         $dt = array();
         $no = 0;
         foreach(Kebijakan::where(function($q) use ($keyword) {
-            $q->where("deskripsi", "LIKE", "%" . $keyword. "%");
+            $q->where("deskripsi", "ILIKE", "%" . $keyword. "%");
         })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "roa","roi","roe", "deskripsi"]) as $kebijakan){
             $no = $no+1;
             $act = '';
@@ -217,7 +217,7 @@ class KebijakanController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Kebijakan::get()->count(),
             "recordsFiltered" => intval(Kebijakan::where(function($q) use ($keyword) {
-                $q->orWhere("deskripsi", "LIKE", "%" . $keyword. "%");
+                $q->orWhere("deskripsi", "ILIKE", "%" . $keyword. "%");
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );

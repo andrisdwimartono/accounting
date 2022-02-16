@@ -207,7 +207,7 @@ class UnitkerjaController extends Controller
         $dt = array();
         $no = 0;
         foreach(Unitkerja::where(function($q) use ($keyword) {
-            $q->where("unitkerja_code", "LIKE", "%" . $keyword. "%")->orWhere("unitkerja_name", "LIKE", "%" . $keyword. "%");
+            $q->where("unitkerja_code", "ILIKE", "%" . $keyword. "%")->orWhere("unitkerja_name", "ILIKE", "%" . $keyword. "%");
         })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unitkerja_code", "unitkerja_name"]) as $unitkerja){
             $no = $no+1;
             $act = '
@@ -225,7 +225,7 @@ class UnitkerjaController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Unitkerja::get()->count(),
             "recordsFiltered" => intval(Unitkerja::where(function($q) use ($keyword) {
-                $q->where("unitkerja_code", "LIKE", "%" . $keyword. "%")->orWhere("unitkerja_name", "LIKE", "%" . $keyword. "%");
+                $q->where("unitkerja_code", "ILIKE", "%" . $keyword. "%")->orWhere("unitkerja_name", "ILIKE", "%" . $keyword. "%");
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );

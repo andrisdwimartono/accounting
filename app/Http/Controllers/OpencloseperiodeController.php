@@ -227,7 +227,7 @@ class OpencloseperiodeController extends Controller
         $dt = array();
         $no = 0;
         foreach(Opencloseperiode::where(function($q) use ($keyword) {
-            $q->where("bulan_open_label", "LIKE", "%" . $keyword. "%")->orWhere("tahun_open", "LIKE", "%" . $keyword. "%")->orWhere("catatan", "LIKE", "%" . $keyword. "%");
+            $q->where("bulan_open_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_open", "ILIKE", "%" . $keyword. "%")->orWhere("catatan", "ILIKE", "%" . $keyword. "%");
         })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "bulan_open_label", "tahun_open", "catatan"]) as $opencloseperiode){
             $no = $no+1;
             $act = '
@@ -243,7 +243,7 @@ class OpencloseperiodeController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Opencloseperiode::get()->count(),
             "recordsFiltered" => intval(Opencloseperiode::where(function($q) use ($keyword) {
-                $q->where("bulan_open_label", "LIKE", "%" . $keyword. "%")->orWhere("tahun_open", "LIKE", "%" . $keyword. "%")->orWhere("catatan", "LIKE", "%" . $keyword. "%");
+                $q->where("bulan_open_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_open", "ILIKE", "%" . $keyword. "%")->orWhere("catatan", "ILIKE", "%" . $keyword. "%");
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );

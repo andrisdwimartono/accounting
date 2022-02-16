@@ -171,7 +171,7 @@ class PencairanController extends Controller
         $dt = array();
         $no = 0;
         foreach(Pencairan::where(function($q) use ($keyword) {
-            $q->where("tanggal_pencairan", "LIKE", "%" . $keyword. "%")->orWhere("catatan", "LIKE", "%" . $keyword. "%");
+            $q->where("tanggal_pencairan", "ILIKE", "%" . $keyword. "%")->orWhere("catatan", "ILIKE", "%" . $keyword. "%");
         })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "tanggal_pencairan", "catatan"]) as $pencairan){
             $no = $no+1;
             $act = '
@@ -188,7 +188,7 @@ class PencairanController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Pencairan::get()->count(),
             "recordsFiltered" => intval(Pencairan::where(function($q) use ($keyword) {
-                $q->where("tanggal_pencairan", "LIKE", "%" . $keyword. "%")->orWhere("catatan", "LIKE", "%" . $keyword. "%");
+                $q->where("tanggal_pencairan", "ILIKE", "%" . $keyword. "%")->orWhere("catatan", "ILIKE", "%" . $keyword. "%");
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
@@ -208,7 +208,7 @@ class PencairanController extends Controller
             $count = 0;
             if($request->field == "kegiatan"){
                 $lists = Kegiatan::where(function($q) use ($request) {
-                    $q->where("kegiatan_name", "LIKE", "%" . $request->term. "%");
+                    $q->where("kegiatan_name", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("kegiatan_name as text")]);
                 $count = Kegiatan::count();
             }
@@ -254,6 +254,29 @@ class PencairanController extends Controller
                 "message" => "Data available",
                 "data" => [
                     "total_biaya" => $total_biaya
+                ]
+            );
+
+            return response()->json($results);
+        }
+    }
+
+    public function getlistrka(Request $request){
+        if($request->ajax() || $request->wantsJson()){
+            
+            $lists = Kegiatan::where(function($q) use ($request) {
+                $q->whereBetween("tanggal", [$request->tanggal_pencairan_start, $request->tanggal_pencairan_finish]);
+            })->orderBy("id")->get([DB::raw("id as kegiatan"), DB::raw("kegiatan_name as kegiatan_label"), DB::raw("1000000 as nominalbiaya")]);
+
+            $no_seq = 1;
+            foreach($lists as $list){
+                $list->no_seq = $no_seq++;
+            }
+            $results = array(
+                "status" => 201,
+                "message" => "Data available",
+                "data" => [
+                    "ct1_pencairanrka" => $lists
                 ]
             );
 

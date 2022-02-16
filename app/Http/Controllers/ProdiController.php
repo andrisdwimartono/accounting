@@ -214,7 +214,7 @@ class ProdiController extends Controller
         $dt = array();
         $no = 0;
         foreach(Prodi::where(function($q) use ($keyword) {
-            $q->where("prodi_name", "LIKE", "%" . $keyword. "%")->orWhere("kode", "LIKE", "%" . $keyword. "%")->orWhere("fakultas_label", "LIKE", "%" . $keyword. "%");
+            $q->where("prodi_name", "ILIKE", "%" . $keyword. "%")->orWhere("kode", "ILIKE", "%" . $keyword. "%")->orWhere("fakultas_label", "ILIKE", "%" . $keyword. "%");
         })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "prodi_name", "kode", "fakultas_label"]) as $prodi){
             $no = $no+1;
             $act = '
@@ -230,7 +230,7 @@ class ProdiController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Prodi::get()->count(),
             "recordsFiltered" => intval(Prodi::where(function($q) use ($keyword) {
-                $q->where("prodi_name", "LIKE", "%" . $keyword. "%")->orWhere("kode", "LIKE", "%" . $keyword. "%")->orWhere("fakultas_label", "LIKE", "%" . $keyword. "%");
+                $q->where("prodi_name", "ILIKE", "%" . $keyword. "%")->orWhere("kode", "ILIKE", "%" . $keyword. "%")->orWhere("fakultas_label", "ILIKE", "%" . $keyword. "%");
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
@@ -281,7 +281,7 @@ class ProdiController extends Controller
             $count = 0;
             if($request->field == "fakultas"){
                 $lists = Fakultas::where(function($q) use ($request) {
-                    $q->where("fakultas_name", "LIKE", "%" . $request->term. "%");
+                    $q->where("fakultas_name", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("fakultas_name as text")]);
                 $count = Fakultas::count();
             }

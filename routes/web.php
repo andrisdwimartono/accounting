@@ -319,6 +319,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/createpencairan', 'App\Http\Controllers\PencairanController@create');
         Route::post('/getlinkspencairan', 'App\Http\Controllers\PencairanController@getlinks');
         Route::post('/getbiayakegiatan', 'App\Http\Controllers\PencairanController@getbiayakegiatan');
+        Route::post('/getlistrka', 'App\Http\Controllers\PencairanController@getlistrka');
     });
 });
 

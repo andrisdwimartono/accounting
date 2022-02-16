@@ -221,7 +221,7 @@ class CompanyController extends Controller
         $dt = array();
         $no = 0;
         foreach(Company::where(function($q) use ($keyword) {
-            $q->where("company_name", "LIKE", "%" . $keyword. "%")->orWhere("company_id_label", "LIKE", "%" . $keyword. "%");
+            $q->where("company_name", "ILIKE", "%" . $keyword. "%")->orWhere("company_id_label", "ILIKE", "%" . $keyword. "%");
         })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "company_name", "company_id_label"]) as $company){
             $no = $no+1;
             $act = '
@@ -237,7 +237,7 @@ class CompanyController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Company::get()->count(),
             "recordsFiltered" => intval(Company::where(function($q) use ($keyword) {
-                $q->where("company_name", "LIKE", "%" . $keyword. "%")->orWhere("company_id_label", "LIKE", "%" . $keyword. "%");
+                $q->where("company_name", "ILIKE", "%" . $keyword. "%")->orWhere("company_id_label", "ILIKE", "%" . $keyword. "%");
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
@@ -288,7 +288,7 @@ class CompanyController extends Controller
             $count = 0;
             if($request->field == "company_id"){
                 $lists = Company::where(function($q) use ($request) {
-                    $q->where("company_name", "LIKE", "%" . $request->term. "%");
+                    $q->where("company_name", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("company_name as text")]);
                 $count = Company::count();
             }

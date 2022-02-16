@@ -203,7 +203,7 @@ class FakultasController extends Controller
         $dt = array();
         $no = 0;
         foreach(Fakultas::where(function($q) use ($keyword) {
-            $q->where("fakultas_name", "LIKE", "%" . $keyword. "%")->orWhere("fakultas_code", "LIKE", "%" . $keyword. "%");
+            $q->where("fakultas_name", "ILIKE", "%" . $keyword. "%")->orWhere("fakultas_code", "ILIKE", "%" . $keyword. "%");
         })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "fakultas_name", "fakultas_code"]) as $fakultas){
             $no = $no+1;
             $act = '
@@ -219,7 +219,7 @@ class FakultasController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Fakultas::get()->count(),
             "recordsFiltered" => intval(Fakultas::where(function($q) use ($keyword) {
-                $q->where("fakultas_name", "LIKE", "%" . $keyword. "%")->orWhere("fakultas_code", "LIKE", "%" . $keyword. "%");
+                $q->where("fakultas_name", "ILIKE", "%" . $keyword. "%")->orWhere("fakultas_code", "ILIKE", "%" . $keyword. "%");
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );

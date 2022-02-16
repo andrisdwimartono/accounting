@@ -905,7 +905,7 @@ class JurnalController extends Controller
     //     $dt = array();
     //     $no = 0;
     //     foreach(Jurnal::where(function($q) use ($keyword) {
-    //         $q->where("unitkerja_label", "LIKE", "%" . $keyword. "%")->orWhere("no_jurnal", "LIKE", "%" . $keyword. "%")->orWhere("tanggal_jurnal", "LIKE", "%" . $keyword. "%");
+    //         $q->where("unitkerja_label", "ILIKE", "%" . $keyword. "%")->orWhere("no_jurnal", "ILIKE", "%" . $keyword. "%")->orWhere("tanggal_jurnal", "ILIKE", "%" . $keyword. "%");
     //     })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unitkerja_label", "no_jurnal", "tanggal_jurnal"]) as $jurnal){
     //         $no = $no+1;
     //         $act = '
@@ -921,7 +921,7 @@ class JurnalController extends Controller
     //         "draw" => intval($request->draw),
     //         "recordsTotal" => Jurnal::get()->count(),
     //         "recordsFiltered" => intval(Jurnal::where(function($q) use ($keyword) {
-    //             $q->where("unitkerja_label", "LIKE", "%" . $keyword. "%")->orWhere("no_jurnal", "LIKE", "%" . $keyword. "%")->orWhere("tanggal_jurnal", "LIKE", "%" . $keyword. "%");
+    //             $q->where("unitkerja_label", "ILIKE", "%" . $keyword. "%")->orWhere("no_jurnal", "ILIKE", "%" . $keyword. "%")->orWhere("tanggal_jurnal", "ILIKE", "%" . $keyword. "%");
     //         })->orderBy($orders[0], $orders[1])->get()->count()),
     //         "data" => $dt
     //     );
@@ -936,7 +936,7 @@ class JurnalController extends Controller
         $dt = array();
         $no = 0;
         foreach(Jurnal::where(function($q) use ($request) {
-            $q->where("no_jurnal", "LIKE", "%" . $request->no_jurnal_search. "%");
+            $q->where("no_jurnal", "ILIKE", "%" . $request->no_jurnal_search. "%");
         })->whereNull("isdeleted")->whereBetween("tanggal_jurnal", [$request->tanggal_jurnal_from, $request->tanggal_jurnal_to])->orderBy("no_jurnal", $request->ordering)->get(["id", "keterangan", "no_jurnal", "tanggal_jurnal"]) as $jurnal){
             $no = $no+1;
             $act = '
@@ -952,7 +952,7 @@ class JurnalController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Jurnal::get()->count(),
             "recordsFiltered" => intval(Jurnal::where(function($q) use ($request) {
-                $q->where("no_jurnal", "LIKE", "%" . $request->no_jurnal_search. "%");
+                $q->where("no_jurnal", "ILIKE", "%" . $request->no_jurnal_search. "%");
             })->whereBetween("tanggal_jurnal", [$request->tanggal_jurnal_from, $request->tanggal_jurnal_to])->orderBy("tanggal_jurnal", "asc")->get()->count()),
             "data" => $dt
         );
@@ -967,8 +967,8 @@ class JurnalController extends Controller
         $dt = array();
         $no = 0;
         foreach(Jurnal::where(function($q) use ($request) {
-            $q->where("no_jurnal", "LIKE", "%" . $request->no_jurnal_search. "%");
-        })->where("no_jurnal", "LIKE", $request->jurnal_type. "%")->whereNull("isdeleted")->whereBetween("tanggal_jurnal", [$request->tanggal_jurnal_from, $request->tanggal_jurnal_to])->orderBy("no_jurnal", $request->ordering)->get(["id", "keterangan", "no_jurnal", "tanggal_jurnal"]) as $jurnal){
+            $q->where("no_jurnal", "ILIKE", "%" . $request->no_jurnal_search. "%");
+        })->where("no_jurnal", "ILIKE", $request->jurnal_type. "%")->whereNull("isdeleted")->whereBetween("tanggal_jurnal", [$request->tanggal_jurnal_from, $request->tanggal_jurnal_to])->orderBy("no_jurnal", $request->ordering)->get(["id", "keterangan", "no_jurnal", "tanggal_jurnal"]) as $jurnal){
             $no = $no+1;
             $act = '
             <a href="/jurnal/'.$jurnal->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
@@ -983,7 +983,7 @@ class JurnalController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Jurnal::get()->count(),
             "recordsFiltered" => intval(Jurnal::where(function($q) use ($request) {
-                $q->where("no_jurnal", "LIKE", "%" . $request->no_jurnal_search. "%");
+                $q->where("no_jurnal", "ILIKE", "%" . $request->no_jurnal_search. "%");
             })->whereBetween("tanggal_jurnal", [$request->tanggal_jurnal_from, $request->tanggal_jurnal_to])->orderBy("tanggal_jurnal", "asc")->get()->count()),
             "data" => $dt
         );
@@ -1022,7 +1022,7 @@ class JurnalController extends Controller
                 abort(404, "Data not found");
             }
 
-            $transaksis = Transaction::where("no_jurnal", "LIKE", $request->jurnal_type."%")->whereParentId($request->id)->orderBy("no_seq", "asc")->get();
+            $transaksis = Transaction::where("no_jurnal", "ILIKE", $request->jurnal_type."%")->whereParentId($request->id)->orderBy("no_seq", "asc")->get();
 
             $jurnal->bank_kas = $transaksis[count($transaksis)-1]->coa;
             $jurnal->bank_kas_label = $transaksis[count($transaksis)-1]->coa_label;
@@ -1062,31 +1062,31 @@ class JurnalController extends Controller
             $count = 0;
             if($request->field == "unitkerja"){
                 $lists = Unitkerja::where(function($q) use ($request) {
-                    $q->where("unitkerja_name", "LIKE", "%" . $request->term. "%");
+                    $q->where("unitkerja_name", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("unitkerja_name as text")]);
                 $count = Unitkerja::count();
             }elseif($request->field == "anggaran"){
                 $lists = Anggaran::where(function($q) use ($request) {
-                    $q->where("anggaran_name", "LIKE", "%" . $request->term. "%");
+                    $q->where("anggaran_name", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("anggaran_name as text")]);
                 $count = Anggaran::count();
             }elseif($request->field == "coa"){
                 // if(isset($request->jurnal_type) && isset(Auth::user()->unitkerja)){
                 //     $lists = Coa::where(function($q) use ($request) {
-                //         $q->where("coa_name", "LIKE", "%" . $request->term. "%")->orWhere("coa_code", "LIKE", "%" . $request->term. "%");
+                //         $q->where("coa_name", "ILIKE", "%" . $request->term. "%")->orWhere("coa_code", "ILIKE", "%" . $request->term. "%");
                 //     })->where("unitkerja", Auth::user()->unitkerja)->where("fheader", null)->orderBy("coa_code", "asc")->skip($offset)->take($resultCount)->get(["id", DB::raw("concat(concat(coa_code, ' '), coa_name) as text"), DB::raw("coa_name as description")]);
                 //     $count = Coa::where(function($q) use ($request) {
-                //         $q->where("coa_name", "LIKE", "%" . $request->term. "%")->orWhere("coa_code", "LIKE", "%" . $request->term. "%");
+                //         $q->where("coa_name", "ILIKE", "%" . $request->term. "%")->orWhere("coa_code", "ILIKE", "%" . $request->term. "%");
                 //     })->where("unitkerja", Auth::user()->unitkerja)->where("fheader", null)->orderBy("coa_code", "asc")->skip($offset)->take($resultCount)->get(["id", DB::raw("concat(concat(coa_code, ' '), coa_name) as text"), DB::raw("coa_name as description")])->count();
                 // }else{
                     $lists = Coa::where(function($q) use ($request) {
-                        $q->where("coa_name", "LIKE", "%" . $request->term. "%")->orWhere("coa_code", "LIKE", "%" . $request->term. "%");
+                        $q->where("coa_name", "ILIKE", "%" . $request->term. "%")->orWhere("coa_code", "ILIKE", "%" . $request->term. "%");
                     })->where("fheader", null)->orderBy("coa_code", "asc")->skip($offset)->take($resultCount)->get(["id", DB::raw("concat(concat(coa_code, ' '), coa_name) as text"), DB::raw("coa_name as description")]);
                     $count = Coa::count();
                 // }
             }elseif($request->field == "jenisbayar"){
                 $lists = Jenisbayar::where(function($q) use ($request) {
-                    $q->where("jenisbayar_name", "LIKE", "%" . $request->term. "%");
+                    $q->where("jenisbayar_name", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("jenisbayar_name as text")]);
                 $count = Jenisbayar::count();
             }
@@ -1120,7 +1120,7 @@ class JurnalController extends Controller
             $count = 0;
             if($request->field == "coa"){
                 $lists = Coa::where(function($q) use ($request) {
-                    $q->where("coa_name", "LIKE", "%" . $request->term. "%")->orWhere("coa_code", "LIKE", "%" . $request->term. "%");
+                    $q->where("coa_name", "ILIKE", "%" . $request->term. "%")->orWhere("coa_code", "ILIKE", "%" . $request->term. "%");
                 })->where("category", "pendapatan")->where("fheader", null)->orderBy("coa_code", "asc")->skip($offset)->take($resultCount)->get(["id", DB::raw("concat(concat(coa_code, ' '), coa_name) as text"), DB::raw("coa_name as description")]);
                 $count = Coa::count();
             }
@@ -4099,7 +4099,7 @@ class JurnalController extends Controller
         $dt = array();
         $no = 0;
         foreach(Jurnal::where(function($q) use ($request) {
-            $q->where("jurnals.no_jurnal", "LIKE", "%" . $request->search['no_jurnal_search']. "%");
+            $q->where("jurnals.no_jurnal", "ILIKE", "%" . $request->search['no_jurnal_search']. "%");
         })->whereNull("jurnals.isdeleted")->whereBetween("jurnals.tanggal_jurnal", [$this->tgl_dbs($request->search['tanggal_jurnal_from'], "/",2,1,0), $this->tgl_dbs($request->search['tanggal_jurnal_to'], "/",2,1,0)])
         ->leftJoin('transactions', 'jurnals.no_jurnal', '=', 'transactions.no_jurnal')
         ->orderBy("no_jurnal", $request->search['ordering'])
@@ -4118,7 +4118,7 @@ class JurnalController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Jurnal::get()->count(),
             "recordsFiltered" => intval(Jurnal::where(function($q) use ($request) {
-                $q->where("no_jurnal", "LIKE", "%" . $request->no_jurnal_search. "%");
+                $q->where("no_jurnal", "ILIKE", "%" . $request->no_jurnal_search. "%");
             })->whereBetween("tanggal_jurnal", [$this->tgl_dbs($request->tanggal_jurnal_from, "/",2,1,0), $this->tgl_dbs($request->tanggal_jurnal_to, "/",2,1,0)])->orderBy("tanggal_jurnal", "asc")->get()->count()),
             "data" => $dt
         );
@@ -4144,9 +4144,9 @@ class JurnalController extends Controller
         $no = 0;
         foreach(Jurnal::where(function($q) use ($request) {
             if(!$request->search['no_jurnal_search']){
-                $q->where("jurnals.no_jurnal", "LIKE", "%" . $request->search['no_jurnal_search']. "%")->where("jurnals.no_jurnal", "LIKE", $request->search['jurnal_type']."%");
+                $q->where("jurnals.no_jurnal", "ILIKE", "%" . $request->search['no_jurnal_search']. "%")->where("jurnals.no_jurnal", "ILIKE", $request->search['jurnal_type']."%");
             }else{
-                $q->where("jurnals.no_jurnal", "LIKE", $request->search['jurnal_type']."%");
+                $q->where("jurnals.no_jurnal", "ILIKE", $request->search['jurnal_type']."%");
             }
         })->whereNull("jurnals.isdeleted")->whereBetween("jurnals.tanggal_jurnal", [$this->tgl_dbs($request->search['tanggal_jurnal_from'], "/",2,1,0), $this->tgl_dbs($request->search['tanggal_jurnal_to'], "/",2,1,0)])
         ->leftJoin('transactions', 'jurnals.no_jurnal', '=', 'transactions.no_jurnal')
@@ -4166,7 +4166,7 @@ class JurnalController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Jurnal::get()->count(),
             "recordsFiltered" => intval(Jurnal::where(function($q) use ($request) {
-                $q->where("no_jurnal", "LIKE", "%" . $request->no_jurnal_search. "%");
+                $q->where("no_jurnal", "ILIKE", "%" . $request->no_jurnal_search. "%");
             })->whereBetween("tanggal_jurnal", [$this->tgl_dbs($request->tanggal_jurnal_from, "/",2,1,0), $this->tgl_dbs($request->tanggal_jurnal_to, "/",2,1,0)])->orderBy("tanggal_jurnal", "asc")->get()->count()),
             "data" => $dt
         );
@@ -4188,8 +4188,8 @@ class JurnalController extends Controller
         // $dt = array();
         // $no = 0;
         // foreach(Jurnal::where(function($q) use ($request) {
-        //     $q->where("no_jurnal", "LIKE", "%" . $request->search['no_jurnal_search']. "%");
-        // })->where("no_jurnal", "LIKE", $request->search['jurnal_type']. "%")->whereNull("isdeleted")->whereBetween("tanggal_jurnal", [$this->tgl_dbs($request->search['tanggal_jurnal_from'], "/",2,1,0), $this->tgl_dbs($request->search['tanggal_jurnal_to'], "/",2,1,0)])->orderBy("no_jurnal", $request->search['ordering'])->get(["id", "keterangan", "no_jurnal", "tanggal_jurnal"]) as $jurnal){
+        //     $q->where("no_jurnal", "ILIKE", "%" . $request->search['no_jurnal_search']. "%");
+        // })->where("no_jurnal", "ILIKE", $request->search['jurnal_type']. "%")->whereNull("isdeleted")->whereBetween("tanggal_jurnal", [$this->tgl_dbs($request->search['tanggal_jurnal_from'], "/",2,1,0), $this->tgl_dbs($request->search['tanggal_jurnal_to'], "/",2,1,0)])->orderBy("no_jurnal", $request->search['ordering'])->get(["id", "keterangan", "no_jurnal", "tanggal_jurnal"]) as $jurnal){
         //     $no = $no+1;
         //     $act = '
         //     <a href="/jurnal/'.$jurnal->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
@@ -4204,7 +4204,7 @@ class JurnalController extends Controller
         //     "draw" => intval($request->draw),
         //     "recordsTotal" => Jurnal::get()->count(),
         //     "recordsFiltered" => intval(Jurnal::where(function($q) use ($request) {
-        //         $q->where("no_jurnal", "LIKE", "%" . $request->no_jurnal_search. "%");
+        //         $q->where("no_jurnal", "ILIKE", "%" . $request->no_jurnal_search. "%");
         //     })->whereBetween("tanggal_jurnal", [$this->tgl_dbs($request->tanggal_jurnal_from, "/",2,1,0), $this->tgl_dbs($request->tanggal_jurnal_to, "/",2,1,0)])->orderBy("tanggal_jurnal", "asc")->get()->count()),
         //     "data" => $dt
         // );

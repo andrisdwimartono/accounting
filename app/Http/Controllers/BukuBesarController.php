@@ -139,7 +139,7 @@ class BukuBesarController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Transaction::get()->count(),
             "recordsFiltered" => intval(Transaction::where(function($q) use ($keyword) {
-                    $q->where("tanggal", "LIKE", "%" . $keyword. "%")->orWhere("no_jurnal", "LIKE", "%" . $keyword. "%")->orWhere("deskripsi", "LIKE", "%" . $keyword. "%");
+                    $q->where("tanggal", "ILIKE", "%" . $keyword. "%")->orWhere("no_jurnal", "ILIKE", "%" . $keyword. "%")->orWhere("deskripsi", "ILIKE", "%" . $keyword. "%");
                 })->where(function($q) {
                     $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
                 })->where("coa", $coa)
@@ -250,22 +250,22 @@ class BukuBesarController extends Controller
             $count = 0;
             if($request->field == "unitkerja"){
                 $lists = Unitkerja::where(function($q) use ($request) {
-                    $q->where("unitkerja_name", "LIKE", "%" . $request->term. "%")->orWhere("unitkerja_code", "LIKE", "%" . $request->term. "%");
+                    $q->where("unitkerja_name", "ILIKE", "%" . $request->term. "%")->orWhere("unitkerja_code", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("unitkerja_name as text")]);
                 $count = Unitkerja::count();
             }elseif($request->field == "anggaran"){
                 $lists = Anggaran::where(function($q) use ($request) {
-                    $q->where("anggaran_name", "LIKE", "%" . $request->term. "%");
+                    $q->where("anggaran_name", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("anggaran_name as text")]);
                 $count = Anggaran::count();
             }elseif($request->field == "coa"){
                 $lists = Coa::where(function($q) use ($request) {
-                    $q->where("coa_name", "LIKE", "%" . $request->term. "%")->orWhere("coa_code", "LIKE", "%" . $request->term. "%");
+                    $q->where("coa_name", "ILIKE", "%" . $request->term. "%")->orWhere("coa_code", "ILIKE", "%" . $request->term. "%");
                 })->where("fheader", null)->orderBy("coa_code", "asc")->skip($offset)->take($resultCount)->get(["id", DB::raw("concat(concat(coa_code, ' '), coa_name) as text"), DB::raw("coa_name as description")]);
                 $count = Coa::count();
             }elseif($request->field == "jenisbayar"){
                 $lists = Jenisbayar::where(function($q) use ($request) {
-                    $q->where("jenisbayar_name", "LIKE", "%" . $request->term. "%");
+                    $q->where("jenisbayar_name", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("jenisbayar_name as text")]);
                 $count = Jenisbayar::count();
             }
