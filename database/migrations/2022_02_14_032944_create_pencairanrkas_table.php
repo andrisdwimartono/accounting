@@ -20,6 +20,7 @@ class CreatePencairanrkasTable extends Migration
             $table->integer("kegiatan");
             $table->string("kegiatan_label")->nullable();
             $table->double('nominalbiaya', 8, 0);
+            $table->integer("transaction")->nullable();
             $table->timestamps();
         });
     }

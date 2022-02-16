@@ -17,6 +17,8 @@ class CreatePencairansTable extends Migration
             $table->id();
             $table->date("tanggal_pencairan")->nullable();
             $table->string("catatan")->nullable();
+            $table->integer("jurnal")->nullable();
+            $table->string("status")->nullable();
             $table->integer('user_creator_id')->nullable();
             $table->integer('user_updater_id')->nullable();
             $table->timestamps();

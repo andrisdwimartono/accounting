@@ -102,7 +102,7 @@ class PencairanController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**
@@ -263,10 +263,9 @@ class PencairanController extends Controller
 
     public function getlistrka(Request $request){
         if($request->ajax() || $request->wantsJson()){
-            
             $lists = Kegiatan::where(function($q) use ($request) {
                 $q->whereBetween("tanggal", [$request->tanggal_pencairan_start, $request->tanggal_pencairan_finish]);
-            })->orderBy("id")->get([DB::raw("id as kegiatan"), DB::raw("kegiatan_name as kegiatan_label"), DB::raw("1000000 as nominalbiaya")]);
+            })->orderBy("id")->get([DB::raw("id as kegiatan"), DB::raw("kegiatan_name as kegiatan_label")]);
 
             $no_seq = 1;
             foreach($lists as $list){

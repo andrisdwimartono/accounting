@@ -826,14 +826,14 @@ $(document).keydown(function(event) {
                     "<tr row-seq=\""+rowlen+"\" class=\"addnewrow\">"
                     +"<td class=\"column-hidden\"></td>"
                     +"<td class=\"p-0\"><select name=\"kegiatan_"+rowlen+"\" id=\"kegiatan_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
-                    +"<td class=\"p-0\"><input type=\"text\" name=\"nom_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"nom_"+rowlen+"\" placeholder=\"Enter Nominal\"></td>"
+                    +"<td class=\"p-0\"><input type=\"text\" name=\"nom_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"nom_"+rowlen+"\" placeholder=\"Enter Nominal\" readonly></td>"
                     +"<td class=\"column-hidden\"></td>"
                     +"</tr>"
                 @else 
                     "<tr row-seq=\""+rowlen+"\" class=\"addnewrow\">"
                     +"<td class=\"column-hidden\"></td>"
                     +"<td class=\"p-0\"><select name=\"kegiatan_"+rowlen+"\" id=\"kegiatan_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
-                    +"<td class=\"p-0\"><input type=\"text\" name=\"nom_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"nom_"+rowlen+"\" placeholder=\"Enter Nominal\"></td>"
+                    +"<td class=\"p-0\"><input type=\"text\" name=\"nom_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"nom_"+rowlen+"\" placeholder=\"Enter Nominal\" readonly></td>"
                     +"<td class=\"p-0 text-center\"><button id=\"row_delete_"+rowlen+"\" class=\"bg-white border-0\"><i class=\"text-danger fas fa-minus-circle row-delete\" style=\"cursor: pointer;\"></i></button></td>"
                     +"<td class=\"column-hidden\"></td>"
                     +"</tr>"
@@ -1136,15 +1136,6 @@ $(document).keydown(function(event) {
                 if(data.data.ct1_pencairanrka.length > 0){
                     $("#caktable1 > tbody > tr").each(function(index){
                         var row_index = parseInt($(this).attr("row-seq"));
-                        if(row_index == 1){
-                            $("#caktable1 > tbody > tr[row-seq="+row_index+"]").find("td:eq(0)").text("");
-                            $("select[name='kegiatan_"+row_index+"']").empty();
-                            $("#caktable1 > tbody > tr[row-seq=1]").find("td:eq(0)").text("");
-
-                            $("input[name='nom_"+row_index+"']").val("0");
-                            $("#caktable1 > tbody > tr[row-seq="+row_index+"]").find("td:eq(6)").text("");
-                            return true;
-                        }
                         $(this).remove();
                     });
                     
@@ -1164,11 +1155,16 @@ $(document).keydown(function(event) {
                         // $("input[name='nom_"+(parseInt(data.data.ct1_pencairanrka[i].no_seq))+"']").trigger("change");
                         $("#caktable1 > tbody > tr[row-seq="+(parseInt(data.data.ct1_pencairanrka[i].no_seq))+"]").find("td:eq(6)").text(data.data.ct1_pencairanrka[i].id);
                     }
-
-                    $(".row-show-history").on("click", function() {
-                        
-
-
+                }else{
+                    $.toast({
+                        text: "Tidak ada Data!",
+                        heading: 'Status',
+                        icon: 'warning',
+                        showHideTransition: 'fade',
+                        allowToastClose: true,
+                        hideAfter: 3000,
+                        position: 'mid-center',
+                        textAlign: 'left'
                     });
                 }
             cto_loading_hide();
