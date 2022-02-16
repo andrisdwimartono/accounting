@@ -284,12 +284,17 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/pengajuan/{kegiatan}/edit', 'App\Http\Controllers\KegiatanController@edit_pengajuan');
         Route::post('/getlistpengajuan', 'App\Http\Controllers\KegiatanController@get_list_pengajuan');
         Route::post('/getoptionspengajuan', 'App\Http\Controllers\KegiatanController@getoptions');
-        Route::post('/getdatapengajuan', 'App\Http\Controllers\KegiatanController@getdata');
+        Route::post('/getdatapengajuan', 'App\Http\Controllers\KegiatanController@getdata_pengajuan');
         Route::post('/getlinkspengajuan', 'App\Http\Controllers\KegiatanController@getlinks');
+        Route::post('/updatepengajuan/{kegiatan}', 'App\Http\Controllers\KegiatanController@update_pengajuan');
+        Route::get('/pengajuan/{kegiatan}', 'App\Http\Controllers\KegiatanController@show_pengajuan');
+        Route::post('/processapprovepengajuan', 'App\Http\Controllers\KegiatanController@processapprove_pengajuan');
+        
+        Route::get('/pertanggungjawaban', 'App\Http\Controllers\KegiatanController@pertanggungjawaban');
+        Route::post('/getlistpertanggungjawaban', 'App\Http\Controllers\KegiatanController@get_list_pertanggungjawaban');
         
         Route::get('/kegiatan', 'App\Http\Controllers\KegiatanController@index')->name('kegiatan');
-        Route::get('/kegiatan/laporan', 'App\Http\Controllers\KegiatanController@laporan');
-        Route::get('/pertanggungjawaban', 'App\Http\Controllers\KegiatanController@pertanggungjawaban');
+        Route::get('/kegiatan/laporan', 'App\Http\Controllers\KegiatanController@laporan');        
         Route::post('/getlistkegiatan', 'App\Http\Controllers\KegiatanController@get_list_rka');
         Route::post('/getlistlaporankegiatan', 'App\Http\Controllers\KegiatanController@get_list_laporan');
         Route::get('/kegiatan/{kegiatan}', 'App\Http\Controllers\KegiatanController@show');

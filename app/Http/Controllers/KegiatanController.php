@@ -150,6 +150,10 @@ class KegiatanController extends Controller
             "nominalbiaya" => "required|numeric"
         ];
 
+        $td["fieldsrules_pengajuan"] = [
+            // "tanggal_pencairan" => "required"
+        ];
+
         $td["fieldsmessages_ct1_detailbiayapjk"] = [
             "required" => ":attribute harus diisi!!",
             "min" => ":attribute minimal :min karakter!!",
@@ -322,14 +326,31 @@ class KegiatanController extends Controller
         $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_create"];
         
         $page_data["id"] = $kegiatan->id;
+        $page_data["jenismenu"] = 'rka';
         $page_data["lastapprove"] = $this->lastapprove($kegiatan->id);
         $page_data["nextapprove"] = $this->nextapprove($kegiatan->id);
         return view("kegiatan.create", ["page_data" => $page_data]);
     }
 
+    public function show_pengajuan(Kegiatan $kegiatan)
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "View";
+        $page_data["page_data_name"] = "Pengajuan Anggaran";
+        $page_data["footer_js_page_specific_script"] = ["kegiatan.page_specific_script.footer_js_create"];
+        $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_create"];
+        
+        $page_data["id"] = $kegiatan->id;
+        $page_data["jenismenu"] = 'pengajuan';
+        $page_data["page_data_urlname"] = 'pengajuan';
+        $page_data["lastapprove"] = $this->lastapprove_pengajuan($kegiatan->id);
+        $page_data["nextapprove"] = $this->nextapprove_pengajuan($kegiatan->id);
+        return view("kegiatan.create_pengajuan", ["page_data" => $page_data]);
+    }
+
+    
     public function lastapprove($id){
         $getlastapproval = Approval::where("parent_id", $id)->where("jenismenu", "RKA")->where("status_approval", "approve")->orderBy("no_seq", "asc")->first();
-        
         return $getlastapproval;
     }
 
@@ -338,6 +359,20 @@ class KegiatanController extends Controller
         $getnextapp = Approval::where("parent_id", $id)->where("jenismenu", "RKA")->whereNull("status_approval")->orderBy("no_seq", "desc")->first();
         if($getlastapproval){
             $getnextapp = Approval::where("parent_id", $id)->where("jenismenu", "RKA")->whereNull("status_approval")->where("no_seq", ((int) $getlastapproval->no_seq)-1)->orderBy("no_seq", "desc")->first();
+        }
+        return $getnextapp;
+    }
+
+    public function lastapprove_pengajuan($id){
+        $getlastapproval = Approval::where("parent_id", $id)->where("jenismenu", "pengajuan")->where("status_approval", "approve")->orderBy("no_seq", "asc")->first();
+        return $getlastapproval;
+    }
+    
+    public function nextapprove_pengajuan($id){
+        $getlastapproval = Approval::where("parent_id", $id)->where("jenismenu", "pengajuan")->where("status_approval", "approve")->orderBy("no_seq", "asc")->first();
+        $getnextapp = Approval::where("parent_id", $id)->where("jenismenu", "pengajuan")->whereNull("status_approval")->orderBy("no_seq", "desc")->first();
+        if($getlastapproval){
+            $getnextapp = Approval::where("parent_id", $id)->where("jenismenu", "pengajuan")->whereNull("status_approval")->where("no_seq", ((int) $getlastapproval->no_seq)-1)->orderBy("no_seq", "desc")->first();
         }
         return $getnextapp;
     }
@@ -413,7 +448,9 @@ class KegiatanController extends Controller
                 "Deskripsi"=> $request->Deskripsi == ''?null:$request->Deskripsi,
                 "output"=> $request->output == ''?null:$request->output,
                 "proposal"=> $request->proposal == ''?null:$request->proposal,
-                "user_updater_id"=> Auth::user()->id
+                "user_updater_id"=> Auth::user()->id,
+                "tanggal"=> $request->tanggal,
+                "tanggal_pencairan"=> $request->tanggal_pencairan,
             ]);
 
             $new_menu_field_ids = array();
@@ -463,6 +500,36 @@ class KegiatanController extends Controller
             return response()->json([
                 'status' => 201,
                 'message' => 'Id '.$id.' is updated',
+                'data' => ['id' => $id]
+            ]);
+        }
+    }
+
+    public function update_pengajuan(Request $request, $id)
+    {
+        $page_data = $this->tabledesign();
+        $rules = $page_data["fieldsrules_pengajuan"];
+        $messages = $page_data["fieldsmessages"];
+        if($request->validate($rules, $messages)){
+            Kegiatan::where("id", $id)->update([
+                "tanggal_pencairan"=> $request->tanggal_pencairan,
+                "status" => "submitting"
+            ]);
+            
+            foreach(Approvalsetting::where("jenismenu", "pengajuan")->get() as $appr){
+                Approval::create([
+                    "no_seq" => $appr->no_seq,
+                    "parent_id" => $id,
+                    "role"=> $appr->role,
+                    "role_label"=> $appr->role_label,
+                    "jenismenu"=> $appr->jenismenu,
+                    "user_creator_id" => Auth::user()->id
+                ]);
+            }
+
+            return response()->json([
+                'status' => 201,
+                'message' => 'Anggaran diajukan',
                 'data' => ['id' => $id]
             ]);
         }
@@ -604,15 +671,31 @@ class KegiatanController extends Controller
                     $q->where("unit_pelaksana", $ukl);
                 }
             }
-        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status"]) as $kegiatan){
+        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status", "user_creator_id"]) as $kegiatan){
             $no = $no+1;
-            $act = '
-            <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
+            $act = '';
+            
+            if($kegiatan->user_creator_id == Auth::user()->id){
+                $act .= '
+                <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>';
+            } else {
+                $act .= '<a href="/kegiatan/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
 
-            <a href="/kegiatan/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
+                <button type="button" class="row-delete btn btn-danger shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
+            }
 
-            <button type="button" class="row-delete btn btn-danger shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
+            // dd(Auth::user()->role );
+            if(Auth::user()->role == 'admin'){
+                $act .= '
+                <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
+           
+                <a href="/kegiatan/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
 
+                <button type="button" class="row-delete btn btn-danger shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
+            }
+
+
+            
             $status = "";
             switch ($kegiatan->status) {
                 case "process":
@@ -624,7 +707,7 @@ class KegiatanController extends Controller
                 case "approved":
                     $status = "<span class='badge light badge-primary' style='width:70px'>".$kegiatan->status."</span>";
                     break;
-                case "submiting":
+                case "submitting":
                     $status = "<span class='badge light badge-secondary' style='width:70px'>".$kegiatan->status."</span>";
                     break;
                 case "submitted":
@@ -681,7 +764,7 @@ class KegiatanController extends Controller
             case "approved":
                 $status = "<span class='badge light badge-primary' style='width:70px'>".$data."</span>";
                 break;
-            case "submiting":
+            case "submitting":
                 $status = "<span class='badge light badge-secondary' style='width:70px'>".$data."</span>";
                 break;
             case "submitted":
@@ -712,20 +795,32 @@ class KegiatanController extends Controller
             }
             $act .= '
                 <a href="/pjk/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>';
-        } else if($kegiatan->status == "approved" || $kegiatan->status == "submitting"){
-            if($kegiatan->status == "approved"){
-                $act .= '<a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>';        
-            }
+        } else if($kegiatan->status == "approved"){
             $act .= '
-                <a href="/pengajuan/'.$kegiatan->id.'/edit"  class="btn btn-info shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Pengajuan"><i class="fas fa-edit text-white"></i></a>';
-        } else {
-            $act = '
-            <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
+            <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>';        
+            
+            if($kegiatan->user_creator_id == Auth::user()->id || Auth::user()->role == 'admin'){
+                $act .= '
+                    <a href="/pengajuan/'.$kegiatan->id.'/edit"  class="btn btn-info shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Pengajuan"><i class="fas fa-share text-white"></i></a>';
+            }
+        } else if($kegiatan->status == "submitting"){
+            $act .= '
+            <a href="/pengajuan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>';        
 
+        } else if($kegiatan->status == "process" ){
+            // if($kegiatan->user_creator_id != Auth::user()->id){
+                $act .= '
+                <a href="/pengajuan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>';
+            // }
+        }
+
+        if(Auth::user()->role == 'admin' || $kegiatan->user_creator_id == Auth::user()->id){
+            $act .= '
             <a href="/kegiatan/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
 
             <button type="button" class="row-delete btn btn-danger shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
         }
+
         return $act;
     }
 
@@ -763,13 +858,6 @@ class KegiatanController extends Controller
         ->whereIn('status', array('process', 'approving', 'approved'))
         ->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status"]) as $kegiatan){
             $no = $no+1;
-            $act = '
-            <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
-
-            <a href="/kegiatan/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
-
-            <button type="button" class="row-delete btn btn-danger shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
-
             $status = $this->status($kegiatan->status);
             $act = $this->action($kegiatan);
 
@@ -820,7 +908,67 @@ class KegiatanController extends Controller
                 }
             }
         })
-        ->whereIn('status', array('approved','submiting', 'submitted'))
+        ->whereIn('status', array('approved','submitting', 'submitted'))
+        ->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status"]) as $kegiatan){
+            $no = $no+1;
+            $act = '
+            <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
+
+            <a href="/kegiatan/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
+
+            <button type="button" class="row-delete btn btn-danger shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
+
+            $status = $this->status($kegiatan->status);
+            $act = $this->action($kegiatan);
+
+            array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $status, $act));
+        }
+
+
+        $output = array(
+            "draw" => intval($request->draw),
+            "recordsTotal" => Kegiatan::get()->count(),
+            "recordsFiltered" => intval(Kegiatan::where(function($q) use ($keyword) {
+                $q->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+            })->orderBy($orders[0], $orders[1])->get()->count()),
+            "data" => $dt
+        );
+
+        echo json_encode($output);
+    }
+
+    public function get_list_pertanggungjawaban(Request $request)
+    {
+        $list_column = array("id", "unit_pelaksana_label", "tanggal", "kegiatan_name", "output", "status", "id");
+        $keyword = null;
+        if(isset($request->search["value"])){
+            $keyword = $request->search["value"];
+        }
+
+        $orders = array("id", "ASC");
+        if(isset($request->order)){
+            $orders = array($list_column[$request->order["0"]["column"]], $request->order["0"]["dir"]);
+        }
+
+        $limit = null;
+        if(isset($request->length) && $request->length != -1){
+            $limit = array(intval($request->start), intval($request->length));
+        }
+
+        $dt = array();
+        $no = 0;
+        $ukl = Auth::user()->unitkerja;
+        $rl = Auth::user()->role_label;
+        foreach(Kegiatan::where(function($q) use ($keyword) {
+            $q->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+        })->where(function($q) use ($ukl, $rl){
+            if($rl != 'admin'){
+                if($ukl){
+                    $q->where("unit_pelaksana", $ukl);
+                }
+            }
+        })
+        ->whereIn('status', array('finish'))
         ->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status"]) as $kegiatan){
             $no = $no+1;
             $act = '
@@ -932,7 +1080,7 @@ class KegiatanController extends Controller
             if(Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->count() < 1){
                 $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
 
-                if(Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->count() < 1){
+                if(Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->count() < 1){
                     $lastapp = Approval::where("parent_id", $request->id)->where("role", Auth::user()->role)->where("jenismenu", "RKA")->first();
                     $beforeapp = Approval::where("parent_id", $request->id)->where("no_seq", ((int)$lastapp->no_seq)+1)->where("jenismenu", "RKA")->first();
                     if($beforeapp){
@@ -942,6 +1090,43 @@ class KegiatanController extends Controller
             }
             
             $ct2_approvals = Approval::whereParentId($request->id)->where("jenismenu", "RKA")->get();
+
+            $results = array(
+                "status" => 201,
+                "message" => "Data available",
+                "data" => [
+                    "ct1_detailbiayakegiatan" => $ct1_detailbiayakegiatans,
+                    "ct2_approval" => $ct2_approvals,
+                    "kegiatan" => $kegiatan
+                ]
+            );
+
+            return response()->json($results);
+        }
+    }
+
+    public function getdata_pengajuan(Request $request)
+    {
+        if($request->ajax() || $request->wantsJson()){
+            $kegiatan = Kegiatan::whereId($request->id)->first();
+            if(!$kegiatan){
+                abort(404, "Data not found");
+            }
+
+            $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->get();
+            if(Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->count() < 1){
+                $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+
+                if(Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->count() < 1){
+                    $lastapp = Approval::where("parent_id", $request->id)->where("role", Auth::user()->role)->where("jenismenu", "pengajuan")->first();
+                    $beforeapp = Approval::where("parent_id", $request->id)->where("no_seq", ((int)$lastapp->no_seq)+1)->where("jenismenu", "pengajuan")->first();
+                    if($beforeapp){
+                        $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $beforeapp->role)->orderBy("no_seq")->get();
+                    }
+                }
+            }
+            
+            $ct2_approvals = Approval::whereParentId($request->id)->where("jenismenu", "pengajuan")->get();
 
             $results = array(
                 "status" => 201,
@@ -1159,7 +1344,66 @@ class KegiatanController extends Controller
 
                 return response()->json([
                     "status" => 200,
-                    "message" => "Membuat Jurnal"
+                    "message" => "Anggaran telah diterima"
+                ]);
+            }
+
+            return response()->json([
+                "status" => 200,
+                "message" => $request->status_approval_label." berhasil"
+            ]);
+        }
+        return response()->json(['error'=>$validator->errors()->all()]);
+    }
+
+    public function processapprove_pengajuan(Request $request){
+        if($request->ajax() || $request->wantsJson()){
+            $last_approval = Approval::where("jenismenu", "pengajuan")->where("parent_id", $request->id)->where("no_seq", ((int)$request->no_seq)+1)->first();
+
+            if(!(($this->lastapprove_pengajuan($request->id) && $this->lastapprove_pengajuan($request->id)->role == Auth::user()->role_label) || ($this->nextapprove_pengajuan($request->id) && $this->nextapprove_pengajuan($request->id)->role == Auth::user()->role_label))){
+                //abort(403, $last_approval->role_label." tidak/belum menerima pengajuan ini!");
+                abort(403, " Tidak bisa melakukan approval!");
+            }
+
+            // if($last_approval && $last_approval->status_approval != "approve"){
+            //     abort(403, $last_approval->role_label." tidak/belum menerima pengajuan ini!");
+            // }
+
+            if(!Approval::where("jenismenu", "pengajuan")->where("parent_id", $request->id)->where("role", Auth::user()->role_label)->update([
+                "role"                    => Auth::user()->role_label,
+                "jenismenu"               => "pengajuan",
+                "user"                    => Auth::user()->id,
+                "user_label"              => Auth::user()->name,
+                "komentar"                => $request->komentar,
+                "status_approval"         => $request->status_approval,
+                "status_approval_label"   => $request->status_approval_label,
+            ])){
+                abort(401, "Gagal update");
+            }else{
+                $this->update_pengajuan($request, $request->id);
+            }
+            
+            $tgl = date('Y-m-d');
+            $kegiatan = Kegiatan::where("id", $request->id)->first();
+            if(Approval::where("jenismenu", "pengajuan")->where("parent_id", $request->id)->count() > Approval::where("jenismenu", "pengajuan")->where("parent_id", $request->id)->where("status_approval", "approve")->count()){
+                if(Approval::where("jenismenu", "pengajuan")->where("parent_id", $request->id)->where("status_approval", "approve")->count() > 1){
+                    Kegiatan::where("id", $request->id)->update([
+                        "status" => "submitting"
+                    ]);
+                }else{
+                    Kegiatan::where("id", $request->id)->update([
+                        "status" => "approved"
+                    ]);
+                }
+            }elseif(Approval::where("jenismenu", "pengajuan")->where("parent_id", $request->id)->count() == Approval::where("jenismenu", "pengajuan")->where("parent_id", $request->id)->where("status_approval", "approve")->count()){
+
+                Kegiatan::where("id", $request->id)->update([
+                    "status" => "submitted"
+                ]);
+
+                return response()->json([
+                    "status" => 200,
+                    "message" => "Anggaran telah diterima"
                 ]);
             }
 
@@ -1177,7 +1421,7 @@ class KegiatanController extends Controller
 
             $last_approval = Approval::where("jenismenu", "PJK")->where("parent_id", $kegiatan->id)->where("no_seq", ((int)$request->no_seq)+1)->first();
 
-            if(!(($this->lastapprovepjk($kegiatan->id) && $this->lastapprovepjk($kegiatan->id)->role == Auth::user()->role) || ($this->nextapprovepjk($kegiatan->id) && $this->nextapprovepjk($kegiatan->id)->role == Auth::user()->role))){
+            if(!(($this->lastapprovepjk($kegiatan->id) && $this->lastapprovepjk($kegiatan->id)->role == Auth::user()->role_label) || ($this->nextapprovepjk($kegiatan->id) && $this->nextapprovepjk($kegiatan->id)->role == Auth::user()->role_label))){
                 abort(403, " Tidak bisa melakukan approval!");
             }
 
@@ -1192,7 +1436,7 @@ class KegiatanController extends Controller
             //     abort(403, $last_approval->role_label." tidak/belum menerima pengajuan ini!");
             // }
 
-            if(!Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("role", Auth::user()->role)->update([
+            if(!Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("role", Auth::user()->role_label)->update([
                 "role"                    => Auth::user()->role,
                 "jenismenu"               => "PJK",
                 "user"                    => Auth::user()->id,
@@ -1380,6 +1624,7 @@ class KegiatanController extends Controller
         $page_data["lastapprove"] = $this->lastapprovepjk($kegiatan->id);
         $page_data["nextapprove"] = $this->nextapprovepjk($kegiatan->id);
         $page_data["id"] = $kegiatan->id;
+        $page_data["jenismenu"] = 'pjk';
         return view("kegiatan.createpjk", ["page_data" => $page_data]);
     }
 
