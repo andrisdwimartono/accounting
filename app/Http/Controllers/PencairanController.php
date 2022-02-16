@@ -158,9 +158,15 @@ class PencairanController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Pencairan $pencairan)
     {
-        //
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "View";
+        $page_data["footer_js_page_specific_script"] = ["pencairan.page_specific_script.footer_js_create"];
+        $page_data["header_js_page_specific_script"] = ["pencairan.page_specific_script.header_js_create"];
+        
+        $page_data["id"] = $pencairan->id;
+        return view("pencairan.create", ["page_data" => $page_data]);
     }
 
     /**
@@ -224,9 +230,9 @@ class PencairanController extends Controller
             $act = '
             <a href="/pencairan/'.$pencairan->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
 
-            <a href="/pencairan/'.$pencairan->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
+            <!-- <a href="/pencairan/'.$pencairan->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a> -->
 
-            <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button>';
+            <!-- <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button> -->';
             
             array_push($dt, array($pencairan->id, $this->tgl_indo($pencairan->tanggal_pencairan, "-", 2,1,0), $pencairan->catatan, $act));
         }

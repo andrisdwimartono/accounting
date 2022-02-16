@@ -4197,7 +4197,7 @@ class JurnalController extends Controller
                 
                 $kegiatan = Kegiatan::where("id", $ct_request["kegiatan"])->first();
                 $idct_trans = Transaction::create([
-                    "no_seq" => $no_seq,
+                    "no_seq" => $no_seq-1,
                     "parent_id" => $id_jurnal,
                     "deskripsi"=> "",
                     "debet"=> $nominalbiaya,
@@ -4217,7 +4217,7 @@ class JurnalController extends Controller
                     "no_jurnal"=> $no_jurnal,
                     "user_creator_id" => Auth::user()->id
                 ])->id;
-                
+
                 Pencairanrka::where("id", $idct)->update([
                     "transaction" => $idct_trans
                 ]);
