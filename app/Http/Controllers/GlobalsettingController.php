@@ -432,7 +432,7 @@ class GlobalsettingController extends Controller
         $dt = array();
         $no = 0;
         foreach(Globalsetting::where(function($q) use ($keyword) {
-            $q->where("nama_instansi", "LIKE", "%" . $keyword. "%")->orWhere("bulan_tutup_tahun_label", "LIKE", "%" . $keyword. "%");
+            $q->where("nama_instansi", "ILIKE", "%" . $keyword. "%")->orWhere("bulan_tutup_tahun_label", "ILIKE", "%" . $keyword. "%");
         })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "nama_instansi", "bulan_tutup_tahun_label"]) as $globalsetting){
             $no = $no+1;
             $act = '
@@ -448,7 +448,7 @@ class GlobalsettingController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Globalsetting::get()->count(),
             "recordsFiltered" => intval(Globalsetting::where(function($q) use ($keyword) {
-                $q->where("nama_instansi", "LIKE", "%" . $keyword. "%")->orWhere("bulan_tutup_tahun_label", "LIKE", "%" . $keyword. "%");
+                $q->where("nama_instansi", "ILIKE", "%" . $keyword. "%")->orWhere("bulan_tutup_tahun_label", "ILIKE", "%" . $keyword. "%");
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
@@ -507,7 +507,7 @@ class GlobalsettingController extends Controller
             $count = 0;
             if($request->field == "coa"){
                 $lists = Coa::where(function($q) use ($request) {
-                    $q->where("coa_name", "LIKE", "%" . $request->term. "%");
+                    $q->where("coa_name", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("coa_name as text")]);
                 $count = Coa::count();
             }

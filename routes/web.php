@@ -292,7 +292,6 @@ Route::group(['middleware' => 'auth'], function () {
         
         Route::get('/kegiatan', 'App\Http\Controllers\KegiatanController@index')->name('kegiatan');
         Route::get('/kegiatan/laporan', 'App\Http\Controllers\KegiatanController@laporan');
-        Route::get('/pencairan', 'App\Http\Controllers\KegiatanController@pencairan');
         Route::get('/pertanggungjawaban', 'App\Http\Controllers\KegiatanController@pertanggungjawaban');
         Route::post('/getlistkegiatan', 'App\Http\Controllers\KegiatanController@get_list_rka');
         Route::post('/getlistlaporankegiatan', 'App\Http\Controllers\KegiatanController@get_list_laporan');
@@ -318,10 +317,14 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getdatapjk', 'App\Http\Controllers\KegiatanController@getdatapjk');
         Route::post('/getdatapjk', 'App\Http\Controllers\KegiatanController@getdatapjk');
 
+        Route::get('/pencairan', 'App\Http\Controllers\PencairanController@index');
         Route::post('/getlistpencairan', 'App\Http\Controllers\PencairanController@get_list');
         Route::get('/createpencairan', 'App\Http\Controllers\PencairanController@create');
         Route::post('/getlinkspencairan', 'App\Http\Controllers\PencairanController@getlinks');
         Route::post('/getbiayakegiatan', 'App\Http\Controllers\PencairanController@getbiayakegiatan');
+        Route::post('/getlistrka', 'App\Http\Controllers\PencairanController@getlistrka');
+        Route::post('/storepencairan', 'App\Http\Controllers\JurnalController@storepencairan');
+
     });
 });
 

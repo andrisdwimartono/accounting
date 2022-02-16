@@ -102,7 +102,54 @@ class PencairanController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $page_data = $this->tabledesign();
+        $rules_transaksi = $page_data["fieldsrules_pencairanrka"];
+        $requests_transaksi = json_decode($request->ct1_pencairanrka, true);
+        $listkeg = array();
+        foreach($requests_transaksi as $ct_request){
+            $child_tb_request = new \Illuminate\Http\Request();
+            $child_tb_request->replace($ct_request);
+            $ct_messages = array();
+            $no_seq = 1;
+            foreach($page_data["fieldsmessages_pencairanrka"] as $key => $value){
+                $ct_messages[$key] = "No ".$no_seq++." ".$value;
+            }
+            if(in_array($ct_request["kegiatan"], $listkeg)){
+                abort(404, "Kegiatan ".$ct_request["kegiatan_label"]." dobel ");
+                die();
+            }else{
+                array_push($listkeg, $ct_request["kegiatan"]);
+            }
+            $child_tb_request->validate($rules_transaksi, $ct_messages);
+        }
+
+        $rules = $page_data["fieldsrules"];
+        $messages = $page_data["fieldsmessages"];
+        if($request->validate($rules, $messages)){
+            $id = Pencairan::create([
+                "tanggal_pencairan"=> $this->tgl_dbs($request->tanggal_pencairan),
+                "catatan"=> $request->catatan,
+                "status"=> "process",
+                "user_creator_id"=> Auth::user()->id
+            ])->id;
+            
+            $no_seq = 1;
+            foreach($requests_transaksi as $ct_request){
+                $nominalbiaya = $this->getbiayakegiatansingle($id);
+                $idct = Pencairanrka::create([
+                    "no_seq" => $no_seq++,
+                    "parent_id" => $id,
+                    "kegiatan"=> $ct_request["kegiatan"],
+                    "kegiatan_label"=> $ct_request["kegiatan_label"],
+                    "nominalbiaya"=> $nominalbiaya
+                ])->id;
+            }
+
+            return response()->json([
+                'status' => 201,
+                'message' => 'Buat Jurnal Berhasil '
+            ]);
+        }
     }
 
     /**
@@ -111,9 +158,15 @@ class PencairanController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Pencairan $pencairan)
     {
-        //
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "View";
+        $page_data["footer_js_page_specific_script"] = ["pencairan.page_specific_script.footer_js_create"];
+        $page_data["header_js_page_specific_script"] = ["pencairan.page_specific_script.header_js_create"];
+        
+        $page_data["id"] = $pencairan->id;
+        return view("pencairan.create", ["page_data" => $page_data]);
     }
 
     /**
@@ -171,24 +224,24 @@ class PencairanController extends Controller
         $dt = array();
         $no = 0;
         foreach(Pencairan::where(function($q) use ($keyword) {
-            $q->where("tanggal_pencairan", "LIKE", "%" . $keyword. "%")->orWhere("catatan", "LIKE", "%" . $keyword. "%");
+            $q->where("tanggal_pencairan", "ILIKE", "%" . $keyword. "%")->orWhere("catatan", "ILIKE", "%" . $keyword. "%");
         })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "tanggal_pencairan", "catatan"]) as $pencairan){
             $no = $no+1;
             $act = '
             <a href="/pencairan/'.$pencairan->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
 
-            <a href="/pencairan/'.$pencairan->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
+            <!-- <a href="/pencairan/'.$pencairan->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a> -->
 
-            <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button>';
-
-            array_push($dt, array($pencairan->id, $pencairan->tanggal_pencairan, $pencairan->catatan, $act));
+            <!-- <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button> -->';
+            
+            array_push($dt, array($pencairan->id, $this->tgl_indo($pencairan->tanggal_pencairan, "-", 2,1,0), $pencairan->catatan, $act));
         }
         
         $output = array(
             "draw" => intval($request->draw),
             "recordsTotal" => Pencairan::get()->count(),
             "recordsFiltered" => intval(Pencairan::where(function($q) use ($keyword) {
-                $q->where("tanggal_pencairan", "LIKE", "%" . $keyword. "%")->orWhere("catatan", "LIKE", "%" . $keyword. "%");
+                $q->where("tanggal_pencairan", "ILIKE", "%" . $keyword. "%")->orWhere("catatan", "ILIKE", "%" . $keyword. "%");
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
@@ -208,7 +261,7 @@ class PencairanController extends Controller
             $count = 0;
             if($request->field == "kegiatan"){
                 $lists = Kegiatan::where(function($q) use ($request) {
-                    $q->where("kegiatan_name", "LIKE", "%" . $request->term. "%");
+                    $q->where("kegiatan_name", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("kegiatan_name as text")]);
                 $count = Kegiatan::count();
             }
@@ -259,5 +312,74 @@ class PencairanController extends Controller
 
             return response()->json($results);
         }
+    }
+
+    public function getbiayakegiatansingle($id){
+        $kegiatan = Kegiatan::whereId($id)->first();
+        if(!$kegiatan){
+            abort(404, "Data not found");
+        }
+
+        $finalappr = Approval::where("parent_id", $id)->orderBy("no_seq", "asc")->first();
+        $total_biaya = 0;
+        if($finalappr){
+            $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($id)->where("isarchived", "on")->where("archivedby", $finalappr->role)->orderBy("no_seq")->get();
+            
+            if(Detailbiayakegiatan::whereParentId($id)->where("isarchived", "on")->where("archivedby", $finalappr->role)->orderBy("no_seq")->count() > 1){
+                foreach($ct1_detailbiayakegiatans as $detailbiayakegiatans){
+                    $total_biaya += $detailbiayakegiatans->nominalbiaya;
+                }
+            }
+        }
+
+        return $total_biaya;
+    }
+
+    public function getlistrka(Request $request){
+        if($request->ajax() || $request->wantsJson()){
+            $lists = Kegiatan::where(function($q) use ($request) {
+                $q->whereBetween("tanggal", [$request->tanggal_pencairan_start, $request->tanggal_pencairan_finish]);
+            })->orderBy("id")->get([DB::raw("id as kegiatan"), DB::raw("kegiatan_name as kegiatan_label")]);
+
+            $no_seq = 1;
+            foreach($lists as $list){
+                $list->no_seq = $no_seq++;
+            }
+            $results = array(
+                "status" => 201,
+                "message" => "Data available",
+                "data" => [
+                    "ct1_pencairanrka" => $lists
+                ]
+            );
+
+            return response()->json($results);
+        }
+    }
+
+    public function tgl_dbs($tanggal){
+    
+        $date = str_replace('/', '-', $tanggal);
+        return date('Y-m-d', strtotime($date));
+    }
+
+    public function tgl_indo($tanggal, $sep,$d1,$d2,$d3){
+        $bulan = array (
+            1 =>   'Januari',
+            'Februari',
+            'Maret',
+            'April',
+            'Mei',
+            'Juni',
+            'Juli',
+            'Agustus',
+            'September',
+            'Oktober',
+            'November',
+            'Desember'
+        );
+        $pecahkan = explode($sep, $tanggal);
+     
+        return $pecahkan[$d1] . ' ' . $bulan[ (int)$pecahkan[$d2] ] . ' ' . $pecahkan[$d3];
     }
 }

@@ -210,7 +210,7 @@ class RoleController extends Controller
         $no = 0;
         // dd(role::find(1)->get());
         foreach(role::where(function($q) use ($keyword) {
-            $q->where("nama", "LIKE", "%" . $keyword. "%")->orWhere("alias", "LIKE", "%" . $keyword. "%");
+            $q->where("nama", "ILIKE", "%" . $keyword. "%")->orWhere("alias", "ILIKE", "%" . $keyword. "%");
         })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "nama", "alias"]) as $role){
             $no = $no+1;
             $act = '
@@ -231,7 +231,7 @@ class RoleController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => role::get()->count(),
             "recordsFiltered" => intval(role::where(function($q) use ($keyword) {
-                $q->where("nama", "LIKE", "%" . $keyword. "%")->orWhere("alias", "LIKE", "%" . $keyword. "%");
+                $q->where("nama", "ILIKE", "%" . $keyword. "%")->orWhere("alias", "ILIKE", "%" . $keyword. "%");
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );

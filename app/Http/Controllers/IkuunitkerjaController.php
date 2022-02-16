@@ -1049,7 +1049,7 @@ class IkuunitkerjaController extends Controller
         $dt = array();
         $no = 0;
         foreach(Iku::where(function($q) use ($keyword) {
-            $q->where("bab", "LIKE", "%" . $keyword. "%")->orWhere("elemen", "LIKE", "%" . $keyword. "%")->orWhere("indikator", "LIKE", "%" . $keyword. "%");
+            $q->where("bab", "ILIKE", "%" . $keyword. "%")->orWhere("elemen", "ILIKE", "%" . $keyword. "%")->orWhere("indikator", "ILIKE", "%" . $keyword. "%");
         })->where("type", $request->type)
         ->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "bab", "elemen", "indikator"]) as $ikuunitkerja){
             $no = $no+1;
@@ -1067,7 +1067,7 @@ class IkuunitkerjaController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Iku::get()->count(),
             "recordsFiltered" => intval(Iku::where(function($q) use ($keyword) {
-                $q->where("bab", "LIKE", "%" . $keyword. "%")->orWhere("elemen", "LIKE", "%" . $keyword. "%")->orWhere("indikator", "LIKE", "%" . $keyword. "%");
+                $q->where("bab", "ILIKE", "%" . $keyword. "%")->orWhere("elemen", "ILIKE", "%" . $keyword. "%")->orWhere("indikator", "ILIKE", "%" . $keyword. "%");
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
@@ -1127,17 +1127,17 @@ class IkuunitkerjaController extends Controller
             $count = 0;
             if($request->field == "unit_pelaksana"){
                 $lists = Unitkerja::where(function($q) use ($request) {
-                    $q->where("unitkerja_name", "LIKE", "%" . $request->term. "%");
+                    $q->where("unitkerja_name", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("unitkerja_name as text")]);
                 $count = Unitkerja::count();
             }elseif($request->field == "iku_unit_pelaksana"){
                 $lists = Unitkerja::where(function($q) use ($request) {
-                    $q->where("unitkerja_name", "LIKE", "%" . $request->term. "%");
+                    $q->where("unitkerja_name", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("unitkerja_name as text")]);
                 $count = Unitkerja::count();
             }elseif($request->field == "unit_pendukung"){
                 $lists = Unitkerja::where(function($q) use ($request) {
-                    $q->where("unitkerja_name", "LIKE", "%" . $request->term. "%");
+                    $q->where("unitkerja_name", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("unitkerja_name as text")]);
                 $count = Unitkerja::count();
             }

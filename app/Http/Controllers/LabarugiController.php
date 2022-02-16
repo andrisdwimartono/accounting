@@ -250,7 +250,7 @@ class LabarugiController extends Controller
     //     $dt = array();
     //     $no = 0;
     //     foreach(Labarugi::where(function($q) use ($keyword) {
-    //         $q->where("tahun_periode", "LIKE", "%" . $keyword. "%")->orWhere("bulan_periode", "LIKE", "%" . $keyword. "%")->orWhere("coa_label", "LIKE", "%" . $keyword. "%");
+    //         $q->where("tahun_periode", "ILIKE", "%" . $keyword. "%")->orWhere("bulan_periode", "ILIKE", "%" . $keyword. "%")->orWhere("coa_label", "ILIKE", "%" . $keyword. "%");
     //     })->where(function($q) {
     //         $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
     //     })->where(function($q) use($bulan_periode, $tahun_periode){
@@ -274,7 +274,7 @@ class LabarugiController extends Controller
     //         "draw" => intval($request->draw),
     //         "recordsTotal" => Labarugi::get()->count(),
     //         "recordsFiltered" => intval(Labarugi::where(function($q) use ($keyword) {
-    //             $q->where("tahun_periode", "LIKE", "%" . $keyword. "%")->orWhere("bulan_periode", "LIKE", "%" . $keyword. "%")->orWhere("coa_label", "LIKE", "%" . $keyword. "%");
+    //             $q->where("tahun_periode", "ILIKE", "%" . $keyword. "%")->orWhere("bulan_periode", "ILIKE", "%" . $keyword. "%")->orWhere("coa_label", "ILIKE", "%" . $keyword. "%");
     //         })->where(function($q) {
     //             $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
     //         })->where("bulan_periode", $bulan_periode)->where("tahun_periode", $tahun_periode)->orderBy($orders[0], $orders[1])->get()->count()),
@@ -405,7 +405,7 @@ class LabarugiController extends Controller
     private function get_list_data(&$dt, $request, &$keyword, $limit, $orders, $parent_id = null){
         $no = 0;
         foreach(Coa::where(function($q) use (&$keyword, $request) {
-                $q->where("coa_code", "LIKE", "%" . $keyword. "%")->orWhere("coa_name", "LIKE", "%" . $keyword. "%")->orWhere("level_coa", "LIKE", "%" . $keyword. "%")->orWhere("fheader", "LIKE", "%" . $keyword. "%")->orWhere("factive", "LIKE", "%" . $keyword. "%");
+                $q->where("coa_code", "ILIKE", "%" . $keyword. "%")->orWhere("coa_name", "ILIKE", "%" . $keyword. "%")->orWhere("level_coa", "ILIKE", "%" . $keyword. "%")->orWhere("fheader", "ILIKE", "%" . $keyword. "%")->orWhere("factive", "ILIKE", "%" . $keyword. "%");
             })->where("factive", "on")->whereIn("category", ["pendapatan", "biaya", "biaya_lainnya", "pendapatan_lainnya"])->where("coa", $parent_id)->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "coa_code", "coa_name", "level_coa", "coa", "coa_label", "category", "category_label", "fheader", "factive"]) as $coa){
                 $no = $no+1;
                 $act = '';
@@ -505,17 +505,17 @@ class LabarugiController extends Controller
             $count = 0;
             if($request->field == "coa"){
                 $lists = Coa::where(function($q) use ($request) {
-                    $q->where("coa_name", "LIKE", "%" . $request->term. "%");
+                    $q->where("coa_name", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("coa_name as text")]);
                 $count = Coa::count();
             }elseif($request->field == "jenisbayar"){
                 $lists = Jenisbayar::where(function($q) use ($request) {
-                    $q->where("jenisbayar_name", "LIKE", "%" . $request->term. "%");
+                    $q->where("jenisbayar_name", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("jenisbayar_name as text")]);
                 $count = Jenisbayar::count();
             }elseif($request->field == "unitkerja"){
                 $lists = Unitkerja::where(function($q) use ($request) {
-                    $q->where("unitkerja_name", "LIKE", "%" . $request->term. "%")->orWhere("unitkerja_code", "LIKE", "%" . $request->term. "%");
+                    $q->where("unitkerja_name", "ILIKE", "%" . $request->term. "%")->orWhere("unitkerja_code", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("unitkerja_name as text")]);
                 $count = Unitkerja::count();
             }

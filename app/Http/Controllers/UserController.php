@@ -385,12 +385,12 @@ class UserController extends Controller
             $count = 0;
             if($request->field == "unitkerja"){
                 $lists = Unitkerja::where(function($q) use ($request) {
-                    $q->where("unitkerja_name", "LIKE", "%" . $request->term. "%");
+                    $q->where("unitkerja_name", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("unitkerja_name as text")]);
                 $count = Unitkerja::count();
             } else if($request->field == "role"){
                 $lists = Role::where(function($q) use ($request) {
-                    $q->where("nama", "LIKE", "%" . $request->term. "%");
+                    $q->where("nama", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("alias as text")]);
                 $count = Role::count();
             }

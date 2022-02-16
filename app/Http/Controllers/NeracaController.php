@@ -334,7 +334,7 @@ class NeracaController extends Controller
     private function get_list_data(&$dt, $request, &$keyword, $limit, $orders, $parent_id = null){
         $no = 0;
         foreach(Coa::where(function($q) use (&$keyword, $request) {
-                $q->where("coa_code", "LIKE", "%" . $keyword. "%")->orWhere("coa_name", "LIKE", "%" . $keyword. "%")->orWhere("level_coa", "LIKE", "%" . $keyword. "%")->orWhere("fheader", "LIKE", "%" . $keyword. "%")->orWhere("factive", "LIKE", "%" . $keyword. "%");
+                $q->where("coa_code", "ILIKE", "%" . $keyword. "%")->orWhere("coa_name", "ILIKE", "%" . $keyword. "%")->orWhere("level_coa", "ILIKE", "%" . $keyword. "%")->orWhere("fheader", "ILIKE", "%" . $keyword. "%")->orWhere("factive", "ILIKE", "%" . $keyword. "%");
             })->where("factive", "on")->where("coa", $parent_id)->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "coa_code", "coa_name", "level_coa", "coa", "coa_label", "category", "category_label", "fheader", "factive"]) as $coa){
                 $no = $no+1;
                 $act = '';
@@ -430,12 +430,12 @@ class NeracaController extends Controller
             $count = 0;
             if($request->field == "coa"){
                 $lists = Coa::where(function($q) use ($request) {
-                    $q->where("coa_name", "LIKE", "%" . $request->term. "%");
+                    $q->where("coa_name", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("coa_name as text")]);
                 $count = Coa::count();
             }elseif($request->field == "unitkerja"){
                 $lists = Unitkerja::where(function($q) use ($request) {
-                    $q->where("unitkerja_name", "LIKE", "%" . $request->term. "%")->orWhere("unitkerja_code", "LIKE", "%" . $request->term. "%");
+                    $q->where("unitkerja_name", "ILIKE", "%" . $request->term. "%")->orWhere("unitkerja_code", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("unitkerja_name as text")]);
                 $count = Unitkerja::count();
             }

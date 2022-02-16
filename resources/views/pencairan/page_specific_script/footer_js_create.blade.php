@@ -727,11 +727,7 @@ function processapprove(status, komentar = ""){
 function convertCode(data){
     var val = "";
     for(var i = 0; i < data.length; i++){
-        if(i == 0){
-          val = val+data.charAt(i)+"-";
-        }else if(i == 2 || i == 4){
-          val = val+data.charAt(i)+"-";
-        }else if(i > 4 && (i-4)%3 == 0 && i != data.length-1){
+        if(i == 2 || i == 6){
           val = val+data.charAt(i)+"-";
         }else{
           val = val+data.charAt(i);
@@ -830,14 +826,14 @@ $(document).keydown(function(event) {
                     "<tr row-seq=\""+rowlen+"\" class=\"addnewrow\">"
                     +"<td class=\"column-hidden\"></td>"
                     +"<td class=\"p-0\"><select name=\"kegiatan_"+rowlen+"\" id=\"kegiatan_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
-                    +"<td class=\"p-0\"><input type=\"text\" name=\"nom_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"nom_"+rowlen+"\" placeholder=\"Enter Nominal\"></td>"
+                    +"<td class=\"p-0\"><input type=\"text\" name=\"nom_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"nom_"+rowlen+"\" placeholder=\"Enter Nominal\" readonly></td>"
                     +"<td class=\"column-hidden\"></td>"
                     +"</tr>"
                 @else 
                     "<tr row-seq=\""+rowlen+"\" class=\"addnewrow\">"
                     +"<td class=\"column-hidden\"></td>"
                     +"<td class=\"p-0\"><select name=\"kegiatan_"+rowlen+"\" id=\"kegiatan_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
-                    +"<td class=\"p-0\"><input type=\"text\" name=\"nom_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"nom_"+rowlen+"\" placeholder=\"Enter Nominal\"></td>"
+                    +"<td class=\"p-0\"><input type=\"text\" name=\"nom_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"nom_"+rowlen+"\" placeholder=\"Enter Nominal\" readonly></td>"
                     +"<td class=\"p-0 text-center\"><button id=\"row_delete_"+rowlen+"\" class=\"bg-white border-0\"><i class=\"text-danger fas fa-minus-circle row-delete\" style=\"cursor: pointer;\"></i></button></td>"
                     +"<td class=\"column-hidden\"></td>"
                     +"</tr>"
@@ -997,10 +993,8 @@ $(document).keydown(function(event) {
             event.preventDefault();
             cto_loading_show();
             var quickForm = $("#quickForm");
-            var ctct1_detailbiayakegiatan = [];
+            var ctct1_pencairanrka = [];
 
-            var unitpelaksana = $("#unitpelaksana").val();
-            var unitpelaksana_label = $("#unitpelaksana_label").val();
             var stop_submit = false;
             $("#caktable1 > tbody > tr").each(function(index, tr){
                 if(AutoNumeric.getNumber("#nom_"+$(tr).attr("row-seq")) <= 0 && $("#coa_"+$(tr).attr("row-seq")).val() != null){
@@ -1010,31 +1004,24 @@ $(document).keydown(function(event) {
                     return;
                 }
                 
-                
-                var iku = 0;
-                var iku_label = $("#iku").val();
-                //var tanggal = $("input[name=tanggal_jurnal]").val();
-                var coa = 0;
-                var coa_label = "";
+                var kegiatan = 0;
+                var kegiatan_label = "";
                 var deskripsibiaya = "";
                 var nominalbiaya = 0;
                 var id = "";
                 $(tr).find("td").each(function(index, td){
                     if(index == 0){
-                        coa = $(td).text();
+                        kegiatan = $(td).text();
                     }else if(index == 1){
-                        coa_label = $(td).find("select").text();
-                        // coa_label = "";
-                    }else if(index == 2){
-                        deskripsibiaya = $(td).find("input").val();
+                        kegiatan_label = $(td).find("select").text();
                     }else if(index == 3){
                         nominalbiaya = AutoNumeric.getNumber("#nom_"+$(tr).attr("row-seq"));
-                    }else if(index == 7){
+                    }else if(index == 4){
                         id = $(td).text();
                     }
                 });
-                if(coa != '')
-                    ctct1_detailbiayakegiatan.push({"no_seq": index, "coa": coa, "coa_label": coa_label, "deskripsibiaya": deskripsibiaya, "nominalbiaya": nominalbiaya, "id": id});
+                if(kegiatan != '')
+                    ctct1_pencairanrka.push({"kegiatan": kegiatan, "kegiatan_label": kegiatan_label, "nominalbiaya": nominalbiaya, "id": id});
             });
 
             
@@ -1042,24 +1029,10 @@ $(document).keydown(function(event) {
                 return;
             }
             
-            $("#ct1_detailbiayakegiatan").val(JSON.stringify(ctct1_detailbiayakegiatan));
-                
-            // var id_jurnal = 0;
+            $("#ct1_pencairanrka").val(JSON.stringify(ctct1_pencairanrka));
             var values = $("#quickForm").serializeArray();
-            // for (index = 0; index < values.length; ++index) {
-            //     if (values[index].name == "tanggal_kegiatan") {
-            //         values[index].value = $("input[name=tanggal_kegiatan]").val().split("/")[2]+"-"+ $("input[name=tanggal_jurnal]").val().split("/")[1]+"-"+ $("input[name=tanggal_jurnal]").val().split("/")[0];
-            //         break;
-            //     }
-            // }
-
             values = jQuery.param(values);
-
             var ajaxRequest;
-            // var urlpage = "{{ env('APP_URL') }}/storejurnal";
-            // if($("#is_edit").val() == 1){
-            //     urlpage = "{{ env('APP_URL') }}/updatejurnal/"+$("#id_jurnal").val();
-            // }
             ajaxRequest = $.ajax({
                 @if($page_data["page_method_name"] == "Update")
                     url: "/update{{$page_data["page_data_urlname"]}}/{{$page_data["id"]}}",
@@ -1070,11 +1043,6 @@ $(document).keydown(function(event) {
                 data: values,
                 success: function(data){
                     if(data.status >= 200 && data.status <= 299){
-                        id_jurnal = data.data.id;
-                        // $("#id_jurnal").val(data.data.id);
-                        $("#is_edit").val(1);
-                        // $("#no_jurnal").val(data.data.no_jurnal);
-                        
                         $.toast({
                             text: data.message,
                             heading: 'Status',
@@ -1086,19 +1054,19 @@ $(document).keydown(function(event) {
                             textAlign: 'left'
                         });
                     }
+                    $("#modal-trysubmit").modal("hide");
                     cto_loading_hide();
                     @if($page_data["page_method_name"] == "Update")
                     getdata();
                     @endif
-                    // getlist();
                 },
                 error: function (err) {
                     if (err.status == 422) {
                         $.each(err.responseJSON.errors, function (i, error) {
                             var validator = $("#quickForm").validate();
                             var errors = {};
-                            if(i == "coa" || i == "coa_label" || i == "deskripsibiaya" || i == "nominalbiaya"){
-                                errors["ct1_detailbiayakegiatan"] = error[0];
+                            if(i == "kegiatan" || i == "kegiatan_label" || i == "nominalbiaya"){
+                                errors["ct1_pencairanrka"] = error[0];
                             }else{
                                 errors[i] = error[0];
                             }
@@ -1119,7 +1087,86 @@ $(document).keydown(function(event) {
                     cto_loading_hide();
                 }
             });
+            $("#modal-trysubmit").modal("hide");
         }
     });
+
+    $("#trysubmit").on("click", function(){
+        $("#modal-trysubmit").modal("show");
+    });
+
+    $("#trysubmit-confirmed").on("click", function(){
+        $("#quickForm").submit();
+    });
+
+    $("#filterkegiatan").on("click", function(){
+        getlistrka();
+    });
+
+    function getlistrka(){
+        cto_loading_show();
+        $.ajax({
+            url: "/getlistrka",
+            type: "post",
+            data: {
+                _token: $("#quickForm input[name=_token]").val(),
+                tanggal_pencairan_start: $("input[name=tanggal_pencairan_start]").val().split("/")[2]+"-"+ $("input[name=tanggal_pencairan_start]").val().split("/")[1]+"-"+ $("input[name=tanggal_pencairan_start]").val().split("/")[0],
+                tanggal_pencairan_finish : $("input[name=tanggal_pencairan_finish]").val().split("/")[2]+"-"+ $("input[name=tanggal_pencairan_finish]").val().split("/")[1]+"-"+ $("input[name=tanggal_pencairan_finish]").val().split("/")[0]
+            },
+            success: function(data){
+                if(data.data.ct1_pencairanrka.length > 0){
+                    $("#caktable1 > tbody > tr").each(function(index){
+                        var row_index = parseInt($(this).attr("row-seq"));
+                        $(this).remove();
+                    });
+                    
+                    for(var i = 0; i < data.data.ct1_pencairanrka.length; i++){
+                        addRow();
+
+                        $("#caktable1 > tbody").find("[row-seq="+(parseInt(data.data.ct1_pencairanrka[i].no_seq))+"]").find("td:eq(0)").text(data.data.ct1_pencairanrka[i].kegiatan);
+                        $("select[name='kegiatan_"+(parseInt(data.data.ct1_pencairanrka[i].no_seq))+"']").empty();
+                        var newState = new Option(data.data.ct1_pencairanrka[i].kegiatan_label, data.data.ct1_pencairanrka[i].kegiatan, true, false);
+                        $("#kegiatan_"+(parseInt(data.data.ct1_pencairanrka[i].no_seq))+"").append(newState).trigger('change');
+                        // @if($page_data["page_method_name"] == "View")
+                        //     $("#kegiatan_"+(parseInt(data.data.ct1_pencairanrka[i].no_seq))+"").attr("disabled", true); 
+                        // @endif
+
+                        // console.log(data.data.ct1_pencairanrka[i].nominalbiaya);
+                        // AutoNumeric.getAutoNumericElement('#nom_'+(parseInt(data.data.ct1_pencairanrka[i].no_seq))).set("312331");
+                        // $("input[name='nom_"+(parseInt(data.data.ct1_pencairanrka[i].no_seq))+"']").trigger("change");
+                        $("#caktable1 > tbody > tr[row-seq="+(parseInt(data.data.ct1_pencairanrka[i].no_seq))+"]").find("td:eq(6)").text(data.data.ct1_pencairanrka[i].id);
+                    }
+                }else{
+                    $.toast({
+                        text: "Tidak ada Data!",
+                        heading: 'Status',
+                        icon: 'warning',
+                        showHideTransition: 'fade',
+                        allowToastClose: true,
+                        hideAfter: 3000,
+                        position: 'mid-center',
+                        textAlign: 'left'
+                    });
+                }
+            cto_loading_hide();
+        },
+            error: function (err) {
+                // console.log(err);
+                if (err.status >= 400 && err.status <= 500) {
+                    $.toast({
+                        text: err.status+" "+err.responseJSON.message,
+                        heading: 'Status',
+                        icon: 'warning',
+                        showHideTransition: 'fade',
+                        allowToastClose: true,
+                        hideAfter: 3000,
+                        position: 'mid-center',
+                        textAlign: 'left'
+                    });
+                }
+                cto_loading_hide();
+            }
+        });
+    }
  
 </script>
