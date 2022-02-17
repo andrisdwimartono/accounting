@@ -4285,9 +4285,9 @@ class JurnalController extends Controller
     }
 
     public function checkOpenPeriode($date){
-        // if(Auth::user()->role == "admin"){
-        //     return true;
-        // }
+        if(Auth::user()->role == "admin"){
+            return true;
+        }
         $opencloseperiode = Opencloseperiode::orderBy("id", "desc")->first();
         if($opencloseperiode->bulan_open == explode("-", $date)[1] && $opencloseperiode->tahun_open == explode("-", $date)[0]){
             return true;
