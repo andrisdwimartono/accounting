@@ -333,6 +333,18 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/deletepencairan', 'App\Http\Controllers\PencairanController@destroy');
         Route::get('/pencairan/{pencairan}', 'App\Http\Controllers\PencairanController@show');
         Route::post('/getdatapencairan', 'App\Http\Controllers\PencairanController@getdata');
+
+        Route::get('/settingpagupendapatan', 'App\Http\Controllers\SettingpagupendapatanController@index')->name('settingpagupendapatan');
+        Route::post('/getlistsettingpagupendapatan', 'App\Http\Controllers\SettingpagupendapatanController@get_list');
+        Route::get('/settingpagupendapatan/{settingpagupendapatan}', 'App\Http\Controllers\SettingpagupendapatanController@show');
+        Route::get('/createsettingpagupendapatan', 'App\Http\Controllers\SettingpagupendapatanController@create');
+        Route::post('/storesettingpagupendapatan', 'App\Http\Controllers\SettingpagupendapatanController@store');
+        Route::get('/settingpagupendapatan/{settingpagupendapatan}/edit', 'App\Http\Controllers\SettingpagupendapatanController@edit');
+        Route::post('/getdatasettingpagupendapatan', 'App\Http\Controllers\SettingpagupendapatanController@getdata');
+        Route::post('/updatesettingpagupendapatan/{settingpagupendapatan}', 'App\Http\Controllers\SettingpagupendapatanController@update');
+        Route::post('/deletesettingpagupendapatan', 'App\Http\Controllers\SettingpagupendapatanController@destroy');
+        Route::post('/getlinkssettingpagupendapatan', 'App\Http\Controllers\SettingpagupendapatanController@getlinks');
+        Route::post('/getoptionssettingpagupendapatan', 'App\Http\Controllers\SettingpagupendapatanController@getoptions');
     });
 });
 
