@@ -181,7 +181,7 @@ class UserController extends Controller
                 "photo_profile"=> $request->photo_profile,
                 "unitkerja"=> $request->unitkerja,
                 "unitkerja_label"=> $request->unitkerja_label,
-                "role"=> $request->role,
+                "role"=> $request->role_label,
                 "role_label"=> $request->role_label,
                 "user_creator_id"=> Auth::user()->id
             ])->id;

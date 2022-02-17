@@ -266,7 +266,6 @@
                                     <label class="col-sm-4 col-form-label" for="role">Jabatan</label>
                                     <div class="col-sm-6 cakfield">
                                         <select name="role" id="role" class="form-control select2bs4staticBackdrop" style="width: 100%;" @if($page_data["page_method_name"] == "View") readonly @endif>
-
                                         </select>
                                         <input type="hidden" name="role_label" id="role_label">
                                     </div>

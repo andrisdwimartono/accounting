@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Globalsetting;
 use App\Models\Bankva;
 use App\Models\Coa;
+use App\Models\Role;
 use App\Models\Approvalsetting;
 use Session;
 
@@ -96,7 +97,7 @@ class GlobalsettingController extends Controller
         ];
 
         $td["fieldsrules_ct2_approval_setting"] = [
-            "role" => "required|in:admin,direktur,manager,staffkeuangan,staff",
+            "role" => "required",
             "jenismenu" => "required"
         ];
 
@@ -345,7 +346,7 @@ class GlobalsettingController extends Controller
                     Approvalsetting::where("id", $ct_request["id"])->update([
                         "no_seq" => $ct_request["no_seq"],
                         "parent_id" => $id,
-                        "role"=> $ct_request["role"],
+                        "role"=> $ct_request["role_label"],
                         "role_label"=> $ct_request["role_label"],
                         "jenismenu"=> $ct_request["jenismenu"],
                         "user_updater_id" => Auth::user()->id
@@ -354,7 +355,7 @@ class GlobalsettingController extends Controller
                     $idct = Approvalsetting::create([
                         "no_seq" => $ct_request["no_seq"],
                         "parent_id" => $id,
-                        "role"=> $ct_request["role"],
+                        "role"=> $ct_request["role_label"],
                         "role_label"=> $ct_request["role_label"],
                         "jenismenu"=> $ct_request["jenismenu"],
                         "user_creator_id" => Auth::user()->id
@@ -510,6 +511,11 @@ class GlobalsettingController extends Controller
                     $q->where("coa_name", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("coa_name as text")]);
                 $count = Coa::count();
+            } else if($request->field == "role"){
+                $lists = Role::where(function($q) use ($request) {
+                    $q->where("nama", "ILIKE", "%" . $request->term. "%");
+                })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("alias as text")]);
+                $count = Role::count();
             }
 
             $endCount = $offset + $resultCount;

@@ -151,7 +151,7 @@ class KegiatanController extends Controller
         ];
 
         $td["fieldsrules_pengajuan"] = [
-            // "tanggal_pencairan" => "required"
+            "tanggal_pencairan" => "required"
         ];
 
         $td["fieldsmessages_ct1_detailbiayapjk"] = [

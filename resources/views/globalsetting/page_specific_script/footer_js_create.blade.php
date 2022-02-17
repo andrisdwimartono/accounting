@@ -172,31 +172,33 @@ $.ajax({
     }
 });
 
-$.ajax({
-    url: "/getoptions{{$page_data["page_data_urlname"]}}",
-    type: "post",
-    data: {
-        fieldname: "role",
-        _token: $("#quickForm input[name=_token]").val()
-    },
-    success: function(data){
-        var newState = new Option("", "", true, false);
-        $("#role").append(newState).trigger("change");
-        for(var i = 0; i < data.length; i++){
-            if(data[i].name){
-                newState = new Option(data[i].label, data[i].name, true, false);
-                $("#role").append(newState).trigger("change");
+$("#role").select2({
+    ajax: {
+        url: "/getlinks{{$page_data["page_data_urlname"]}}",
+        type: "post",
+        data: {
+            field: "role",
+            _token: $("#quickForm input[name=_token]").val()
+        },
+        success: function(data){
+            var newState = new Option("", "", true, false);
+            $("#role").append(newState).trigger("change");
+            for(var i = 0; i < data.length; i++){
+                if(data[i].name){
+                    newState = new Option(data[i].label, data[i].name, true, false);
+                    $("#role").append(newState).trigger("change");
+                }
             }
-        }
-    },
-    error: function (err) {
-        if (err.status == 422) {
-            $.each(err.responseJSON.errors, function (i, error) {
-                var validator = $("#quickForm").validate();
-                var errors = {}
-                errors[i] = error[0];
-                validator.showErrors(errors);
-            });
+        },
+        error: function (err) {
+            if (err.status == 422) {
+                $.each(err.responseJSON.errors, function (i, error) {
+                    var validator = $("#quickForm").validate();
+                    var errors = {}
+                    errors[i] = error[0];
+                    validator.showErrors(errors);
+                });
+            }
         }
     }
 });
