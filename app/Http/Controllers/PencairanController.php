@@ -145,6 +145,8 @@ class PencairanController extends Controller
                     "kegiatan_label"=> $ct_request["kegiatan_label"],
                     "nominalbiaya"=> $nominalbiaya
                 ])->id;
+
+                
             }
 
             return response()->json([
@@ -213,6 +215,11 @@ class PencairanController extends Controller
         if(Pencairan::where("id", $request->id)->update([
             "status" => "deleted"
         ])){
+            foreach(Pencairanrka::where("parent_id", $request->id)->get() as $pr){
+                Kegiatan::where("id", $pr->kegiatan)->update([
+                    "status" => "approved"
+                ]);
+            }
             $results = array(
                 "status" => 201,
                 "message" => "Berhasil dihapus",
@@ -255,8 +262,39 @@ class PencairanController extends Controller
             // <!-- <a href="/pencairan/'.$pencairan->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a> -->
 
             // ';
+
+            $status = "";
+            switch ($pencairan->status) {
+                case "process":
+                    $status = "<span class='badge light badge-secondary' style='width:70px'>".$pencairan->status."</span>";
+                    break;
+                case "approving":
+                    $status = "<span class='badge light badge-secondary' style='width:70px'>".$pencairan->status."</span>";
+                    break;
+                case "approved":
+                    $status = "<span class='badge light badge-primary' style='width:70px'>".$pencairan->status."</span>";
+                    break;
+                case "submitting":
+                    $status = "<span class='badge light badge-secondary' style='width:70px'>".$pencairan->status."</span>";
+                    break;
+                case "submitted":
+                    $status = "<span class='badge light badge-info' style='width:70px'>".$pencairan->status."</span>";
+                    break;
+                case "paid":
+                    $status = "<span class='badge light badge-success' style='width:70px'>".$pencairan->status."</span>";
+                    break;
+                case "reporting":
+                    $status = "<span class='badge light badge-warning' style='width:70px'>".$pencairan->status."</span>";
+                    break;
+                case "finish":
+                    $status = "<span class='badge light badge-warning' style='width:70px'>".$pencairan->status."</span>";
+                    break;
+                case "deleted":
+                    $status = "<span class='badge light badge-danger' style='width:70px'>".$pencairan->status."</span>";
+                    break;
+            }
             
-            array_push($dt, array($pencairan->id, $this->tgl_indo($pencairan->tanggal_pencairan, "-", 2,1,0), $pencairan->catatan, $pencairan->status, $act));
+            array_push($dt, array($pencairan->id, $this->tgl_indo($pencairan->tanggal_pencairan, "-", 2,1,0), $pencairan->catatan, $status, $act));
         }
         
         $output = array(
@@ -284,7 +322,7 @@ class PencairanController extends Controller
             if($request->field == "kegiatan"){
                 $lists = Kegiatan::where(function($q) use ($request) {
                     $q->where("kegiatan_name", "ILIKE", "%" . $request->term. "%");
-                })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("kegiatan_name as text")]);
+                })->where("status", "submitted")->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("kegiatan_name as text")]);
                 $count = Kegiatan::count();
             }
 
@@ -361,7 +399,7 @@ class PencairanController extends Controller
         if($request->ajax() || $request->wantsJson()){
             $lists = Kegiatan::where(function($q) use ($request) {
                 $q->whereBetween("tanggal", [$request->tanggal_pencairan_start, $request->tanggal_pencairan_finish]);
-            })->orderBy("id")->get([DB::raw("id as kegiatan"), DB::raw("kegiatan_name as kegiatan_label")]);
+            })->where("status", "submitted")->orderBy("id")->get([DB::raw("id as kegiatan"), DB::raw("kegiatan_name as kegiatan_label")]);
 
             $no_seq = 1;
             foreach($lists as $list){

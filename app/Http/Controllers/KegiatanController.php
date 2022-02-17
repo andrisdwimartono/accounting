@@ -666,7 +666,7 @@ class KegiatanController extends Controller
         foreach(Kegiatan::where(function($q) use ($keyword) {
             $q->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
         })->where(function($q) use ($ukl, $rl){
-            if($rl != 'admin'){
+            if($rl != 'admin' && $rl != 'Administrator'){
                 if($ukl){
                     $q->where("unit_pelaksana", $ukl);
                 }
@@ -849,7 +849,7 @@ class KegiatanController extends Controller
         foreach(Kegiatan::where(function($q) use ($keyword) {
             $q->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
         })->where(function($q) use ($ukl, $rl){
-            if($rl != 'admin'){
+            if($rl != 'admin' && $rl != 'Administrator'){
                 if($ukl){
                     $q->where("unit_pelaksana", $ukl);
                 }
@@ -902,7 +902,7 @@ class KegiatanController extends Controller
         foreach(Kegiatan::where(function($q) use ($keyword) {
             $q->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
         })->where(function($q) use ($ukl, $rl){
-            if($rl != 'admin'){
+            if($rl != 'admin' && $rl != 'Administrator'){
                 if($ukl){
                     $q->where("unit_pelaksana", $ukl);
                 }
@@ -962,26 +962,77 @@ class KegiatanController extends Controller
         foreach(Kegiatan::where(function($q) use ($keyword) {
             $q->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
         })->where(function($q) use ($ukl, $rl){
-            if($rl != 'admin'){
+            if($rl != 'admin' && $rl != 'Administrator'){
                 if($ukl){
                     $q->where("unit_pelaksana", $ukl);
                 }
             }
-        })
-        ->whereIn('status', array('finish'))
-        ->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status"]) as $kegiatan){
+        })->whereIn("status", ["finish", "paid"])->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status", "user_creator_id"]) as $kegiatan){
             $no = $no+1;
-            $act = '
-            <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
+            $act = '';
+            
+            if($kegiatan->user_creator_id = Auth::user()->id){
+                $act .= '
+                <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>';
+            } else {
+                $act .= '<a href="/kegiatan/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
 
-            <a href="/kegiatan/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
+                <button type="button" class="row-delete btn btn-danger shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
+            }
 
-            <button type="button" class="row-delete btn btn-danger shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
+            // dd(Auth::user()->role );
+            if(Auth::user()->role == 'admin'){
+                $act .= '
+                <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
+           
+                <a href="/kegiatan/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
 
-            $status = $this->status($kegiatan->status);
-            $act = $this->action($kegiatan);
+                <button type="button" class="row-delete btn btn-danger shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
+            }
 
-            array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $status, $act));
+
+            
+            $status = "";
+            switch ($kegiatan->status) {
+                case "process":
+                    $status = "<span class='badge light badge-secondary' style='width:70px'>".$kegiatan->status."</span>";
+                    break;
+                case "approving":
+                    $status = "<span class='badge light badge-secondary' style='width:70px'>".$kegiatan->status."</span>";
+                    break;
+                case "approved":
+                    $status = "<span class='badge light badge-primary' style='width:70px'>".$kegiatan->status."</span>";
+                    break;
+                case "submitting":
+                    $status = "<span class='badge light badge-secondary' style='width:70px'>".$kegiatan->status."</span>";
+                    break;
+                case "submitted":
+                    $status = "<span class='badge light badge-info' style='width:70px'>".$kegiatan->status."</span>";
+                    break;
+                case "paid":
+                    $status = "<span class='badge light badge-success' style='width:70px'>".$kegiatan->status."</span>";
+                    break;
+                case "reporting":
+                    $status = "<span class='badge light badge-warning' style='width:70px'>".$kegiatan->status."</span>";
+                    break;
+                case "finish":
+                    $status = "<span class='badge light badge-warning' style='width:70px'>".$kegiatan->status."</span>";
+                    break;
+            }
+
+            $lpjact = "";
+            if($kegiatan->status == "paid"){
+                $pjk = Pjk::where('kegiatan_id', $kegiatan->id)->first();
+                $lpjact = '';
+                if($pjk){
+                    $lpjact .= '
+                    <a href="/pjk/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>';
+                }
+                $lpjact .= '
+                    <a href="/pjk/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>';
+            }
+
+            array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $status, $lpjact, $act));
         }
 
 
@@ -990,7 +1041,7 @@ class KegiatanController extends Controller
             "recordsTotal" => Kegiatan::get()->count(),
             "recordsFiltered" => intval(Kegiatan::where(function($q) use ($keyword) {
                 $q->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
-            })->orderBy($orders[0], $orders[1])->get()->count()),
+            })->whereIn("status", ["finish", "paid"])->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
 
@@ -1769,8 +1820,8 @@ class KegiatanController extends Controller
     public function storepjk(Request $request, $id)
     {
         $keg = Kegiatan::where("id",$id)->first();
-        if($keg->status != "approved"){
-            abort(403, "tidak dapat di PJK, status belum approved");
+        if($keg->status != "paid"){
+            abort(403, "tidak dapat di PJK, status belum terbayar");
         }
         $page_data = $this->tabledesign();
         $rules_ct1_detailbiayapjk = $page_data["fieldsrules_ct1_detailbiayapjk"];
@@ -1846,8 +1897,8 @@ class KegiatanController extends Controller
             $kegiatan = Kegiatan::whereId($request->id)->first();
             if(!$kegiatan){
                 abort(404, "Data not found");
-            }elseif($kegiatan->status != "approved"){
-                abort(403, "RKA belum di-approved");
+            }elseif($kegiatan->status != "paid"){
+                abort(403, "RKA belum terbayar");
             }
 
             $pjk = Pjk::where("kegiatan_id", $request->id)->first();

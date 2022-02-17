@@ -1240,7 +1240,8 @@ class JurnalController extends Controller
 
             if(in_array($coa->category, array("pendapatan", "biaya", "biaya_lainnya", "pendapatan_lainnya"))){
                 //$coa_sur_def = Coa::where("coa_code", "30101008")->first();
-                $coa_sur_def = Coa::where("coa_code", "30300001")->first();
+                //$coa_sur_def = Coa::where("coa_code", "30300001")->first();
+                $coa_sur_def = Coa::where("coa_code", "340000001")->first();
                 $neraca = Neraca::where("coa", $coa_sur_def->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->first();
                 if($neraca){
                     Neraca::where("coa", $coa_sur_def->id)->where("tahun_periode", $tahun)->where("bulan_periode", $bulan)->where("unitkerja", $transaction->unitkerja)->update([
@@ -4221,6 +4222,11 @@ class JurnalController extends Controller
                 Pencairanrka::where("id", $idct)->update([
                     "transaction" => $idct_trans
                 ]);
+                
+                Kegiatan::where("id", $ct_request["kegiatan"])->update([
+                    "status" => "paid"
+                ]);
+
                 $this->summerizeJournal("store", $idct_trans);
             }
 
