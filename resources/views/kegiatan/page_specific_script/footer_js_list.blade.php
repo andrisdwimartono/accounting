@@ -64,7 +64,7 @@
                   $(node).removeClass('dt-button')
                 },
                 action: function ( e, dt, node, config ) {
-                  window.location.href = "/create{{$page_data["page_data_urlname"]}}";
+                  window.location.href = "/createkegiatan";
                 }
             },
         ],

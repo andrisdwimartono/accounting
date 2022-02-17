@@ -546,7 +546,36 @@ class KegiatanController extends Controller
         $page_data = $this->tabledesign();
         $rules = $page_data["fieldsrules_pengajuan"];
         $messages = $page_data["fieldsmessages"];
-        if($request->validate($rules, $messages)){
+        if(isset($request->tanggal_pencairan)){
+            if($request->validate($rules, $messages)){
+                Kegiatan::where("id", $id)->update([
+                    "tanggal_pencairan"=> $request->tanggal_pencairan,
+                    "status" => "submitting"
+                ]);
+            }
+
+            Kegiatan::where("id", $id)->update([
+                "tanggal_pencairan"=> $request->tanggal_pencairan,
+                "status" => "submitting"
+            ]);
+            
+            foreach(Approvalsetting::where("jenismenu", "pengajuan")->get() as $appr){
+                Approval::create([
+                    "no_seq" => $appr->no_seq,
+                    "parent_id" => $id,
+                    "role"=> $appr->role,
+                    "role_label"=> $appr->role_label,
+                    "jenismenu"=> $appr->jenismenu,
+                    "user_creator_id" => Auth::user()->id
+                ]);
+            }
+
+            return response()->json([
+                'status' => 201,
+                'message' => 'Anggaran diajukan',
+                'data' => ['id' => $id]
+            ]);
+        } else {
             Kegiatan::where("id", $id)->update([
                 "tanggal_pencairan"=> $request->tanggal_pencairan,
                 "status" => "submitting"
@@ -569,6 +598,9 @@ class KegiatanController extends Controller
                 'data' => ['id' => $id]
             ]);
         }
+        
+            
+        
     }
 
     public function updaterka($request, $id)
@@ -843,7 +875,7 @@ class KegiatanController extends Controller
             $act .= '
             <a href="/pengajuan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>';        
 
-        } else if($kegiatan->status == "process" ){
+        } else if($kegiatan->status == "process" || $kegiatan->status == "approving" ){
             // if($kegiatan->user_creator_id != Auth::user()->id){
                 $act .= '
                 <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>';
