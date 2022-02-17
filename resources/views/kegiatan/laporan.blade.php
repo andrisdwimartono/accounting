@@ -62,7 +62,7 @@
                                                 <!-- <th>IKU</th> -->
                                                 <th width=250px>Nama</th>
                                                 <th>Output</th>
-                                                <!-- <th>Action</th> -->
+                                                <th>Status</th>
                                             </tr>
                                         </thead>
                                     </table>

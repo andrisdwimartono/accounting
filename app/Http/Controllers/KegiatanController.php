@@ -227,6 +227,42 @@ class KegiatanController extends Controller
         return view("kegiatan.laporan", ["page_data" => $page_data]);
     }
 
+    public function laporan_pengajuan()
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "Laporan";
+        $page_data["page_data_name"] = "Pengajuan Anggaran";
+        $page_data["page_data_urlname"] = "pengajuan";
+        $page_data["footer_js_page_specific_script"] = ["kegiatan.page_specific_script.footer_js_laporan"];
+        $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_list"];
+        
+        return view("kegiatan.laporan", ["page_data" => $page_data]);
+    }
+
+    public function laporan_pencairan()
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "Laporan";
+        $page_data["page_data_name"] = "Pencairan Anggaran";
+        $page_data["page_data_urlname"] = "pencairan";
+        $page_data["footer_js_page_specific_script"] = ["kegiatan.page_specific_script.footer_js_laporan"];
+        $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_list"];
+        
+        return view("kegiatan.laporan", ["page_data" => $page_data]);
+    }
+
+    public function laporan_pertanggungjawaban()
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "Laporan";
+        $page_data["page_data_name"] = "Pertanggungjawaban Anggaran";
+        $page_data["page_data_urlname"] = "pertanggungjawaban";
+        $page_data["footer_js_page_specific_script"] = ["kegiatan.page_specific_script.footer_js_laporan"];
+        $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_list"];
+        
+        return view("kegiatan.laporan", ["page_data" => $page_data]);
+    }
+
     /**
     * Show the form for creating a new resource.
     *
@@ -774,9 +810,9 @@ class KegiatanController extends Controller
                 $status = "<span class='badge light badge-success' style='width:70px'>".$data."</span>";
                 break;
             case "reporting":
-                $status = "<span class='badge light badge-warning' style='width:70px'>".$data."</span>";
+                $status = "<span class='badge light badge-secondary' style='width:70px'>".$data."</span>";
                 break;
-            case "finish":
+            case "reported":
                 $status = "<span class='badge light badge-warning' style='width:70px'>".$data."</span>";
                 break;
         }
@@ -1048,7 +1084,7 @@ class KegiatanController extends Controller
         echo json_encode($output);
     }
 
-    public function get_list_laporan(Request $request)
+    public function get_list_laporan(Request $request, $jenis)
     {
         $list_column = array("id", "unit_pelaksana_label", "tanggal", "kegiatan_name", "output", "id");
         $keyword = null;
@@ -1081,15 +1117,22 @@ class KegiatanController extends Controller
                 $q->where("unit_pelaksana", $unit_pelaksana);
             }
         })
+        ->where(function($q) use ($jenis) {
+            if($jenis=='kegiatan'){
+                $q->whereIn("status", array("process","approved"));
+            } else if($jenis=='pengajuan'){
+                $q->whereIn("status", array("submitted","submitting"));
+            } else if($jenis=='pencairan'){
+                $q->whereIn("status", array("paid"));
+            } else if($jenis=='pertanggungjawaban'){
+                $q->whereIn("status", array("reporting", "reported"));
+            }
+        })
         ->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])
-        ->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output"]) as $kegiatan){
+        ->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status"]) as $kegiatan){
             $no = $no+1;
-            $act = '
-            <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
-
-            <a href="/kegiatan/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>
-
-            <button type="button" class="row-delete btn btn-danger shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
+            $status = $this->status($kegiatan->status);
+            
 
             $detail = array();
             $total = 0;
@@ -1103,7 +1146,7 @@ class KegiatanController extends Controller
             array_push($detail, array("", "<b>TOTAL</b>", $tot));
             // $detail = Detailbiayakegiatan::whereParentId($kegiatan->id)->get();
 
-            array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $kegiatan->output, $act, $detail));
+            array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $kegiatan->output, $status, $detail));
         }
 
 

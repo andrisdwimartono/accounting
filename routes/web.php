@@ -293,10 +293,15 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/pertanggungjawaban', 'App\Http\Controllers\KegiatanController@pertanggungjawaban');
         Route::post('/getlistpertanggungjawaban', 'App\Http\Controllers\KegiatanController@get_list_pertanggungjawaban');
         
-        Route::get('/kegiatan', 'App\Http\Controllers\KegiatanController@index')->name('kegiatan');
         Route::get('/kegiatan/laporan', 'App\Http\Controllers\KegiatanController@laporan');        
+        Route::post('/getlistlaporan/{jenis}', 'App\Http\Controllers\KegiatanController@get_list_laporan');
+        Route::get('/pengajuan-laporan', 'App\Http\Controllers\KegiatanController@laporan_pengajuan');        
+        Route::get('/pencairan-laporan', 'App\Http\Controllers\KegiatanController@laporan_pencairan');                
+        Route::get('/pertanggungjawaban-laporan', 'App\Http\Controllers\KegiatanController@laporan_pertanggungjawaban');        
+        
+
+        Route::get('/kegiatan', 'App\Http\Controllers\KegiatanController@index')->name('kegiatan');
         Route::post('/getlistkegiatan', 'App\Http\Controllers\KegiatanController@get_list_rka');
-        Route::post('/getlistlaporankegiatan', 'App\Http\Controllers\KegiatanController@get_list_laporan');
         Route::get('/kegiatan/{kegiatan}', 'App\Http\Controllers\KegiatanController@show');
         Route::get('/createkegiatan', 'App\Http\Controllers\KegiatanController@create');
         Route::post('/storekegiatan', 'App\Http\Controllers\KegiatanController@store');

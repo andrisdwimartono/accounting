@@ -96,7 +96,7 @@ function format ( d ) {
         ],
         aoColumnDefs: [
             { 
-              "targets": [5,6],
+              "targets": [6],
               "class" : "column-hidden",
             }
             ],
@@ -109,7 +109,7 @@ function format ( d ) {
           "pageLength": 20,
           "order": [[ 1, "asc" ]],
           "ajax" : {
-            url:"/getlistlaporan{{$page_data["page_data_urlname"]}}",
+            url:"/getlistlaporan/{{$page_data["page_data_urlname"]}}",
             type:"POST",
             data:{
               search : {
