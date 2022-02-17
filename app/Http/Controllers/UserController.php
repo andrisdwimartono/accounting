@@ -391,7 +391,7 @@ class UserController extends Controller
             } else if($request->field == "role"){
                 $lists = Role::where(function($q) use ($request) {
                     $q->where("nama", "ILIKE", "%" . $request->term. "%");
-                })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("alias as text")]);
+                })->orderBy("id")->skip($offset)->take($resultCount)->get(["alias", DB::raw("alias as text")]);
                 $count = Role::count();
             }
 
