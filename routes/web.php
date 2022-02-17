@@ -315,6 +315,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/processapprove', 'App\Http\Controllers\KegiatanController@processapprove');
         Route::post('/getdatakegiatanhistory', 'App\Http\Controllers\KegiatanController@getdatahistory');
         Route::post('/getdatapjkhistory', 'App\Http\Controllers\KegiatanController@getdatahistorypjk');
+        Route::get('/persetujuankegiatan', 'App\Http\Controllers\KegiatanController@persetujuankegiatan');
+        Route::post('/getlistpersetujuankegiatan', 'App\Http\Controllers\KegiatanController@get_list_persetujuankegiatan');
 
         Route::get('/pjk/{kegiatan}/edit', 'App\Http\Controllers\KegiatanController@createpjk');
         Route::post('/storepjk', 'App\Http\Controllers\KegiatanController@storepjk');
