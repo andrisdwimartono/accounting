@@ -1136,6 +1136,9 @@ function processapprove(status, komentar = ""){
         }
     });
     cto_loading_hide();
+    @if($page_data["page_method_name"] == "Update")
+    getdata();
+    @endif
     <?php } ?>
 }
 
@@ -1240,6 +1243,9 @@ function processapprove_pengajuan(status, komentar = ""){
             }
         }
     });
+    @if($page_data["page_method_name"] == "Update")
+    getdata();
+    @endif
     cto_loading_hide();
     <?php } ?>
 }
