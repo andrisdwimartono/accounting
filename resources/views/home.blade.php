@@ -17,7 +17,7 @@
                                     @else
                                         <img class="mb-4" src="{{ asset ('/assets/images/logo_sia_default.png') }}" alt="" height="100">
                                     @endif
-                                    <h4>{{$globalsetting->nama_sia}}</h4>
+                                    <h4>{!! $globalsetting->nama_sia !!}</h4>
                                 </center>
                             </div>
                         </div>
