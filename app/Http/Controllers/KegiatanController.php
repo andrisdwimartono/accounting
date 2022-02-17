@@ -184,6 +184,8 @@ class KegiatanController extends Controller
     public function persetujuankegiatan(){
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "List";
+        $page_data["page_data_name"] = "Persetujuan Rencana Kegiatan dan Anggaran";
+        $page_data["page_data_urlname"] = "kegiatan";
         $page_data["footer_js_page_specific_script"] = ["kegiatan.page_specific_script.footer_js_list_persetujuankegiatan"];
         $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_list"];
         
