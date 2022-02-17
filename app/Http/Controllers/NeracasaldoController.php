@@ -310,7 +310,7 @@ class NeracasaldoController extends Controller
         $iter = array_filter($dt, function ($dt) {
             return ($dt[3] != 0) || ($dt[4] != 0) && ($dt[7] != "on");
         });
-
+        
         // sum nominal to header
         foreach($iter as $key => $item){
             $d = $item;
@@ -327,10 +327,15 @@ class NeracasaldoController extends Controller
             return ($dt[3] != 0) || ($dt[4] != 0);
             // return $dt;
         });
-
+        // leveling
+        if($child_level==0){
+            $dt = array_filter($dt, function ($dt) use ($child_level) {
+                return ((int)$dt[6] <= 1);
+            });
+        }
         
         // sort by code
-        $columns = array_column($dt, 1);
+        $columns = array_column($dt, 2);
         array_multisort($columns, SORT_ASC, $dt);
         // convert array
         $dt = array_values($dt);

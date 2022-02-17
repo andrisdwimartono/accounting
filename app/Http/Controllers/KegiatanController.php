@@ -1294,7 +1294,7 @@ class KegiatanController extends Controller
         if($request->ajax() || $request->wantsJson()){
             $last_approval = Approval::where("jenismenu", "RKA")->where("parent_id", $request->id)->where("no_seq", ((int)$request->no_seq)+1)->first();
 
-            if(!(($this->lastapprove($request->id) && $this->lastapprove($request->id)->role == Auth::user()->role_label) || ($this->nextapprove($request->id) && $this->nextapprove($request->id)->role == Auth::user()->role_label))){
+            if(!(($this->lastapprove($request->id) && ($this->lastapprove($request->id)->role == Auth::user()->role_label || $this->lastapprove($request->id)->role == Auth::user()->role)) || ($this->nextapprove($request->id) && ($this->nextapprove($request->id)->role == Auth::user()->role_label || $this->nextapprove($request->id)->role == Auth::user()->role)))){
                 //abort(403, $last_approval->role_label." tidak/belum menerima pengajuan ini!");
                 abort(403, " Tidak bisa melakukan approval!");
             }
@@ -1766,7 +1766,7 @@ class KegiatanController extends Controller
     public function updatepjk(Request $request, $id)
     {
         $keg = Kegiatan::where("id",$id)->first();
-        if($keg->status != "approved"){
+        if($keg->status != "paid"){
             abort(403, "tidak dapat di PJK, status belum approved");
         }
 
@@ -1790,74 +1790,62 @@ class KegiatanController extends Controller
 
         $rules = $page_data["fieldsrules"];
         $messages = $page_data["fieldsmessages"];
-        if($request->validate($rules, $messages)){
-            Pjk::where("id", $thispjk->id)->update([
-                "unit_pelaksana"=> $request->unit_pelaksana,
-                "unit_pelaksana_label"=> $request->unit_pelaksana_label,
-                "tahun"=> $request->tahun,
-                "tahun_label"=> $request->tahun_label,
-                "iku"=> $request->iku,
-                "iku_label"=> $request->iku_label,
-                "kegiatan_name"=> $request->kegiatan_name,
-                "Deskripsi"=> $request->Deskripsi == ''?null:$request->Deskripsi,
-                "output"=> $request->output == ''?null:$request->output,
-                "proposal"=> $request->proposal == ''?null:$request->proposal,
-                'kegiatan_id' => $id,
-                'desc_pjk' => $request->desc_pjk == ''?null:$request->desc_pjk,
-                'laporan_pjk' => $request->laporan_pjk == ''?null:$request->laporan_pjk, 
-                'user_pjk' => Auth::user()->id,
-                "user_updater_id"=> Auth::user()->id,
-                "status" =>"process"
-            ]);
-            
-            $new_menu_field_ids = array();
-            foreach($requests_ct1_detailbiayapjk as $ct_request){
-                if(isset($ct_request["id"])){
-                    Detailbiayapjk::where("id", $ct_request["id"])->update([
-                        "no_seq" => $ct_request["no_seq"],
-                        "parent_id" => $thispjk->id,
-                        "coa"=> $ct_request["coa"],
-                        "coa_label"=> $ct_request["coa_label"],
-                        "deskripsibiaya"=> $ct_request["deskripsibiaya"],
-                        "nominalbiaya"=> $ct_request["nominalbiaya"],
-                        'kegiatan_id' => $id,
-                        'desc_detail' => $ct_request["desc_detail"],
-                        "user_updater_id" => Auth::user()->id
-                    ]);
-                }else{
-                    $idct = Detailbiayapjk::create([
-                        "no_seq" => $ct_request["no_seq"],
-                        "parent_id" => $thispjk->id,
-                        "coa"=> $ct_request["coa"],
-                        "coa_label"=> $ct_request["coa_label"],
-                        "deskripsibiaya"=> $ct_request["deskripsibiaya"],
-                        "nominalbiaya"=> $ct_request["nominalbiaya"],
-                        'kegiatan_id' => $id,
-                        'desc_detail' => $ct_request["desc_detail"],
-                        "user_creator_id" => Auth::user()->id
-                    ])->id;
-                    array_push($new_menu_field_ids, $idct);
+        Pjk::where("id", $thispjk->id)->update([
+            "user_updater_id"=> Auth::user()->id,
+            "status" =>"approving"
+        ]);
+        
+        $new_menu_field_ids = array();
+        foreach($requests_ct1_detailbiayapjk as $ct_request){
+            if(isset($ct_request["id"])){
+                Detailbiayapjk::where("id", $ct_request["id"])->update([
+                    "no_seq" => $ct_request["no_seq"],
+                    "parent_id" => $thispjk->id,
+                    "coa"=> $ct_request["coa"],
+                    "coa_label"=> $ct_request["coa_label"],
+                    "deskripsibiaya"=> $ct_request["deskripsibiaya"],
+                    "nominalbiaya"=> $ct_request["nominalbiaya"],
+                    'kegiatan_id' => $id,
+                    'desc_detail' => $ct_request["desc_detail"],
+                    'status' => $ct_request["status"],
+                    'komentarrevisi' => $ct_request["komentarrevisi"],
+                    "user_updater_id" => Auth::user()->id
+                ]);
+            }else{
+                $idct = Detailbiayapjk::create([
+                    "no_seq" => $ct_request["no_seq"],
+                    "parent_id" => $thispjk->id,
+                    "coa"=> $ct_request["coa"],
+                    "coa_label"=> $ct_request["coa_label"],
+                    "deskripsibiaya"=> $ct_request["deskripsibiaya"],
+                    "nominalbiaya"=> $ct_request["nominalbiaya"],
+                    'kegiatan_id' => $id,
+                    'desc_detail' => $ct_request["desc_detail"],
+                    'status' => $ct_request["status"],
+                    'komentarrevisi' => $ct_request["komentarrevisi"],
+                    "user_creator_id" => Auth::user()->id
+                ])->id;
+                array_push($new_menu_field_ids, $idct);
+            }
+        }
+
+        foreach(Detailbiayapjk::whereParentId($thispjk->id)->get() as $ch){
+                $is_still_exist = false;
+                foreach($requests_ct1_detailbiayapjk as $ct_request){
+                    if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
+                        $is_still_exist = true;
+                    }
+                }
+                if(!$is_still_exist){
+                    Detailbiayapjk::whereId($ch->id)->delete();
                 }
             }
 
-            foreach(Detailbiayapjk::whereParentId($thispjk->id)->get() as $ch){
-                    $is_still_exist = false;
-                    foreach($requests_ct1_detailbiayapjk as $ct_request){
-                        if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
-                            $is_still_exist = true;
-                        }
-                    }
-                    if(!$is_still_exist){
-                        Detailbiayapjk::whereId($ch->id)->delete();
-                    }
-                }
-
-            return response()->json([
-                'status' => 201,
-                'message' => 'Id '.$id.' is updated',
-                'data' => ['id' => $id]
-            ]);
-        }
+        return response()->json([
+            'status' => 201,
+            'message' => 'Id '.$id.' is updated',
+            'data' => ['id' => $id]
+        ]);
     }
 
     public function storepjk(Request $request, $id)

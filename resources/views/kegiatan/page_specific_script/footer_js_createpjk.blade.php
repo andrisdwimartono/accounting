@@ -1139,6 +1139,7 @@ function processapprove(status, komentar = ""){
         var coa = 0;
         var coa_label = "";
         var deskripsibiaya = "";
+        var desc_detail = "";
         var nominalbiaya = 0;
         var desc_detail = "";
         var id = "";
@@ -1155,7 +1156,7 @@ function processapprove(status, komentar = ""){
             }else if(index == 3){
                 nominalbiaya = AutoNumeric.getNumber("#nom_"+$(tr).attr("row-seq"));
             }else if(index == 4){
-                deskripsibiaya = $(td).find("input").val();
+                desc_detail = $(td).find("input").val();
             }else if(index == 8){
                 id = $(td).text();
             }else if(index == 7){
@@ -1167,7 +1168,7 @@ function processapprove(status, komentar = ""){
             console.log(td);
         });
         if(coa != '')
-            ctct1_detailbiayakegiatan.push({"no_seq": index, "coa": coa, "coa_label": coa_label, "deskripsibiaya": deskripsibiaya, "nominalbiaya": nominalbiaya, "id": id, "komentarrevisi": komentarrevisi, "status": status});
+            ctct1_detailbiayakegiatan.push({"no_seq": index, "coa": coa, "coa_label": coa_label, "deskripsibiaya": deskripsibiaya, "nominalbiaya": nominalbiaya, "id": id, "desc_detail": desc_detail, "komentarrevisi": komentarrevisi, "status": status});
     });
 
     

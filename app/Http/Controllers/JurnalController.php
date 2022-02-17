@@ -3843,7 +3843,7 @@ class JurnalController extends Controller
 
             $last_approval = Approval::where("jenismenu", "PJK")->where("parent_id", $kegiatan->id)->where("no_seq", ((int)$request->no_seq)+1)->first();
 
-            if(!(($this->lastapprovepjk($kegiatan->id) && $this->lastapprovepjk($kegiatan->id)->role == Auth::user()->role) || ($this->nextapprovepjk($kegiatan->id) && $this->nextapprovepjk($kegiatan->id)->role == Auth::user()->role))){
+            if(!(($this->lastapprovepjk($kegiatan->id) && $this->lastapprovepjk($kegiatan->id)->role == Auth::user()->role_label) || ($this->nextapprovepjk($kegiatan->id) && $this->nextapprovepjk($kegiatan->id)->role == Auth::user()->role_label))){
                 abort(403, " Tidak bisa melakukan approval!");
             }
 
@@ -3858,7 +3858,7 @@ class JurnalController extends Controller
             //     abort(403, $last_approval->role_label." tidak/belum menerima pengajuan ini!");
             // }
 
-            if(!Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("role", Auth::user()->role)->update([
+            if(!Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("role", Auth::user()->role_label)->update([
                 "role"                    => Auth::user()->role,
                 "jenismenu"               => "PJK",
                 "user"                    => Auth::user()->id,
