@@ -79,7 +79,7 @@
                                 <input type="hidden" name="id_bank_kas" id="id_bank_kas">
                             </div>
                             <div class="col-sm-1 cakfield">
-                                <button type="button" id="simpan_kas_bank" class="btn btn-primary">Ingat</button>
+                                <button type="button" id="simpan_kas_bank" class="btn btn-primary">Simpan</button>
                             </div>
                         </div>
                         <div class="form-group m-0">

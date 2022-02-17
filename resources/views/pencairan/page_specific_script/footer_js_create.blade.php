@@ -222,18 +222,18 @@ function getdata(){
                 for(var i = 0; i < data.data.ct1_pencairanrka.length; i++){
                     addRow();
 
-                    $("#caktable1 > tbody").find("[row-seq="+(parseInt(data.data.ct1_pencairanrka[i].no_seq)+1)+"]").find("td:eq(0)").text(data.data.ct1_pencairanrka[i].kegiatan);
-                    $("select[name='kegiatan_"+(parseInt(data.data.ct1_pencairanrka[i].no_seq)+1)+"']").empty();
+                    $("#caktable1 > tbody").find("[row-seq="+(parseInt(data.data.ct1_pencairanrka[i].no_seq))+"]").find("td:eq(0)").text(data.data.ct1_pencairanrka[i].kegiatan);
+                    $("select[name='kegiatan_"+(parseInt(data.data.ct1_pencairanrka[i].no_seq))+"']").empty();
                     var newState = new Option(data.data.ct1_pencairanrka[i].kegiatan_label, data.data.ct1_pencairanrka[i].kegiatan, true, false);
-                    $("#kegiatan_"+(parseInt(data.data.ct1_pencairanrka[i].no_seq)+1)+"").append(newState).trigger('change');
+                    $("#kegiatan_"+(parseInt(data.data.ct1_pencairanrka[i].no_seq))+"").append(newState).trigger('change');
                     // @if($page_data["page_method_name"] == "View")
-                    //     $("#kegiatan_"+(parseInt(data.data.ct1_pencairanrka[i].no_seq)+1)+"").attr("disabled", true); 
+                    //     $("#kegiatan_"+(parseInt(data.data.ct1_pencairanrka[i].no_seq))+"").attr("disabled", true); 
                     // @endif
 
                     //console.log(data.data.ct1_pencairanrka[i].nominalbiaya);
-                    AutoNumeric.getAutoNumericElement('#nom_'+(parseInt(data.data.ct1_pencairanrka[i].no_seq)+1)).set(data.data.ct1_pencairanrka[i].nominalbiaya);
-                    $("input[name='nom_"+(parseInt(data.data.ct1_pencairanrka[i].no_seq)+1)+"']").trigger("change");
-                    $("#caktable1 > tbody > tr[row-seq="+(parseInt(data.data.ct1_pencairanrka[i].no_seq)+1)+"]").find("td:eq(6)").text(data.data.ct1_pencairanrka[i].id);
+                    AutoNumeric.getAutoNumericElement('#nom_'+(parseInt(data.data.ct1_pencairanrka[i].no_seq))).set(data.data.ct1_pencairanrka[i].nominalbiaya);
+                    $("input[name='nom_"+(parseInt(data.data.ct1_pencairanrka[i].no_seq))+"']").trigger("change");
+                    $("#caktable1 > tbody > tr[row-seq="+(parseInt(data.data.ct1_pencairanrka[i].no_seq))+"]").find("td:eq(6)").text(data.data.ct1_pencairanrka[i].id);
                 }
 
                 $(".row-show-history").on("click", function() {

@@ -35,6 +35,7 @@
                                                 <th style="width: 10%">No</th>
                                                 <th style="width: 20%">Tanggal Pencairan</th>
                                                 <th style="width: 60%">Catatan</th>
+                                                <th style="width: 60%">Status</th>
                                                 <th style="width: 10%">Action</th>
                                             </tr>
                                         </thead>

@@ -71,7 +71,8 @@
         "columns": [
         { "width": "10%" },
         { "width": "20%" },
-        { "width": "60%" },
+        { "width": "40%" },
+        { "width": "20%" },
         { "width": "10%" },
         ],
         aoColumnDefs: [{
@@ -189,67 +190,67 @@
   } ); 
  });
 
- function submitform(val_arr, action = 'update'){
-  var field_arr = ["id", "unitkerja_code", "unitkerja_name"];
-  cto_loading_show();
+//  function submitform(val_arr, action = 'update'){
+//   var field_arr = ["id", "unitkerja_code", "unitkerja_name"];
+//   cto_loading_show();
 
-  var urlaction = "/updateunitkerja/"+val_arr[0];
-  if(action == 'create'){
-    urlaction = "/storeunitkerja";
-  }
+//   var urlaction = "/updateunitkerja/"+val_arr[0];
+//   if(action == 'create'){
+//     urlaction = "/storeunitkerja";
+//   }
 
-  var values = "_token="+$("input[name=_token]").val();
-  for(var x = 0; x < field_arr.length; x++){
-    values = values+"&"+field_arr[x]+"="+val_arr[x];
-  }
-  var ajaxRequest;
-  var id_coa = 0;
-  ajaxRequest = $.ajax({
-      url: urlaction,
-      type: "post",
-      data: values,
-      async: false,
-      success: function(data){
-          if(data.status >= 200 && data.status <= 299){
-              id_coa = data.data.id;
-              $.toast({
-                  text: data.message,
-                  heading: 'Status',
-                  icon: 'success',
-                  showHideTransition: 'fade',
-                  allowToastClose: true,
-                  hideAfter: 3000,
-                  position: 'mid-center',
-                  textAlign: 'left'
-              });
-          }
-          cto_loading_hide();
-      },
-      error: function (err) {
-          if (err.status == 422) {
-              var errors = "";
-              $.each(err.responseJSON.errors, function (i, error) {
-                  //var validator = $("#quickForm").validate();
-                  // var errors = {};
-                  // errors[i] = error[0];
-                  //validator.showErrors(errors);
-                  errors += error[0];
-              });
-              $.toast({
-                    text: errors,
-                    heading: 'Status',
-                    icon: 'danger',
-                    showHideTransition: 'fade',
-                    allowToastClose: true,
-                    hideAfter: 3000,
-                    position: 'mid-center',
-                    textAlign: 'left'
-                });
-          }
-        cto_loading_hide();
-      }
-  });
+//   var values = "_token="+$("input[name=_token]").val();
+//   for(var x = 0; x < field_arr.length; x++){
+//     values = values+"&"+field_arr[x]+"="+val_arr[x];
+//   }
+//   var ajaxRequest;
+//   var id_coa = 0;
+//   ajaxRequest = $.ajax({
+//       url: urlaction,
+//       type: "post",
+//       data: values,
+//       async: false,
+//       success: function(data){
+//           if(data.status >= 200 && data.status <= 299){
+//               id_coa = data.data.id;
+//               $.toast({
+//                   text: data.message,
+//                   heading: 'Status',
+//                   icon: 'success',
+//                   showHideTransition: 'fade',
+//                   allowToastClose: true,
+//                   hideAfter: 3000,
+//                   position: 'mid-center',
+//                   textAlign: 'left'
+//               });
+//           }
+//           cto_loading_hide();
+//       },
+//       error: function (err) {
+//           if (err.status == 422) {
+//               var errors = "";
+//               $.each(err.responseJSON.errors, function (i, error) {
+//                   //var validator = $("#quickForm").validate();
+//                   // var errors = {};
+//                   // errors[i] = error[0];
+//                   //validator.showErrors(errors);
+//                   errors += error[0];
+//               });
+//               $.toast({
+//                     text: errors,
+//                     heading: 'Status',
+//                     icon: 'danger',
+//                     showHideTransition: 'fade',
+//                     allowToastClose: true,
+//                     hideAfter: 3000,
+//                     position: 'mid-center',
+//                     textAlign: 'left'
+//                 });
+//           }
+//         cto_loading_hide();
+//       }
+//   });
 
-  return id_coa;
- }
+//   return id_coa;
+//  }
 </script>

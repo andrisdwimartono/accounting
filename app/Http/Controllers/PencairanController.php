@@ -10,6 +10,8 @@ use App\Models\Pencairanrka;
 use App\Models\Kegiatan;
 use App\Models\Approval;
 use App\Models\Detailbiayakegiatan;
+use App\Models\Transaction;
+use App\Models\Jurnal;
 
 class PencairanController extends Controller
 {
@@ -143,6 +145,8 @@ class PencairanController extends Controller
                     "kegiatan_label"=> $ct_request["kegiatan_label"],
                     "nominalbiaya"=> $nominalbiaya
                 ])->id;
+
+                
             }
 
             return response()->json([
@@ -198,14 +202,37 @@ class PencairanController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        if(Transaction::where("anggaran", $request->id)->count() > 0){
+            $tr = Transaction::where("anggaran", $request->id)->first();
+            $jr = Jurnal::where("id", $tr->parent_id)->first();
+            if($jr->isdeleted != "on"){
+                abort(403, "Hapus jurnal ".$jr->no_jurnal." terlebih dahulu sebelum menghapus pencairan!");
+            }
+        }
+
+        if(Pencairan::where("id", $request->id)->update([
+            "status" => "deleted"
+        ])){
+            foreach(Pencairanrka::where("parent_id", $request->id)->get() as $pr){
+                Kegiatan::where("id", $pr->kegiatan)->update([
+                    "status" => "approved"
+                ]);
+            }
+            $results = array(
+                "status" => 201,
+                "message" => "Berhasil dihapus",
+            );
+
+            return response()->json($results);
+        }
+
     }
 
     public function get_list(Request $request)
     {
-        $list_column = array("id", "tanggal_pencairan", "catatan", "id");
+        $list_column = array("id", "tanggal_pencairan", "catatan", "status", "id");
         $keyword = null;
         if(isset($request->search["value"])){
             $keyword = $request->search["value"];
@@ -225,16 +252,49 @@ class PencairanController extends Controller
         $no = 0;
         foreach(Pencairan::where(function($q) use ($keyword) {
             $q->where("tanggal_pencairan", "ILIKE", "%" . $keyword. "%")->orWhere("catatan", "ILIKE", "%" . $keyword. "%");
-        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "tanggal_pencairan", "catatan"]) as $pencairan){
+        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "tanggal_pencairan", "catatan", "status"]) as $pencairan){
             $no = $no+1;
-            $act = '
-            <a href="/pencairan/'.$pencairan->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
+            $act = '<a href="/pencairan/'.$pencairan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>';
+            if($pencairan->status != "deleted"){
+                $act .= '<button type="button" class="btn btn-danger row-delete shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
+            }
+            // $act .= '
+            // <!-- <a href="/pencairan/'.$pencairan->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a> -->
 
-            <!-- <a href="/pencairan/'.$pencairan->id.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a> -->
+            // ';
 
-            <!-- <button type="button" class="btn btn-danger row-delete"> <i class="fas fa-minus-circle text-white"></i> </button> -->';
+            $status = "";
+            switch ($pencairan->status) {
+                case "process":
+                    $status = "<span class='badge light badge-secondary' style='width:70px'>".$pencairan->status."</span>";
+                    break;
+                case "approving":
+                    $status = "<span class='badge light badge-secondary' style='width:70px'>".$pencairan->status."</span>";
+                    break;
+                case "approved":
+                    $status = "<span class='badge light badge-primary' style='width:70px'>".$pencairan->status."</span>";
+                    break;
+                case "submitting":
+                    $status = "<span class='badge light badge-secondary' style='width:70px'>".$pencairan->status."</span>";
+                    break;
+                case "submitted":
+                    $status = "<span class='badge light badge-info' style='width:70px'>".$pencairan->status."</span>";
+                    break;
+                case "paid":
+                    $status = "<span class='badge light badge-success' style='width:70px'>".$pencairan->status."</span>";
+                    break;
+                case "reporting":
+                    $status = "<span class='badge light badge-warning' style='width:70px'>".$pencairan->status."</span>";
+                    break;
+                case "finish":
+                    $status = "<span class='badge light badge-warning' style='width:70px'>".$pencairan->status."</span>";
+                    break;
+                case "deleted":
+                    $status = "<span class='badge light badge-danger' style='width:70px'>".$pencairan->status."</span>";
+                    break;
+            }
             
-            array_push($dt, array($pencairan->id, $this->tgl_indo($pencairan->tanggal_pencairan, "-", 2,1,0), $pencairan->catatan, $act));
+            array_push($dt, array($pencairan->id, $this->tgl_indo($pencairan->tanggal_pencairan, "-", 2,1,0), $pencairan->catatan, $status, $act));
         }
         
         $output = array(
@@ -262,7 +322,7 @@ class PencairanController extends Controller
             if($request->field == "kegiatan"){
                 $lists = Kegiatan::where(function($q) use ($request) {
                     $q->where("kegiatan_name", "ILIKE", "%" . $request->term. "%");
-                })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("kegiatan_name as text")]);
+                })->where("status", "submitted")->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("kegiatan_name as text")]);
                 $count = Kegiatan::count();
             }
 
@@ -339,7 +399,7 @@ class PencairanController extends Controller
         if($request->ajax() || $request->wantsJson()){
             $lists = Kegiatan::where(function($q) use ($request) {
                 $q->whereBetween("tanggal", [$request->tanggal_pencairan_start, $request->tanggal_pencairan_finish]);
-            })->orderBy("id")->get([DB::raw("id as kegiatan"), DB::raw("kegiatan_name as kegiatan_label")]);
+            })->where("status", "submitted")->orderBy("id")->get([DB::raw("id as kegiatan"), DB::raw("kegiatan_name as kegiatan_label")]);
 
             $no_seq = 1;
             foreach($lists as $list){
@@ -381,5 +441,27 @@ class PencairanController extends Controller
         $pecahkan = explode($sep, $tanggal);
      
         return $pecahkan[$d1] . ' ' . $bulan[ (int)$pecahkan[$d2] ] . ' ' . $pecahkan[$d3];
+    }
+
+    public function getdata(Request $request){
+        if($request->ajax() || $request->wantsJson()){
+            $pencairan = Pencairan::whereId($request->id)->first();
+            if(!$pencairan){
+                abort(404, "Data not found");
+            }
+
+            $pencairanrkas = Pencairanrka::whereParentId($request->id)->orderBy("no_seq", "asc")->get();
+
+            $results = array(
+                "status" => 201,
+                "message" => "Data available",
+                "data" => [
+                    "ct1_pencairanrka" => $pencairanrkas,
+                    "pencairan" => $pencairan
+                ]
+            );
+
+            return response()->json($results);
+        }
     }
 }

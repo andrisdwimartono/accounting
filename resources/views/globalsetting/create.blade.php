@@ -97,7 +97,7 @@
                                                 <input type="text" name="nama_instansi" class="form-control" id="nama_instansi" placeholder="Enter Nama Alias Instansi" @if($page_data["page_method_name"] == "View") readonly @endif><br>
                                                 <label>Nama SIA</label>
                                                 <textarea type="text" name="nama_sia" class="form-control" style="height:90px;" id="nama_sia" placeholder="Enter Nama SIA" @if($page_data["page_method_name"] == "View") readonly @endif></textarea><br>
-                                                <label class="col-form-label" for="bulan_tutup_tahun">Bulan Tutup Tahun</label>
+                                                <label class="col-form-label" for="bulan_tutup_tahun">Awal Periode Tahunan</label>
                                                 <div class="cakfield">
                                                     <select name="bulan_tutup_tahun" id="bulan_tutup_tahun" class="form-control select2bs4" style="width: 100%;" @if($page_data["page_method_name"] == "View") readonly @endif></select>
                                                     <input type="hidden" name="bulan_tutup_tahun_label" id="bulan_tutup_tahun_label">
