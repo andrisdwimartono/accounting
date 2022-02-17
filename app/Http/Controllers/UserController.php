@@ -627,7 +627,7 @@ class UserController extends Controller
               'success' => true,
               'token' => $success,
               'user' => $user
-          ]);
+            ]);
         } else {
        //if authentication is unsuccessfull, notice how I return json parameters
           return response()->json([

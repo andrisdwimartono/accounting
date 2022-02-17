@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
   
 use Illuminate\Http\Request;
+use App\Models\Globalsetting;
   
 class HomeController extends Controller
 {
@@ -20,7 +21,8 @@ class HomeController extends Controller
         $page_data["footer_js_page_specific_script"] = ["paging.page_specific_script.footer_js_home"];
         $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_create"];
 
-        return view('home', ['page_data' => $page_data]);
+        $globalsetting = Globalsetting::where("id", 1)->first();
+        return view('home', ['page_data' => $page_data,"globalsetting" => $globalsetting]);
     }
     public function test()
     {

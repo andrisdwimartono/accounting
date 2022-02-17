@@ -17,8 +17,13 @@
 							</li>
                             <li class="nav-item dropdown header-profile">
                                 <a class="nav-link" href="#" role="button" data-toggle="dropdown">
-                                    <img src="{{ asset ("/photo_profile") }}/{{Auth::user()->photo_profile}}" width="20" alt=""/>
-									<div class="header-info">
+                                    @if(isset(Auth::user()->photo_profile))
+                                        <img src="{{ asset ("/photo_profile") }}/{{Auth::user()->photo_profile}}" width="20" alt=""/>
+									@else
+                                        <img src="{{ asset ("/photo_profile") }}/default.jpg" width="20" alt=""/>
+                                    @endif
+                                    
+                                    <div class="header-info">
 										<span>Hey, <strong>{{Auth::user()->name}}</strong></span>
 										<small>{{Auth::user()->role_label}}</small>
 									</div>
