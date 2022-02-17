@@ -846,7 +846,7 @@ class KegiatanController extends Controller
         } else if($kegiatan->status == "process" ){
             // if($kegiatan->user_creator_id != Auth::user()->id){
                 $act .= '
-                <a href="/pengajuan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>';
+                <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>';
             // }
         }
 
