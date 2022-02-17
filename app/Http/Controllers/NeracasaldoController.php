@@ -237,6 +237,11 @@ class NeracasaldoController extends Controller
             $tahun_periode = $request->search["tahun_periode"];
         }
 
+        $child_level = 1;
+        if(isset($request->search["child_level"])){
+            $child_level = $request->search["child_level"];
+        }
+
         $unitkerja = 0;
         if(isset($request->search["unitkerja"])){
             $unitkerja = $request->search["unitkerja"];
