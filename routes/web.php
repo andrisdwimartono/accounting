@@ -315,7 +315,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/storepjk', 'App\Http\Controllers\KegiatanController@storepjk');
         Route::post('/updatepjk/{kegiatan}', 'App\Http\Controllers\KegiatanController@updatepjk');
         Route::get('/pjk/{kegiatan}', 'App\Http\Controllers\KegiatanController@showpjk');
-        Route::post('/processapprovepjk', 'App\Http\Controllers\KegiatanController@processapprovepjk');
+        Route::post('/processapprovepjk', 'App\Http\Controllers\JurnalController@processapprovepjk');
         Route::post('/getdatapjk', 'App\Http\Controllers\KegiatanController@getdatapjk');
 
         Route::get('/pencairan', 'App\Http\Controllers\PencairanController@index');
