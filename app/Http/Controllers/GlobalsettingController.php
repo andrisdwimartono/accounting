@@ -468,7 +468,7 @@ class GlobalsettingController extends Controller
             $ct1_bank_vas = Bankva::whereParentId($request->id)->get();
             $ct2_approval_settings = Approvalsetting::whereParentId($request->id)->where("jenismenu", "RKA")->get();
             $ct2_approval_settingspjk = Approvalsetting::whereParentId($request->id)->where("jenismenu", "PJK")->get();
-            $ct2_approval_settings_pengajuan = Approvalsetting::whereParentId($request->id)->where("jenismenu", "Pengajuan")->get();
+            $ct2_approval_settings_pengajuan = Approvalsetting::whereParentId($request->id)->where("jenismenu", "pengajuan")->get();
 
             $results = array(
                 "status" => 201,
