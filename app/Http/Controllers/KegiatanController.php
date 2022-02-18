@@ -570,16 +570,16 @@ class KegiatanController extends Controller
                 "status" => "submitting"
             ]);
             
-            foreach(Approvalsetting::where("jenismenu", "pengajuan")->get() as $appr){
-                Approval::create([
-                    "no_seq" => $appr->no_seq,
-                    "parent_id" => $id,
-                    "role"=> $appr->role,
-                    "role_label"=> $appr->role_label,
-                    "jenismenu"=> $appr->jenismenu,
-                    "user_creator_id" => Auth::user()->id
-                ]);
-            }
+            // foreach(Approvalsetting::where("jenismenu", "pengajuan")->get() as $appr){
+            //     Approval::create([
+            //         "no_seq" => $appr->no_seq,
+            //         "parent_id" => $id,
+            //         "role"=> $appr->role,
+            //         "role_label"=> $appr->role_label,
+            //         "jenismenu"=> $appr->jenismenu,
+            //         "user_creator_id" => Auth::user()->id
+            //     ]);
+            // }
 
             return response()->json([
                 'status' => 201,
