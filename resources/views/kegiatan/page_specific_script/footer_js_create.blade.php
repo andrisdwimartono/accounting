@@ -1137,7 +1137,7 @@ function processapprove(status, komentar = ""){
     });
     cto_loading_hide();
     @if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")
-    getdata();
+    location.reload();
     @endif
     <?php } ?>
 }
@@ -1244,7 +1244,7 @@ function processapprove_pengajuan(status, komentar = ""){
         }
     });
     @if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")
-    getdata();
+    location.reload();
     @endif
     cto_loading_hide();
     <?php } ?>
