@@ -1134,11 +1134,10 @@ function processapprove(status, komentar = ""){
                 });
             }
         }
+    }).then(function(){
+        location.reload();
     });
     cto_loading_hide();
-    @if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")
-    location.reload();
-    @endif
     <?php } ?>
 }
 
@@ -1242,10 +1241,9 @@ function processapprove_pengajuan(status, komentar = ""){
                 });
             }
         }
+    }).then(function(){
+        location.reload();
     });
-    @if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")
-    location.reload();
-    @endif
     cto_loading_hide();
     <?php } ?>
 }
