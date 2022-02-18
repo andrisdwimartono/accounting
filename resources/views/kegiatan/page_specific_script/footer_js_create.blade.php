@@ -515,9 +515,6 @@ $(document).ready(function() {
 
 @if($page_data["page_method_name"] == "Update" || $page_data["page_method_name"] == "View")
 function getdata(){
-    @if($page_data["page_data_urlname"] == "pengajuan")
-    return;
-    @endif
     cto_loading_show();
     $.ajax({
         url: "/getdata{{$page_data["page_data_urlname"]}}",
