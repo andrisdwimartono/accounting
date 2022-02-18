@@ -560,7 +560,7 @@ class KegiatanController extends Controller
         if(isset($request->tanggal_pencairan)){
             if($request->validate($rules, $messages)){
                 Kegiatan::where("id", $id)->update([
-                    "tanggal_pencairan"=> $request->tanggal_pencairan,
+                    "tanggal_pencairan"=> $this->tgl_dbs($request->tanggal_pencairan),
                     "status" => "submitting"
                 ]);
             }
