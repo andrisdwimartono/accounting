@@ -552,7 +552,7 @@ class KegiatanController extends Controller
         }
     }
 
-    public function update_pengajuan(Request $request, $id)
+    public function update_pengajuan(Request $request, $id, $isapproving = false)
     {
         $page_data = $this->tabledesign();
         $rules = $page_data["fieldsrules_pengajuan"];
@@ -570,16 +570,18 @@ class KegiatanController extends Controller
                 "status" => "submitting"
             ]);
             
-            // foreach(Approvalsetting::where("jenismenu", "pengajuan")->get() as $appr){
-            //     Approval::create([
-            //         "no_seq" => $appr->no_seq,
-            //         "parent_id" => $id,
-            //         "role"=> $appr->role,
-            //         "role_label"=> $appr->role_label,
-            //         "jenismenu"=> $appr->jenismenu,
-            //         "user_creator_id" => Auth::user()->id
-            //     ]);
-            // }
+            if(!$isapproving){
+                foreach(Approvalsetting::where("jenismenu", "pengajuan")->get() as $appr){
+                    Approval::create([
+                        "no_seq" => $appr->no_seq,
+                        "parent_id" => $id,
+                        "role"=> $appr->role,
+                        "role_label"=> $appr->role_label,
+                        "jenismenu"=> $appr->jenismenu,
+                        "user_creator_id" => Auth::user()->id
+                    ]);
+                }
+            }
 
             return response()->json([
                 'status' => 201,
@@ -1620,7 +1622,7 @@ class KegiatanController extends Controller
             ])){
                 abort(401, "Gagal update");
             }else{
-                $this->update_pengajuan($request, $request->id);
+                $this->update_pengajuan($request, $request->id, true);
             }
             
             $tgl = date('Y-m-d');
