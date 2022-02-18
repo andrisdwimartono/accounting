@@ -566,7 +566,7 @@ class KegiatanController extends Controller
             }
 
             Kegiatan::where("id", $id)->update([
-                "tanggal_pencairan"=> $request->tanggal_pencairan,
+                "tanggal_pencairan"=> $this->tgl_dbs($request->tanggal_pencairan),
                 "status" => "submitting"
             ]);
             
@@ -2180,5 +2180,10 @@ class KegiatanController extends Controller
 
             return response()->json($results);
         }
+    }
+
+    public function tgl_dbs($tanggal){
+        $date = str_replace('/', '-', $tanggal);
+        return date('Y-m-d', strtotime($date));
     }
 }
