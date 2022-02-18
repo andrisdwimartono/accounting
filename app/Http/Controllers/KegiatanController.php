@@ -1361,9 +1361,13 @@ class KegiatanController extends Controller
 
                 if(Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->count() < 1){
                     $lastapp = Approval::where("parent_id", $request->id)->where("role", Auth::user()->role)->where("jenismenu", "pengajuan")->first();
-                    $beforeapp = Approval::where("parent_id", $request->id)->where("no_seq", ((int)$lastapp->no_seq)+1)->where("jenismenu", "pengajuan")->first();
-                    if($beforeapp){
-                        $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $beforeapp->role)->orderBy("no_seq")->get();
+                    if($lastapp){
+                        $beforeapp = Approval::where("parent_id", $request->id)->where("no_seq", ((int)$lastapp->no_seq)+1)->where("jenismenu", "pengajuan")->first();
+                        if($beforeapp){
+                            $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $beforeapp->role)->orderBy("no_seq")->get();
+                        }
+                    }else{
+                        $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
                     }
                 }
             }
