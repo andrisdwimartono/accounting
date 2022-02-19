@@ -524,7 +524,6 @@ function getdata(){
             _token: $("#quickForm input[name=_token]").val()
         },
         success: function(data){
-            console.log(data.data)
             for(var i = 0; i < Object.keys(data.data.kegiatan).length; i++){
                 if(Object.keys(data.data.kegiatan)[i] == "unit_pelaksana" || Object.keys(data.data.kegiatan)[i] == "iku"){
                     if(data.data.kegiatan[Object.keys(data.data.kegiatan)[i]]){
@@ -635,27 +634,32 @@ function getdata(){
                     $("input[name='nom_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"']").trigger("change");
                     $("#caktable1 > tbody > tr[row-seq="+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"]").find("td:eq(7)").text(data.data.ct1_detailbiayakegiatan[i].id);
                     
-                    
-
-                    
-                    // $("#status_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)).on("change", function() {
-                    //     console.log($(this));
-                    //     var $td = $(this).parent();
-                    //     var $tr = $($td).parent();
-                    //     console.log($($tr).find("td:eq(0)").html());
-                    //     console.log($($tr).find("td:eq(1)").html());
-                    //     console.log((parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1));
-                    //     $("input[name='komentarrevisi_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"']").attr("readonly", false);
-                    // }(data));
-                    
                     $("input[name='komentarrevisi_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"']").val(data.data.ct1_detailbiayakegiatan[i].komentarrevisi);
                 }
+            }
 
-                $(".row-show-history").on("click", function() {
-                    
-
-
+            if(data.data.ct3_outputrka.length > 0){
+                $("#caktable3 > tbody > tr").each(function(index){
+                    $(this).remove();
                 });
+                
+                for(var i = 0; i < data.data.ct3_outputrka.length; i++){
+                    addRow3();
+                    $("#caktable3 > tbody").find("[row-seq="+(parseInt(data.data.ct3_outputrka[i].no_seq)+1)+"]").find("td:eq(0)").text(data.data.ct3_outputrka[i].iku);
+                    $("select[name='iku_"+(parseInt(data.data.ct3_outputrka[i].no_seq)+1)+"']").empty();
+                    var newState = new Option(data.data.ct3_outputrka[i].iku_label, data.data.ct3_outputrka[i].iku, true, false);
+                    $("#iku_"+(parseInt(data.data.ct3_outputrka[i].no_seq)+1)+"").append(newState).trigger('change');
+
+                    $("input[name='indikator_"+(parseInt(data.data.ct3_outputrka[i].no_seq)+1)+"']").val(data.data.ct3_outputrka[i].indikator);
+
+                    $("input[name='keterangan_"+(parseInt(data.data.ct3_outputrka[i].no_seq)+1)+"']").val(data.data.ct3_outputrka[i].keterangan);
+
+                    //console.log(data.data.ct3_outputrka[i].target);
+                    AutoNumeric.getAutoNumericElement('#nom3_'+(parseInt(data.data.ct3_outputrka[i].no_seq)+1)).set(data.data.ct3_outputrka[i].target);
+                    $("input[name='nom3_"+(parseInt(data.data.ct3_outputrka[i].no_seq)+1)+"']").trigger("change");
+                    $("input[name='satuan_target_"+(parseInt(data.data.ct3_outputrka[i].no_seq)+1)+"']").val(data.data.ct3_outputrka[i].satuan_target);
+                    $("#caktable3 > tbody > tr[row-seq="+(parseInt(data.data.ct3_outputrka[i].no_seq)+1)+"]").find("td:eq(7)").text(data.data.ct3_outputrka[i].id);
+                }
             }
         cto_loading_hide();
     },
@@ -1088,6 +1092,51 @@ function processapprove(status, komentar = ""){
     
     var ct1_detailbiayakegiatan = JSON.stringify(ctct1_detailbiayakegiatan);
 
+    stop_submit = false;
+    var ctct3_outputrka = [];
+    $("#caktable3 > tbody > tr").each(function(index, tr){
+        if(AutoNumeric.getNumber("#nom3_"+$(tr).attr("row-seq")) <= 0){
+            $("#nom3_"+$(tr).attr("row-seq")).addClass("border-danger");
+            cto_loading_hide();
+            stop_submit = true;
+            return;
+        }
+        
+        var iku = 0;
+        var iku_label = "";
+        var indikator = "";
+        var keterangan = "";
+        var target = 0;
+        var satuan_target = "";
+        var id = 0;
+        $(tr).find("td").each(function(index, td){
+            if(index == 0){
+                iku = $(td).text();
+            }else if(index == 1){
+                iku_label = $(td).find("select").text();
+            }else if(index == 2){
+                indikator = $(td).find("input").val();
+            }else if(index == 3){
+                keterangan = $(td).find("input").val();
+            }else if(index == 4){
+                target = AutoNumeric.getNumber("#nom3_"+$(tr).attr("row-seq"));
+            }else if(index == 5){
+                satuan_target = $(td).find("input").val();
+            }else if(index == 7){
+                id = $(td).text();
+            }
+        });
+        if(coa != '')
+            ctct3_outputrka.push({"no_seq": index, "iku" : iku, "iku_label" : iku_label, "indikator": indikator, "keterangan": keterangan, "target": target, "satuan_target": satuan_target, "id": id});
+    });
+
+    
+    if(stop_submit){
+        return;
+    }
+    
+    var ct3_outputrka = JSON.stringify(ctct3_outputrka);
+
     var status_approval_label = "";
     $("#status_approval option").each(function(i, x){
         if(status == $(x).val())
@@ -1103,7 +1152,8 @@ function processapprove(status, komentar = ""){
             status_approval_label   : status_approval_label,
             komentar                : komentar,
             id                      : {{$page_data["id"]}},
-            ct1_detailbiayakegiatan : ct1_detailbiayakegiatan
+            ct1_detailbiayakegiatan : ct1_detailbiayakegiatan,
+            ct3_outputrka           : ct3_outputrka
         },
         cache: false,
         success:function(data){
@@ -1195,6 +1245,51 @@ function processapprove_pengajuan(status, komentar = ""){
     
     var ct1_detailbiayakegiatan = JSON.stringify(ctct1_detailbiayakegiatan);
 
+    stop_submit = false;
+    var ctct3_outputrka = [];
+    $("#caktable3 > tbody > tr").each(function(index, tr){
+        if(AutoNumeric.getNumber("#nom3_"+$(tr).attr("row-seq")) <= 0){
+            $("#nom3_"+$(tr).attr("row-seq")).addClass("border-danger");
+            cto_loading_hide();
+            stop_submit = true;
+            return;
+        }
+        
+        var iku = 0;
+        var iku_label = "";
+        var indikator = "";
+        var keterangan = "";
+        var target = 0;
+        var satuan_target = "";
+        var id = 0;
+        $(tr).find("td").each(function(index, td){
+            if(index == 0){
+                iku = $(td).text();
+            }else if(index == 1){
+                iku_label = $(td).find("select").text();
+            }else if(index == 2){
+                indikator = $(td).find("input").val();
+            }else if(index == 3){
+                keterangan = $(td).find("input").val();
+            }else if(index == 4){
+                target = AutoNumeric.getNumber("#nom3_"+$(tr).attr("row-seq"));
+            }else if(index == 5){
+                satuan_target = $(td).find("input").val();
+            }else if(index == 7){
+                id = $(td).text();
+            }
+        });
+        if(coa != '')
+            ctct3_outputrka.push({"no_seq": index, "iku": iku, "iku_label" : iku_label, "indikator": indikator, "keterangan": keterangan, "target": target, "satuan_target": satuan_target, "id": id});
+    });
+
+    
+    if(stop_submit){
+        return;
+    }
+    
+    var ct3_outputrka = JSON.stringify(ctct3_outputrka);
+
     var status_approval_label = "";
     $("#status_approval option").each(function(i, x){
         if(status == $(x).val())
@@ -1210,7 +1305,8 @@ function processapprove_pengajuan(status, komentar = ""){
             status_approval_label   : status_approval_label,
             komentar                : komentar,
             id                      : {{$page_data["id"]}},
-            ct1_detailbiayakegiatan : ct1_detailbiayakegiatan
+            ct1_detailbiayakegiatan : ct1_detailbiayakegiatan,
+            ct3_outputrka           : ct3_outputrka
         },
         cache: false,
         success:function(data){
@@ -1286,6 +1382,12 @@ $(document).keydown(function(event) {
         calcTotal();
     });
 
+    $(".row-delete3").click(function(){
+        var $td = $(this).parent();
+        var $tr = $($td).parent();
+        $($tr).remove();
+    });
+
     $(".addnewrowselect").select2({
         ajax: {
             url: "/getlinks{{$page_data["page_data_urlname"]}}",
@@ -1334,7 +1436,11 @@ $(document).keydown(function(event) {
 
     $("#addrow").click(function(){
         addRow();
-    });  
+    });
+
+    $("#addrow3").click(function(){
+        addRow3();
+    });
 
     function addRow(){
         rowlen = 1;
@@ -1349,7 +1455,7 @@ $(document).keydown(function(event) {
                 @if($page_data["page_method_name"] == "View")
                     "<tr row-seq=\""+rowlen+"\" class=\"addnewrow\">"
                     +"<td class=\"column-hidden\"></td>"
-                    +"<td class=\"p-0\"><select name=\"coa_"+rowlen+"\" id=\"coa_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
+                    +"<td class=\"p-0\"><select name=\"coa_"+rowlen+"\" id=\"coa_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%; overflow: hidden; white-space: nowrap;\"></select></td>"
                     +"<td class=\"p-0\"><input type=\"text\" name=\"deskripsi_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"deskripsi_"+rowlen+"\"></td>"
                     +"<td class=\"p-0\"><input type=\"text\" name=\"nom_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"nom_"+rowlen+"\" placeholder=\"Enter Nominal\"></td>"
                     +"<td class=\"column-hidden\"></td>"
@@ -1361,7 +1467,7 @@ $(document).keydown(function(event) {
                 @else 
                     "<tr row-seq=\""+rowlen+"\" class=\"addnewrow\">"
                     +"<td class=\"column-hidden\"></td>"
-                    +"<td class=\"p-0\"><select name=\"coa_"+rowlen+"\" id=\"coa_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
+                    +"<td class=\"p-0\"><select name=\"coa_"+rowlen+"\" id=\"coa_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%; overflow: hidden; white-space: nowrap;\"></select></td>"
                     +"<td class=\"p-0\"><input type=\"text\" name=\"deskripsi_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"deskripsi_"+rowlen+"\"></td>"
                     +"<td class=\"p-0\"><input type=\"text\" name=\"nom_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"nom_"+rowlen+"\" placeholder=\"Enter Nominal\"></td>"
                     +"<td class=\"p-0 text-center\"><button id=\"row_delete_"+rowlen+"\" class=\"bg-white border-0\"><i class=\"text-danger fas fa-minus-circle row-delete\" style=\"cursor: pointer;\"></i></button></td>"
@@ -1398,6 +1504,7 @@ $(document).keydown(function(event) {
         });
 
         $("#coa_"+rowlen+"").select2({
+            width: '100%',
             ajax: {
                 url: "/getlinkskegiatan",
                 type: "post",
@@ -1465,6 +1572,91 @@ $(document).keydown(function(event) {
         //     });
         // });
         @endif
+    }
+
+    function addRow3(){
+        rowlen = 1;
+        if($('#caktable3 > tbody > tr').length > 0){
+            rowlen = parseInt($('#caktable3 > tbody > tr:last').attr('row-seq'))+1;
+        }
+         
+
+        var rowaddlen = 0;
+        $("#caktable3").find('tbody')
+            .append(
+                @if($page_data["page_method_name"] == "View")
+                    "<tr row-seq=\""+rowlen+"\" class=\"addnewrow3\">"
+                    +"<td class=\"column-hidden\"></td>"
+                    +"<td class=\"p-0\"><select name=\"iku_"+rowlen+"\" id=\"iku_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%; overflow: hidden; white-space: nowrap;\"></select></td>"
+                    +"<td class=\"p-0\"><input type=\"text\" name=\"indikator_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"indikator_"+rowlen+"\"></td>"
+                    +"<td class=\"p-0\"><input type=\"text\" name=\"keterangan_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"keterangan_"+rowlen+"\"></td>"
+                    +"<td class=\"p-0\"><input type=\"text\" name=\"nom3_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"nom3_"+rowlen+"\" placeholder=\"Enter Nominal\"></td>"
+                    +"<td class=\"p-0\"><input type=\"text\" name=\"satuan_target_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"satuan_target_"+rowlen+"\"></td>"
+                    +"<td class=\"p-0 text-center\"><button id=\"row_delete3_"+rowlen+"\" class=\"bg-white border-0\"><i class=\"text-danger fas fa-minus-circle row-delete\" style=\"cursor: pointer;\"></i></button></td>"
+                    +"<td class=\"column-hidden\"></td>"
+                    +"</tr>"
+                @else 
+                    "<tr row-seq=\""+rowlen+"\" class=\"addnewrow3\">"
+                    +"<td class=\"column-hidden\"></td>"
+                    +"<td class=\"p-0\"><select name=\"iku_"+rowlen+"\" id=\"iku_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%; overflow: hidden; white-space: nowrap;\"></select></td>"
+                    +"<td class=\"p-0\"><input type=\"text\" name=\"indikator_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"indikator_"+rowlen+"\"></td>"
+                    +"<td class=\"p-0\"><input type=\"text\" name=\"keterangan_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"keterangan_"+rowlen+"\"></td>"
+                    +"<td class=\"p-0\"><input type=\"text\" name=\"nom3_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"nom3_"+rowlen+"\" placeholder=\"Enter Nominal\"></td>"
+                    +"<td class=\"p-0\"><input type=\"text\" name=\"satuan_target_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"satuan_target_"+rowlen+"\"></td>"
+                    +"<td class=\"p-0 text-center\"><button id=\"row_delete3_"+rowlen+"\" class=\"bg-white border-0\"><i class=\"text-danger fas fa-minus-circle row-delete\" style=\"cursor: pointer;\"></i></button></td>"
+                    +"<td class=\"column-hidden\"></td>"
+                    +"</tr>"
+                @endif
+            );
+        rowaddlen = $('#caktable3 tr.addnewrow3').length
+
+        $("#row_delete3_"+rowlen).on('click', function(){
+            var $td = $(this).parent();
+            var $tr = $($td).parent();
+            $($tr).remove();
+        });
+
+        var noms = new AutoNumeric("#nom3_"+rowlen, {
+            decimalCharacter : ',',
+            digitGroupSeparator : '.',
+            minimumValue : 0,
+            decimalPlaces : 2,
+            unformatOnSubmit : true
+        });
+
+        $("#iku_"+rowlen+"").on("change", function() {
+            var $td = $(this).parent();
+            var $tr = $($td).parent();
+            $($tr).find("td:eq(0)").text($(this).val());
+        });
+
+        $("#iku_"+rowlen+"").select2({
+            width: '100%',
+            ajax: {
+                url: "/getlinkskegiatan",
+                type: "post",
+                dataType: "json",
+                data: function(params) {
+                    return {
+                        term: params.term || "",
+                        page: params.page,
+                        field: "iku",
+                        _token: $("input[name=_token]").val()
+                    }
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: data.items,
+                        pagination: {
+                            more: (params.page * 25) < data.total_count
+                        }
+                    };
+                },
+                cache: true
+            }
+        });
+
     }
     
     
@@ -1566,6 +1758,52 @@ $(document).keydown(function(event) {
             
             $("#ct1_detailbiayakegiatan").val(JSON.stringify(ctct1_detailbiayakegiatan));
                 
+            stop_submit = false;
+            var ctct3_outputrka = [];
+            $("#caktable3 > tbody > tr").each(function(index, tr){
+                if(AutoNumeric.getNumber("#nom3_"+$(tr).attr("row-seq")) <= 0){
+                    $("#nom3_"+$(tr).attr("row-seq")).addClass("border-danger");
+                    cto_loading_hide();
+                    stop_submit = true;
+                    return;
+                }
+                
+                var iku = 0;
+                var iku_label = "";
+                var indikator = "";
+                var keterangan = "";
+                var target = 0;
+                var satuan_target = "";
+                var id = 0;
+                $(tr).find("td").each(function(index, td){
+                    if(index == 0){
+                        iku = $(td).text();
+                    }else if(index == 1){
+                        iku_label = $(td).find("select").text();
+                    }else if(index == 2){
+                        indikator = $(td).find("input").val();
+                    }else if(index == 3){
+                        keterangan = $(td).find("input").val();
+                    }else if(index == 4){
+                        target = AutoNumeric.getNumber("#nom3_"+$(tr).attr("row-seq"));
+                    }else if(index == 5){
+                        satuan_target = $(td).find("input").val();
+                    }else if(index == 7){
+                        id = $(td).text();
+                    }
+                });
+                if(coa != '')
+                    ctct3_outputrka.push({"no_seq": index, "iku": iku, "iku_label": iku_label, "indikator": indikator, "keterangan": keterangan, "target": target, "satuan_target": satuan_target, "id": id});
+            });
+
+            
+            if(stop_submit){
+                return;
+            }
+            
+            var ct3_outputrka = JSON.stringify(ctct3_outputrka);
+            $("#ct3_outputrka").val(JSON.stringify(ctct3_outputrka));
+
             // var id_jurnal = 0;
             var values = $("#quickForm").serializeArray();
             // for (index = 0; index < values.length; ++index) {
@@ -1609,10 +1847,6 @@ $(document).keydown(function(event) {
                         });
                     }
                     cto_loading_hide();
-                    @if($page_data["page_method_name"] == "Update")
-                    getdata();
-                    @endif
-                    // getlist();
                 },
                 error: function (err) {
                     if (err.status == 422) {
@@ -1640,6 +1874,8 @@ $(document).keydown(function(event) {
                     }
                     cto_loading_hide();
                 }
+            }).then(function(){
+                location.reload();
             });
         }
     });

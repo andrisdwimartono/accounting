@@ -33,6 +33,7 @@
                                         <thead class="bg-primary">
                                             <tr>
                                                 <th>No</th>
+                                                <th>Kode Anggaran</th>
                                                 <th>Unit Pelaksana</th>
                                                 <th>Tanggal</th>
                                                 <!-- <th>IKU</th> -->
