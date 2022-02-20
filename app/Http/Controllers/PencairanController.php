@@ -355,13 +355,13 @@ class PencairanController extends Controller
             if($finalappr){
                 $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $finalappr->role)->orderBy("no_seq")->get();
                 
-                if(Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $finalappr->role)->orderBy("no_seq")->count() > 1){
+                if(Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $finalappr->role)->orderBy("no_seq")->count() > 0){
                     foreach($ct1_detailbiayakegiatans as $detailbiayakegiatans){
                         $total_biaya += $detailbiayakegiatans->nominalbiaya;
                     }
                 }
             }
-
+            
             $results = array(
                 "status" => 201,
                 "message" => "Data available",
@@ -398,7 +398,7 @@ class PencairanController extends Controller
     public function getlistrka(Request $request){
         if($request->ajax() || $request->wantsJson()){
             $lists = Kegiatan::where(function($q) use ($request) {
-                $q->whereBetween("tanggal", [$request->tanggal_pencairan_start, $request->tanggal_pencairan_finish]);
+                $q->whereBetween("tanggal_pencairan", [$request->tanggal_pencairan_start, $request->tanggal_pencairan_finish]);
             })->where("status", "submitted")->orderBy("id")->get([DB::raw("id as kegiatan"), DB::raw("kegiatan_name as kegiatan_label")]);
 
             $no_seq = 1;

@@ -75,6 +75,11 @@ $.fn.modal.Constructor.prototype._enforceFocus = function() {
 $("#unit_pelaksana").on("change", function() {
     $("#unit_pelaksana_label").val($("#unit_pelaksana option:selected").text());
     $('#iku').val('').trigger('change');
+    plafonanggaran();
+});
+
+$('input[name=tanggal_kegiatan]').on("change", function(){
+    plafonanggaran();
 });
 
 $("#tahun").on("change", function() {
@@ -1875,9 +1880,52 @@ $(document).keydown(function(event) {
                     cto_loading_hide();
                 }
             }).then(function(){
-                location.reload();
+                //location.reload();
             });
         }
     });
+
+    function plafonanggaran(){
+        var uk = $("#unit_pelaksana").val();
+        var tk = $("input[name=tanggal_kegiatan]").val();
+
+        if(!tk || !uk){
+            return;
+        }
+        $.ajax({
+            url: "/getdatakegiatanplafon",
+            type: "post",
+            data: {
+                unitkerja: uk,
+                tanggal_kegiatan: tk,
+                _token: $("#quickForm input[name=_token]").val()
+            },
+            success: function(data){
+                $("#valplafon").text(formatNumber(parseFloat(data.data.valplafon), ''));
+                $("#valprocess").text(formatNumber(parseFloat(data.data.valprocess), ''));
+                $("#valapproved").text(formatNumber(parseFloat(data.data.valapproved), ''));
+                $("#valsubmitted").text(formatNumber(parseFloat(data.data.valsubmitted), ''));
+                $("#valpaid").text(formatNumber(parseFloat(data.data.valpaid), ''));
+                $("#valpjkprocess").text(formatNumber(parseFloat(data.data.valpjkprocess), ''));
+                $("#valpjkapproved").text(formatNumber(parseFloat(data.data.valpjkapproved), ''));
+                $("#valsisa").text(formatNumber(parseFloat(data.data.valsisa), ''));
+            },
+            error: function (err) {
+                $("#historykegiatan").removeClass("spinner-border");
+                if (err.status >= 400 && err.status <= 500) {
+                    $.toast({
+                        text: err.status+" "+err.responseJSON.message,
+                        heading: 'Status',
+                        icon: 'warning',
+                        showHideTransition: 'fade',
+                        allowToastClose: true,
+                        hideAfter: 3000,
+                        position: 'mid-center',
+                        textAlign: 'left'
+                    });
+                }
+            }
+        });
+    }
  
 </script>

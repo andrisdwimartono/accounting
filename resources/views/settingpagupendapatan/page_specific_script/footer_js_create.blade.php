@@ -260,8 +260,8 @@ function getdata(){
                     $("#unitkerja_"+(parseInt(data.data.ct1_nilaipagu[i].no_seq)+1)+"").append(newState).trigger('change');
                     
 
-                    //console.log(data.data.ct1_nilaipagu[i].nominalbiaya);
-                    AutoNumeric.getAutoNumericElement('#nom_'+(parseInt(data.data.ct1_nilaipagu[i].no_seq)+1)).set(data.data.ct1_nilaipagu[i].nominalbiaya);
+                    //console.log(data.data.ct1_nilaipagu[i].maxbiaya);
+                    AutoNumeric.getAutoNumericElement('#nom_'+(parseInt(data.data.ct1_nilaipagu[i].no_seq)+1)).set(data.data.ct1_nilaipagu[i].maxbiaya);
                     $("input[name='nom_"+(parseInt(data.data.ct1_nilaipagu[i].no_seq)+1)+"']").trigger("change");
                     $("#caktable1 > tbody > tr[row-seq="+(parseInt(data.data.ct1_nilaipagu[i].no_seq)+1)+"]").find("td:eq(4)").text(data.data.ct1_nilaipagu[i].id);
                 }
@@ -280,7 +280,7 @@ function getdata(){
                     var newState = new Option(data.data.ct2_potensipendapatan[i].unitkerja2_label, data.data.ct2_potensipendapatan[i].unitkerja2, true, false);
                     $("#unitkerja2_"+(parseInt(data.data.ct2_potensipendapatan[i].no_seq)+1)+"").append(newState).trigger('change');
 
-                    $("#caktable2 > tbody").find("[row-seq="+(parseInt(data.data.ct2_potensipendapatan[i].no_seq)+1)+"]").find("td:eq(0)").text(data.data.ct2_potensipendapatan[i].coa);
+                    $("#caktable2 > tbody").find("[row-seq="+(parseInt(data.data.ct2_potensipendapatan[i].no_seq)+1)+"]").find("td:eq(2)").text(data.data.ct2_potensipendapatan[i].coa);
                     $("select[name='coa_"+(parseInt(data.data.ct2_potensipendapatan[i].no_seq)+1)+"']").empty();
                     var newState = new Option(data.data.ct2_potensipendapatan[i].coa_label, data.data.ct2_potensipendapatan[i].coa, true, false);
                     $("#coa_"+(parseInt(data.data.ct2_potensipendapatan[i].no_seq)+1)+"").append(newState).trigger('change');

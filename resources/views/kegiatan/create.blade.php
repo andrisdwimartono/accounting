@@ -28,6 +28,45 @@
                                     <form id="quickForm" action="#">
                                         @csrf
                                             <div class="card-body">
+                                                @if($page_data["page_data_urlname"] != "pengajuan")
+                                                <div class="form-group row m-0">
+                                                    <label for="plafon" class="col-sm-4 col-form-label">Plafon Anggaran</label>
+                                                    <table id="caktable4" class="display mb-3" style="width: 100%">
+                                                        <thead>
+                                                            <tr>
+                                                                <th scope="col" style="width: 12.5%;">Plafon</th>
+                                                                <th scope="col" style="width: 12.5%;">Process</th>
+                                                                <th scope="col" style="width: 12.5%;">Approved</th>
+                                                                <th scope="col" style="width: 12.5%;">Submitted</th>
+                                                                <th scope="col" style="width: 12.5%;">Paid</th>
+                                                                <th scope="col" style="width: 12.5%;">PJK Process</th>
+                                                                <th scope="col" style="width: 12.5%;">PJK Approved</th>
+                                                                <th scope="col" style="width: 12.5%;">Sisa</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="text-right pr-1" id="valplafon"></td>
+                                                                <td class="text-right pr-1" id="valprocess"></td>
+                                                                <td class="text-right pr-1" id="valapproved"></td>
+                                                                <td class="text-right pr-1" id="valsubmitted"></td>
+                                                                <td class="text-right pr-1" id="valpaid"></td>
+                                                                <td class="text-right pr-1" id="valpjkprocess"></td>
+                                                                <td class="text-right pr-1" id="valpjkapproved"></td>
+                                                                <td class="text-right pr-1" id="valsisa"></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                @endif
+                                                @if($page_data["page_method_name"] != "Create")
+                                                <div class="form-group row m-0">
+                                                    <label for="kode_anggaran" class="col-sm-4 col-form-label">Kode Anggaran</label>
+                                                    <div class="col-sm-6 cakfield">
+                                                    <input type="text" name="kode_anggaran" class="form-control" id="kode_anggaran" placeholder="UN####-######-####" readonly>
+                                                    </div>
+                                                </div>
+                                                @endif
                                                 @if($page_data["page_data_urlname"] == "pengajuan" && $page_data["page_method_name"] == "Update")
                                                 <div class="form-group row m-0">
                                                     <label for="tanggal_kegiatan" class="col-sm-4 col-form-label">Tanggal Pencairan</label>
@@ -366,8 +405,14 @@
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
+                                                @if($page_data["page_data_urlname"] != "pengajuan")
                                                 <button type="button" class="btn btn-danger" id="rejectrka-confirmed">Tolak</button>
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal Tolak</button>
+                                                @else
+                                                <button type="button" class="btn btn-info" id="rejectpengajuan-confirmed">Terima</button>
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal Terima</button>
+                                                @endif
+                                                
                                             </div>
                                         </div>
                                     </div>
@@ -386,8 +431,13 @@
                                                 <p>Apakah anda yakin terima RKA ini?</p>
                                             </div>
                                             <div class="modal-footer">
+                                                @if($page_data["page_data_urlname"] != "pengajuan")
                                                 <button type="button" class="btn btn-info" id="approverka-confirmed">Terima</button>
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal Terima</button>
+                                                @else
+                                                <button type="button" class="btn btn-info" id="approvepengajuan-confirmed">Terima</button>
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal Terima</button>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>

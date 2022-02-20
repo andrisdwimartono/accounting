@@ -28,6 +28,14 @@
                                     <form id="quickForm" action="#">
                                         @csrf
                                             <div class="card-body">
+                                                @if($page_data["page_method_name"] != "Create")
+                                                <div class="form-group row m-0">
+                                                    <label for="kode_anggaran" class="col-sm-4 col-form-label">Kode Anggaran</label>
+                                                    <div class="col-sm-6 cakfield">
+                                                    <input type="text" name="kode_anggaran" class="form-control" id="kode_anggaran" placeholder="UN####-######-####" readonly>
+                                                    </div>
+                                                </div>
+                                                @endif
                                                 <div class="form-group row m-0">
                                                     <label class="col-sm-4 col-form-label" for="unit_pelaksana">Unit Pelaksana</label>
                                                     <div class="col-sm-6 cakfield">
@@ -164,6 +172,65 @@
                                                 <!-- <div class="text-danger col-sm-12" id="caktable1_message"></div> -->
                                                 <input type="hidden" name="ct1_detailbiayakegiatan" class="form-control" id="ct1_detailbiayakegiatan" placeholder="Enter Menu Field" @if($page_data["page_method_name"] == "View") readonly @endif>
                                             </div>
+
+                                            <div class="form-group @if($page_data["page_data_urlname"] == "pengajuan" && $page_data["page_method_name"] == "Update") column-hidden @endif" >
+                                                    <label for="ct3_outputrka">Output RKA</label>
+                                                    <div id="result">
+                                                        Event result:
+                                                    </div>
+                                                    <div class="table-responsive">
+                                                        <table id="caktable3" class="display" style="width: 100%">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th scope="col" class="column-hidden"></th>
+                                                                    <th scope="col" style="width: 15%; overflow: hidden;">IKU</th>
+                                                                    <th scope="col" style="width: 7%; overflow: hidden;">Indikator</th>
+                                                                    <th scope="col" style="width: 10%; overflow: hidden;">Keterangan</th>
+                                                                    <th scope="col" style="width: 7%;">Target</th>
+                                                                    <th scope="col" style="width: 10%;">Satuan<br/>Target</th>
+
+                                                                    <th scope="col" style="width: 8%;">Realisasi</th>
+                                                                    <th scope="col" style="width: 10%;">Satuan<br/>Realisasi</th>
+                                                                    <th scope="col" style="width: 10%;">File Bukti</th>
+                                                                    <th scope="col" style="width: 10%;">Link Bukti</th>
+                                                                    <th scope="col" style="width: 10%;">Hasil Pencapaian</th>
+
+                                                                    <th scope="col" style="width: 3%;"></th>
+                                                                    <th scope="col" class="column-hidden"></th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                
+                                                            </tbody>
+                                                            <tfoot>
+                                                                <tr class="p-0">
+                                                                    <td class="column-hidden"></td>
+                                                                        <td class="text-center">
+                                                                            <div class="form-group row m-0 p-0 properties">
+                                                                                @if($page_data["page_method_name"] == "Create"  || $page_data["page_method_name"] == "Update"  ||($page_data["lastapprove"] && $page_data["lastapprove"]->role == Auth::user()->role) || ($page_data["nextapprove"] && $page_data["nextapprove"]->role == Auth::user()->role)) 
+                                                                                    <button type="button" id="addrow3" class="btn btn-primary shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Tambah Output"><i class="fa fa-plus"></i></button>
+                                                                                @endif
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="p-0 text-right"> </td>
+                                                                        <td class="p-0 text-right"> </td>
+                                                                        <td class="p-0 text-right"> </td>
+                                                                        <td class="p-0 text-right"> </td>
+                                                                        <td class="p-0 text-right"> </td>
+                                                                        <td class="p-0 text-right"> </td>
+                                                                        <td class="p-0 text-right"> </td>
+                                                                        <td class="p-0 text-right"> </td>
+                                                                        <td class="p-0 text-right"> </td>
+                                                                        <td class="p-0 text-right" id="totalnom3"></td>
+                                                                       
+                                                                        <td class="column-hidden"></td>
+                                                                        
+                                                                    </tr>
+                                                            </tfoot>
+                                                        </table>
+                                                    </div>
+                                                    <input type="hidden" name="ct3_outputrka" class="form-control" id="ct3_outputrka" placeholder="Enter Menu Field" @if($page_data["page_method_name"] == "View") readonly @endif>
+                                                </div>
 
                                             <?php if($page_data["page_method_name"] != "Create" && $page_data["page_method_name"] != "Update"){ ?>
                                             <div class="form-group">
