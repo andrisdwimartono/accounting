@@ -100,7 +100,8 @@ class NeracaExport implements FromView, WithStyles
         })
         ->where(function($q) use ($unitkerja){
             $q->where(function($q) use ($unitkerja){
-                if($unitkerja != null && $unitkerja != 0){
+                
+                if($unitkerja != null && $unitkerja != 'null' && $unitkerja != 0){
                     $q->where("neracas.unitkerja", $unitkerja);
                 }else{
                     $q->whereNull("coas.fheader");
@@ -117,7 +118,6 @@ class NeracaExport implements FromView, WithStyles
             $dt[$neraca->id] = array($neraca->id, $neraca->coa_code, $neraca->coa_name, $neraca->debet, $neraca->credit, $neraca->coa, $neraca->level_coa, $neraca->fheader);
         }
         
-
         // get nominal
         $iter = array_filter($dt, function ($dt) {
             return ($dt[3] != 0) || ($dt[4] != 0) && ($dt[7] != "on");
@@ -148,7 +148,8 @@ class NeracaExport implements FromView, WithStyles
         
         // sort by code
         $columns = array_column($dt, 1);
-        array_multisort($columns, SORT_ASC, $dt);
+        array_multisort($columns, SORT_ASC, SORT_STRING, $dt);
+
         // convert array
         $dt = array_values($dt);
         
@@ -184,8 +185,8 @@ class NeracaExport implements FromView, WithStyles
         }
 
         $uk = null;
-        if($unitkerja != null && $unitkerja != 0){
-            $uk = Unitkerja::where("id", ($unitkerja?$unitkerja:0))->first();
+        if($unitkerja != null && $unitkerja != "null" && $unitkerja != 0){
+            $uk = Unitkerja::where("id", $unitkerja)->first();
         }
 
         $output = array(

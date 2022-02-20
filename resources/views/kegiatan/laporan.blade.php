@@ -25,7 +25,7 @@
                         <div class="card">
                         <div class="card-header" style="display:block">
                                 <div class="form-group row m-0" style="height:40px;">
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-4">
                                         <div class="col-sm-3 left">
                                             <label class="text-grey">Unit Pelaksana</label>
                                         </div>
@@ -34,7 +34,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-4">
                                         <div class="col-sm-3 left">
                                             <label class="text-grey">Tahun</label>
                                         </div>
@@ -46,7 +46,15 @@
                                             </select>
                                         </div>
                                     </div>       
-                                    
+                                    <div class="col-sm-4">
+                                        <div class="col-sm-3 left">
+                                            <label class="text-grey">Status</label>
+                                        </div>
+                                        <div class="col-sm-9 right">
+                                            <select name="status" id="status" class="form-control select2bs4staticBackdrop" data-row="1" style="width: 100%;">
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="card-body">

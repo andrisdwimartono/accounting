@@ -263,32 +263,24 @@ class CoaController extends Controller
         }
 
         $dt = array();
-        if($keyword){
+        // if($keyword){
             $no = 0;
-        foreach(Coa::where(function($q) use ($keyword, $request) {
+            foreach(Coa::where(function($q) use ($keyword, $request) {
                 $q->where("coa_code", "ILIKE", "%" . $keyword. "%")->orWhere("coa_name", "ILIKE", "%" . $keyword. "%")->orWhere("level_coa", "ILIKE", "%" . $keyword. "%")->orWhere("fheader", "ILIKE", "%" . $keyword. "%")->orWhere("factive", "ILIKE", "%" . $keyword. "%");
                     })->where("factive", "on")->where("category", $request->category_filter)->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "coa_code", "coa_name", "level_coa", "coa", "coa_label", "category", "category_label", "fheader", "factive", "jenis_aktivitas"]) as $coa){
                         $no = $no+1;
-                        $act = '
-                        <!--<a href="/coa/'.$coa->id.'" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-info"></i></a>
-
-                        <a href="/coa/'.$coa->id.'/edit" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-success"></i></a>-->
-
-                        <button type="button" class="row-delete"> <i class="fas fa-minus-circle text-danger"></i> </button>
-                        
-                        <!--
-                        <button type="button" class="row-update-line"> <i class="fas fa-edit text-success"></i> </button>-->
-                        ';
-
+                        $act = '                
+                        <a class="row-delete btn btn-danger shadow btn-xs sharp"><i class="fa fa-trash"></i></a>                        ';
+        
                         if($coa->fheader == 'on'){
-                            $act .= '<button type="button" class="row-add-child"> <i class="fas fa-plus text-info"></i> </button>';
+                            $act .= '<a href="#" class="row-add-child btn btn-primary shadow btn-xs sharp mr-1"><i class="fa fa-plus"></i></a>';
                         }
 
                     array_push($dt, array($coa->id, $coa->coa_code, $coa->coa_name, $coa->level_coa, $coa->coa, $coa->coa_label, $coa->category, $coa->category_label, $coa->fheader, $coa->factive, $coa->jenis_aktivitas, $act));
                 }
-        }else{
-            $this->get_list_data($dt, $request, $keyword, $limit, $orders, null);
-        }
+        // }else{
+        //     $this->get_list_data($dt, $request, $keyword, $limit, $orders, null);
+        // }
         
         $output = array(
             "draw" => intval($request->draw),

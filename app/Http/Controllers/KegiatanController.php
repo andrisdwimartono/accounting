@@ -68,6 +68,16 @@ class KegiatanController extends Controller
                     ["name" => "2022", "label" => "2022"],
                     ["name" => "2023", "label" => "2023"]
                 ],
+                "status_kegiatan" => [
+                    ["name" => "process", "label" => "process"],
+                    ["name" => "approved", "label" => "approved"],
+                    ["name" => "approving", "label" => "approving"],
+                    ["name" => "submitting", "label" => "submitting"],
+                    ["name" => "submitted", "label" => "submitted"],
+                    ["name" => "paid", "label" => "paid"],
+                    ["name" => "reporting", "label" => "reporting"],
+                    ["name" => "reported", "label" => "reported"],
+                ],
                 "role" => [
                     ["name" => "admin", "label" => "Administrator"],
                     ["name" => "direktur", "label" => "Direktur"],
@@ -1417,6 +1427,11 @@ class KegiatanController extends Controller
             $unit_pelaksana = $request->search["unit_pelaksana"];
         }
 
+        $status = null;
+        if(isset($request->search["status"])){
+            $status = $request->search["status"];
+        }
+
         $orders = array("id", "ASC");
         if(isset($request->order)){
             $orders = array($list_column[$request->order["0"]["column"]], $request->order["0"]["dir"]);
@@ -1437,17 +1452,22 @@ class KegiatanController extends Controller
                 $q->where("unit_pelaksana", $unit_pelaksana);
             }
         })
-        ->where(function($q) use ($jenis) {
-            if($jenis=='kegiatan'){
-                $q->whereIn("status", array("process","approved"));
-            } else if($jenis=='pengajuan'){
-                $q->whereIn("status", array("submitted","submitting"));
-            } else if($jenis=='pencairan'){
-                $q->whereIn("status", array("paid"));
-            } else if($jenis=='pertanggungjawaban'){
-                $q->whereIn("status", array("reporting", "reported"));
+        ->where(function($q) use ($status) {
+            if(isset($status)){
+                $q->where("status", $status);
             }
         })
+        // ->where(function($q) use ($jenis) {
+        //     if($jenis=='kegiatan'){
+        //         $q->whereIn("status", array("process","approved"));
+        //     } else if($jenis=='pengajuan'){
+        //         $q->whereIn("status", array("submitted","submitting"));
+        //     } else if($jenis=='pencairan'){
+        //         $q->whereIn("status", array("paid"));
+        //     } else if($jenis=='pertanggungjawaban'){
+        //         $q->whereIn("status", array("reporting", "reported"));
+        //     }
+        // })
         ->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])
         ->get(["id", "kode_anggaran", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status"]) as $kegiatan){
             $no = $no+1;

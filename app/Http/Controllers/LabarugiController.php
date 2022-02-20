@@ -339,7 +339,7 @@ class LabarugiController extends Controller
         })
         ->where(function($q) use ($unitkerja){
             $q->where(function($q) use ($unitkerja){
-                if($unitkerja != null && $unitkerja != 0){
+                if($unitkerja != null && $unitkerja != "null" && $unitkerja != 0){
                     $q->where("labarugis.unitkerja", $unitkerja);
                 }else{
                     $q->whereNull("coas.fheader");
@@ -388,7 +388,8 @@ class LabarugiController extends Controller
         
         // sort by code
         $columns = array_column($dt, 1);
-        array_multisort($columns, SORT_ASC, $dt);
+        array_multisort($columns, SORT_ASC, SORT_STRING, $dt);
+        
         // convert array
         $dt = array_values($dt);
         
@@ -591,7 +592,7 @@ class LabarugiController extends Controller
         })
         ->where(function($q) use ($unitkerja){
             $q->where(function($q) use ($unitkerja){
-                if($unitkerja != null && $unitkerja != 0){
+                if($unitkerja != null && $unitkerja != "null" && $unitkerja != 0){
                     $q->where("labarugis.unitkerja", $unitkerja);
                 }else{
                     $q->whereNull("coas.fheader");
@@ -639,7 +640,8 @@ class LabarugiController extends Controller
         
         // sort by code
         $columns = array_column($dt, 1);
-        array_multisort($columns, SORT_ASC, $dt);
+        array_multisort($columns, SORT_ASC, SORT_STRING, $dt);
+        
         // convert array
         $dt = array_values($dt);
         
@@ -663,15 +665,15 @@ class LabarugiController extends Controller
 
             // format nominal
             if($child_level==1){
-                $dt[$key][3] = "<td class='rp'>Rp</td><td class='nom'>".number_format($data[3],0,",",".")."</td>";
-                $dt[$key][4] = "<td class='rp'>Rp</td><td class='nom'>".number_format($data[4],0,",",".")."</td>";
+                $dt[$key][3] = "<td class='rp'>$</td><td class='nom'>".number_format($data[3],0,",",".")."</td>";
+                $dt[$key][4] = "<td class='rp'>$</td><td class='nom'>".number_format($data[4],0,",",".")."</td>";
                 if($data[7]=="on"){
                     $dt[$key][3] = "<td colspan=2></td>";
                     $dt[$key][4] = "<td colspan=2></td>";
                 }    
             } else {
-                $dt[$key][3] = "<td class='rp'>Rp</td><td class='nom'>".number_format($data[3],0,",",".")."</td>";
-                $dt[$key][4] = "<td class='rp'>Rp</td><td class='nom'>".number_format($data[4],0,",",".")."</td>";
+                $dt[$key][3] = "<td class='rp'>$</td><td class='nom'>".number_format($data[3],0,",",".")."</td>";
+                $dt[$key][4] = "<td class='rp'>$</td><td class='nom'>".number_format($data[4],0,",",".")."</td>";
                 if($data[7]!="on"){
                     $dt[$key][3] = "<td colspan=2></td>";
                     $dt[$key][4] = "<td colspan=2></td>";
@@ -684,16 +686,16 @@ class LabarugiController extends Controller
         $saldo_debet = "<td colspan=2></td>";
         $saldo_kredit = "<td colspan=2></td>";
         if($saldo>0){
-            $saldo_debet = "<td class='rp'>Rp</td><td class='nom'><b>".number_format($saldo,0,",",".")."</b></td>";
+            $saldo_debet = "<td class='rp'>$</td><td class='nom'><b>".number_format($saldo,0,",",".")."</b></td>";
             $saldo_kredit = "<td colspan=2></td>";
             $ket = "SURPLUS";
         } else {
             $saldo_debet = "<td colspan=2></td>";
-            $saldo_kredit = "<td class='rp'>Rp</td><td class='nom'><b>".number_format($saldo,0,",",".")."</b></td>";
+            $saldo_kredit = "<td class='rp'>$</td><td class='nom'><b>".number_format($saldo,0,",",".")."</b></td>";
             $ket = "DEFISIT";
         }
         $uk = null;
-        if($unitkerja != null && $unitkerja != 0){
+        if($unitkerja != null && $unitkerja != "null" && $unitkerja != 0){
             $uk = Unitkerja::where("id", ($unitkerja?$unitkerja:0))->first();
         }
         $output = array(
@@ -701,8 +703,8 @@ class LabarugiController extends Controller
             "recordsTotal" => 0,
             "recordsFiltered" => 0,
             "data" => $dt,
-            "deb" => "<td class='rp'>Rp</td><td class='nom'><b>".number_format($deb_total,0,",",".")."</b></td>",
-            "cre" => "<td class='rp'>Rp</td><td class='nom'><b>".number_format($cre_total,0,",",".")."</b></td>",
+            "deb" => "<td class='rp'>$</td><td class='nom'><b>".number_format($deb_total,0,",",".")."</b></td>",
+            "cre" => "<td class='rp'>$</td><td class='nom'><b>".number_format($cre_total,0,",",".")."</b></td>",
             "sal_deb" => $saldo_debet,
             "sal_cre" => $saldo_kredit,
             "ket" => $ket,

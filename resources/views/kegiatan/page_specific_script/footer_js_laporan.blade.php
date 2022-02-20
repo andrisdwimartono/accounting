@@ -116,6 +116,7 @@ function format ( d ) {
                   bulan_periode: $("#bulan_periode").val(),
                   tahun_periode: $("#tahun_periode").val(),
                   unit_pelaksana: $("#unitkerja").val(),
+                  status: $("#status").val(),
               }, 
               _token: $("input[name=_token]").val()
             }
@@ -215,6 +216,38 @@ function format ( d ) {
         },
         cache: true
     }
+  });
+
+  $("#status").on("change", function() {
+      fetch_data();
+      $("#status_label").val($("#status option:selected").text());
+  });
+
+  $.ajax({
+      url: "/getoptions{{$page_data["page_data_urlname"]}}",
+      type: "post",
+      data: {
+          fieldname: "status_kegiatan",
+          _token: $("input[name=_token]").val()
+      },
+      success: function(data){
+          for(var i = 0; i < data.length; i++){
+              if(data[i].name){
+                  var newState = new Option(data[i].label, data[i].name, true, false);
+                  $("#status").append(newState).trigger("change");
+              }
+          }
+      },
+      error: function (err) {
+          if (err.status == 422) {
+              $.each(err.responseJSON.errors, function (i, error) {
+                  var validator = $("#quickForm").validate();
+                  var errors = {}
+                  errors[i] = error[0];
+                  validator.showErrors(errors);
+              });
+          }
+      }
   });
 
   $('#example1 tbody').on( 'click', '.row-delete', function () {
