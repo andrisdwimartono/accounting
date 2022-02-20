@@ -75,12 +75,16 @@
         { "width": "50px" },
         { "width": "50px" },
         { "width": "50px" },
+        { "width": "50px" },
         ],
         aoColumnDefs: [{
               aTargets: [1],
               mRender: function (data, type, row){
-                console.log(data);
-                data = data.toString();
+                if(data){
+                  data = data.toString();
+                }else{
+                  return "<span></span>";
+                }
                 return "<span>"+data+"</span>";
               },
               createdCell: function (td, cellData, rowData, row, col) {
