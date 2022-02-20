@@ -58,7 +58,7 @@
       //"searching": false,
       buttons: [
             {
-                text: "Tambah Unit Kerja <span class='btn-icon-right'><i class='fa fa-plus'></i></span>",
+                text: "Tambah Program Kerja Kerja <span class='btn-icon-right'><i class='fa fa-plus'></i></span>",
                 className: "btn btn-primary",
                 init: function(api, node, config) {
                   $(node).removeClass('dt-button')
@@ -70,22 +70,22 @@
         ],
         "columns": [
         { "width": "5px" },
-        { "width": "5px" },
-        { "width": "550px" },
-        { "width": "20px" },
+        { "width": "50px" },
+        { "width": "50px" },
+        { "width": "50px" },
+        { "width": "50px" },
+        { "width": "300px" },
+        { "width": "50px" },
+        { "width": "50px" },
+        { "width": "50px" },
         ],
-        aoColumnDefs: [{
-              aTargets: [1, 2],
-              mRender: function (data, type, row){
-                data = data.toString();
-                return "<span>"+data+"</span>";
-              },
-              createdCell: function (td, cellData, rowData, row, col) {
-                $(td).addClass('asset_value');
-                $(td).addClass('caktext');
-                $(td).attr('data-id', rowData[0]);
+        aoColumnDefs: [
+            {
+                aTargets: [1,2,3,4],
+                createdCell: function (td, cellData, rowData, row, col) {
+                  $(td).addClass('column-hidden');
+                }
               }
-            }
             ],
           "autoWidth": false,
           dom: 'Bfrtip',
@@ -193,9 +193,9 @@
   var field_arr = ["id", "unitkerja_code", "unitkerja_name"];
   cto_loading_show();
 
-  var urlaction = "/updateunitkerja/"+val_arr[0];
+  var urlaction = "/updateiku/"+val_arr[0];
   if(action == 'create'){
-    urlaction = "/storeunitkerja";
+    urlaction = "/storeiku";
   }
 
   var values = "_token="+$("input[name=_token]").val();

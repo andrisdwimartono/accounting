@@ -33,9 +33,9 @@
                                         <thead>
                                             <tr>
                                                 <th>No</th>
-                                                <th>Bab</th>
-                                                <th>Elemen</th>
-                                                <th>Indikator</th>
+                                                <th>Tahun</th>
+                                                <th>Unit Pelaksana</th>
+                                                <th>Target Capaian</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>

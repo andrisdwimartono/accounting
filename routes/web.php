@@ -238,7 +238,16 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/get_forecast', 'App\Http\Controllers\AruskasController@get_forecast');
 
         Route::get('/iku', 'App\Http\Controllers\IkuunitkerjaController@index')->name('iku');
+        Route::get('/createiku', 'App\Http\Controllers\IkuunitkerjaController@create');
+        Route::post('/storeiku', 'App\Http\Controllers\IkuunitkerjaController@store');
         Route::post('/getlistiku', 'App\Http\Controllers\IkuunitkerjaController@get_list');
+        Route::post('/getdataiku', 'App\Http\Controllers\IkuunitkerjaController@getdata');
+        Route::post('/updateiku/{iku}', 'App\Http\Controllers\IkuunitkerjaController@update');
+        Route::post('/deleteiku', 'App\Http\Controllers\IkuunitkerjaController@destroy');
+        Route::post('/getoptionsiku', 'App\Http\Controllers\IkuunitkerjaController@getoptions');
+        Route::post('/getlinksiku', 'App\Http\Controllers\IkuunitkerjaController@getlinks');
+        Route::get('/iku/{iku}', 'App\Http\Controllers\IkuunitkerjaController@show');
+        Route::get('/iku/{iku}/edit', 'App\Http\Controllers\IkuunitkerjaController@edit');
         
         
         Route::get('/iku/laporan', 'App\Http\Controllers\IkuunitkerjaController@laporan');

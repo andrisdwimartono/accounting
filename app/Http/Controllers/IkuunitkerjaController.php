@@ -13,8 +13,8 @@ class IkuunitkerjaController extends Controller
 {
     public function tabledesign(){
         $td = [
-            "page_data_name" => "IKU Unit Kerja",
-            "page_data_urlname" => "ikuunitkerja",
+            "page_data_name" => "Program Kerja",
+            "page_data_urlname" => "iku",
             "fields" => [
                 "iku_tahun" => "select",
                 "iku_unit_pelaksana" => "link",
@@ -142,9 +142,23 @@ class IkuunitkerjaController extends Controller
         $satuan_nilai_target_tahunan_list = "percent,rp";
 
         $td["fieldsrules"] = [
-            "iku_tahun" => "required|in:2020,2021,2022,2023",
-            "iku_unit_pelaksana" => "required|exists:unitkerjas,id",
-            "ct1_iku" => "required"
+            "misi" => "required",
+            "bidang" => "required",
+            "sasaran_bidang" => "required",
+            "strategi" => "required",
+            "iku_name" => "required",
+            "tahun" => "required",
+            "unit_pelaksana" => "required|exists:unitkerjas,id",
+        ];
+
+        $td["fieldsrules_update"] = [
+            "misi" => "required",
+            "bidang" => "required",
+            "sasaran_bidang" => "required",
+            "strategi" => "required",
+            "iku_name" => "required",
+            "tahun" => "required",
+            "unit_pelaksana" => "required|exists:unitkerjas,id",
         ];
 
         $td["fieldsmessages"] = [
@@ -155,6 +169,16 @@ class IkuunitkerjaController extends Controller
             "exists" => "Tidak ada dalam :attribute!!",
             "date_format" => "Format tidak sesuai di :attribute!!"
         ];
+
+        $td["fieldsmessages_update"] = [
+            "required" => ":attribute harus diisi!!",
+            "min" => ":attribute minimal :min karakter!!",
+            "max" => ":attribute maksimal :max karakter!!",
+            "in" => "Tidak ada dalam pilihan :attribute!!",
+            "exists" => "Tidak ada dalam :attribute!!",
+            "date_format" => "Format tidak sesuai di :attribute!!"
+        ];
+
 
         $td["fieldsrules_ct1_iku"] = [
             "jenis_iku" => "required|in:Visi Misi,Tata Pamong,Mahasiswa,Sumber Daya Manusia,Keuangan dan Sarpras,Pendidikan,Penelitian,Pengabdian Masyarakat,Luaran dan Capaian Tridharma,Jati Diri",
@@ -284,69 +308,20 @@ class IkuunitkerjaController extends Controller
     public function store(Request $request)
     {
         $page_data = $this->tabledesign();
-        $rules_ct1_iku = $page_data["fieldsrules_ct1_iku"];
-        $requests_ct1_iku = json_decode($request->ct1_iku, true);
-        foreach($requests_ct1_iku as $ct_request){
-            $child_tb_request = new \Illuminate\Http\Request();
-            $child_tb_request->replace($ct_request);
-            $ct_messages = array();
-            foreach($page_data["fieldsmessages_ct1_iku"] as $key => $value){
-                $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
-            }
-            $child_tb_request->validate($rules_ct1_iku, $ct_messages);
-        }
-
         $rules = $page_data["fieldsrules"];
         $messages = $page_data["fieldsmessages"];
         if($request->validate($rules, $messages)){
-            $id = Ikuunitkerja::create([
-                "iku_tahun"=> $request->iku_tahun,
-                "iku_tahun_label"=> $request->iku_tahun_label,
-                "iku_unit_pelaksana"=> $request->iku_unit_pelaksana,
-                "iku_unit_pelaksana_label"=> $request->iku_unit_pelaksana_label,
-                "upload_dokumen"=> $request->upload_dokumen,
+            $id = Iku::create([
+                "misi"=> $request->misi,
+                "bidang" => $request->bidang,
+                "sasaran_bidang"=> $request->sasaran_bidang,
+                "strategi"=> $request->strategi,
+                "tahun"=> $request->tahun,
+                "unit_pelaksana"=> $request->unit_pelaksana,
+                "unit_pelaksana_label"=> $request->unit_pelaksana_label,
+                "iku_name"=> $request->iku_name,
                 "user_creator_id"=> Auth::user()->id
             ])->id;
-
-            foreach($requests_ct1_iku as $ct_request){
-                Iku::create([
-                    "no_seq" => $ct_request["no_seq"],
-                    "parent_id" => $id,
-                    "jenis_iku"=> $ct_request["jenis_iku"],
-                    "jenis_iku_label"=> $ct_request["jenis_iku_label"],
-                    "iku_name"=> $ct_request["iku_name"],
-                    "unit_pelaksana"=> $ct_request["unit_pelaksana"],
-                    "unit_pendukung"=> $ct_request["unit_pendukung"],
-                    "unit_pendukung_label"=> $ct_request["unit_pendukung_label"],
-                    "nilai_standar"=> $ct_request["nilai_standar"],
-                    "satuan_nilai_standar"=> $ct_request["satuan_nilai_standar"],
-                    "satuan_nilai_standar_label"=> $ct_request["satuan_nilai_standar_label"],
-                    "nilai_standar_opt"=> $ct_request["nilai_standar_opt"],
-                    "nilai_standar_opt_label"=> $ct_request["nilai_standar_opt_label"],
-                    "nilai_baseline"=> $ct_request["nilai_baseline"],
-                    "satuan_nilai_baseline"=> $ct_request["satuan_nilai_baseline"],
-                    "satuan_nilai_baseline_label"=> $ct_request["satuan_nilai_baseline_label"],
-                    "nilai_baseline_opt"=> $ct_request["nilai_baseline_opt"],
-                    "nilai_baseline_opt_label"=> $ct_request["nilai_baseline_opt_label"],
-                    "nilai_renstra"=> $ct_request["nilai_renstra"],
-                    "satuan_nilai_renstra"=> $ct_request["satuan_nilai_renstra"],
-                    "satuan_nilai_renstra_label"=> $ct_request["satuan_nilai_renstra_label"],
-                    "nilai_renstra_opt"=> $ct_request["nilai_renstra_opt"],
-                    "nilai_renstra_opt_label"=> $ct_request["nilai_renstra_opt_label"],
-                    "nilai_target_tahunan"=> $ct_request["nilai_target_tahunan"],
-                    "satuan_nilai_target_tahunan"=> $ct_request["satuan_nilai_target_tahunan"],
-                    "satuan_nilai_target_tahunan_label"=> $ct_request["satuan_nilai_target_tahunan_label"],
-                    "nilai_target_tahunan_opt"=> $ct_request["nilai_target_tahunan_opt"],
-                    "nilai_target_tahunan_opt_label"=> $ct_request["nilai_target_tahunan_opt_label"],
-                    "keterangan"=> $ct_request["keterangan"],
-                    "sumber_data"=> $ct_request["sumber_data"],
-                    "rujukan"=> $ct_request["rujukan"],
-                    "unit_pelaksana_label"=> $ct_request["unit_pelaksana_label"],
-                    "tahun"=> $ct_request["tahun"],
-                    "upload_detail"=> $ct_request["upload_detail"],
-                    "user_creator_id" => Auth::user()->id
-                ]);
-            }
 
             return response()->json([
                 'status' => 201,
@@ -561,14 +536,14 @@ class IkuunitkerjaController extends Controller
     * @param int $id
     * @return \Illuminate\Http\Response
     */
-    public function edit(Ikuunitkerja $ikuunitkerja)
+    public function edit(Iku $iku)
     {
         $page_data = $this->tabledesign();
         $page_data["page_method_name"] = "Update";
         $page_data["footer_js_page_specific_script"] = ["ikuunitkerja.page_specific_script.footer_js_create"];
         $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_create"];
         
-        $page_data["id"] = $ikuunitkerja->id;
+        $page_data["id"] = $iku->id;
         return view("ikuunitkerja.create", ["page_data" => $page_data]);
     }
 
@@ -610,123 +585,20 @@ class IkuunitkerjaController extends Controller
     public function update(Request $request, $id)
     {
         $page_data = $this->tabledesign();
-        $rules_ct1_iku = $page_data["fieldsrules_ct1_iku"];
-        $requests_ct1_iku = json_decode($request->ct1_iku, true);
-        foreach($requests_ct1_iku as $ct_request){
-            $child_tb_request = new \Illuminate\Http\Request();
-            $child_tb_request->replace($ct_request);
-            $ct_messages = array();
-            foreach($page_data["fieldsmessages_ct1_iku"] as $key => $value){
-                $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
-            }
-            $child_tb_request->validate($rules_ct1_iku, $ct_messages);
-        }
-
-        $rules = $page_data["fieldsrules"];
-        $messages = $page_data["fieldsmessages"];
+        $rules = $page_data["fieldsrules_update"];
+        $messages = $page_data["fieldsmessages_update"];
         if($request->validate($rules, $messages)){
-            Ikuunitkerja::where("id", $id)->update([
-                "iku_tahun"=> $request->iku_tahun,
-                "iku_tahun_label"=> $request->iku_tahun_label,
-                "iku_unit_pelaksana"=> $request->iku_unit_pelaksana,
-                "iku_unit_pelaksana_label"=> $request->iku_unit_pelaksana_label,
-                "upload_dokumen"=> $request->upload_dokumen,
-                "user_updater_id"=> Auth::user()->id
+            Iku::where("id", $id)->update([
+                "misi"=> $request->misi,
+                "bidang" => $request->bidang,
+                "sasaran_bidang"=> $request->sasaran_bidang,
+                "strategi"=> $request->strategi,
+                "tahun"=> $request->tahun,
+                "unit_pelaksana"=> $request->unit_pelaksana,
+                "unit_pelaksana_label"=> $request->unit_pelaksana_label,
+                "iku_name"=> $request->iku_name,
+                "user_creator_id"=> Auth::user()->id
             ]);
-
-            $new_menu_field_ids = array();
-            foreach($requests_ct1_iku as $ct_request){
-                if(isset($ct_request["id"])){
-                    Iku::where("id", $ct_request["id"])->update([
-                        "no_seq" => $ct_request["no_seq"],
-                        "parent_id" => $id,
-                        "jenis_iku"=> $ct_request["jenis_iku"],
-                        "jenis_iku_label"=> $ct_request["jenis_iku_label"],
-                        "iku_name"=> $ct_request["iku_name"],
-                        "unit_pelaksana"=> $ct_request["unit_pelaksana"],
-                        "unit_pendukung"=> $ct_request["unit_pendukung"],
-                        "unit_pendukung_label"=> $ct_request["unit_pendukung_label"],
-                        "nilai_standar"=> $ct_request["nilai_standar"],
-                        "satuan_nilai_standar"=> $ct_request["satuan_nilai_standar"]==''?null:$ct_request["satuan_nilai_standar"],
-                        "satuan_nilai_standar_label"=> $ct_request["satuan_nilai_standar_label"],
-                        "nilai_standar_opt"=> $ct_request["nilai_standar_opt"],
-                        "nilai_standar_opt_label"=> $ct_request["nilai_standar_opt_label"],
-                        "nilai_baseline"=> $ct_request["nilai_baseline"],
-                        "satuan_nilai_baseline"=> $ct_request["satuan_nilai_baseline"]==''?null:$ct_request["satuan_nilai_baseline"],
-                        "satuan_nilai_baseline_label"=> $ct_request["satuan_nilai_baseline_label"],
-                        "nilai_baseline_opt"=> $ct_request["nilai_baseline_opt"],
-                        "nilai_baseline_opt_label"=> $ct_request["nilai_baseline_opt_label"],
-                        "nilai_renstra"=> $ct_request["nilai_renstra"],
-                        "satuan_nilai_renstra"=> $ct_request["satuan_nilai_renstra"]==''?null:$ct_request["satuan_nilai_renstra"],
-                        "satuan_nilai_renstra_label"=> $ct_request["satuan_nilai_renstra_label"],
-                        "nilai_renstra_opt"=> $ct_request["nilai_renstra_opt"],
-                        "nilai_renstra_opt_label"=> $ct_request["nilai_renstra_opt_label"],
-                        "nilai_target_tahunan"=> $ct_request["nilai_target_tahunan"],
-                        "satuan_nilai_target_tahunan"=> $ct_request["satuan_nilai_target_tahunan"]==''?null:$ct_request["satuan_nilai_target_tahunan"],
-                        "satuan_nilai_target_tahunan_label"=> $ct_request["satuan_nilai_target_tahunan_label"],
-                        "nilai_target_tahunan_opt"=> $ct_request["nilai_target_tahunan_opt"],
-                        "nilai_target_tahunan_opt_label"=> $ct_request["nilai_target_tahunan_opt_label"],
-                        "keterangan"=> $ct_request["keterangan"],
-                        "sumber_data"=> $ct_request["sumber_data"],
-                        "rujukan"=> $ct_request["rujukan"],
-                        "unit_pelaksana_label"=> $ct_request["unit_pelaksana_label"],
-                        "tahun"=> $ct_request["tahun"],
-                        "upload_detail"=> $ct_request["upload_detail"],
-                        "user_updater_id" => Auth::user()->id
-                    ]);
-                }else{
-                    $idct = Iku::create([
-                        "no_seq" => $ct_request["no_seq"],
-                        "parent_id" => $id,
-                        "jenis_iku"=> $ct_request["jenis_iku"],
-                        "jenis_iku_label"=> $ct_request["jenis_iku_label"],
-                        "iku_name"=> $ct_request["iku_name"],
-                        "unit_pelaksana"=> $ct_request["unit_pelaksana"],
-                        "unit_pendukung"=> $ct_request["unit_pendukung"],
-                        "unit_pendukung_label"=> $ct_request["unit_pendukung_label"],
-                        "nilai_standar"=> $ct_request["nilai_standar"],
-                        "satuan_nilai_standar"=> $ct_request["satuan_nilai_standar"],
-                        "satuan_nilai_standar_label"=> $ct_request["satuan_nilai_standar_label"],
-                        "nilai_standar_opt"=> $ct_request["nilai_standar_opt"],
-                        "nilai_standar_opt_label"=> $ct_request["nilai_standar_opt_label"],
-                        "nilai_baseline"=> $ct_request["nilai_baseline"],
-                        "satuan_nilai_baseline"=> $ct_request["satuan_nilai_baseline"],
-                        "satuan_nilai_baseline_label"=> $ct_request["satuan_nilai_baseline_label"],
-                        "nilai_baseline_opt"=> $ct_request["nilai_baseline_opt"],
-                        "nilai_baseline_opt_label"=> $ct_request["nilai_baseline_opt_label"],
-                        "nilai_renstra"=> $ct_request["nilai_renstra"],
-                        "satuan_nilai_renstra"=> $ct_request["satuan_nilai_renstra"],
-                        "satuan_nilai_renstra_label"=> $ct_request["satuan_nilai_renstra_label"],
-                        "nilai_renstra_opt"=> $ct_request["nilai_renstra_opt"],
-                        "nilai_renstra_opt_label"=> $ct_request["nilai_renstra_opt_label"],
-                        "nilai_target_tahunan"=> $ct_request["nilai_target_tahunan"],
-                        "satuan_nilai_target_tahunan"=> $ct_request["satuan_nilai_target_tahunan"],
-                        "satuan_nilai_target_tahunan_label"=> $ct_request["satuan_nilai_target_tahunan_label"],
-                        "nilai_target_tahunan_opt"=> $ct_request["nilai_target_tahunan_opt"],
-                        "nilai_target_tahunan_opt_label"=> $ct_request["nilai_target_tahunan_opt_label"],
-                        "keterangan"=> $ct_request["keterangan"],
-                        "sumber_data"=> $ct_request["sumber_data"],
-                        "rujukan"=> $ct_request["rujukan"],
-                        "unit_pelaksana_label"=> $ct_request["unit_pelaksana_label"],
-                        "tahun"=> $ct_request["tahun"],
-                        "upload_detail"=> $ct_request["upload_detail"],
-                        "user_creator_id" => Auth::user()->id
-                    ])->id;
-                    array_push($new_menu_field_ids, $idct);
-                }
-            }
-
-            foreach(Iku::whereParentId($id)->get() as $ch){
-                    $is_still_exist = false;
-                    foreach($requests_ct1_iku as $ct_request){
-                        if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
-                            $is_still_exist = true;
-                        }
-                    }
-                    if(!$is_still_exist){
-                        Iku::whereId($ch->id)->delete();
-                    }
-                }
 
             return response()->json([
                 'status' => 201,
@@ -1030,7 +902,7 @@ class IkuunitkerjaController extends Controller
 
     public function get_list(Request $request)
     {
-        $list_column = array("id", "bab","elemen","indikator", "id");
+        $list_column = array("id", "misi","bidang","sasaran_bidang", "strategi","tahun","unit_pelaksana","unit_pelaksana_label","iku_name","no_seq");
         $keyword = null;
         if(isset($request->search["value"])){
             $keyword = $request->search["value"];
@@ -1049,9 +921,17 @@ class IkuunitkerjaController extends Controller
         $dt = array();
         $no = 0;
         foreach(Iku::where(function($q) use ($keyword) {
-            $q->where("bab", "ILIKE", "%" . $keyword. "%")->orWhere("elemen", "ILIKE", "%" . $keyword. "%")->orWhere("indikator", "ILIKE", "%" . $keyword. "%");
-        })->where("type", $request->type)
-        ->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "bab", "elemen", "indikator"]) as $ikuunitkerja){
+            $q->where("misi", "ILIKE", "%" . $keyword. "%")
+            ->orWhere("bidang", "ILIKE", "%" . $keyword. "%")
+            ->orWhere("sasaran_bidang", "ILIKE", "%" . $keyword. "%")
+            ->orWhere("strategi", "ILIKE", "%" . $keyword. "%")
+            ->orWhere("tahun", "ILIKE", "%" . $keyword. "%")
+            ->orWhere("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")
+            ->orWhere("iku_name", "ILIKE", "%" . $keyword. "%");
+        })
+        ->orderBy($orders[0], $orders[1])
+        ->offset($limit[0])->limit($limit[1])
+        ->get(["id", "misi", "bidang", "sasaran_bidang", "strategi", "tahun", "unit_pelaksana_label","iku_name"]) as $ikuunitkerja){
             $no = $no+1;
 
             $act = '
@@ -1061,13 +941,19 @@ class IkuunitkerjaController extends Controller
 
             <a class="row-delete btn btn-danger shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Delete User"><i class="fa fa-trash"></i></a>';
 
-            array_push($dt, array($ikuunitkerja->id, $ikuunitkerja->bab, $ikuunitkerja->elemen, $ikuunitkerja->indikator, $act));
+            array_push($dt, array($ikuunitkerja->id, $ikuunitkerja->misi, $ikuunitkerja->bidang, $ikuunitkerja->sasaran_bidang, $ikuunitkerja->strategi, $ikuunitkerja->tahun, $ikuunitkerja->unit_pelaksana_label, $ikuunitkerja->iku_name, $act));
     }
         $output = array(
             "draw" => intval($request->draw),
             "recordsTotal" => Iku::get()->count(),
             "recordsFiltered" => intval(Iku::where(function($q) use ($keyword) {
-                $q->where("bab", "ILIKE", "%" . $keyword. "%")->orWhere("elemen", "ILIKE", "%" . $keyword. "%")->orWhere("indikator", "ILIKE", "%" . $keyword. "%");
+                $q->where("misi", "ILIKE", "%" . $keyword. "%")
+                ->orWhere("bidang", "ILIKE", "%" . $keyword. "%")
+                ->orWhere("sasaran_bidang", "ILIKE", "%" . $keyword. "%")
+                ->orWhere("strategi", "ILIKE", "%" . $keyword. "%")
+                ->orWhere("tahun", "ILIKE", "%" . $keyword. "%")
+                ->orWhere("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")
+                ->orWhere("iku_name", "ILIKE", "%" . $keyword. "%");
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
@@ -1078,26 +964,16 @@ class IkuunitkerjaController extends Controller
     public function getdata(Request $request)
     {
         if($request->ajax() || $request->wantsJson()){
-            $ikuunitkerja = Ikuunitkerja::whereId($request->id)->first();
+            $ikuunitkerja = Iku::whereId($request->id)->first();
             if(!$ikuunitkerja){
                 abort(404, "Data not found");
             }
-
-            $ct1_ikus = Iku::whereParentId($request->id)->where(function($q) use ($request){
-                if($request->is_ikt == "on"){
-                    $q->where("is_ikt", "on");
-                }else{
-                    $q->whereNull("is_ikt");
-                }
-            })->get();
 
             $results = array(
                 "status" => 201,
                 "message" => "Data available",
                 "data" => [
-                    "ct1_iku" => $ct1_ikus,
-                    "ikuunitkerja" => $ikuunitkerja,
-                    "iktunitkerja" => $ikuunitkerja
+                    "iku" => $ikuunitkerja,
                 ]
             );
 
