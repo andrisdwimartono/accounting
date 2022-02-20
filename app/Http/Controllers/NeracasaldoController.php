@@ -293,7 +293,7 @@ class NeracasaldoController extends Controller
         })
         ->where(function($q) use ($unitkerja){
             $q->where(function($q) use ($unitkerja){
-                if($unitkerja != null && $unitkerja != 0){
+                if($unitkerja != null && $unitkerja != "null" && $unitkerja != 0){
                     $q->where("neracasaldos.unitkerja", $unitkerja)->whereNull("coas.fheader");
                 }else{
                     $q->whereNull("coas.fheader");
@@ -340,8 +340,8 @@ class NeracasaldoController extends Controller
         }
         
         // sort by code
-        $columns = array_column($dt, 2);
-        array_multisort($columns, SORT_ASC, $dt);
+        $columns = array_column($dt, 1);
+        array_multisort($columns, SORT_ASC, SORT_STRING, $dt);
         // convert array
         $dt = array_values($dt);
 
@@ -486,7 +486,7 @@ class NeracasaldoController extends Controller
         })
         ->where(function($q) use ($unitkerja){
             $q->where(function($q) use ($unitkerja){
-                if($unitkerja != null && $unitkerja != 0){
+                if($unitkerja != null && $unitkerja != "null" && $unitkerja != 0){
                     $q->where("neracasaldos.unitkerja", $unitkerja);
                 }else{
                     $q->whereNull("coas.fheader");
@@ -534,7 +534,7 @@ class NeracasaldoController extends Controller
         
         // sort by code
         $columns = array_column($dt, 1);
-        array_multisort($columns, SORT_ASC, $dt);
+        array_multisort($columns, SORT_ASC, SORT_STRING, $dt);
         // convert array
         $dt = array_values($dt);
         
@@ -558,15 +558,15 @@ class NeracasaldoController extends Controller
 
             // format nominal
             if($child_level==1){
-                $dt[$key][3] = "<td class='rp'>Rp</td><td class='nom'>".number_format($data[3],0,",",".")."</td>";
-                $dt[$key][4] = "<td class='rp'>Rp</td><td class='nom'>".number_format($data[4],0,",",".")."</td>";
+                $dt[$key][3] = "<td class='rp'>$</td><td class='nom'>".number_format($data[3],0,",",".")."</td>";
+                $dt[$key][4] = "<td class='rp'>$</td><td class='nom'>".number_format($data[4],0,",",".")."</td>";
                 if($data[7]=="on"){
                     $dt[$key][3] = "<td colspan=2></td>";
                     $dt[$key][4] = "<td colspan=2></td>";
                 }    
             } else {
-                $dt[$key][3] = "<td class='rp'>Rp</td><td class='nom'>".number_format($data[3],0,",",".")."</td>";
-                $dt[$key][4] = "<td class='rp'>Rp</td><td class='nom'>".number_format($data[4],0,",",".")."</td>";
+                $dt[$key][3] = "<td class='rp'>$</td><td class='nom'>".number_format($data[3],0,",",".")."</td>";
+                $dt[$key][4] = "<td class='rp'>$</td><td class='nom'>".number_format($data[4],0,",",".")."</td>";
                 if($data[7]!="on"){
                     $dt[$key][3] = "<td colspan=2></td>";
                     $dt[$key][4] = "<td colspan=2></td>";
@@ -575,7 +575,7 @@ class NeracasaldoController extends Controller
         }
 
         $uk = null;
-        if($unitkerja != null && $unitkerja != 0){
+        if($unitkerja != null && $unitkerja != "null" && $unitkerja != 0){
             $uk = Unitkerja::where("id", ($unitkerja?$unitkerja:0))->first();
         }
 
@@ -584,8 +584,8 @@ class NeracasaldoController extends Controller
             "recordsTotal" => 0,
             "recordsFiltered" => 0,
             "data" => $dt,
-            "deb" => "<td class='rp'>Rp</td><td class='nom'><b>".number_format($deb_total,0,",",".")."</b></td>",
-            "cre" => "<td class='rp'>Rp</td><td class='nom'><b>".number_format($cre_total,0,",",".")."</b></td>",
+            "deb" => "<td class='rp'>$</td><td class='nom'><b>".number_format($deb_total,0,",",".")."</b></td>",
+            "cre" => "<td class='rp'>$</td><td class='nom'><b>".number_format($cre_total,0,",",".")."</b></td>",
             "unitkerja" => $unitkerja, 
             "unitkerja_label" => $uk?$uk->unitkerja_name:""
         );

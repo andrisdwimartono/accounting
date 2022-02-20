@@ -228,6 +228,18 @@ class UserController extends Controller
         return view("user.create", ["page_data" => $page_data]);
     }
 
+    public function change_password($id)
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "Change Password";
+        $page_data["footer_js_page_specific_script"] = ["user.page_specific_script.footer_js_create"];
+        $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_create"];
+        
+        $page_data["id"] = $id;
+        $user = Auth::user();
+        return view("user.change", ["page_data" => $page_data, "user" => $user]);
+    }
+
     /**
     * Update the specified resource in storage.
     *
@@ -260,6 +272,38 @@ class UserController extends Controller
                 'data' => ['id' => $id]
             ]);
         }
+    }
+
+    public function update_password(Request $request, $id)
+    {
+        $page_data = $this->tabledesign(); 
+
+        if (!(Hash::check($request->currentpassword, Auth::user()->password))) {
+            // The passwords matches
+            return response()->json(array('error' =>"Your current password does not matches with the password."), 400);
+        }
+
+        if(strcmp($request->currentpassword, $request->password) == 0){
+            // Current password and new password same
+            return response()->json(array('error' =>"New Password cannot be same as your current password."), 400);
+        }
+
+        $validatedData = $request->validate([
+            'currentpassword' => 'required',
+            'password' => 'required|string|min:5',
+        ]);
+
+        if($validatedData){
+            User::where("id", $id)->update([
+                "password"=> Hash::make($request->password),
+            ]);
+         
+            return response()->json([
+                'status' => 201,
+                'message' => 'Id '.$id.' is updated',
+                'data' => ['id' => $id]
+            ]);
+        }            
     }
 
     /**
@@ -319,8 +363,14 @@ class UserController extends Controller
                 ->orWhere('email', 'like', '%'.$keyword.'%');
         })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get($list_column) as $user){
             $no = $no+1;
+            $act = '';
 
-            $act = '            
+            if(Auth::user()->role == 'admin'){
+                $act = '    
+                <a href="/change_password/'.$user->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="Change Password"><i class="fa fa-key"></i></a>';    
+            }
+
+            $act .= '
             <a href="/user/'.$user->id.'" class="btn btn-info shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fa fa-eye"></i></a>
 
             <a href="/user/'.$user->id.'/edit" class="btn btn-warning shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit User Data"><i class="fa fa-edit"></i></a>

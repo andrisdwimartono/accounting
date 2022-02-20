@@ -8,15 +8,15 @@ function dezSettings({typography, version, layout, navheaderBg, headerBg, sideba
     this.typography = typography || "roboto";
     this.version = version || "light";
     this.layout = layout || "vertical";
-    this.navheaderBg = navheaderBg || "color_1";
-    this.headerBg = headerBg || "color_1";
+    this.navheaderBg = navheaderBg || "color_3";
+    this.headerBg = headerBg || "color_3";
     this.sidebarStyle = sidebarStyle || "full";
-    this.sidebarBg = sidebarBg || "color_1";
+    this.sidebarBg = sidebarBg || "color_3";
     this.sidebarPosition = sidebarPosition || "static";
     this.headerPosition = headerPosition || "static";
     this.containerLayout = containerLayout || "wide";
     this.direction = direction || "ltr";
-	this.primary = primary || "color_1";
+	this.primary = primary || "color_3";
 
     // this.manageTypography();
     this.manageVersion();
