@@ -16,6 +16,7 @@ use App\Models\Jurnal;
 use App\Models\Transaction;
 use App\Models\Pjk;
 use App\Models\Detailbiayapjk;
+use App\Models\Outputrka;
 
 
 class KegiatanController extends Controller
@@ -25,6 +26,7 @@ class KegiatanController extends Controller
             "page_data_name" => "Rencana Kegiatan dan Anggaran",
             "page_data_urlname" => "kegiatan",
             "fields" => [
+                "kode_anggaran" => "text",
                 "unit_pelaksana" => "link",
                 "tahun" => "select",
                 "iku" => "link",
@@ -33,6 +35,7 @@ class KegiatanController extends Controller
                 "output" => "text",
                 "proposal" => "upload",
                 "ct1_detailbiayakegiatan" => "childtable",
+                "ct3_outputrka" => "childtable",
                 "ct2_approval" => "childtable"
             ],
             "fieldschildtable" => [
@@ -41,6 +44,13 @@ class KegiatanController extends Controller
                     "deskripsibiaya" => "textarea",
                     "nominalbiaya" => "float",
                     "status" => "select"
+                ],
+                "ct3_outputrka" => [
+                    "iku" => "link",
+                    "indikator" => "text",
+                    "keterangan" => "text",
+                    "target" => "float",
+                    "satuan_target" => "text"
                 ],
                 "ct2_approval" => [
                     "role" => "select",
@@ -129,6 +139,22 @@ class KegiatanController extends Controller
         ];
 
         $td["fieldsmessages_ct1_detailbiayakegiatan"] = [
+            "required" => ":attribute harus diisi!!",
+            "min" => ":attribute minimal :min karakter!!",
+            "max" => ":attribute maksimal :max karakter!!",
+            "in" => "Tidak ada dalam pilihan :attribute!!",
+            "exists" => "Tidak ada dalam :attribute!!",
+            "date_format" => "Format tidak sesuai di :attribute!!"
+        ];
+
+        $td["fieldsrules_ct3_outputrka"] = [
+            "iku" => "required",
+            "keterangan" => "required",
+            "target" => "required|numeric",
+            "satuan_target" => "nullable"
+        ];
+
+        $td["fieldsmessages_ct3_outputrka"] = [
             "required" => ":attribute harus diisi!!",
             "min" => ":attribute minimal :min karakter!!",
             "max" => ":attribute maksimal :max karakter!!",
@@ -320,6 +346,18 @@ class KegiatanController extends Controller
             $child_tb_request->validate($rules_ct1_detailbiayakegiatan, $ct_messages);
         }
 
+        $rules_ct3_outputrka = $page_data["fieldsrules_ct3_outputrka"];
+        $requests_ct3_outputrka = json_decode($request->ct3_outputrka, true);
+        foreach($requests_ct3_outputrka as $ct_request){
+            $child_tb_request = new \Illuminate\Http\Request();
+            $child_tb_request->replace($ct_request);
+            $ct_messages = array();
+            foreach($page_data["fieldsmessages_ct3_outputrka"] as $key => $value){
+                $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
+            }
+            $child_tb_request->validate($rules_ct3_outputrka, $ct_messages);
+        }
+
         $rules = $page_data["fieldsrules"];
         $messages = $page_data["fieldsmessages"];
         if($request->validate($rules, $messages)){
@@ -336,6 +374,11 @@ class KegiatanController extends Controller
                 "status" => "process",
                 "user_creator_id"=> Auth::user()->id
             ])->id;
+            
+            $kode_anggaran = $this->kodeanggaran($request, $id);
+            Kegiatan::where("id", $id)->update([
+                "kode_anggaran" => $kode_anggaran
+            ]);
 
             foreach($requests_ct1_detailbiayakegiatan as $ct_request){
                 Detailbiayakegiatan::create([
@@ -346,6 +389,20 @@ class KegiatanController extends Controller
                     "deskripsibiaya"=> $ct_request["deskripsibiaya"],
                     "nominalbiaya"=> $ct_request["nominalbiaya"],
                     "status" => "pengajuan",
+                    "user_creator_id" => Auth::user()->id
+                ]);
+            }
+
+            foreach($requests_ct3_outputrka as $ct_request){
+                Outputrka::create([
+                    "no_seq" => $ct_request["no_seq"],
+                    "parent_id" => $id,
+                    "iku"=> $ct_request["iku"],
+                    "iku_label"=> $ct_request["iku_label"],
+                    "indikator"=> $ct_request["indikator"],
+                    "keterangan"=> $ct_request["keterangan"],
+                    "target"=> $ct_request["target"],
+                    "satuan_target"=> $ct_request["satuan_target"],
                     "user_creator_id" => Auth::user()->id
                 ]);
             }
@@ -491,6 +548,18 @@ class KegiatanController extends Controller
             $child_tb_request->validate($rules_ct1_detailbiayakegiatan, $ct_messages);
         }
 
+        $rules_ct3_outputrka = $page_data["fieldsrules_ct3_outputrka"];
+        $requests_ct3_outputrka = json_decode($request->ct3_outputrka, true);
+        foreach($requests_ct3_outputrka as $ct_request){
+            $child_tb_request = new \Illuminate\Http\Request();
+            $child_tb_request->replace($ct_request);
+            $ct_messages = array();
+            foreach($page_data["fieldsmessages_ct3_outputrka"] as $key => $value){
+                $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
+            }
+            $child_tb_request->validate($rules_ct3_outputrka, $ct_messages);
+        }
+
         $rules = $page_data["fieldsrules"];
         $messages = $page_data["fieldsmessages"];
         if($request->validate($rules, $messages)){
@@ -554,6 +623,48 @@ class KegiatanController extends Controller
                     }
                 }
 
+                $new_menu_field_ids = array();
+                foreach($requests_ct3_outputrka as $ct_request){
+                    if(isset($ct_request["id"])){
+                        Outputrka::where("id", $ct_request["id"])->update([
+                            "no_seq" => $ct_request["no_seq"],
+                            "parent_id" => $id,
+                            "iku"=> $ct_request["iku"],
+                            "iku_label"=> $ct_request["iku_label"],
+                            "indikator"=> $ct_request["indikator"],
+                            "keterangan"=> $ct_request["keterangan"],
+                            "target"=> $ct_request["target"],
+                            "satuan_target"=> $ct_request["satuan_target"],
+                            "user_updater_id" => Auth::user()->id
+                        ]);
+                    }else{
+                        $idct = Outputrka::create([
+                            "no_seq" => $ct_request["no_seq"],
+                            "parent_id" => $id,
+                            "iku"=> $ct_request["iku"],
+                            "iku_label"=> $ct_request["iku_label"],
+                            "indikator"=> $ct_request["indikator"],
+                            "keterangan"=> $ct_request["keterangan"],
+                            "target"=> $ct_request["target"],
+                            "satuan_target"=> $ct_request["satuan_target"],
+                            "user_creator_id" => Auth::user()->id
+                        ])->id;
+                        array_push($new_menu_field_ids, $idct);
+                    }
+                }
+    
+                foreach(Outputrka::whereParentId($id)->get() as $ch){
+                        $is_still_exist = false;
+                        foreach($requests_ct3_outputrka as $ct_request){
+                            if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
+                                $is_still_exist = true;
+                            }
+                        }
+                        if(!$is_still_exist){
+                            Outputrka::whereId($ch->id)->delete();
+                        }
+                    }
+    
             return response()->json([
                 'status' => 201,
                 'message' => 'Id '.$id.' is updated',
@@ -646,6 +757,18 @@ class KegiatanController extends Controller
             $child_tb_request->validate($rules_ct1_detailbiayakegiatan, $ct_messages);
         }
 
+        $rules_ct3_outputrka = $page_data["fieldsrules_ct3_outputrka"];
+        $requests_ct3_outputrka = json_decode($request->ct3_outputrka, true);
+        foreach($requests_ct3_outputrka as $ct_request){
+            $child_tb_request = new \Illuminate\Http\Request();
+            $child_tb_request->replace($ct_request);
+            $ct_messages = array();
+            foreach($page_data["fieldsmessages_ct3_outputrka"] as $key => $value){
+                $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
+            }
+            $child_tb_request->validate($rules_ct3_outputrka, $ct_messages);
+        }
+
         //update
         //hapus yang lama jika ada
         Detailbiayakegiatan::where("parent_id", $id)->where("isarchived", "on")->where("archivedby", Auth::user()->role)->delete();
@@ -702,6 +825,33 @@ class KegiatanController extends Controller
         //         // ]);
         //     }
         // }
+
+        //update
+        //hapus yang lama jika ada
+        Outputrka::where("parent_id", $id)->where("isarchived", "on")->where("archivedby", Auth::user()->role)->delete();
+
+        //jika belum pernah, maka update archived
+        Outputrka::where("parent_id", $id)->whereNull("isarchived")->whereNull("archivedby")->update([
+            "isarchived" => "on",
+            "user_updater_id" => Auth::user()->id
+        ]);
+        $new_menu_field_ids = array();
+        foreach($requests_ct3_outputrka as $ct_request){
+            $idct = Outputrka::create([
+                "no_seq" => $ct_request["no_seq"],
+                "parent_id" => $id,
+                "iku"=> $ct_request["iku"],
+                "iku_label"=> $ct_request["iku_label"],
+                "indikator"=> $ct_request["indikator"],
+                "keterangan"=> $ct_request["keterangan"],
+                "target"=> $ct_request["target"],
+                "satuan_target"=> $ct_request["satuan_target"],
+                "user_creator_id" => Auth::user()->id,
+                "isarchived" => "on",
+                "archivedby" => Auth::user()->role,
+            ])->id;
+            array_push($new_menu_field_ids, $idct);
+        }
     }
 
     /**
@@ -734,7 +884,7 @@ class KegiatanController extends Controller
 
     public function get_list(Request $request)
     {
-        $list_column = array("id", "unit_pelaksana_label", "tanggal", "kegiatan_name", "output", "status", "id");
+        $list_column = array("id", "kode_anggaran", "unit_pelaksana_label", "tanggal", "kegiatan_name", "output", "status", "id");
         $keyword = null;
         if(isset($request->search["value"])){
             $keyword = $request->search["value"];
@@ -755,14 +905,14 @@ class KegiatanController extends Controller
         $ukl = Auth::user()->unitkerja;
         $rl = Auth::user()->role_label;
         foreach(Kegiatan::where(function($q) use ($keyword) {
-            $q->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+            $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
         })->where(function($q) use ($ukl, $rl){
             if($rl != 'admin' && $rl != 'Administrator'){
                 if($ukl){
                     $q->where("unit_pelaksana", $ukl);
                 }
             }
-        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status", "user_creator_id"]) as $kegiatan){
+        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "kode_anggaran", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status", "user_creator_id"]) as $kegiatan){
             $no = $no+1;
             $act = '';
             
@@ -775,7 +925,6 @@ class KegiatanController extends Controller
                 <button type="button" class="row-delete btn btn-danger shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
             }
 
-            // dd(Auth::user()->role );
             if(Auth::user()->role == 'admin'){
                 $act .= '
                 <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
@@ -827,7 +976,7 @@ class KegiatanController extends Controller
                     <a href="/pjk/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>';
             }
 
-            array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $status, $act, $lpjact));
+            array_push($dt, array($kegiatan->id, $kegiatan->kode_anggaran, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $status, $act, $lpjact));
         }
 
 
@@ -835,7 +984,7 @@ class KegiatanController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Kegiatan::get()->count(),
             "recordsFiltered" => intval(Kegiatan::where(function($q) use ($keyword) {
-                $q->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+                $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
@@ -845,7 +994,7 @@ class KegiatanController extends Controller
 
     public function get_list_persetujuankegiatan(Request $request)
     {
-        $list_column = array("id", "unit_pelaksana_label", "tanggal", "kegiatan_name", "output", "status", "id");
+        $list_column = array("id", "kode_anggaran", "unit_pelaksana_label", "tanggal", "kegiatan_name", "output", "status", "id");
         $keyword = null;
         if(isset($request->search["value"])){
             $keyword = $request->search["value"];
@@ -866,14 +1015,14 @@ class KegiatanController extends Controller
         $ukl = Auth::user()->unitkerja;
         $rl = Auth::user()->role_label;
         foreach(Kegiatan::where(function($q) use ($keyword) {
-            $q->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+            $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
         })->where(function($q) use ($ukl, $rl){
             if($rl != 'admin' && $rl != 'Administrator'){
                 if($ukl){
                     $q->where("unit_pelaksana", $ukl);
                 }
             }
-        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status", "user_creator_id"]) as $kegiatan){
+        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "kode_anggaran", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status", "user_creator_id"]) as $kegiatan){
             $no = $no+1;
             $act = '';
             
@@ -930,7 +1079,7 @@ class KegiatanController extends Controller
                     <a href="/pjk/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>';
             }
 
-            array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $status, $act, $lpjact));
+            array_push($dt, array($kegiatan->id, $kegiatan->kode_anggaran, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $status, $act, $lpjact));
         }
 
 
@@ -938,7 +1087,7 @@ class KegiatanController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Kegiatan::get()->count(),
             "recordsFiltered" => intval(Kegiatan::where(function($q) use ($keyword) {
-                $q->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+                $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
@@ -1020,7 +1169,7 @@ class KegiatanController extends Controller
 
     public function get_list_rka(Request $request)
     {
-        $list_column = array("id", "unit_pelaksana_label", "tanggal", "kegiatan_name", "output", "status", "id");
+        $list_column = array("id", "kode_anggaran", "unit_pelaksana_label", "tanggal", "kegiatan_name", "output", "status", "id");
         $keyword = null;
         if(isset($request->search["value"])){
             $keyword = $request->search["value"];
@@ -1041,7 +1190,7 @@ class KegiatanController extends Controller
         $ukl = Auth::user()->unitkerja;
         $rl = Auth::user()->role_label;
         foreach(Kegiatan::where(function($q) use ($keyword) {
-            $q->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+            $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
         })->where(function($q) use ($ukl, $rl){
             if($rl != 'admin' && $rl != 'Administrator'){
                 if($ukl){
@@ -1050,12 +1199,12 @@ class KegiatanController extends Controller
             }
         })
         ->whereIn('status', array('process', 'approving', 'approved'))
-        ->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status"]) as $kegiatan){
+        ->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "kode_anggaran", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status"]) as $kegiatan){
             $no = $no+1;
             $status = $this->status($kegiatan->status);
             $act = $this->action($kegiatan);
 
-            array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $status, $act));
+            array_push($dt, array($kegiatan->id, $kegiatan->kode_anggaran, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $status, $act));
         }
 
 
@@ -1063,7 +1212,7 @@ class KegiatanController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Kegiatan::get()->count(),
             "recordsFiltered" => intval(Kegiatan::where(function($q) use ($keyword) {
-                $q->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+                $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
@@ -1073,7 +1222,7 @@ class KegiatanController extends Controller
 
     public function get_list_pengajuan(Request $request)
     {
-        $list_column = array("id", "unit_pelaksana_label", "tanggal", "kegiatan_name", "output", "status", "id");
+        $list_column = array("id", "kode_anggaran", "unit_pelaksana_label", "tanggal", "kegiatan_name", "output", "status", "id");
         $keyword = null;
         if(isset($request->search["value"])){
             $keyword = $request->search["value"];
@@ -1094,7 +1243,7 @@ class KegiatanController extends Controller
         $ukl = Auth::user()->unitkerja;
         $rl = Auth::user()->role_label;
         foreach(Kegiatan::where(function($q) use ($keyword) {
-            $q->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+            $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
         })->where(function($q) use ($ukl, $rl){
             if($rl != 'admin' && $rl != 'Administrator'){
                 if($ukl){
@@ -1103,7 +1252,7 @@ class KegiatanController extends Controller
             }
         })
         ->whereIn('status', array('approved','submitting', 'submitted'))
-        ->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status"]) as $kegiatan){
+        ->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "kode_anggaran", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status"]) as $kegiatan){
             $no = $no+1;
             $act = '
             <a href="/kegiatan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
@@ -1115,7 +1264,7 @@ class KegiatanController extends Controller
             $status = $this->status($kegiatan->status);
             $act = $this->action($kegiatan);
 
-            array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $status, $act));
+            array_push($dt, array($kegiatan->id, $kegiatan->kode_anggaran, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $status, $act));
         }
 
 
@@ -1123,7 +1272,7 @@ class KegiatanController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Kegiatan::get()->count(),
             "recordsFiltered" => intval(Kegiatan::where(function($q) use ($keyword) {
-                $q->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+                $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
@@ -1133,7 +1282,7 @@ class KegiatanController extends Controller
 
     public function get_list_pertanggungjawaban(Request $request)
     {
-        $list_column = array("id", "unit_pelaksana_label", "tanggal", "kegiatan_name", "output", "status", "id");
+        $list_column = array("id", "kode_anggaran", "unit_pelaksana_label", "tanggal", "kegiatan_name", "output", "status", "id");
         $keyword = null;
         if(isset($request->search["value"])){
             $keyword = $request->search["value"];
@@ -1154,14 +1303,14 @@ class KegiatanController extends Controller
         $ukl = Auth::user()->unitkerja;
         $rl = Auth::user()->role_label;
         foreach(Kegiatan::where(function($q) use ($keyword) {
-            $q->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+            $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
         })->where(function($q) use ($ukl, $rl){
             if($rl != 'admin' && $rl != 'Administrator'){
                 if($ukl){
                     $q->where("unit_pelaksana", $ukl);
                 }
             }
-        })->whereIn("status", ["finish", "paid"])->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status", "user_creator_id"]) as $kegiatan){
+        })->whereIn("status", ["finish", "paid"])->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "kode_anggaran", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status", "user_creator_id"]) as $kegiatan){
             $no = $no+1;
             $act = '';
             
@@ -1226,7 +1375,7 @@ class KegiatanController extends Controller
                     <a href="/pjk/'.$kegiatan->id.'/edit"  class="btn btn-warning shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>';
             }
 
-            array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $status, $lpjact, $act));
+            array_push($dt, array($kegiatan->id, $kegiatan->kode_anggaran, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $status, $lpjact, $act));
         }
 
 
@@ -1234,7 +1383,7 @@ class KegiatanController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Kegiatan::get()->count(),
             "recordsFiltered" => intval(Kegiatan::where(function($q) use ($keyword) {
-                $q->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+                $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
             })->whereIn("status", ["finish", "paid"])->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
@@ -1244,7 +1393,7 @@ class KegiatanController extends Controller
 
     public function get_list_laporan(Request $request, $jenis)
     {
-        $list_column = array("id", "unit_pelaksana_label", "tanggal", "kegiatan_name", "output", "id");
+        $list_column = array("id", "kode_anggaran", "unit_pelaksana_label", "tanggal", "kegiatan_name", "output", "id");
         $keyword = null;
         if(isset($request->search["value"])){
             $keyword = $request->search["value"];
@@ -1273,7 +1422,7 @@ class KegiatanController extends Controller
         $dt = array();
         $no = 0;
         foreach(Kegiatan::where(function($q) use ($keyword) {
-            $q->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+            $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
         })
         ->where(function($q) use ($unit_pelaksana) {
             if(isset($unit_pelaksana)){
@@ -1297,7 +1446,7 @@ class KegiatanController extends Controller
         //     }
         // })
         ->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])
-        ->get(["id", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status"]) as $kegiatan){
+        ->get(["id", "kode_anggaran", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status"]) as $kegiatan){
             $no = $no+1;
             $status = $this->status($kegiatan->status);
             
@@ -1314,7 +1463,7 @@ class KegiatanController extends Controller
             array_push($detail, array("", "<b>TOTAL</b>", $tot));
             // $detail = Detailbiayakegiatan::whereParentId($kegiatan->id)->get();
 
-            array_push($dt, array($kegiatan->id, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $kegiatan->output, $status, $detail));
+            array_push($dt, array($kegiatan->id, $kegiatan->kode_anggaran, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $kegiatan->output, $status, $detail));
         }
 
 
@@ -1322,7 +1471,7 @@ class KegiatanController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Kegiatan::get()->count(),
             "recordsFiltered" => intval(Kegiatan::where(function($q) use ($keyword) {
-                $q->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+                $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
@@ -1350,6 +1499,19 @@ class KegiatanController extends Controller
                     }
                 }
             }
+
+            $ct3_outputrkas = Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->get();
+            if(Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->count() < 1){
+                $ct3_outputrkas = Outputrka::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+
+                if(Outputrka::whereParentId($request->id)->whereNull("isarchived")->count() < 1){
+                    $lastapp = Approval::where("parent_id", $request->id)->where("role", Auth::user()->role)->where("jenismenu", "RKA")->first();
+                    $beforeapp = Approval::where("parent_id", $request->id)->where("no_seq", ((int)$lastapp->no_seq)+1)->where("jenismenu", "RKA")->first();
+                    if($beforeapp){
+                        $ct3_outputrkas = Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $beforeapp->role)->orderBy("no_seq")->get();
+                    }
+                }
+            }
             
             $ct2_approvals = Approval::whereParentId($request->id)->where("jenismenu", "RKA")->get();
 
@@ -1359,6 +1521,7 @@ class KegiatanController extends Controller
                 "data" => [
                     "ct1_detailbiayakegiatan" => $ct1_detailbiayakegiatans,
                     "ct2_approval" => $ct2_approvals,
+                    "ct3_outputrka" => $ct3_outputrkas,
                     "kegiatan" => $kegiatan
                 ]
             );
@@ -1381,13 +1544,34 @@ class KegiatanController extends Controller
 
                 if(Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->count() < 1){
                     $lastapp = Approval::where("parent_id", $request->id)->where("role", Auth::user()->role)->where("jenismenu", "pengajuan")->first();
-                    $beforeapp = Approval::where("parent_id", $request->id)->where("no_seq", ((int)$lastapp->no_seq)+1)->where("jenismenu", "pengajuan")->first();
-                    if($beforeapp){
-                        $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $beforeapp->role)->orderBy("no_seq")->get();
+                    if($lastapp){
+                        $beforeapp = Approval::where("parent_id", $request->id)->where("no_seq", ((int)$lastapp->no_seq)+1)->where("jenismenu", "pengajuan")->first();
+                        if($beforeapp){
+                            $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $beforeapp->role)->orderBy("no_seq")->get();
+                        }
+                    }else{
+                        $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
                     }
                 }
             }
             
+            $ct3_outputrkas = Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->get();
+            if(Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->count() < 1){
+                $ct3_outputrkas = Outputrka::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+
+                if(Outputrka::whereParentId($request->id)->whereNull("isarchived")->count() < 1){
+                    $lastapp = Approval::where("parent_id", $request->id)->where("role", Auth::user()->role)->where("jenismenu", "pengajuan")->first();
+                    if($lastapp){
+                        $beforeapp = Approval::where("parent_id", $request->id)->where("no_seq", ((int)$lastapp->no_seq)+1)->where("jenismenu", "pengajuan")->first();
+                        if($beforeapp){
+                            $ct3_outputrkas = Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $beforeapp->role)->orderBy("no_seq")->get();
+                        }
+                    }else{
+                        $ct3_outputrkas = Outputrka::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+                    }
+                }
+            }
+
             $ct2_approvals = Approval::whereParentId($request->id)->where("jenismenu", "pengajuan")->get();
 
             $results = array(
@@ -1396,6 +1580,7 @@ class KegiatanController extends Controller
                 "data" => [
                     "ct1_detailbiayakegiatan" => $ct1_detailbiayakegiatans,
                     "ct2_approval" => $ct2_approvals,
+                    "ct3_outputrka" => $ct3_outputrkas,
                     "kegiatan" => $kegiatan
                 ]
             );
@@ -2207,5 +2392,21 @@ class KegiatanController extends Controller
     public function tgl_dbs($tanggal){
         $date = str_replace('/', '-', $tanggal);
         return date('Y-m-d', strtotime($date));
+    }
+
+    public function kodeanggaran($request, $id){
+        $uk = Unitkerja::where("id", $request->unit_pelaksana)->first();
+        $kode_anggaran = "YA".$uk->unitkerja_code;
+        if($uk->unitkerja_code != "0000"){
+            $kode_anggaran = "UN".$uk->unitkerja_code;
+        }
+        $tgl = explode('-', $request->tanggal_kegiatan_submit);
+        $kode_anggaran = $kode_anggaran.'-'.$tgl[0].$tgl[1];
+        $nomor = "".$id;
+        for($i = 0; $i < strlen((string)$id); $i++){
+            $nomor = "0".$nomor;
+        }
+        $kode_anggaran = $kode_anggaran.'-'.$nomor;
+        return $kode_anggaran;
     }
 }

@@ -4468,26 +4468,6 @@ class JurnalController extends Controller
     
         $date = str_replace('/', '-', $tanggal);
         return date('Y-m-d', strtotime($date));
-        $pecahkan = explode($sep, $tanggal);
-        var_dump($sep);
-        var_dump($tanggal);
-        // var_dump($pecahkan);
-        // var_dump($pecahkan[0]);
-        // var_dump($pecahkan[1]);
-        $tahun = $pecahkan[2];
-        $bulan = $pecahkan[1];
-        $tanggal = $pecahkan[0];
-        $tgl = $tahun.'-'.$bulan.'-'.$tanggal;
-        // var_dump($tgl);
-        return $tgl;
-        //die();
-        //dd($pecahkan);
-        
-        // variabel pecahkan 0 = tahun
-        // variabel pecahkan 1 = bulan
-        // variabel pecahkan 2 = tanggal
-     
-        return $pecahkan[1] . '-' . $pecahkan[1] . '-' . $pecahkan[0];
     }
 }
 
