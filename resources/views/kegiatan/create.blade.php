@@ -28,6 +28,44 @@
                                     <form id="quickForm" action="#">
                                         @csrf
                                             <div class="card-body">
+                                                @if($page_data["page_method_name"] != "Create")
+                                                <div class="form-group row m-0">
+                                                    <label for="kode_anggaran" class="col-sm-4 col-form-label">Kode Anggaran</label>
+                                                    <div class="col-sm-6 cakfield">
+                                                    <input type="text" name="kode_anggaran" class="form-control" id="kode_anggaran" placeholder="UN####-######-####" readonly>
+                                                    </div>
+                                                </div>
+                                                @else
+                                                <div class="form-group row m-0">
+                                                    <label for="plafon" class="col-sm-4 col-form-label">Plafon Anggaran</label>
+                                                    <table id="caktable4" class="display mb-3" style="width: 100%">
+                                                        <thead>
+                                                            <tr>
+                                                                <th scope="col" style="width: 12.5%;">Plafon</th>
+                                                                <th scope="col" style="width: 12.5%;">Process</th>
+                                                                <th scope="col" style="width: 12.5%;">Approved</th>
+                                                                <th scope="col" style="width: 12.5%;">Submitted</th>
+                                                                <th scope="col" style="width: 12.5%;">Paid</th>
+                                                                <th scope="col" style="width: 12.5%;">PJK Process</th>
+                                                                <th scope="col" style="width: 12.5%;">PJK Approved</th>
+                                                                <th scope="col" style="width: 12.5%;">Sisa</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td id="valplafon"></td>
+                                                                <td id="valprocess"></td>
+                                                                <td id="valapproved"></td>
+                                                                <td id="valsubmitted"></td>
+                                                                <td id="valpaid"></td>
+                                                                <td id="valpjkprocess"></td>
+                                                                <td id="valpjkapproved"></td>
+                                                                <td id="valsisa"></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                @endif
                                                 @if($page_data["page_data_urlname"] == "pengajuan" && $page_data["page_method_name"] == "Update")
                                                 <div class="form-group row m-0">
                                                     <label for="tanggal_kegiatan" class="col-sm-4 col-form-label">Tanggal Pencairan</label>

@@ -283,24 +283,22 @@ class SettingpagupendapatanController extends Controller
 
             $new_menu_field_ids = array();
             foreach($requests_ct1_nilaipagu as $ct_request){
-                if(isset($ct_request["id"])){
+                if(isset($ct_request["id"]) && $ct_request["id"] != ""){
                     Nilaipagu::where("id", $ct_request["id"])->update([
                         "no_seq" => $ct_request["no_seq"],
                         "parent_id" => $id,
-                    "unitkerja"=> $ct_request["unitkerja"],
-                    "unitkerja"=> $ct_request["unitkerja"],
-                    "unitkerja_label"=> $ct_request["unitkerja_label"],
-                    "maxbiaya"=> $ct_request["maxbiaya"],
-                    "maxbiaya"=> $ct_request["maxbiaya"],
+                        "unitkerja"=> $ct_request["unitkerja"],
+                        "unitkerja_label"=> $ct_request["unitkerja_label"],
+                        "maxbiaya"=> $ct_request["maxbiaya"],
                         "user_updater_id" => Auth::user()->id
                     ]);
                 }else{
                     $idct = Nilaipagu::create([
                         "no_seq" => $ct_request["no_seq"],
                         "parent_id" => $id,
-                    "unitkerja"=> $ct_request["unitkerja"],
-                    "unitkerja_label"=> $ct_request["unitkerja_label"],
-                    "maxbiaya"=> $ct_request["maxbiaya"],
+                        "unitkerja"=> $ct_request["unitkerja"],
+                        "unitkerja_label"=> $ct_request["unitkerja_label"],
+                        "maxbiaya"=> $ct_request["maxbiaya"],
                         "user_creator_id" => Auth::user()->id
                     ])->id;
                     array_push($new_menu_field_ids, $idct);
@@ -325,25 +323,22 @@ class SettingpagupendapatanController extends Controller
                     Potensipendapatan::where("id", $ct_request["id"])->update([
                         "no_seq" => $ct_request["no_seq"],
                         "parent_id" => $id,
-                    "unitkerja2"=> $ct_request["unitkerja2"],
-                    "unitkerja2"=> $ct_request["unitkerja2"],
-                    "unitkerja2_label"=> $ct_request["unitkerja2_label"],
-                    "coa"=> $ct_request["coa"],
-                    "coa"=> $ct_request["coa"],
-                    "coa_label"=> $ct_request["coa_label"],
-                    "nominalpendapatan"=> $ct_request["nominalpendapatan"],
-                    "nominalpendapatan"=> $ct_request["nominalpendapatan"],
+                        "unitkerja2"=> $ct_request["unitkerja2"],
+                        "unitkerja2_label"=> $ct_request["unitkerja2_label"],
+                        "coa"=> $ct_request["coa"],
+                        "coa_label"=> $ct_request["coa_label"],
+                        "nominalpendapatan"=> $ct_request["nominalpendapatan"],
                         "user_updater_id" => Auth::user()->id
                     ]);
                 }else{
                     $idct = Potensipendapatan::create([
                         "no_seq" => $ct_request["no_seq"],
                         "parent_id" => $id,
-                    "unitkerja2"=> $ct_request["unitkerja2"],
-                    "unitkerja2_label"=> $ct_request["unitkerja2_label"],
-                    "coa"=> $ct_request["coa"],
-                    "coa_label"=> $ct_request["coa_label"],
-                    "nominalpendapatan"=> $ct_request["nominalpendapatan"],
+                        "unitkerja2"=> $ct_request["unitkerja2"],
+                        "unitkerja2_label"=> $ct_request["unitkerja2_label"],
+                        "coa"=> $ct_request["coa"],
+                        "coa_label"=> $ct_request["coa_label"],
+                        "nominalpendapatan"=> $ct_request["nominalpendapatan"],
                         "user_creator_id" => Auth::user()->id
                     ])->id;
                     array_push($new_menu_field_ids, $idct);

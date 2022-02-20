@@ -17,6 +17,7 @@ use App\Models\Transaction;
 use App\Models\Pjk;
 use App\Models\Detailbiayapjk;
 use App\Models\Outputrka;
+use App\Models\Outputlpj;
 
 
 class KegiatanController extends Controller
@@ -145,6 +146,28 @@ class KegiatanController extends Controller
         ];
 
         $td["fieldsmessages_ct3_outputrka"] = [
+            "required" => ":attribute harus diisi!!",
+            "min" => ":attribute minimal :min karakter!!",
+            "max" => ":attribute maksimal :max karakter!!",
+            "in" => "Tidak ada dalam pilihan :attribute!!",
+            "exists" => "Tidak ada dalam :attribute!!",
+            "date_format" => "Format tidak sesuai di :attribute!!"
+        ];
+
+        $td["fieldsrules_ct3_outputlpj"] = [
+            "iku" => "required|exists:ikuunitkerjas,id",
+            "Indikator" => "required",
+            "keterangan" => "required",
+            "target" => "required|numeric",
+            "satuan_target" => "required",
+            "realisasi" => "nullable|numeric",
+            "satuan_realisasi" => "nullable",
+            "file_bukti" => "nullable",
+            "link_bukti" => "nullable",
+            "hasil_pencapaian" => "nullable|numeric"
+        ];
+
+        $td["fieldsmessages_ct3_outputlpj"] = [
             "required" => ":attribute harus diisi!!",
             "min" => ":attribute minimal :min karakter!!",
             "max" => ":attribute maksimal :max karakter!!",
@@ -602,58 +625,58 @@ class KegiatanController extends Controller
             }
 
             foreach(Detailbiayakegiatan::whereParentId($id)->get() as $ch){
-                    $is_still_exist = false;
-                    foreach($requests_ct1_detailbiayakegiatan as $ct_request){
-                        if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
-                            $is_still_exist = true;
-                        }
-                    }
-                    if(!$is_still_exist){
-                        Detailbiayakegiatan::whereId($ch->id)->delete();
+                $is_still_exist = false;
+                foreach($requests_ct1_detailbiayakegiatan as $ct_request){
+                    if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
+                        $is_still_exist = true;
                     }
                 }
+                if(!$is_still_exist){
+                    Detailbiayakegiatan::whereId($ch->id)->delete();
+                }
+            }
 
-                $new_menu_field_ids = array();
+            $new_menu_field_ids = array();
+            foreach($requests_ct3_outputrka as $ct_request){
+                if(isset($ct_request["id"])){
+                    Outputrka::where("id", $ct_request["id"])->update([
+                        "no_seq" => $ct_request["no_seq"],
+                        "parent_id" => $id,
+                        "iku"=> $ct_request["iku"],
+                        "iku_label"=> $ct_request["iku_label"],
+                        "indikator"=> $ct_request["indikator"],
+                        "keterangan"=> $ct_request["keterangan"],
+                        "target"=> $ct_request["target"],
+                        "satuan_target"=> $ct_request["satuan_target"],
+                        "user_updater_id" => Auth::user()->id
+                    ]);
+                }else{
+                    $idct = Outputrka::create([
+                        "no_seq" => $ct_request["no_seq"],
+                        "parent_id" => $id,
+                        "iku"=> $ct_request["iku"],
+                        "iku_label"=> $ct_request["iku_label"],
+                        "indikator"=> $ct_request["indikator"],
+                        "keterangan"=> $ct_request["keterangan"],
+                        "target"=> $ct_request["target"],
+                        "satuan_target"=> $ct_request["satuan_target"],
+                        "user_creator_id" => Auth::user()->id
+                    ])->id;
+                    array_push($new_menu_field_ids, $idct);
+                }
+            }
+
+            foreach(Outputrka::whereParentId($id)->get() as $ch){
+                $is_still_exist = false;
                 foreach($requests_ct3_outputrka as $ct_request){
-                    if(isset($ct_request["id"])){
-                        Outputrka::where("id", $ct_request["id"])->update([
-                            "no_seq" => $ct_request["no_seq"],
-                            "parent_id" => $id,
-                            "iku"=> $ct_request["iku"],
-                            "iku_label"=> $ct_request["iku_label"],
-                            "indikator"=> $ct_request["indikator"],
-                            "keterangan"=> $ct_request["keterangan"],
-                            "target"=> $ct_request["target"],
-                            "satuan_target"=> $ct_request["satuan_target"],
-                            "user_updater_id" => Auth::user()->id
-                        ]);
-                    }else{
-                        $idct = Outputrka::create([
-                            "no_seq" => $ct_request["no_seq"],
-                            "parent_id" => $id,
-                            "iku"=> $ct_request["iku"],
-                            "iku_label"=> $ct_request["iku_label"],
-                            "indikator"=> $ct_request["indikator"],
-                            "keterangan"=> $ct_request["keterangan"],
-                            "target"=> $ct_request["target"],
-                            "satuan_target"=> $ct_request["satuan_target"],
-                            "user_creator_id" => Auth::user()->id
-                        ])->id;
-                        array_push($new_menu_field_ids, $idct);
+                    if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
+                        $is_still_exist = true;
                     }
                 }
-    
-                foreach(Outputrka::whereParentId($id)->get() as $ch){
-                        $is_still_exist = false;
-                        foreach($requests_ct3_outputrka as $ct_request){
-                            if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
-                                $is_still_exist = true;
-                            }
-                        }
-                        if(!$is_still_exist){
-                            Outputrka::whereId($ch->id)->delete();
-                        }
-                    }
+                if(!$is_still_exist){
+                    Outputrka::whereId($ch->id)->delete();
+                }
+            }
     
             return response()->json([
                 'status' => 201,
@@ -1467,29 +1490,47 @@ class KegiatanController extends Controller
                 abort(404, "Data not found");
             }
 
-            $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->get();
-            if(Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->count() < 1){
-                $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+            // $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->get();
+            // if(Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->count() < 1){
+            //     $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
 
-                if(Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->count() < 1){
-                    $lastapp = Approval::where("parent_id", $request->id)->where("role", Auth::user()->role)->where("jenismenu", "RKA")->first();
-                    $beforeapp = Approval::where("parent_id", $request->id)->where("no_seq", ((int)$lastapp->no_seq)+1)->where("jenismenu", "RKA")->first();
-                    if($beforeapp){
-                        $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $beforeapp->role)->orderBy("no_seq")->get();
-                    }
+            //     if(Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->count() < 1){
+            //         $lastapp = Approval::where("parent_id", $request->id)->where("role", Auth::user()->role)->where("jenismenu", "RKA")->first();
+            //         $beforeapp = Approval::where("parent_id", $request->id)->where("no_seq", ((int)$lastapp->no_seq)+1)->where("jenismenu", "RKA")->first();
+            //         if($beforeapp){
+            //             $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $beforeapp->role)->orderBy("no_seq")->get();
+            //         }
+            //     }
+            // }
+
+            $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+
+            foreach(Approval::where("parent_id", $request->id)->where("jenismenu", "RKA")->orderBy("no_seq", "desc")->get() as $app){
+                $dtbk = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                if($dtbk){
+                    $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get();
                 }
             }
 
-            $ct3_outputrkas = Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->get();
-            if(Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->count() < 1){
-                $ct3_outputrkas = Outputrka::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+            // $ct3_outputrkas = Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->get();
+            // if(Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->count() < 1){
+            //     $ct3_outputrkas = Outputrka::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
 
-                if(Outputrka::whereParentId($request->id)->whereNull("isarchived")->count() < 1){
-                    $lastapp = Approval::where("parent_id", $request->id)->where("role", Auth::user()->role)->where("jenismenu", "RKA")->first();
-                    $beforeapp = Approval::where("parent_id", $request->id)->where("no_seq", ((int)$lastapp->no_seq)+1)->where("jenismenu", "RKA")->first();
-                    if($beforeapp){
-                        $ct3_outputrkas = Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $beforeapp->role)->orderBy("no_seq")->get();
-                    }
+            //     if(Outputrka::whereParentId($request->id)->whereNull("isarchived")->count() < 1){
+            //         $lastapp = Approval::where("parent_id", $request->id)->where("role", Auth::user()->role)->where("jenismenu", "RKA")->first();
+            //         $beforeapp = Approval::where("parent_id", $request->id)->where("no_seq", ((int)$lastapp->no_seq)+1)->where("jenismenu", "RKA")->first();
+            //         if($beforeapp){
+            //             $ct3_outputrkas = Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $beforeapp->role)->orderBy("no_seq")->get();
+            //         }
+            //     }
+            // }
+
+            $ct3_outputrkas = Outputrka::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+
+            foreach(Approval::where("parent_id", $request->id)->where("jenismenu", "RKA")->orderBy("no_seq", "desc")->get() as $app){
+                $ok = Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                if($ok){
+                    $ct3_outputrkas = Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get();
                 }
             }
             
@@ -1518,37 +1559,34 @@ class KegiatanController extends Controller
                 abort(404, "Data not found");
             }
 
-            $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->get();
-            if(Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->count() < 1){
-                $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+            $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
 
-                if(Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->count() < 1){
-                    $lastapp = Approval::where("parent_id", $request->id)->where("role", Auth::user()->role)->where("jenismenu", "pengajuan")->first();
-                    if($lastapp){
-                        $beforeapp = Approval::where("parent_id", $request->id)->where("no_seq", ((int)$lastapp->no_seq)+1)->where("jenismenu", "pengajuan")->first();
-                        if($beforeapp){
-                            $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $beforeapp->role)->orderBy("no_seq")->get();
-                        }
-                    }else{
-                        $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
-                    }
+            foreach(Approval::where("parent_id", $request->id)->where("jenismenu", "RKA")->orderBy("no_seq", "desc")->get() as $app){
+                $dtbk = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                if($dtbk){
+                    $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get();
                 }
             }
-            
-            $ct3_outputrkas = Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->get();
-            if(Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->count() < 1){
-                $ct3_outputrkas = Outputrka::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
 
-                if(Outputrka::whereParentId($request->id)->whereNull("isarchived")->count() < 1){
-                    $lastapp = Approval::where("parent_id", $request->id)->where("role", Auth::user()->role)->where("jenismenu", "pengajuan")->first();
-                    if($lastapp){
-                        $beforeapp = Approval::where("parent_id", $request->id)->where("no_seq", ((int)$lastapp->no_seq)+1)->where("jenismenu", "pengajuan")->first();
-                        if($beforeapp){
-                            $ct3_outputrkas = Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $beforeapp->role)->orderBy("no_seq")->get();
-                        }
-                    }else{
-                        $ct3_outputrkas = Outputrka::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
-                    }
+            // $ct3_outputrkas = Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->get();
+            // if(Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->count() < 1){
+            //     $ct3_outputrkas = Outputrka::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+
+            //     if(Outputrka::whereParentId($request->id)->whereNull("isarchived")->count() < 1){
+            //         $lastapp = Approval::where("parent_id", $request->id)->where("role", Auth::user()->role)->where("jenismenu", "RKA")->first();
+            //         $beforeapp = Approval::where("parent_id", $request->id)->where("no_seq", ((int)$lastapp->no_seq)+1)->where("jenismenu", "RKA")->first();
+            //         if($beforeapp){
+            //             $ct3_outputrkas = Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $beforeapp->role)->orderBy("no_seq")->get();
+            //         }
+            //     }
+            // }
+
+            $ct3_outputrkas = Outputrka::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+
+            foreach(Approval::where("parent_id", $request->id)->where("jenismenu", "RKA")->orderBy("no_seq", "desc")->get() as $app){
+                $ok = Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                if($ok){
+                    $ct3_outputrkas = Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get();
                 }
             }
 
@@ -2163,16 +2201,68 @@ class KegiatanController extends Controller
         }
 
         foreach(Detailbiayapjk::whereParentId($thispjk->id)->get() as $ch){
-                $is_still_exist = false;
-                foreach($requests_ct1_detailbiayapjk as $ct_request){
-                    if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
-                        $is_still_exist = true;
-                    }
-                }
-                if(!$is_still_exist){
-                    Detailbiayapjk::whereId($ch->id)->delete();
+            $is_still_exist = false;
+            foreach($requests_ct1_detailbiayapjk as $ct_request){
+                if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
+                    $is_still_exist = true;
                 }
             }
+            if(!$is_still_exist){
+                Detailbiayapjk::whereId($ch->id)->delete();
+            }
+        }
+
+        $new_menu_field_ids = array();
+        foreach($requests_ct3_outputlpj as $ct_request){
+            if(isset($ct_request["id"])){
+                Outputlpj::where("id", $ct_request["id"])->update([
+                    "no_seq" => $ct_request["no_seq"],
+                    "parent_id" => $id,
+                    "iku"=> $ct_request["iku"],
+                    "iku_label"=> $ct_request["iku_label"],
+                    "indikator"=> $ct_request["indikator"],
+                    "keterangan"=> $ct_request["keterangan"],
+                    "target"=> $ct_request["target"],
+                    "satuan_target"=> $ct_request["satuan_target"],
+                    "realisasi" => $ct_request["realisasi"],
+                    "satuan_realisasi" => $ct_request["satuan_realisasi"],
+                    "file_bukti" => $ct_request["file_bukti"],
+                    "link_bukti" => $ct_request["link_bukti"],
+                    "hasil_pencapaian" => $ct_request["hasil_pencapaian"],
+                    "user_updater_id" => Auth::user()->id
+                ]);
+            }else{
+                $idct = Outputlpj::create([
+                    "no_seq" => $ct_request["no_seq"],
+                    "parent_id" => $id,
+                    "iku"=> $ct_request["iku"],
+                    "iku_label"=> $ct_request["iku_label"],
+                    "indikator"=> $ct_request["indikator"],
+                    "keterangan"=> $ct_request["keterangan"],
+                    "target"=> $ct_request["target"],
+                    "satuan_target"=> $ct_request["satuan_target"],
+                    "realisasi" => $ct_request["realisasi"],
+                    "satuan_realisasi" => $ct_request["satuan_realisasi"],
+                    "file_bukti" => $ct_request["file_bukti"],
+                    "link_bukti" => $ct_request["link_bukti"],
+                    "hasil_pencapaian" => $ct_request["hasil_pencapaian"],
+                    "user_creator_id" => Auth::user()->id
+                ])->id;
+                array_push($new_menu_field_ids, $idct);
+            }
+        }
+
+        foreach(Outputlpj::whereParentId($id)->get() as $ch){
+            $is_still_exist = false;
+            foreach($requests_ct3_outputlpj as $ct_request){
+                if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
+                    $is_still_exist = true;
+                }
+            }
+            if(!$is_still_exist){
+                Outputlpj::whereId($ch->id)->delete();
+            }
+        }
 
         return response()->json([
             'status' => 201,
@@ -2247,6 +2337,58 @@ class KegiatanController extends Controller
                 ]);
             }
 
+            $new_menu_field_ids = array();
+            foreach($requests_ct3_outputlpj as $ct_request){
+                if(isset($ct_request["id"])){
+                    Outputlpj::where("id", $ct_request["id"])->update([
+                        "no_seq" => $ct_request["no_seq"],
+                        "parent_id" => $id,
+                        "iku"=> $ct_request["iku"],
+                        "iku_label"=> $ct_request["iku_label"],
+                        "indikator"=> $ct_request["indikator"],
+                        "keterangan"=> $ct_request["keterangan"],
+                        "target"=> $ct_request["target"],
+                        "satuan_target"=> $ct_request["satuan_target"],
+                        "realisasi" => $ct_request["realisasi"],
+                        "satuan_realisasi" => $ct_request["satuan_realisasi"],
+                        "file_bukti" => $ct_request["file_bukti"],
+                        "link_bukti" => $ct_request["link_bukti"],
+                        "hasil_pencapaian" => $ct_request["hasil_pencapaian"],
+                        "user_updater_id" => Auth::user()->id
+                    ]);
+                }else{
+                    $idct = Outputlpj::create([
+                        "no_seq" => $ct_request["no_seq"],
+                        "parent_id" => $id,
+                        "iku"=> $ct_request["iku"],
+                        "iku_label"=> $ct_request["iku_label"],
+                        "indikator"=> $ct_request["indikator"],
+                        "keterangan"=> $ct_request["keterangan"],
+                        "target"=> $ct_request["target"],
+                        "satuan_target"=> $ct_request["satuan_target"],
+                        "realisasi" => $ct_request["realisasi"],
+                        "satuan_realisasi" => $ct_request["satuan_realisasi"],
+                        "file_bukti" => $ct_request["file_bukti"],
+                        "link_bukti" => $ct_request["link_bukti"],
+                        "hasil_pencapaian" => $ct_request["hasil_pencapaian"],
+                        "user_creator_id" => Auth::user()->id
+                    ])->id;
+                    array_push($new_menu_field_ids, $idct);
+                }
+            }
+
+            foreach(Outputlpj::whereParentId($id)->get() as $ch){
+                $is_still_exist = false;
+                foreach($requests_ct3_outputlpj as $ct_request){
+                    if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
+                        $is_still_exist = true;
+                    }
+                }
+                if(!$is_still_exist){
+                    Outputlpj::whereId($ch->id)->delete();
+                }
+            }
+
             return response()->json([
                 'status' => 201,
                 'message' => 'Created with id '.$id,
@@ -2267,37 +2409,82 @@ class KegiatanController extends Controller
 
             $pjk = Pjk::where("kegiatan_id", $request->id)->first();
             if($pjk){
+                // $ct1_detailbiayakegiatans = Detailbiayapjk::whereKegiatanId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role)->orderBy("no_seq")->get();
+                // if(Detailbiayapjk::whereKegiatanId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role)->orderBy("no_seq")->count() < 1){
+                //     $ct1_detailbiayakegiatans = Detailbiayapjk::whereKegiatanId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
 
-                $ct1_detailbiayakegiatans = Detailbiayapjk::whereKegiatanId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role)->orderBy("no_seq")->get();
-                if(Detailbiayapjk::whereKegiatanId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role)->orderBy("no_seq")->count() < 1){
-                    $ct1_detailbiayakegiatans = Detailbiayapjk::whereKegiatanId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+                //     if(Detailbiayapjk::whereKegiatanId($request->id)->whereNull("isarchived")->orderBy("no_seq")->count() < 1){
+                //         $lastapp = Approval::where("parent_id", $pjk->id)->where("role", Auth::user()->role)->where("jenismenu", "PJK")->orderBy("no_seq", "asc")->first();
+                //         $beforeapp = Approval::where("parent_id", $pjk->id)->where("no_seq", ((int)$lastapp->no_seq)+1)->where("jenismenu", "PJK")->first();
+                //         if($beforeapp){
+                //             $ct1_detailbiayakegiatans = Detailbiayapjk::whereKegiatanId($request->id)->where("isarchived", "on")->where("archivedby", $beforeapp->role)->orderBy("no_seq")->get();
+                //         }
+                //     }
+                // }
 
-                    if(Detailbiayapjk::whereKegiatanId($request->id)->whereNull("isarchived")->orderBy("no_seq")->count() < 1){
-                        $lastapp = Approval::where("parent_id", $pjk->id)->where("role", Auth::user()->role)->where("jenismenu", "PJK")->orderBy("no_seq", "asc")->first();
-                        $beforeapp = Approval::where("parent_id", $pjk->id)->where("no_seq", ((int)$lastapp->no_seq)+1)->where("jenismenu", "PJK")->first();
-                        if($beforeapp){
-                            $ct1_detailbiayakegiatans = Detailbiayapjk::whereKegiatanId($request->id)->where("isarchived", "on")->where("archivedby", $beforeapp->role)->orderBy("no_seq")->get();
-                        }
+                $ct1_detailbiayakegiatans = Detailbiayapjk::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+
+                foreach(Approval::where("parent_id", $request->id)->where("jenismenu", "PJK")->orderBy("no_seq", "desc")->get() as $app){
+                    $dtbk = Detailbiayapjk::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                    if($dtbk){
+                        $ct1_detailbiayakegiatans = Detailbiayapjk::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get();
+                    }
+                }
+
+                // $ct3_outputlpjs = Outputlpj::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->get();
+                // if(Outputlpj::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", Auth::user()->role_label)->orderBy("no_seq")->count() < 1){
+                //     $ct3_outputlpjs = Outputlpj::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+
+                //     if(Outputlpj::whereParentId($request->id)->whereNull("isarchived")->count() < 1){
+                //         $lastapp = Approval::where("parent_id", $request->id)->where("role", Auth::user()->role)->where("jenismenu", "RKA")->first();
+                //         $beforeapp = Approval::where("parent_id", $request->id)->where("no_seq", ((int)$lastapp->no_seq)+1)->where("jenismenu", "RKA")->first();
+                //         if($beforeapp){
+                //             $ct3_outputlpjs = Outputlpj::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $beforeapp->role)->orderBy("no_seq")->get();
+                //         }
+                //     }
+                // }
+
+                $ct3_outputrkas = Outputlpj::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+
+                foreach(Approval::where("parent_id", $request->id)->where("jenismenu", "LPJ")->orderBy("no_seq", "desc")->get() as $app){
+                    $ok = Outputlpj::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                    if($ok){
+                        $ct3_outputrkas = Outputlpj::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get();
                     }
                 }
             
                 $ct2_approvals = Approval::whereParentId($pjk->id)->where("jenismenu", "PJK")->get();
-
+                
+                $pjk->kode_anggaran = $kegiatan->kode_anggaran;
                 $results = array(
                     "status" => 201,
                     "message" => "Data available",
                     "data" => [
                         "ct1_detailbiayakegiatan" => $ct1_detailbiayakegiatans,
                         "ct2_approval" => $ct2_approvals,
+                        "ct3_outputrka" => $ct3_outputrkas,
                         "kegiatan" => $pjk
                     ]
                 );
             }else{
-                $lastapp = Approval::where("parent_id", $request->id)->where("jenismenu", "RKA")->orderBy("no_seq", "asc")->first();
-                $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("archivedby", $lastapp->role)->get();
-                // foreach($ct1_detailbiayakegiatans as $ct1){
-                //     $ct1->desc_detail = '';
-                // }
+                $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+
+                foreach(Approval::where("parent_id", $request->id)->where("jenismenu", "RKA")->orderBy("no_seq", "desc")->get() as $app){
+                    $dtbk = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                    if($dtbk){
+                        $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get();
+                    }
+                }
+    
+                $ct3_outputrkas = Outputrka::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+    
+                foreach(Approval::where("parent_id", $request->id)->where("jenismenu", "RKA")->orderBy("no_seq", "desc")->get() as $app){
+                    $ok = Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                    if($ok){
+                        $ct3_outputrkas = Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get();
+                    }
+                }
+
                 $ct2_approvals = [];
 
                 $results = array(
@@ -2306,6 +2493,7 @@ class KegiatanController extends Controller
                     "data" => [
                         "ct1_detailbiayakegiatan" => $ct1_detailbiayakegiatans,
                         "ct2_approval" => $ct2_approvals,
+                        "ct3_outputrka" => $ct3_outputrkas,
                         "kegiatan" => $kegiatan
                     ]
                 );
