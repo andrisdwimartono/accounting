@@ -202,7 +202,7 @@
                                                             <thead>
                                                                 <tr>
                                                                     <th scope="col" class="column-hidden"></th>
-                                                                    <th scope="col" style="width: 20%; overflow: hidden;">IKU</th>
+                                                                    <th scope="col" style="width: 20%; overflow: hidden;">Program Kerja</th>
                                                                     <th scope="col" style="width: 15%; overflow: hidden;">Indikator</th>
                                                                     <th scope="col" style="width: 20%; overflow: hidden;">Keterangan</th>
                                                                     <th scope="col" style="width: 15%;">Target</th>
