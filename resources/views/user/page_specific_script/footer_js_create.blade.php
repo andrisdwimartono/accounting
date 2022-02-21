@@ -1,5 +1,5 @@
     <!-- Required vendors -->
-<script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
+    <script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
 	<script src="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/js/bootstrap-select.min.js") }} "></script>
     <script src="{{ asset ("/assets/motaadmin/vendor/chart.js/Chart.bundle.min.js") }}"></script>
     <script src="{{ asset ("/assets/motaadmin/js/custom.min.js") }}"></script>
@@ -41,9 +41,11 @@ $(function () {
             var ajaxRequest;
             ajaxRequest = $.ajax({
                 @if($page_data["page_method_name"] == "Update")
-                    url: "{{ env('APP_URL') }}/update{{$page_data["page_data_urlname"]}}/{{$page_data["id"]}}",
+                    url: "/update{{$page_data["page_data_urlname"]}}/{{$page_data["id"]}}",
+                @elseif($page_data["page_method_name"] == "Change Password")
+                    url: "/update_password/{{$page_data["id"]}}",
                 @else
-                    url: "{{ env('APP_URL') }}/store{{$page_data["page_data_urlname"]}}",
+                    url: "/store{{$page_data["page_data_urlname"]}}",
                 @endif
                 type: "post",
                 data: values,
