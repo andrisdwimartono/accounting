@@ -41,7 +41,7 @@
                                                                 <th scope="col" style="width: 12.5%;">Paid</th>
                                                                 <th scope="col" style="width: 12.5%;">PJK Process</th>
                                                                 <th scope="col" style="width: 12.5%;">PJK Approved</th>
-                                                                <th scope="col" style="width: 12.5%;">Sisa</th>
+                                                                <th scope="col" style="width: 12.5%;">Saldo</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -92,7 +92,7 @@
                                                 </div>
                                                 
                                                 <div class="form-group row m-0 d-none">
-                                                    <label class="col-sm-4 col-form-label" for="iku">IKU</label>
+                                                    <label class="col-sm-4 col-form-label" for="iku">Program Kerja</label>
                                                     <div class="col-sm-6 cakfield">
                                                         <select name="iku" id="iku" class="form-control select2bs4" style="width: 100%;" @if($page_data["page_method_name"] == "View") readonly @endif></select>
                                                         <input type="hidden" name="iku_label" id="iku_label">
