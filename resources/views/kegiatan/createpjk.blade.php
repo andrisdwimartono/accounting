@@ -259,7 +259,7 @@
                                             </div>
                                             <?php } ?>
                                         </div>
-                                        @if($page_data["page_method_name"] != "View" && Auth::user()->role != "lpm")
+                                        @if($page_data["page_method_name"] != "View" || Auth::user()->role == "lpm")
                                         <div class="form-group row">
                                             <div class="col-sm-9 offset-sm-9">
                                                 <button type="submit" class="btn btn-primary" @if($page_data["page_method_name"] == "View") readonly @endif>Submit</button>
