@@ -63,11 +63,11 @@ function format ( d ) {
     table += '<table cellpadding="5" cellspacing="0" border="0" style="margin-left:50px;width:80%;">'
     table += '<tr><th>Kode Rekening</th><th>Deskripsi</th><th>Nominal</th></tr>'
 
-    for(var i=0; i<d[6].length; i++){
+    for(var i=0; i<d[7].length; i++){
       table += '<tr>'
-      table += '<td>'+d[6][i][0]+'</td>'
-      table += '<td>'+d[6][i][1]+'</td>'
-      table += '<td>'+d[6][i][2]+'</td>'
+      table += '<td>'+d[7][i][0]+'</td>'
+      table += '<td>'+d[7][i][1]+'</td>'
+      table += '<td>'+d[7][i][2]+'</td>'
       table += '</tr>'
     }
     table += '</table>';
@@ -96,7 +96,7 @@ function format ( d ) {
         ],
         aoColumnDefs: [
             { 
-              "targets": [6],
+              "targets": [7],
               "class" : "column-hidden",
             }
             ],
