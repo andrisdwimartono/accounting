@@ -1335,7 +1335,7 @@ class KegiatanController extends Controller
         foreach(Kegiatan::where(function($q) use ($keyword) {
             $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
         })->where(function($q) use ($ukl, $rl, $pass){
-            if($rl != 'admin' && $rl != 'Administrator' && !$pass){
+            if($rl != 'admin' && $rl != 'Administrator' && !$pass && $rl != 'lpm'){
                 if($ukl){
                     $q->where("unit_pelaksana", $ukl);
                 }
