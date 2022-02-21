@@ -756,6 +756,7 @@ $.ajax({
                         $("#"+Object.keys(data.data.{{$page_data['page_data_urlname']}})[i]).append(newState).trigger("change");
                     }
                 }else{
+                    $("textarea[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").val(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
                     $("input[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").val(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
                         if(["photo_profile"].includes(Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i])){
                             if(Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i] != ""){
