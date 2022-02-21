@@ -40,12 +40,6 @@
     for(var i = 0; i < anElementInt.length; i++){
         anObject[anElementInt[i].domElement.name] = anElementInt[i];
     }
-
-    anObject["nilai_standar"].settings.minimumValue = 0;
-    anObject["nilai_baseline"].settings.minimumValue = 0;
-    anObject["nilai_renstra"].settings.minimumValue = 0;
-    anObject["nilai_target_tahunan"].settings.minimumValue = 0;
-
     function reRunAutonumeric(){
         Object.keys(anObject).forEach(function(key) {
             anObject[key].set(anObject[key].rawValue);
@@ -175,34 +169,40 @@ $("#nilai_target_tahunan_opt_label").val($("#nilai_target_tahunan_opt option:sel
 $("#satuan_nilai_target_tahunan").on("change", function() {
 $("#satuan_nilai_target_tahunan_label").val($("#satuan_nilai_target_tahunan option:selected").text());
 });
+
+$("#unit_pelaksana").on("change", function() {
+    $("#unit_pelaksana_label").val($("#unit_pelaksana option:selected").text());
+});
+
+
 var fields = $("#quickForm").serialize();
 
-$.ajax({
-url: "/getoptions{{$page_data["page_data_urlname"]}}",
-type: "post",
-data: {
-    fieldname: "iku_tahun",
-    _token: $("#quickForm input[name=_token]").val()
-},
-success: function(data){
-    for(var i = 0; i < data.length; i++){
-        if(data[i].name){
-            var newState = new Option(data[i].label, data[i].name, true, false);
-            $("#iku_tahun").append(newState).trigger("change");
-        }
+$("#unit_pelaksana").select2({
+    ajax: {
+        url: "/getlinks{{$page_data["page_data_urlname"]}}",
+        type: "post",
+        dataType: "json",
+        data: function(params) {
+            return {
+                term: params.term || "",
+                page: params.page,
+                field: "unit_pelaksana",
+                _token: $("input[name=_token]").val()
+            }
+        },
+        processResults: function (data, params) {
+            params.page = params.page || 1;
+            return {
+                results: data.items,
+                pagination: {
+                more: (params.page * 25) < data.total_count
+                }
+            };
+        },
+        cache: true
     }
-},
-error: function (err) {
-    if (err.status == 422) {
-        $.each(err.responseJSON.errors, function (i, error) {
-            var validator = $("#quickForm").validate();
-            var errors = {}
-            errors[i] = error[0];
-            validator.showErrors(errors);
-        });
-    }
-}
 });
+
 
 $.ajax({
 url: "/getoptions{{$page_data["page_data_urlname"]}}",
@@ -749,49 +749,30 @@ $.ajax({
         @endif
     },
     success: function(data){
-        for(var i = 0; i < Object.keys(data.data.{{$page_data["page_data_urlname"]}}).length; i++){
-            if(Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i] == "iku_unit_pelaksana"){
-                if(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]){
-                    var newState = new Option(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"_label"], data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]], true, false);
-                    $("#"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]).append(newState).trigger("change");
-                }
-            }else{
-                if(["ewfsdfsafdsafasdfasdferad"].includes(Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i])){
-                    $("input[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").prop("checked", data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
-                }else{
-                try{
-                    anObject[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]].set(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
-                }catch(err){
-                    $("input[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").val(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
-                }
-                    $("textarea[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").val(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
-                    if(["upload_dokumen"].includes(Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i])){
-                        if(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]] != null){
-                            $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").removeAttr("disabled");
-                            $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").addClass("btn-success text-white");
-                            $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").removeClass("btn-primary");
-                            var filename = Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i];
-                            $("label[for=upload_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").html(filename);
-                            $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").html("Download");
-                        }
+        for(var i = 0; i < Object.keys(data.data.{{$page_data['page_data_urlname']}}).length; i++){
+                if(Object.keys(data.data.{{$page_data['page_data_urlname']}})[i] == "unit_pelaksana" ){
+                    if(data.data.{{$page_data['page_data_urlname']}}[Object.keys(data.data.{{$page_data['page_data_urlname']}})[i]]){
+                        var newState = new Option(data.data.{{$page_data['page_data_urlname']}}[Object.keys(data.data.{{$page_data['page_data_urlname']}})[i]+"_label"], data.data.{{$page_data['page_data_urlname']}}[Object.keys(data.data.{{$page_data['page_data_urlname']}})[i]], true, false);
+                        $("#"+Object.keys(data.data.{{$page_data['page_data_urlname']}})[i]).append(newState).trigger("change");
                     }
+                }else{
+                    $("input[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").val(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]);
+                        if(["photo_profile"].includes(Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i])){
+                            if(Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i] != ""){
+                                $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").removeAttr("disabled");
+                                $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").addClass("btn-success text-white");
+                                $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").removeClass("btn-primary");
+                                var filename = Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i];
+                                $("label[for=upload_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").html(filename);
+                                $("#btn_"+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"").html("Download");
+                            }
+                        }
                 }
                 $("select[name="+Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]+"]").val(data.data.{{$page_data["page_data_urlname"]}}[Object.keys(data.data.{{$page_data["page_data_urlname"]}})[i]]).change();
-            }
-            }
-
-        $("#ctct1_iku").DataTable().clear().draw();
-        if(data.data.ct1_iku.length > 0){
-            for(var i = 0; i < data.data.ct1_iku.length; i++){
-                var dttb = $('#ctct1_iku').DataTable();
-                var child_table_data = [data.data.ct1_iku[i].no_seq, data.data.ct1_iku[i].jenis_iku, data.data.ct1_iku[i].jenis_iku_label, data.data.ct1_iku[i].iku_name, data.data.ct1_iku[i].unit_pelaksana, data.data.ct1_iku[i].unit_pelaksana_label, data.data.ct1_iku[i].tahun, data.data.ct1_iku[i].unit_pendukung, data.data.ct1_iku[i].unit_pendukung_label, data.data.ct1_iku[i].nilai_standar_opt, data.data.ct1_iku[i].nilai_standar_opt_label, data.data.ct1_iku[i].nilai_standar, data.data.ct1_iku[i].satuan_nilai_standar, data.data.ct1_iku[i].satuan_nilai_standar_label, data.data.ct1_iku[i].nilai_baseline_opt, data.data.ct1_iku[i].nilai_baseline_opt_label, data.data.ct1_iku[i].nilai_baseline, data.data.ct1_iku[i].satuan_nilai_baseline, data.data.ct1_iku[i].satuan_nilai_baseline_label, data.data.ct1_iku[i].nilai_renstra_opt, data.data.ct1_iku[i].nilai_renstra_opt_label, data.data.ct1_iku[i].nilai_renstra, data.data.ct1_iku[i].satuan_nilai_renstra, data.data.ct1_iku[i].satuan_nilai_renstra_label, data.data.ct1_iku[i].nilai_target_tahunan_opt, data.data.ct1_iku[i].nilai_target_tahunan_opt_label, data.data.ct1_iku[i].nilai_target_tahunan, data.data.ct1_iku[i].satuan_nilai_target_tahunan, data.data.ct1_iku[i].satuan_nilai_target_tahunan_label, data.data.ct1_iku[i].keterangan, data.data.ct1_iku[i].sumber_data, data.data.ct1_iku[i].rujukan, data.data.ct1_iku[i].upload_detail, @if($page_data["page_method_name"] != "View") '<div class="row-show"><i class="fa fa-eye" style="color:blue;cursor: pointer;"></i></div>     <div class="row-delete"><i class="fa fa-trash" style="color:red;cursor: pointer;"></i></div>' @else '<div class="row-show"><i class="fa fa-eye" style="color:blue;cursor: pointer;"></i></div>' @endif, data.data.ct1_iku[i].id];
-                if(dttb.row.add(child_table_data).draw( false )){
-
                 }
-            }
-        }
-    cto_loading_hide();
-},
+ 
+        cto_loading_hide();
+    },
     error: function (err) {
         // console.log(err);
         if (err.status >= 400 && err.status <= 500) {
