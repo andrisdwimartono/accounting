@@ -77,7 +77,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/assignmenu/{user}', 'App\Http\Controllers\UserController@update_assignmenu');
         Route::post('/getdataassignmenuuser', 'App\Http\Controllers\UserController@getdataassignmenuuser');
         Route::post('/updateassignmenuuser/{user}', 'App\Http\Controllers\UserController@updateassignmenu');
+        Route::get('/change_password/{id}', 'App\Http\Controllers\UserController@change_password');
+        Route::post('/update_password/{id}', 'App\Http\Controllers\UserController@update_password');
         
+
         Route::get('/getusermenu', 'App\Http\Controllers\UserController@getUserMenu');
         
         Route::get('/unitkerja', 'App\Http\Controllers\UnitkerjaController@index')->name('unitkerja');
