@@ -65,6 +65,7 @@
                                             <tr>
                                                 <!-- <th></th> -->
                                                 <th width=20px>No</th>
+                                                <th width=20px>Kode Anggaran</th>
                                                 <th width=150px>Unit Pelaksana</th>
                                                 <th>Tanggal</th>
                                                 <!-- <th>IKU</th> -->
