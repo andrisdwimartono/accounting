@@ -159,7 +159,8 @@ class NeracaSaldoExport implements FromView, WithStyles
             "bulan" => $this->convertBulan($bulan_periode), 
             "tahun" => $tahun_periode,
             "unitkerja" => $unitkerja, 
-            "unitkerja_label" => $uk?$uk->unitkerja_name:""
+            "unitkerja_label" => $uk?$uk->unitkerja_name:"",
+            "jenis" => "neracasaldo"
         );
 
         return view('neracasaldo.excel', [
