@@ -190,8 +190,14 @@
               saldo = kredit-debet
               saldo_debet = "";
               saldo_kredit = "";
-              if(saldo>0) saldo_debet = formatRupiahWNegative(saldo,".");
-              else saldo_kredit = formatRupiahWNegative(saldo,".");
+              saldo_akhir = "";
+              if(saldo>0){
+                saldo_debet = formatRupiahWNegative(saldo,".");
+                saldo_akhir = saldo_debet;
+              }else{
+                saldo_kredit = formatRupiahWNegative(saldo,".");
+                saldo_akhir = saldo_kredit;
+              }
 
               // Update footer
               $( api.column( 2 ).footer() ).html("JUMLAH");
@@ -199,8 +205,8 @@
               $( api.column( 4 ).footer() ).html(formatRupiahWNegative(kredit,"."));
 
               $( 'tr:eq(1) td:eq(1)', api.table().footer() ).addClass("right total").html(saldo>0?"SURPLUS":"DEFISIT");
-              $( 'tr:eq(1) td:eq(3)', api.table().footer() ).html(saldo_debet);
-              $( 'tr:eq(1) td:eq(4)', api.table().footer() ).html(saldo_kredit);
+              $( 'tr:eq(1) td:eq(3)', api.table().footer() ).html(saldo_akhir);
+              $( 'tr:eq(1) td:eq(4)', api.table().footer() ).html("");
             },
             "columnDefs": [
               { 
