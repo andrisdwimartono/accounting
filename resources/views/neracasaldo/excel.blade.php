@@ -4,7 +4,7 @@
             <td colspan=3>{{ Session::get('global_setting')->nama_lengkap_instansi }}</td>
         </tr>
         <tr style="text-align:center; font-weight:bold;">
-            <td colspan=3>Laporan {{isset($transaction["jenis"])&&$transaction["jenis"]=="neraca"?"Neraca":"Neraca Saldo"}}</td>
+            <td colspan=3>Laporan {{$transaction["jenis"]=="neraca"?"Neraca":"Neraca Saldo"}}</td>
         </tr>
         <tr style="text-align:center; font-weight:bold;">
             <td colspan=3><?= $transactions['unitkerja_label'] != ""?"Unit Kerja ".$transactions['unitkerja_label']." ":"" ?>Periode {{$transactions['bulan']}} {{$transactions['tahun']}}</td>
