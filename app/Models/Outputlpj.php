@@ -9,7 +9,7 @@ class Outputlpj extends Model
 {
     use HasFactory;
     protected $table = 'outputlpjs';
-    protected $fillable = ['parent_id', 'no_seq', 'iku', 'iku_label', 'Indikator', 'keterangan', 'target', 'satuan_target', 'realisasi', 'satuan_realisasi', 'file_bukti', 'link_bukti', 'hasil_pencapaian', 'user_creator_id', 'user_updater_id', 'updated_at'];
+    protected $fillable = ['parent_id', 'no_seq', 'iku', 'iku_label', 'Indikator', 'keterangan', 'target', 'satuan_target', 'realisasi', 'satuan_realisasi', 'file_bukti', 'link_bukti', 'hasil_pencapaian', 'user_creator_id', 'user_updater_id', 'updated_at', 'isarchived', 'archivedby'];
 
     function getPjk(){
         return $this->hasOne('App\Models\Pjk');

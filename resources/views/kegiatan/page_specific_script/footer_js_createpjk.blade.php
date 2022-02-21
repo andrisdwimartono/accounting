@@ -662,15 +662,15 @@ function getdata(){
                     $("input[name='nom3_"+(parseInt(data.data.ct3_outputrka[i].no_seq)+1)+"']").trigger("change");
                     $("input[name='satuan_target_"+(parseInt(data.data.ct3_outputrka[i].no_seq)+1)+"']").val(data.data.ct3_outputrka[i].satuan_target);
 
-                    AutoNumeric.getAutoNumericElement('#real3_'+(parseInt(data.data.ct3_outputrka[i].no_seq)+1)).set(data.data.ct3_outputrka[i].target);
+                    AutoNumeric.getAutoNumericElement('#real3_'+(parseInt(data.data.ct3_outputrka[i].no_seq)+1)).set(data.data.ct3_outputrka[i].realisasi);
                     $("input[name='real3_"+(parseInt(data.data.ct3_outputrka[i].no_seq)+1)+"']").trigger("change");
                     $("input[name='satuan_realisasi_"+(parseInt(data.data.ct3_outputrka[i].no_seq)+1)+"']").val(data.data.ct3_outputrka[i].satuan_realisasi);
                     $("input[name='file_bukti_"+(parseInt(data.data.ct3_outputrka[i].no_seq)+1)+"']").val(data.data.ct3_outputrka[i].file_bukti);
                     $("input[name='link_bukti_"+(parseInt(data.data.ct3_outputrka[i].no_seq)+1)+"']").val(data.data.ct3_outputrka[i].link_bukti);
-                    AutoNumeric.getAutoNumericElement('#penc3_'+(parseInt(data.data.ct3_outputrka[i].no_seq)+1)).set(data.data.ct3_outputrka[i].target);
+                    AutoNumeric.getAutoNumericElement('#penc3_'+(parseInt(data.data.ct3_outputrka[i].no_seq)+1)).set(data.data.ct3_outputrka[i].hasil_pencapaian);
                     $("input[name='penc3_"+(parseInt(data.data.ct3_outputrka[i].no_seq)+1)+"']").trigger("change");
 
-                    $("#caktable3 > tbody > tr[row-seq="+(parseInt(data.data.ct3_outputrka[i].no_seq)+1)+"]").find("td:eq(7)").text(data.data.ct3_outputrka[i].id);
+                    $("#caktable3 > tbody > tr[row-seq="+(parseInt(data.data.ct3_outputrka[i].no_seq)+1)+"]").find("td:eq(12)").text(data.data.ct3_outputrka[i].id);
                 }
             }
         cto_loading_hide();
