@@ -125,6 +125,7 @@
           search : {
             bulan_periode: bulan,
             tahun_periode: tahun,
+            category:'{{$page_data["category"]}}',
             child_level: $("#child_level").val(),
           },  
           _token: $("input[name=_token]").val()

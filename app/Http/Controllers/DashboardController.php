@@ -758,6 +758,11 @@ class DashboardController extends Controller
             $child_level = $request->search["child_level"];
         }
 
+        $category = null;
+        if(isset($request->search["category"])){
+            $category = $request->search["category"];
+        }
+
         if($x==0){
             $bulan_periode -= 1;
             if($bulan_periode==0){
@@ -771,16 +776,22 @@ class DashboardController extends Controller
         $sum_nom = 0;
         $yearopen = Session::get('global_setting');
         foreach(Coa::find(1)
-        ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader", DB::raw("SUM(labarugis.debet) as debet"), DB::raw("SUM(labarugis.credit) as credit")]) //"neracas.debet", "neracas.credit"])//DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")])
-        ->leftJoin('labarugis', 'coas.id', '=', 'labarugis.coa')
-        ->whereIn('coas.category',["pendapatan", "biaya", "biaya_lainnya", "pendapatan_lainnya"])
+        ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader", DB::raw("SUM(neracasaldos.debet) as debet"), DB::raw("SUM(neracasaldos.credit) as credit")]) //"neracas.debet", "neracas.credit"])//DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")])
+        ->leftJoin('neracasaldos', 'coas.id', '=', 'neracasaldos.coa')
         ->where(function($q){
             $q->where(function($q){
-                $q->where("labarugis.debet","!=",0)->orWhere("labarugis.credit","!=",0);
+                $q->where("neracasaldos.debet","!=",0)->orWhere("neracasaldos.credit","!=",0);
             })
             ->orWhere(function($q){
                 $q->where("coas.fheader","on");
             });  
+        })
+        ->where(function($q) use($category){
+            if($category == 'labarugi'){
+                $q->whereIn('coas.category',['pendapatan', 'biaya', 'biaya_lainnya', 'pendapatan_lainnya']);
+            } else if($category == 'neraca') {
+                $q->whereIn('coas.category',['aset','hutang','modal']);
+            }
         })
         ->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
             // dd($yearopen);
