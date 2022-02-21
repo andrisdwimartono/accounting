@@ -1335,7 +1335,7 @@ class KegiatanController extends Controller
         foreach(Kegiatan::where(function($q) use ($keyword) {
             $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
         })->where(function($q) use ($ukl, $rl, $pass){
-            if($rl != 'admin' && $rl != 'Administrator' && !$pass){
+            if($rl != 'admin' && $rl != 'Administrator' && !$pass && $rl != 'lpm'){
                 if($ukl){
                     $q->where("unit_pelaksana", $ukl);
                 }
@@ -2248,27 +2248,34 @@ class KegiatanController extends Controller
                     "satuan_realisasi" => $ct_request["satuan_realisasi"],
                     "file_bukti" => $ct_request["file_bukti"],
                     "link_bukti" => $ct_request["link_bukti"],
-                    "hasil_pencapaian" => $ct_request["hasil_pencapaian"],
                     "user_updater_id" => Auth::user()->id
                 ]);
+
+                if(Auth::user()->role == "lpm"){
+                    Outputlpj::where("id", $ct_request["id"])->update([
+                        "hasil_pencapaian" => $ct_request["hasil_pencapaian"],
+                        "user_updater_id" => Auth::user()->id
+                    ]);
+                }
             }else{
-                $idct = Outputlpj::create([
-                    "no_seq" => $ct_request["no_seq"],
-                    "parent_id" => $thispjk->id,
-                    "iku"=> $ct_request["iku"],
-                    "iku_label"=> $ct_request["iku_label"],
-                    "indikator"=> $ct_request["indikator"],
-                    "keterangan"=> $ct_request["keterangan"],
-                    "target"=> $ct_request["target"],
-                    "satuan_target"=> $ct_request["satuan_target"],
-                    "realisasi" => $ct_request["realisasi"],
-                    "satuan_realisasi" => $ct_request["satuan_realisasi"],
-                    "file_bukti" => $ct_request["file_bukti"],
-                    "link_bukti" => $ct_request["link_bukti"],
-                    "hasil_pencapaian" => $ct_request["hasil_pencapaian"],
-                    "user_creator_id" => Auth::user()->id
-                ])->id;
-                array_push($new_menu_field_ids, $idct);
+                if(Auth::user()->role != "lpm"){
+                    $idct = Outputlpj::create([
+                        "no_seq" => $ct_request["no_seq"],
+                        "parent_id" => $thispjk->id,
+                        "iku"=> $ct_request["iku"],
+                        "iku_label"=> $ct_request["iku_label"],
+                        "indikator"=> $ct_request["indikator"],
+                        "keterangan"=> $ct_request["keterangan"],
+                        "target"=> $ct_request["target"],
+                        "satuan_target"=> $ct_request["satuan_target"],
+                        "realisasi" => $ct_request["realisasi"],
+                        "satuan_realisasi" => $ct_request["satuan_realisasi"],
+                        "file_bukti" => $ct_request["file_bukti"],
+                        "link_bukti" => $ct_request["link_bukti"],
+                        "user_creator_id" => Auth::user()->id
+                    ])->id;
+                    array_push($new_menu_field_ids, $idct);
+                }
             }
         }
 
@@ -2280,7 +2287,9 @@ class KegiatanController extends Controller
                 }
             }
             if(!$is_still_exist){
-                Outputlpj::whereId($ch->id)->delete();
+                if(Auth::user()->role != "lpm"){
+                    Outputlpj::whereId($ch->id)->delete();
+                }
             }
         }
 
@@ -2357,12 +2366,13 @@ class KegiatanController extends Controller
                 ]);
             }
 
+            $requests_ct3_outputlpj = json_decode($request->ct3_outputlpj, true);
             $new_menu_field_ids = array();
             foreach($requests_ct3_outputlpj as $ct_request){
                 if(isset($ct_request["id"]) && $ct_request["id"] != ""){
                     Outputlpj::where("id", $ct_request["id"])->update([
                         "no_seq" => $ct_request["no_seq"],
-                        "parent_id" => $id,
+                        "parent_id" => $pjkid,
                         "iku"=> $ct_request["iku"],
                         "iku_label"=> $ct_request["iku_label"],
                         "indikator"=> $ct_request["indikator"],
@@ -2379,7 +2389,7 @@ class KegiatanController extends Controller
                 }else{
                     $idct = Outputlpj::create([
                         "no_seq" => $ct_request["no_seq"],
-                        "parent_id" => $id,
+                        "parent_id" => $pjkid,
                         "iku"=> $ct_request["iku"],
                         "iku_label"=> $ct_request["iku_label"],
                         "indikator"=> $ct_request["indikator"],

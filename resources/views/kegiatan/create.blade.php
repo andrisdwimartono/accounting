@@ -91,7 +91,7 @@
                                                     </div>
                                                 </div>
                                                 
-                                                <div class="form-group row m-0">
+                                                <div class="form-group row m-0 d-none">
                                                     <label class="col-sm-4 col-form-label" for="iku">IKU</label>
                                                     <div class="col-sm-6 cakfield">
                                                         <select name="iku" id="iku" class="form-control select2bs4" style="width: 100%;" @if($page_data["page_method_name"] == "View") readonly @endif></select>
