@@ -74,7 +74,7 @@ $.fn.modal.Constructor.prototype._enforceFocus = function() {
 
 $("#unit_pelaksana").on("change", function() {
     $("#unit_pelaksana_label").val($("#unit_pelaksana option:selected").text());
-    $('#iku').val('').trigger('change');
+    //$('#iku').val('').trigger('change');
     plafonanggaran();
 });
 
@@ -82,13 +82,13 @@ $('input[name=tanggal_kegiatan]').on("change", function(){
     plafonanggaran();
 });
 
-$("#tahun").on("change", function() {
-    $("#tahun_label").val($("#tahun option:selected").text());
-    $('#iku').val('').trigger('change');
-});
+// $("#tahun").on("change", function() {
+//     $("#tahun_label").val($("#tahun option:selected").text());
+//     $('#iku').val('').trigger('change');
+// });
 
-$("#iku").on("change", function() {
-    $("#iku_label").val($("#iku option:selected").text());
+$("#programkerja").on("change", function() {
+    $("#programkerja_label").val($("#programkerja option:selected").text());
 });
 
 $("#coa").on("change", function() {
@@ -219,7 +219,7 @@ $.ajax({
     }
 });
 
-$("#iku").select2({
+$("#programkerja").select2({
     placeholder: "Pilih satu",
     allowClear: true,
     theme: "bootstrap4", @if($page_data["page_method_name"] == "View")
@@ -232,7 +232,7 @@ $("#iku").select2({
             return {
                 term: params.term || "",
                 page: params.page,
-                field: "iku",
+                field: "programkerja",
                 unit_pelaksana: $("#unit_pelaksana").val(),
                 tahun: $("#tahun").val(),
                 _token: $("input[name=_token]").val()
@@ -294,9 +294,9 @@ $("#quickForm").validate({
         tahun :{
             required: true
         },
-        // iku :{
-        //     required: true
-        // },
+        programkerja :{
+            required: true
+        },
         kegiatan_name :{
             required: true
         },
@@ -308,8 +308,8 @@ $("#quickForm").validate({
         tahun :{
             required: "Tahun harus diisi!!"
         },
-        iku :{
-            required: "IKU harus diisi!!"
+        programkerja :{
+            required: "Program Kerja harus diisi!!"
         },
         kegiatan_name :{
             required: "Nama harus diisi!!"

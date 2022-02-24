@@ -20,8 +20,8 @@ class CreateKegiatansTable extends Migration
             $table->string('unit_pelaksana_label', 255)->nullable();
             $table->string('tahun')->nullable();
             $table->string('tahun_label', 255)->nullable();
-            $table->integer('iku')->nullable();
-            $table->string('iku_label', 255)->nullable();
+            $table->integer('programkerja')->nullable();
+            $table->string('programkerja_label', 255)->nullable();
             $table->string('kegiatan_name');
             $table->string('Deskripsi')->nullable();
             $table->string('output')->nullable();

@@ -360,6 +360,28 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/deletesettingpagupendapatan', 'App\Http\Controllers\SettingpagupendapatanController@destroy');
         Route::post('/getlinkssettingpagupendapatan', 'App\Http\Controllers\SettingpagupendapatanController@getlinks');
         Route::post('/getoptionssettingpagupendapatan', 'App\Http\Controllers\SettingpagupendapatanController@getoptions');
+
+        Route::get('/satuan', 'App\Http\Controllers\SatuanController@index')->name('satuan');
+        Route::post('/getlistsatuan', 'App\Http\Controllers\SatuanController@get_list');
+        Route::get('/satuan/{satuan}', 'App\Http\Controllers\SatuanController@show');
+        Route::get('/createsatuan', 'App\Http\Controllers\SatuanController@create');
+        Route::post('/storesatuan', 'App\Http\Controllers\SatuanController@store');
+        Route::get('/satuan/{satuan}/edit', 'App\Http\Controllers\SatuanController@edit');
+        Route::post('/getdatasatuan', 'App\Http\Controllers\SatuanController@getdata');
+        Route::post('/updatesatuan/{satuan}', 'App\Http\Controllers\SatuanController@update');
+        Route::post('/deletesatuan', 'App\Http\Controllers\SatuanController@destroy');
+        Route::post('/getoptionssatuan', 'App\Http\Controllers\SatuanController@getoptions');
+
+        Route::get('/programkerja', 'App\Http\Controllers\ProgramkerjaController@index')->name('programkerja');
+        Route::post('/getlistprogramkerja', 'App\Http\Controllers\ProgramkerjaController@get_list');
+        Route::get('/programkerja/{programkerja}', 'App\Http\Controllers\ProgramkerjaController@show');
+        Route::get('/createprogramkerja', 'App\Http\Controllers\ProgramkerjaController@create');
+        Route::post('/storeprogramkerja', 'App\Http\Controllers\ProgramkerjaController@store');
+        Route::get('/programkerja/{programkerja}/edit', 'App\Http\Controllers\ProgramkerjaController@edit');
+        Route::post('/getdataprogramkerja', 'App\Http\Controllers\ProgramkerjaController@getdata');
+        Route::post('/updateprogramkerja/{programkerja}', 'App\Http\Controllers\ProgramkerjaController@update');
+        Route::post('/deleteprogramkerja', 'App\Http\Controllers\ProgramkerjaController@destroy');
+        Route::post('/getlinksprogramkerja', 'App\Http\Controllers\ProgramkerjaController@getlinks');
     });
 });
 
