@@ -28,6 +28,7 @@ use App\Models\Pjk;
 use App\Models\Detailbiayapjk;
 use App\Models\Pencairan;
 use App\Models\Pencairanrka;
+use App\Models\Pendapatanpmb;
 
 use App\Exports\JurnalExport;
 use PDF;
@@ -2251,6 +2252,134 @@ class JurnalController extends Controller
         }
     }
 
+    public function storependapatanpmb(Request $req)
+    {
+        $request = json_decode($req->getContent());
+        $tgl = date('Y-m-d');
+        $this->checkOpenPeriode($tgl, true);
+        if(!isset($request->kode_rekening)){
+            abort(401, "Kode Rekening harus diisi!");
+        }else{
+            $coa = Coa::where("coa_code", $request->kode_rekening)->first();
+            if(!$coa){
+                abort(401, "Kode Rekening tidak ada!");
+            }
+        }
+        if(!isset($request->nominal)){
+            abort(401, "Nominal harus diisi!");
+        }
+        if(!isset($request->noformuir)){
+            abort(401, "No Formuir harus diisi!");
+        }
+        if(!isset($request->nama)){
+            abort(401, "Nama harus diisi!");
+        }
+        if(!isset($request->kode_prodi)){
+            abort(401, "Kode Prodi harus diisi!");
+        }
+        if(!isset($request->bank)){
+            abort(401, "Bank harus diisi!");
+        }
+
+        $pendapatanpmbid = Pendapatanpmb::create([
+            "kode_rekening"=> $request->kode_rekening,
+            "nominal"=> $request->nominal,
+            "noformuir"=> $request->noformuir,
+            "notes"=> $request->notes,
+            "nimsementara"=> $request->nimsementara,
+            "nama" => $request->nama,
+            "kode_prodi" => $request->kode_prodi,
+            "bank" => $request->bank
+        ])->id;
+        
+        $page_data = $this->tabledesign();
+        
+        $uk = Unitkerja::where("unitkerja_code", "1300")->first();
+        $id = Jurnal::create([
+            "unitkerja"=> $uk->id,
+            "unitkerja_label"=> $uk->unitkerja_name,
+            "no_jurnal"=> "JU########",
+            "tanggal_jurnal"=> $tgl,
+            "keterangan"=> $request->bank." ".$request->noformuir." ".$request->nama,
+            "apitype" => "apipendapatanpmb",
+            "clientreff" => $request->clientreff,
+            "user_creator_id"=> 2
+        ])->id;
+
+        $no_jurnal = "JU";
+        for($i = 0; $i < 7-strlen((string)$id); $i++){
+            $no_jurnal .= "0";
+        }
+        $no_jurnal .= $id;
+        Jurnal::where("id", $id)->update([
+            "no_jurnal"=> $no_jurnal
+        ]);
+
+        Pendapatanpmb::where("id", $pendapatanpmbid)->update([
+            "jurnal_id" => $id
+        ]);
+        
+        $coa = Coa::where("coa_code", $request->kode_rekening)->first();
+        $no_seq = 0;
+        $idct = Transaction::create([
+            "no_seq" => $no_seq,
+            "parent_id" => $id,
+            "deskripsi"=> "",
+            "debet"=> 0,
+            "credit"=> $request->nominal,
+            "unitkerja"=> $uk->id,
+            "unitkerja_label"=> $uk->unitkerja_name,
+            "anggaran"=> 0,
+            "anggaran_label"=> "",
+            "tanggal"=> $tgl,
+            "keterangan"=> $request->bank." ".$request->noformuir." ".$request->nama,
+            "jenis_transaksi"=> 0,
+            "coa"=> $coa->id,
+            "coa_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,
+            "jenisbayar"=> $coa->jenisbayar,
+            "jenisbayar_label"=> $coa->jenisbayar_label,
+            "fheader"=> null,
+            "no_jurnal"=> $no_jurnal,
+            "apitype" => "apipendapatanpmb",
+            "clientreff" => $request->clientreff,
+            "user_creator_id" => 2
+        ])->id;
+        $this->summerizeJournal("store", $idct);
+        
+        $coa = Coa::where("kode_jenisbayar", $request->bank)->first();
+        $no_seq++;
+        $idct = Transaction::create([
+            "no_seq" => $no_seq,
+            "parent_id" => $id,
+            "deskripsi"=> "",
+            "debet"=> $request->nominal,
+            "credit"=> 0,
+            "unitkerja"=> $uk->id,
+            "unitkerja_label"=> $uk->unitkerja_name,
+            "anggaran"=> 0,
+            "anggaran_label"=> "",
+            "tanggal"=> $tgl,
+            "keterangan"=> $request->bank." ".$request->noformuir." ".$request->nama,
+            "jenis_transaksi"=> 0,
+            "coa"=> $coa->id,
+            "coa_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,
+            "jenisbayar"=> $coa->jenisbayar,
+            "jenisbayar_label"=> $coa->jenisbayar_label,
+            "fheader"=> null,
+            "no_jurnal"=> $no_jurnal,
+            "apitype" => "apipendapatanpmb",
+            "clientreff" => $request->clientreff,
+            "user_creator_id" => 2
+        ])->id;
+        $this->summerizeJournal("store", $idct);
+
+        return response()->json([
+            'status' => 201,
+            'message' => 'Buat Jurnal Berhasil '.$no_jurnal,
+            'data' => ['id' => $id, 'no_jurnal' => $no_jurnal]
+        ]);
+    }
+
     public function storeaccrumhs(Request $req)
     {
         $request = json_decode($req->getContent());
@@ -4285,9 +4414,11 @@ class JurnalController extends Controller
         return $total_biaya;
     }
 
-    public function checkOpenPeriode($date){
-        if(Auth::user()->role == "admin"){
-            return true;
+    public function checkOpenPeriode($date, $pass = false){
+        if(!$pass){
+            if(Auth::user()->role == "admin"){
+                return true;
+            }
         }
         $opencloseperiode = Opencloseperiode::orderBy("id", "desc")->first();
         if($opencloseperiode->bulan_open == explode("-", $date)[1] && $opencloseperiode->tahun_open == explode("-", $date)[0]){

@@ -666,6 +666,36 @@ function getdata(){
                     $("#caktable3 > tbody > tr[row-seq="+(parseInt(data.data.ct3_outputrka[i].no_seq)+1)+"]").find("td:eq(7)").text(data.data.ct3_outputrka[i].id);
                 }
             }
+
+            if(data.data.ct4_detailbiayaproker.length > 0){
+                $("#caktable4 > tbody > tr").each(function(index){
+                    $(this).remove();
+                });
+                
+                for(var i = 0; i < data.data.ct4_detailbiayaproker.length; i++){
+                    addRow4();
+                    $("input[name='indikator_"+(parseInt(data.data.ct4_detailbiayaproker[i].no_seq)+1)+"']").val(data.data.ct4_detailbiayaproker[i].indikator);
+                    $("input[name='indikator_"+(parseInt(data.data.ct4_detailbiayaproker[i].no_seq)+1)+"']").val(data.data.ct4_detailbiayaproker[i].indikator);
+                    AutoNumeric.getAutoNumericElement('#nom3_'+(parseInt(data.data.ct4_detailbiayaproker[i].no_seq)+1)).set(data.data.ct4_detailbiayaproker[i].target);
+                    $("input[name='nom3_"+(parseInt(data.data.ct4_detailbiayaproker[i].no_seq)+1)+"']").trigger("change");
+                    
+
+                    $("#caktable4 > tbody").find("[row-seq="+(parseInt(data.data.ct4_detailbiayaproker[i].no_seq)+1)+"]").find("td:eq(0)").text(data.data.ct4_detailbiayaproker[i].iku);
+                    $("select[name='iku_"+(parseInt(data.data.ct4_detailbiayaproker[i].no_seq)+1)+"']").empty();
+                    var newState = new Option(data.data.ct4_detailbiayaproker[i].iku_label, data.data.ct4_detailbiayaproker[i].iku, true, false);
+                    $("#iku_"+(parseInt(data.data.ct4_detailbiayaproker[i].no_seq)+1)+"").append(newState).trigger('change');
+
+                    $("input[name='indikator_"+(parseInt(data.data.ct4_detailbiayaproker[i].no_seq)+1)+"']").val(data.data.ct4_detailbiayaproker[i].indikator);
+
+                    $("input[name='keterangan_"+(parseInt(data.data.ct4_detailbiayaproker[i].no_seq)+1)+"']").val(data.data.ct4_detailbiayaproker[i].keterangan);
+
+                    //console.log(data.data.ct4_detailbiayaproker[i].target);
+                    AutoNumeric.getAutoNumericElement('#nom3_'+(parseInt(data.data.ct4_detailbiayaproker[i].no_seq)+1)).set(data.data.ct4_detailbiayaproker[i].target);
+                    $("input[name='nom3_"+(parseInt(data.data.ct4_detailbiayaproker[i].no_seq)+1)+"']").trigger("change");
+                    $("input[name='satuan_target_"+(parseInt(data.data.ct4_detailbiayaproker[i].no_seq)+1)+"']").val(data.data.ct4_detailbiayaproker[i].satuan_target);
+                    $("#caktable4 > tbody > tr[row-seq="+(parseInt(data.data.ct4_detailbiayaproker[i].no_seq)+1)+"]").find("td:eq(7)").text(data.data.ct4_detailbiayaproker[i].id);
+                }
+            }
         cto_loading_hide();
     },
         error: function (err) {
