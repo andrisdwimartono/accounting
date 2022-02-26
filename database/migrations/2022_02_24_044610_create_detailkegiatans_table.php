@@ -19,9 +19,10 @@ class CreateDetailkegiatansTable extends Migration
             $table->integer("no_seq")->nullable();
             $table->string('detailbiayaproker_name');
             $table->string('deskripsibiaya')->nullable();
-            $table->double('standarbiaya', 8, 0)->default(0);
+            $table->double('volume', 8, 0)->default(0);
             $table->integer('satuan')->nullable();
             $table->string('satuan_label', 255)->nullable();
+            $table->double('standarbiaya', 8, 0)->default(0);
             $table->string('status')->nullable();
             $table->string('komentarrevisi')->nullable();
             $table->string('isarchived')->nullable();

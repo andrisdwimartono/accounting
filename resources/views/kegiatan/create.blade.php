@@ -31,7 +31,7 @@
                                                 @if($page_data["page_data_urlname"] != "pengajuan")
                                                 <div class="form-group row m-0">
                                                     <label for="plafon" class="col-sm-4 col-form-label">Plafon Anggaran</label>
-                                                    <table id="caktable4" class="display mb-3" style="width: 100%">
+                                                    <table id="caktable5" class="display mb-3" style="width: 100%">
                                                         <thead>
                                                             <tr>
                                                                 <th scope="col" style="width: 12.5%;">Plafon</th>
@@ -131,7 +131,7 @@
                                                 </div>
                                                 @endif
                                                 <div class="form-group @if($page_data["page_data_urlname"] == "pengajuan" && $page_data["page_method_name"] == "Update") column-hidden @endif" >
-                                                    <label for="ct4_detailbiayaproker">Detail Biaya</label>
+                                                    <label for="ct4_detailkegiatan">Detail Biaya</label>
                                                     <div id="result">
                                                         Event result:
                                                     </div>
@@ -145,7 +145,6 @@
                                                                     <th class="column-hidden">Satuan</th>
                                                                     <th scope="col" style="width: 13%; overflow: hidden;">Satuan</th>
                                                                     <th scope="col" style="width: 13%; overflow: hidden;">Nominal</th>
-                                                                    <th scope="col" style="width: 13%; overflow: hidden;">Total</th>
 
                                                                     @if($page_data["page_method_name"] == "View")
                                                                         <th scope="col" style="width: 7%;">Status</th>
@@ -165,7 +164,7 @@
                                                                         <td class="text-center">
                                                                             <div class="form-group row m-0 p-0 properties">
                                                                                 @if($page_data["page_method_name"] == "Create"  || $page_data["page_method_name"] == "Update"  ||($page_data["lastapprove"] && $page_data["lastapprove"]->role == Auth::user()->role) || ($page_data["nextapprove"] && $page_data["nextapprove"]->role == Auth::user()->role)) 
-                                                                                    <button type="button" id="addrow" class="btn btn-primary shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Tambah Anggaran"><i class="fa fa-plus"></i></button>
+                                                                                    <button type="button" id="addrow4" class="btn btn-primary shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Tambah Detail Biaya"><i class="fa fa-plus"></i></button>
                                                                                 @endif
                                                                             </div>
                                                                         </td>
@@ -186,7 +185,7 @@
                                                         </table>
                                                     </div>
                                                     <!-- <div class="text-danger col-sm-12" id="caktable1_message"></div> -->
-                                                    <input type="hidden" name="ct4_detailbiayaproker" class="form-control" id="ct4_detailbiayaproker" placeholder="Enter Menu Field" @if($page_data["page_method_name"] == "View") readonly @endif>
+                                                    <input type="hidden" name="ct4_detailkegiatan" class="form-control" id="ct4_detailkegiatan" placeholder="Enter Menu Field" @if($page_data["page_method_name"] == "View") readonly @endif>
                                                 </div>
 
                                                 <div class="form-group @if($page_data["page_data_urlname"] == "pengajuan" && $page_data["page_method_name"] == "Update") column-hidden @endif" >

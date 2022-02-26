@@ -58,7 +58,7 @@
       //"searching": false,
       buttons: [
             {
-                text: "Pencairan <span class='btn-icon-right'><i class='fa fa-plus'></i></span>",
+                text: "Program Kerja <span class='btn-icon-right'><i class='fa fa-plus'></i></span>",
                 className: "btn btn-primary",
                 init: function(api, node, config) {
                   $(node).removeClass('dt-button')

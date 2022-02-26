@@ -330,6 +330,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/persetujuankegiatan', 'App\Http\Controllers\KegiatanController@persetujuankegiatan');
         Route::post('/getlistpersetujuankegiatan', 'App\Http\Controllers\KegiatanController@get_list_persetujuankegiatan');
         Route::post('/getdatakegiatanplafon', 'App\Http\Controllers\KegiatanController@getdatakegiatanplafon');
+        Route::post('/getdatadetailkegiatan', 'App\Http\Controllers\KegiatanController@getdatadetailkegiatan');
 
         Route::get('/pjk/{kegiatan}/edit', 'App\Http\Controllers\KegiatanController@createpjk');
         Route::post('/storepjk', 'App\Http\Controllers\KegiatanController@storepjk');

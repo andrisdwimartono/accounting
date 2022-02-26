@@ -9,7 +9,7 @@ class Detailkegiatan extends Model
 {
     use HasFactory;
     protected $table = 'detailkegiatans';
-    protected $fillable = ['parent_id', 'no_seq', 'detailbiayaproker_name', 'deskripsibiaya', 'standarbiaya', 'satuan', 'satuan_label', 'status', 'komentarrevisi', 'isarchived', 'archivedby', 'user_creator_id', 'user_updater_id', 'updated_at'];
+    protected $fillable = ['parent_id', 'no_seq', 'detailbiayaproker_name', 'deskripsibiaya', 'standarbiaya', 'volume', 'satuan', 'satuan_label', 'status', 'komentarrevisi', 'isarchived', 'archivedby', 'user_creator_id', 'user_updater_id', 'updated_at'];
 
     function getKegiatan(){
         return $this->hasOne('App\Models\Kegiatan');
