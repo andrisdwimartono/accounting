@@ -380,7 +380,7 @@
 					<div class="tab-pane fade" id="cakmenu-ebudgeting" role="tabpanel">
 						<ul class="metismenu tab-nav-menu">
 							<li class="nav-label">E-Budgeting</li>
-							<li class="d-none" id="cakmenu-iku" class="active"><a href="{{ env('APP_URL') }}/iku">
+							<!-- <li class="d-none" id="cakmenu-iku" class="active"><a href="{{ env('APP_URL') }}/iku">
 									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="svg-main-icon">
 										<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
 											<rect x="0" y="0" width="24" height="24"/>
@@ -390,7 +390,7 @@
 									</svg>
 									Program Kerja
 								</a>
-							</li>
+							</li> -->
 							<!-- 
 							<li class="d-none" id="cakmenu-iktunitkerja" class="active"><a href="{{ env('APP_URL') }}/iktunitkerja">
 									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="svg-main-icon">
