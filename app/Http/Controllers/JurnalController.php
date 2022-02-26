@@ -2319,7 +2319,8 @@ class JurnalController extends Controller
             "jurnal_id" => $id
         ]);
         
-        $coa = Coa::where("coa_code", $request->kode_rekening)->first();
+        //$coa = Coa::where("coa_code", $request->kode_rekening)->first();
+        $coa = Coa::where("coa_code", "415100001")->first();
         $no_seq = 0;
         $idct = Transaction::create([
             "no_seq" => $no_seq,
