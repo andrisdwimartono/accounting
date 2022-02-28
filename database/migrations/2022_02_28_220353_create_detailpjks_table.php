@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDetailbiayaprokersTable extends Migration
+class CreateDetailpjksTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,10 @@ class CreateDetailbiayaprokersTable extends Migration
      */
     public function up()
     {
-        Schema::create('detailbiayaprokers', function (Blueprint $table) {
+        Schema::create('detailpjks', function (Blueprint $table) {
             $table->id();
             $table->integer("parent_id")->nullable();
+            $table->integer("kegiatan_id")->nullable();
             $table->integer("no_seq")->nullable();
             $table->string('detailbiayaproker_name');
             $table->string('deskripsibiaya')->nullable();
@@ -23,6 +24,12 @@ class CreateDetailbiayaprokersTable extends Migration
             $table->integer('satuan')->nullable();
             $table->string('satuan_label', 255)->nullable();
             $table->double('standarbiaya', 8, 0)->default(0);
+            $table->string("status_detail")->nullable();
+            $table->string("desc_detail")->nullable();
+            $table->string('status')->nullable();
+            $table->string('komentarrevisi')->nullable();
+            $table->string('isarchived')->nullable();
+            $table->string('archivedby')->nullable();
             $table->integer('user_creator_id')->nullable();
             $table->integer('user_updater_id')->nullable();
             $table->timestamps();
@@ -36,6 +43,6 @@ class CreateDetailbiayaprokersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('detailbiayaprokers');
+        Schema::dropIfExists('detailpjks');
     }
 }

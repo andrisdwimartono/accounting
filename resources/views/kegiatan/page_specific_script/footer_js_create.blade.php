@@ -685,10 +685,12 @@ function getdata(){
                             _token: $("#quickForm input[name=_token]").val()
                         },
                         success: function(data){
-                            for(var x = 0; x < data.length; x++){
-                                if(data[x].name){
-                                    var newState = new Option(data[x].label, data[x].name, true, false);
-                                    $("#status4_"+this.indexValue).append(newState);
+                            if($("#status4_"+this.indexValue+" > option").length == 0){
+                                for(var x = 0; x < data.length; x++){
+                                    if(data[x].name){
+                                        var newState = new Option(data[x].label, data[x].name, true, false);
+                                        $("#status4_"+this.indexValue).append(newState);
+                                    }
                                 }
                             }
                         },
@@ -1705,7 +1707,7 @@ $(document).keydown(function(event) {
                     "<tr row-seq=\""+rowlen+"\" class=\"addnewrow3\">"
                     +"<td class=\"column-hidden\"></td>"
                     +"<td class=\"p-0\"><select name=\"iku_"+rowlen+"\" id=\"iku_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%; overflow: hidden; white-space: nowrap;\"></select></td>"
-                    +"<td class=\"p-0\"><input type=\"text\" name=\"indikator_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"indikator_"+rowlen+"\"></td>"
+                    +"<td class=\"column-hidden\"><input type=\"text\" name=\"indikator_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"indikator_"+rowlen+"\"></td>"
                     +"<td class=\"p-0\"><input type=\"text\" name=\"keterangan_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"keterangan_"+rowlen+"\"></td>"
                     +"<td class=\"p-0\"><input type=\"text\" name=\"nom3_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"nom3_"+rowlen+"\" placeholder=\"Enter Nominal\"></td>"
                     +"<td class=\"p-0\"><input type=\"text\" name=\"satuan_target_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"satuan_target_"+rowlen+"\"></td>"
@@ -1716,7 +1718,7 @@ $(document).keydown(function(event) {
                     "<tr row-seq=\""+rowlen+"\" class=\"addnewrow3\">"
                     +"<td class=\"column-hidden\"></td>"
                     +"<td class=\"p-0\"><select name=\"iku_"+rowlen+"\" id=\"iku_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%; overflow: hidden; white-space: nowrap;\"></select></td>"
-                    +"<td class=\"p-0\"><input type=\"text\" name=\"indikator_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"indikator_"+rowlen+"\"></td>"
+                    +"<td class=\"column-hidden\"><input type=\"text\" name=\"indikator_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"indikator_"+rowlen+"\"></td>"
                     +"<td class=\"p-0\"><input type=\"text\" name=\"keterangan_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"keterangan_"+rowlen+"\"></td>"
                     +"<td class=\"p-0\"><input type=\"text\" name=\"nom3_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"nom3_"+rowlen+"\" placeholder=\"Enter Nominal\"></td>"
                     +"<td class=\"p-0\"><input type=\"text\" name=\"satuan_target_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"satuan_target_"+rowlen+"\"></td>"
@@ -2198,6 +2200,9 @@ $(document).keydown(function(event) {
 
 
     function getdatadetailkegiatan(){
+        @if($page_data["page_method_name"] == "View") 
+        return;
+        @endif
         var pk = $("#programkerja").val();
 
         if(!pk){
@@ -2228,10 +2233,12 @@ $(document).keydown(function(event) {
                                 _token: $("#quickForm input[name=_token]").val()
                             },
                             success: function(data){
-                                for(var x = 0; x < data.length; x++){
-                                    if(data[x].name){
-                                        var newState = new Option(data[x].label, data[x].name, true, false);
-                                        $("#status4_"+this.indexValue).append(newState);
+                                if($("#status4_"+this.indexValue+" > option").length == 0){
+                                    for(var x = 0; x < data.length; x++){
+                                        if(data[x].name){
+                                            var newState = new Option(data[x].label, data[x].name, true, false);
+                                            $("#status4_"+this.indexValue).append(newState);
+                                        }
                                     }
                                 }
                             },
