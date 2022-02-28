@@ -1819,6 +1819,11 @@ $(document).keydown(function(event) {
             var $td = $(this).parent();
             var $tr = $($td).parent();
             $($tr).remove();
+            calcTotal4();
+        });
+
+        $("#standarbiaya_"+rowlen+"").on("change", function(){
+            calcTotal4();
         });
 
         var noms3 = new AutoNumeric("#standarbiaya_"+rowlen, {
@@ -1885,6 +1890,14 @@ $(document).keydown(function(event) {
             totalnom += AutoNumeric.getNumber("#nom_"+$(tr).attr("row-seq"));
         });
         $("#totalnom").text('Rp '+totalnom.toLocaleString('id'));
+    }
+
+    function calcTotal4(){
+        var totalnom = 0;
+        $("#caktable4 > tbody > tr").each(function(index, tr){
+            totalnom += AutoNumeric.getNumber("#standarbiaya_"+$(tr).attr("row-seq"));
+        });
+        $("#totalnom4").text('Rp '+totalnom.toLocaleString('id'));
     }
     
     $('input[name=tanggal_kegiatan]').pickadate({
