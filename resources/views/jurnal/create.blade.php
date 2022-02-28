@@ -54,7 +54,7 @@
                         <div class="form-group row m-0">
                             <label class="col-sm-4 col-form-label" for="no_jurnal">Nomor Jurnal</label>
                             <div class="col-sm-6 cakfield">
-                                <input type="text" name="no_jurnal" class="form-control form-control-sm" id="no_jurnal" placeholder="Enter Nomor Jurnal" value="JU#######" readonly>
+                                <input type="text" name="no_jurnal" class="form-control form-control-sm" id="no_jurnal" placeholder="Enter Nomor Jurnal" value="####JUMMYYYY" readonly>
                             </div>
                         </div>
                         

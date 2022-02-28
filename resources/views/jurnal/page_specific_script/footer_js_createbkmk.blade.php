@@ -685,7 +685,7 @@ $(document).ready(function() {
         $("#is_edit").val(0);
         $('#unitkerja').val(null).trigger('change');
         $("#anggaran_label").val("");
-        $("#no_jurnal").val("<?=$page_data["page_job"]?>#######");
+        $("#no_jurnal").val("####<?=$page_data["page_job"]=="KM"?"BKM":($page_data["page_job"]=="KK"?"BKK":($page_data["page_job"]=="BM"?"BBM":"BBK"))?>MMYYYY");
         $('input[name=tanggal_jurnal]').val("");
         $('#coa_1').val(null).trigger('change');
         $('#deskripsi_1').val("");
