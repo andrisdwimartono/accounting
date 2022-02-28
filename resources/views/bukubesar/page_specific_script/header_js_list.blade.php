@@ -11,7 +11,11 @@
   <link href="{{ asset ("/assets/node_modules/@ttskch/select2-bootstrap4-theme/dist/select2-bootstrap4.min.css") }}" rel="stylesheet" />
 
   <!-- hijgo for date dan datetime picker -->
-  <link href="{{ asset ("/assets/node_modules/gijgo/css/gijgo.min.css") }}" rel="stylesheet" />
+  <!-- <link href="{{ asset ("/assets/node_modules/gijgo/css/gijgo.min.css") }}" rel="stylesheet" /> -->
+  <link href="{{ asset ("/assets/motaadmin/vendor/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css") }}" rel="stylesheet">
+  <!-- Pick date -->
+  <link rel="stylesheet" href="{{ asset ("/assets/motaadmin/vendor/pickadate/themes/default.css") }}">
+  <link rel="stylesheet" href="{{ asset ("/assets/motaadmin/vendor/pickadate/themes/default.date.css") }}">
   
   <!-- datatables -->
   <link href="{{ asset ("/assets/motaadmin//vendor/datatables/css/jquery.dataTables.min.css") }} " rel="stylesheet">
