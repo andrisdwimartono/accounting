@@ -2785,7 +2785,7 @@ class KegiatanController extends Controller
 
                 $ct3_outputrkas = Outputlpj::whereParentId($pjk->id)->whereNull("isarchived")->orderBy("no_seq")->get();
 
-                foreach(Approval::where("parent_id", $pjk->id)->where("jenismenu", "LPJ")->orderBy("no_seq", "desc")->get() as $app){
+                foreach(Approval::where("parent_id", $pjk->id)->where("jenismenu", "PJK")->orderBy("no_seq", "desc")->get() as $app){
                     $ok = Outputlpj::whereParentId($pjk->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
                     if($ok){
                         $ct3_outputrkas = Outputlpj::whereParentId($pjk->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get();
