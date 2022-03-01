@@ -2687,7 +2687,7 @@ class KegiatanController extends Controller
                 if(isset($ct_request["id"]) && $ct_request["id"] != ""){
                     Detailpjk::where("id", $ct_request["id"])->update([
                         "no_seq" => $ct_request["no_seq"],
-                        "parent_id" => $id,
+                        "parent_id" => $pjkid,
                         "detailbiayaproker_name" => $ct_request["detailbiayaproker_name"],
                         "deskripsibiaya" => $ct_request["deskripsibiaya"],
                         "standarbiaya" => $ct_request["standarbiaya"],
@@ -2701,7 +2701,7 @@ class KegiatanController extends Controller
                 }else{
                     $idct = Detailpjk::create([
                         "no_seq" => $ct_request["no_seq"],
-                        "parent_id" => $id,
+                        "parent_id" => $pjkid,
                         "detailbiayaproker_name" => $ct_request["detailbiayaproker_name"],
                         "deskripsibiaya" => $ct_request["deskripsibiaya"],
                         "standarbiaya" => $ct_request["standarbiaya"],
