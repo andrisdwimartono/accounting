@@ -424,7 +424,7 @@ class ProgramkerjaController extends Controller
         }
         $programkerja_code .= $id;
         $programkerja_code .= "-";
-        $programkerja_code .= substr(explode("-", $tgl_jurnal)[0], 2);
+        $programkerja_code .= substr(explode("-", date('Y-m-d'))[0], 2);
         $programkerja_code .= "-";
         $programkerja_code .= 'PK';
 
