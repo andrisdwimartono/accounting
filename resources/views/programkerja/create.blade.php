@@ -30,7 +30,8 @@
                                             <div class="form-group row">
                                                 <label class="col-sm-4 col-form-label" for="programkerja_code">Kode</label>
                                                 <div class="col-sm-6">
-                                                    <input type="text" name="programkerja_code" class="form-control" id="programkerja_code" placeholder="Enter Kode" @if($page_data["page_method_name"] == "View") readonly @endif>
+                                                    <input type="text" name="programkerja_code" class="form-control" id="programkerja_code" placeholder="###-YY-PK" readonly>
+                                                    <span class="text-secondary">Otomatis dibuat oleh sistem</span>
                                                 </div>
                                             </div>
                                             <div class="form-group row">

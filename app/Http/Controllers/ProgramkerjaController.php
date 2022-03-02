@@ -128,12 +128,15 @@ class ProgramkerjaController extends Controller
         $messages = $page_data["fieldsmessages"];
         if($request->validate($rules, $messages)){
             $id = Programkerja::create([
-                "programkerja_code"=> $request->programkerja_code,
+                //"programkerja_code"=> $request->programkerja_code,
                 "programkerja_name"=> $request->programkerja_name,
                 "deskripsi_programkerja"=> $request->deskripsi_programkerja,
                 "type_programkerja"=> $request->type_programkerja,
                 "user_creator_id"=> Auth::user()->id
             ])->id;
+
+            
+            $this->generateKodePK($id);
 
             foreach($requests_ct1_detailbiayaproker as $ct_request){
                 Detailbiayaproker::create([
@@ -217,7 +220,7 @@ class ProgramkerjaController extends Controller
         $messages = $page_data["fieldsmessages"];
         if($request->validate($rules, $messages)){
             Programkerja::where("id", $id)->update([
-                "programkerja_code"=> $request->programkerja_code == ''?null:$request->programkerja_code,
+                //"programkerja_code"=> $request->programkerja_code == ''?null:$request->programkerja_code,
                 "programkerja_name"=> $request->programkerja_name,
                 "deskripsi_programkerja"=> $request->deskripsi_programkerja == ''?null:$request->deskripsi_programkerja,
                 "type_programkerja"=> $request->type_programkerja == ''?null:$request->type_programkerja,
@@ -412,5 +415,22 @@ class ProgramkerjaController extends Controller
 
             return response()->json($results);
         }
+    }
+
+    public function generateKodePK($id){
+        $programkerja_code = "";
+        for($i = 0; $i < 3-strlen((string)$id); $i++){
+            $programkerja_code .= "0";
+        }
+        $programkerja_code .= $id;
+        $programkerja_code .= "-";
+        $programkerja_code .= substr(explode("-", $tgl_jurnal)[0], 2);
+        $programkerja_code .= "-";
+        $programkerja_code .= 'PK';
+
+        Programkerja::where("id", $id)->update([
+            "programkerja_code"=> $programkerja_code
+        ]);
+        return $programkerja_code;
     }
 }

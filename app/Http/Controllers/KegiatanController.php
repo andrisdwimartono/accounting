@@ -2570,6 +2570,18 @@ class KegiatanController extends Controller
             $child_tb_request->validate($rules_ct1_detailbiayapjk, $ct_messages);
         }
 
+        $rules_ct3_outputrka = $page_data["fieldsrules_ct3_outputrka"];
+        $requests_ct3_outputrka = json_decode($request->ct3_outputrka, true);
+        foreach($requests_ct3_outputrka as $ct_request){
+            $child_tb_request = new \Illuminate\Http\Request();
+            $child_tb_request->replace($ct_request);
+            $ct_messages = array();
+            foreach($page_data["fieldsmessages_ct3_outputrka"] as $key => $value){
+                $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
+            }
+            $child_tb_request->validate($rules_ct3_outputrka, $ct_messages);
+        }
+
         $rules_ct4_detailkegiatan = $page_data["fieldsrules_ct4_detailkegiatan"];
         $requests_ct4_detailkegiatan = json_decode($request->ct4_detailkegiatan, true);
         foreach($requests_ct4_detailkegiatan as $ct_request){
@@ -2629,50 +2641,31 @@ class KegiatanController extends Controller
                 ]);
             }
 
-            $requests_ct3_outputlpj = json_decode($request->ct3_outputrka, true);
+            $requests_ct3_outputrka = json_decode($request->ct3_outputrka, true);
             $new_menu_field_ids = array();
-            foreach($requests_ct3_outputlpj as $ct_request){
-                if(isset($ct_request["id"]) && $ct_request["id"] != ""){
-                    Outputlpj::where("id", $ct_request["id"])->update([
-                        "no_seq" => $ct_request["no_seq"],
-                        "parent_id" => $pjkid,
-                        "iku"=> $ct_request["iku"],
-                        "iku_label"=> $ct_request["iku_label"],
-                        "indikator"=> $ct_request["indikator"],
-                        "keterangan"=> $ct_request["keterangan"],
-                        "target"=> $ct_request["target"],
-                        "satuan_target"=> $ct_request["satuan_target"],
-                        "realisasi" => $ct_request["realisasi"],
-                        "satuan_realisasi" => $ct_request["satuan_realisasi"],
-                        "file_bukti" => $ct_request["file_bukti"],
-                        "link_bukti" => $ct_request["link_bukti"],
-                        "hasil_pencapaian" => $ct_request["hasil_pencapaian"],
-                        "user_updater_id" => Auth::user()->id
-                    ]);
-                }else{
-                    $idct = Outputlpj::create([
-                        "no_seq" => $ct_request["no_seq"],
-                        "parent_id" => $pjkid,
-                        "iku"=> $ct_request["iku"],
-                        "iku_label"=> $ct_request["iku_label"],
-                        "indikator"=> $ct_request["indikator"],
-                        "keterangan"=> $ct_request["keterangan"],
-                        "target"=> $ct_request["target"],
-                        "satuan_target"=> $ct_request["satuan_target"],
-                        "realisasi" => $ct_request["realisasi"],
-                        "satuan_realisasi" => $ct_request["satuan_realisasi"],
-                        "file_bukti" => $ct_request["file_bukti"],
-                        "link_bukti" => $ct_request["link_bukti"],
-                        "hasil_pencapaian" => $ct_request["hasil_pencapaian"],
-                        "user_creator_id" => Auth::user()->id
-                    ])->id;
-                    array_push($new_menu_field_ids, $idct);
-                }
+            foreach($requests_ct3_outputrka as $ct_request){
+                $idct = Outputlpj::create([
+                    "no_seq" => $ct_request["no_seq"],
+                    "parent_id" => $pjkid,
+                    "iku"=> $ct_request["iku"],
+                    "iku_label"=> $ct_request["iku_label"],
+                    "indikator"=> $ct_request["indikator"],
+                    "keterangan"=> $ct_request["keterangan"],
+                    "target"=> $ct_request["target"],
+                    "satuan_target"=> $ct_request["satuan_target"],
+                    "realisasi" => $ct_request["realisasi"],
+                    "satuan_realisasi" => $ct_request["satuan_realisasi"],
+                    "file_bukti" => $ct_request["file_bukti"],
+                    "link_bukti" => $ct_request["link_bukti"],
+                    "hasil_pencapaian" => $ct_request["hasil_pencapaian"],
+                    "user_creator_id" => Auth::user()->id
+                ])->id;
+                array_push($new_menu_field_ids, $idct);
             }
 
             foreach(Outputlpj::whereParentId($id)->get() as $ch){
                 $is_still_exist = false;
-                foreach($requests_ct3_outputlpj as $ct_request){
+                foreach($requests_ct3_outputrka as $ct_request){
                     if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
                         $is_still_exist = true;
                     }
