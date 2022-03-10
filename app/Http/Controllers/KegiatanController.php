@@ -380,6 +380,7 @@ class KegiatanController extends Controller
         $page_data = $this->tabledesign();
         $rules_ct1_detailbiayakegiatan = $page_data["fieldsrules_ct1_detailbiayakegiatan"];
         $requests_ct1_detailbiayakegiatan = json_decode($request->ct1_detailbiayakegiatan, true);
+        $totalbiayakegiatan = 0;
         foreach($requests_ct1_detailbiayakegiatan as $ct_request){
             $child_tb_request = new \Illuminate\Http\Request();
             $child_tb_request->replace($ct_request);
@@ -388,6 +389,7 @@ class KegiatanController extends Controller
                 $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
             }
             $child_tb_request->validate($rules_ct1_detailbiayakegiatan, $ct_messages);
+            $totalbiayakegiatan = $totalbiayakegiatan+$ct_request["nominalbiaya"];
         }
 
         $rules_ct3_outputrka = $page_data["fieldsrules_ct3_outputrka"];
@@ -402,6 +404,7 @@ class KegiatanController extends Controller
             $child_tb_request->validate($rules_ct3_outputrka, $ct_messages);
         }
 
+        $totaldetailkegiatan = 0;
         $rules_ct4_detailkegiatan = $page_data["fieldsrules_ct4_detailkegiatan"];
         $requests_ct4_detailkegiatan = json_decode($request->ct4_detailkegiatan, true);
         foreach($requests_ct4_detailkegiatan as $ct_request){
@@ -412,6 +415,17 @@ class KegiatanController extends Controller
                 $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
             }
             $child_tb_request->validate($rules_ct4_detailkegiatan, $ct_messages);
+            $totaldetailkegiatan = $totaldetailkegiatan+$ct_request["standarbiaya"];
+        }
+        $plafon = $this->getdatakegiatanplafon2($request);
+
+        if($totaldetailkegiatan > $plafon){
+            abort(401, "Plafon > Total Kegiatan");
+        }
+
+        $lpjopen = $this->checklpjopen($request);
+        if($lpjopen > 0){
+            abort(401, "Masih ada yang belum dilakukan LPJ di tahun sebelumnya");
         }
 
         $rules = $page_data["fieldsrules"];
@@ -490,7 +504,7 @@ class KegiatanController extends Controller
 
             return response()->json([
                 'status' => 201,
-                'message' => 'Created with id '.$id,
+                'message' => 'Created with id '.$id." ".$lpjopen,
                 'data' => ['id' => $id]
             ]);
         }
@@ -3057,6 +3071,290 @@ class KegiatanController extends Controller
                 );
     
                 return response()->json($results);
+
+            }
+        }
+    }
+
+    public function checklpjopen(Request $request){
+        if($request->ajax() || $request->wantsJson()){
+            if(isset($request->tanggal_kegiatan) && isset($request->unit_pelaksana)){
+                $tahun = explode("/", $request->tanggal_kegiatan)[2];
+                $tahun = ((int) $tahun)-1;
+                $valplafon = 0;
+                $valprocess = 0;
+                $valapproved = 0;
+                $valsubmitted = 0;
+                $valpaid = 0;
+                $valpjkprocess = 0;
+                $valpjkapproved = 0;
+                $valsisa = 0;
+
+                foreach(Kegiatan::where("unit_pelaksana", $request->unit_pelaksana)->whereBetween("tanggal", [$tahun."-01-01", $tahun."-12-31"])->where("user_creator_id", Auth::user()->id)->get() as $keg){
+                    if($keg->status == "process" || $keg->status == "approving"){
+                        $nom = 0;
+                        foreach(Detailbiayakegiatan::whereParentId($keg->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                            $nom += $det->nominalbiaya;
+                        }
+
+                        foreach(Approval::where("parent_id", $keg->id)->where("jenismenu", "RKA")->whereNotNull("status_approval")->orderBy("no_seq", "desc")->get() as $app){
+                            $dtbk = Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                            $nom = 0;
+                            if($dtbk){
+                                foreach(Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                    $nom += $det->nominalbiaya;
+                                }
+                            }
+                        }
+                        
+
+                        $valprocess = $valprocess+$nom;
+                    }elseif($keg->status == "approved" || $keg->status == "submitting"){
+                        $nom = 0;
+                        foreach(Detailbiayakegiatan::whereParentId($keg->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                            $nom += $det->nominalbiaya;
+                        }
+
+                        foreach(Approval::where("parent_id", $keg->id)->where("jenismenu", "RKA")->whereNotNull("status_approval")->orderBy("no_seq", "desc")->get() as $app){
+                            $dtbk = Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                            $nom = 0;
+                            if($dtbk){
+                                foreach(Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                    $nom += $det->nominalbiaya;
+                                }
+                            }
+                        }
+
+                        $valapproved = $valapproved+$nom;
+                    }elseif($keg->status == "submitted"){
+                        $nom = 0;
+                        foreach(Detailbiayakegiatan::whereParentId($keg->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                            $nom += $det->nominalbiaya;
+                        }
+
+                        foreach(Approval::where("parent_id", $keg->id)->where("jenismenu", "RKA")->whereNotNull("status_approval")->orderBy("no_seq", "desc")->get() as $app){
+                            $dtbk = Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                            $nom = 0;
+                            if($dtbk){
+                                foreach(Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                    $nom += $det->nominalbiaya;
+                                }
+                            }
+                        }
+
+                        $valsubmitted = $valsubmitted+$nom;
+                    }elseif($keg->status == "paid"){
+                        $pjk = Pjk::where("kegiatan_id", $keg->id)->first();
+                        if(!$pjk){
+                            $nom = 0;
+                            foreach(Detailbiayakegiatan::whereParentId($keg->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                                $nom += $det->nominalbiaya;
+                            }
+
+                            foreach(Approval::where("parent_id", $keg->id)->where("jenismenu", "RKA")->whereNotNull("status_approval")->orderBy("no_seq", "desc")->get() as $app){
+                                $dtbk = Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                                $nom = 0;
+                                if($dtbk){
+                                    foreach(Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                        $nom += $det->nominalbiaya;
+                                    }
+                                }
+                            }
+
+                            $valpaid = $valpaid+$nom;
+                        }elseif($pjk->status == "process" || $pjk->status == "approving"){
+                            $nom = 0;
+                            foreach(Detailbiayapjk::whereParentId($pjk->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                                $nom += $det->nominalbiaya;
+                            }
+
+                            foreach(Approval::where("parent_id", $pjk->id)->where("jenismenu", "PJK")->orderBy("no_seq", "desc")->get() as $app){
+                                $dtbk = Detailbiayapjk::whereParentId($pjk->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                                $nom = 0;
+                                if($dtbk){
+                                    foreach(Detailbiayapjk::whereParentId($pjk->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                        $nom += $det->nominalbiaya;
+                                    }
+                                }
+                            }
+
+                            $valpjkprocess = $valpjkprocess+$nom;
+                        }elseif($pjk->status == "approved"){
+                            $nom = 0;
+                            foreach(Detailbiayapjk::whereParentId($pjk->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                                $nom += $det->nominalbiaya;
+                            }
+
+                            foreach(Approval::where("parent_id", $pjk->id)->where("jenismenu", "PJK")->orderBy("no_seq", "desc")->get() as $app){
+                                $dtbk = Detailbiayapjk::whereParentId($pjk->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                                $nom = 0;
+                                if($dtbk){
+                                    foreach(Detailbiayapjk::whereParentId($pjk->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                        $nom += $det->nominalbiaya;
+                                    }
+                                }
+                            }
+
+                            $valpjkapproved = $valpjkapproved+$nom;
+                        }
+                        
+                    }
+                }
+
+                $valsisa = $valprocess+$valapproved+$valsubmitted+$valpaid+$valpjkprocess;
+                return $valsisa;
+            }
+        }
+    }
+
+    public function getdatakegiatanplafon2(Request $request){
+        if($request->ajax() || $request->wantsJson()){
+            if(isset($request->tanggal_kegiatan) && isset($request->unit_pelaksana)){
+                $valplafon = 0;
+                $valprocess = 0;
+                $valapproved = 0;
+                $valsubmitted = 0;
+                $valpaid = 0;
+                $valpjkprocess = 0;
+                $valpjkapproved = 0;
+                $valsisa = 0;
+
+                $tahun = explode("/", $request->tanggal_kegiatan)[2];
+                $sett = Settingpagupendapatan::where("tahun", $tahun)->orderBy("id", "desc")->first();
+                if($sett){
+                    $nilaipagu = Nilaipagu::where("parent_id", $sett->id)->where("unitkerja", $request->unit_pelaksana)->first();
+                    if($nilaipagu){
+                        $valplafon = $nilaipagu->maxbiaya;
+                    }
+                }
+
+                foreach(Kegiatan::where("unit_pelaksana", $request->unit_pelaksana)->whereBetween("tanggal", [$tahun."-01-01", $tahun."-12-31"])->get() as $keg){
+                    if($keg->status == "process" || $keg->status == "approving"){
+                        $nom = 0;
+                        foreach(Detailbiayakegiatan::whereParentId($keg->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                            $nom += $det->nominalbiaya;
+                        }
+
+                        foreach(Approval::where("parent_id", $keg->id)->where("jenismenu", "RKA")->whereNotNull("status_approval")->orderBy("no_seq", "desc")->get() as $app){
+                            $dtbk = Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                            $nom = 0;
+                            if($dtbk){
+                                foreach(Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                    $nom += $det->nominalbiaya;
+                                }
+                            }
+                        }
+
+                        $valprocess = $valprocess+$nom;
+                    }elseif($keg->status == "approved" || $keg->status == "submitting"){
+                        $nom = 0;
+                        foreach(Detailbiayakegiatan::whereParentId($keg->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                            $nom += $det->nominalbiaya;
+                        }
+
+                        foreach(Approval::where("parent_id", $keg->id)->where("jenismenu", "RKA")->whereNotNull("status_approval")->orderBy("no_seq", "desc")->get() as $app){
+                            $dtbk = Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                            $nom = 0;
+                            if($dtbk){
+                                foreach(Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                    $nom += $det->nominalbiaya;
+                                }
+                            }
+                        }
+
+                        $valapproved = $valapproved+$nom;
+                    }elseif($keg->status == "submitted"){
+                        $nom = 0;
+                        foreach(Detailbiayakegiatan::whereParentId($keg->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                            $nom += $det->nominalbiaya;
+                        }
+
+                        foreach(Approval::where("parent_id", $keg->id)->where("jenismenu", "RKA")->whereNotNull("status_approval")->orderBy("no_seq", "desc")->get() as $app){
+                            $dtbk = Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                            $nom = 0;
+                            if($dtbk){
+                                foreach(Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                    $nom += $det->nominalbiaya;
+                                }
+                            }
+                        }
+
+                        $valsubmitted = $valsubmitted+$nom;
+                    }elseif($keg->status == "paid"){
+                        $pjk = Pjk::where("kegiatan_id", $keg->id)->first();
+                        if(!$pjk){
+                            $nom = 0;
+                            foreach(Detailbiayakegiatan::whereParentId($keg->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                                $nom += $det->nominalbiaya;
+                            }
+
+                            foreach(Approval::where("parent_id", $keg->id)->where("jenismenu", "RKA")->whereNotNull("status_approval")->orderBy("no_seq", "desc")->get() as $app){
+                                $dtbk = Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                                $nom = 0;
+                                if($dtbk){
+                                    foreach(Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                        $nom += $det->nominalbiaya;
+                                    }
+                                }
+                            }
+
+                            $valpaid = $valpaid+$nom;
+                        }elseif($pjk->status == "process" || $pjk->status == "approving"){
+                            $nom = 0;
+                            foreach(Detailbiayapjk::whereParentId($pjk->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                                $nom += $det->nominalbiaya;
+                            }
+
+                            foreach(Approval::where("parent_id", $pjk->id)->where("jenismenu", "PJK")->orderBy("no_seq", "desc")->get() as $app){
+                                $dtbk = Detailbiayapjk::whereParentId($pjk->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                                $nom = 0;
+                                if($dtbk){
+                                    foreach(Detailbiayapjk::whereParentId($pjk->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                        $nom += $det->nominalbiaya;
+                                    }
+                                }
+                            }
+
+                            $valpjkprocess = $valpjkprocess+$nom;
+                        }elseif($pjk->status == "approved"){
+                            $nom = 0;
+                            foreach(Detailbiayapjk::whereParentId($pjk->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                                $nom += $det->nominalbiaya;
+                            }
+
+                            foreach(Approval::where("parent_id", $pjk->id)->where("jenismenu", "PJK")->orderBy("no_seq", "desc")->get() as $app){
+                                $dtbk = Detailbiayapjk::whereParentId($pjk->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                                $nom = 0;
+                                if($dtbk){
+                                    foreach(Detailbiayapjk::whereParentId($pjk->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                        $nom += $det->nominalbiaya;
+                                    }
+                                }
+                            }
+
+                            $valpjkapproved = $valpjkapproved+$nom;
+                        }
+                        
+                    }
+                }
+
+                $valsisa = $valplafon-$valprocess-$valapproved-$valsubmitted-$valpaid-$valpjkprocess-$valpjkapproved;
+                $results = array(
+                    "status" => 201,
+                    "message" => "Data available",
+                    "data" => [
+                        "valplafon" => $valplafon,
+                        "valprocess" => $valprocess,
+                        "valapproved" => $valapproved,
+                        "valsubmitted" => $valsubmitted,
+                        "valpaid" => $valpaid,
+                        "valpjkprocess" => $valpjkprocess,
+                        "valpjkapproved" => $valpjkapproved,
+                        "valsisa" => $valsisa
+                    ]
+                );
+    
+                return $valsisa;
 
             }
         }

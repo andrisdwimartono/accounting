@@ -1941,6 +1941,36 @@ $(document).keydown(function(event) {
             var quickForm = $("#quickForm");
             var ctct1_detailbiayakegiatan = [];
 
+            // var valsisa = $("#valsisa").text();
+            // var vs = 0;
+            // if(valsisa != ""){
+            //     valsisa = valsisa.replace(".", "");
+            //     valsisa = valsisa.replace(",", ".");
+            //     vs = parseFloat(valsisa);
+            // }
+            // var totalnom4 = $("#totalnom4").text();
+            // var tn = 0;
+            // if(totalnom4 != ""){
+            //     totalnom4 = totalnom4.replace("Rp ", "");
+            //     totalnom4 = totalnom4.replace(".", "");
+            //     totalnom4 = totalnom4.replace(",", ".");
+            //     tn = parseFloat(totalnom4);
+            // }
+            // if(tn > vs){
+            //     $.toast({
+            //         text: "Total Detail lebih dari plafon sisa",
+            //         heading: 'Status',
+            //         icon: 'warning',
+            //         showHideTransition: 'fade',
+            //         allowToastClose: true,
+            //         hideAfter: 3000,
+            //         position: 'mid-center',
+            //         textAlign: 'left'
+            //     });
+            //     cto_loading_hide();
+            //     return;
+            // }
+
             var unitpelaksana = $("#unitpelaksana").val();
             var unitpelaksana_label = $("#unitpelaksana_label").val();
             var stop_submit = false;
