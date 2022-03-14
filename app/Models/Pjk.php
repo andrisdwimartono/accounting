@@ -9,7 +9,7 @@ class Pjk extends Model
 {
     use HasFactory;
     protected $table = 'pjks';
-    protected $fillable = ['kegiatan_id', 'unit_pelaksana', 'unit_pelaksana_label', 'tahun', 'tahun_label', 'iku', 'iku_label', 'kegiatan_name', 'Deskripsi', 'output', 'proposal', 'status', 'desc_pjk', 'laporan_pjk', 'user_pjk', 'user_creator_id', 'user_updater_id', 'updated_at', 'tanggal', 'status'];
+    protected $fillable = ['kegiatan_id', 'unit_pelaksana', 'unit_pelaksana_label', 'tahun', 'tahun_label', 'programkerja', 'programkerja_label', 'kegiatan_name', 'Deskripsi', 'output', 'proposal', 'status', 'desc_pjk', 'laporan_pjk', 'user_pjk', 'user_creator_id', 'user_updater_id', 'updated_at', 'tanggal', 'status'];
 
     function getUnitkerja(){
         return $this->hasOne('App\Models\Unitkerja')->orderBy('no_seq', 'ASC');

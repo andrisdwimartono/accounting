@@ -55,8 +55,9 @@
                         <div class="form-group row m-0">
                             <label class="col-sm-4 col-form-label" for="no_jurnal">Nomor <?=$page_data["page_job"]=="KM"?"Kas Masuk":($page_data["page_job"]=="KK"?"Kas Keluar":($page_data["page_job"]=="BM"?"Bank Masuk":"Bank Keluar"))?></label>
                             <div class="col-sm-6 cakfield">
-                                <input type="text" name="no_jurnal" class="form-control form-control-sm" id="no_jurnal" placeholder="Enter Nomor Jurnal" value="<?=$page_data["page_job"]?>#######" readonly>
+                                <input type="text" name="no_jurnal" class="form-control form-control-sm" id="no_jurnal" placeholder="Enter Nomor Jurnal" value="####<?=$page_data["page_job"]=="KM"?"BKM":($page_data["page_job"]=="KK"?"BKK":($page_data["page_job"]=="BM"?"BBM":"BBK"))?>MMYYYY" readonly>
                             </div>
+                            
                         </div>
                         
                         <div class="form-group row m-0">

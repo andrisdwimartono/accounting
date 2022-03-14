@@ -28,6 +28,8 @@ use App\Models\Pjk;
 use App\Models\Detailbiayapjk;
 use App\Models\Pencairan;
 use App\Models\Pencairanrka;
+use App\Models\Pendapatanpmb;
+use App\Models\Detailpjk;
 
 use App\Exports\JurnalExport;
 use PDF;
@@ -431,14 +433,7 @@ class JurnalController extends Controller
                 "user_creator_id"=> Auth::user()->id
             ])->id;
 
-            $no_jurnal = "JU";
-            for($i = 0; $i < 7-strlen((string)$id); $i++){
-                $no_jurnal .= "0";
-            }
-            $no_jurnal .= $id;
-            Jurnal::where("id", $id)->update([
-                "no_jurnal"=> $no_jurnal
-            ]);
+            $no_jurnal = $this->generateKodeJurnal($id, $request->tanggal_jurnal, "umum");
             
             foreach($requests_transaksi as $ct_request){
                 $coa = Coa::where("id", $ct_request["coa"])->first();
@@ -512,14 +507,7 @@ class JurnalController extends Controller
                 "user_creator_id"=> Auth::user()->id
             ])->id;
 
-            $no_jurnal = $request->jurnal_type;
-            for($i = 0; $i < 7-strlen((string)$id); $i++){
-                $no_jurnal .= "0";
-            }
-            $no_jurnal .= $id;
-            Jurnal::where("id", $id)->update([
-                "no_jurnal"=> $no_jurnal
-            ]);
+            $no_jurnal = $this->generateKodeJurnal($id, $request->tanggal_jurnal, ($request->jurnal_type=="KM"?"kasmasuk":($request->jurnal_type=="KK"?"kaskeluar":($request->jurnal_type=="BM"?"bankmasuk":"bankkeluar"))));
             
             foreach($requests_transaksi as $ct_request){
                 $coa = Coa::where("id", $ct_request["coa"])->first();
@@ -969,6 +957,7 @@ class JurnalController extends Controller
         
         $dt = array();
         $no = 0;
+        
         foreach(Jurnal::where(function($q) use ($request) {
             $q->where("no_jurnal", "ILIKE", "%" . $request->no_jurnal_search. "%");
         })->whereNull("isdeleted")->whereBetween("tanggal_jurnal", [$request->tanggal_jurnal_from, $request->tanggal_jurnal_to])->orderBy("no_jurnal", $request->ordering)->get(["id", "keterangan", "no_jurnal", "tanggal_jurnal"]) as $jurnal){
@@ -1000,9 +989,10 @@ class JurnalController extends Controller
         
         $dt = array();
         $no = 0;
+        $request->jurnal_type = ($request->jurnal_type=="KM"?"BKM":($request->jurnal_type=="KK"?"BKK":($request->jurnal_type=="BM"?"BBM":"BBK")));
         foreach(Jurnal::where(function($q) use ($request) {
             $q->where("no_jurnal", "ILIKE", "%" . $request->no_jurnal_search. "%");
-        })->where("no_jurnal", "ILIKE", $request->jurnal_type. "%")->whereNull("isdeleted")->whereBetween("tanggal_jurnal", [$request->tanggal_jurnal_from, $request->tanggal_jurnal_to])->orderBy("no_jurnal", $request->ordering)->get(["id", "keterangan", "no_jurnal", "tanggal_jurnal"]) as $jurnal){
+        })->where("no_jurnal", "ILIKE", "%".$request->jurnal_type. "%")->whereNull("isdeleted")->whereBetween("tanggal_jurnal", [$request->tanggal_jurnal_from, $request->tanggal_jurnal_to])->orderBy("no_jurnal", $request->ordering)->get(["id", "keterangan", "no_jurnal", "tanggal_jurnal"]) as $jurnal){
             $no = $no+1;
             $act = '
             <a href="/jurnal/'.$jurnal->id.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
@@ -1056,7 +1046,7 @@ class JurnalController extends Controller
                 abort(404, "Data not found");
             }
 
-            $transaksis = Transaction::where("no_jurnal", "ILIKE", $request->jurnal_type."%")->whereParentId($request->id)->orderBy("no_seq", "asc")->get();
+            $transaksis = Transaction::where("no_jurnal", "ILIKE", "%".$request->jurnal_type."%")->whereParentId($request->id)->orderBy("no_seq", "asc")->get();
 
             $jurnal->bank_kas = $transaksis[count($transaksis)-1]->coa;
             $jurnal->bank_kas_label = $transaksis[count($transaksis)-1]->coa_label;
@@ -1433,14 +1423,7 @@ class JurnalController extends Controller
                 "user_creator_id"=> 2
             ])->id;
 
-            $no_jurnal = "JU";
-            for($i = 0; $i < 7-strlen((string)$id); $i++){
-                $no_jurnal .= "0";
-            }
-            $no_jurnal .= $id;
-            Jurnal::where("id", $id)->update([
-                "no_jurnal"=> $no_jurnal
-            ]);
+            $no_jurnal = $this->generateKodeJurnal($id, $tgl, "umum");
             
             $no_seq = -1;
             foreach($requests_transaksi as $ct_request){
@@ -1744,14 +1727,7 @@ class JurnalController extends Controller
                 "user_creator_id"=> 2
             ])->id;
 
-            $no_jurnal = "JU";
-            for($i = 0; $i < 7-strlen((string)$id); $i++){
-                $no_jurnal .= "0";
-            }
-            $no_jurnal .= $id;
-            Jurnal::where("id", $id)->update([
-                "no_jurnal"=> $no_jurnal
-            ]);
+            $no_jurnal = $this->generateKodeJurnal($id, $tgl, "umum");
             
             $no_seq = -1;
             foreach($requests_transaksi as $ct_request){
@@ -2035,14 +2011,7 @@ class JurnalController extends Controller
                 "user_creator_id"=> 2
             ])->id;
 
-            $no_jurnal = "JU";
-            for($i = 0; $i < 7-strlen((string)$id); $i++){
-                $no_jurnal .= "0";
-            }
-            $no_jurnal .= $id;
-            Jurnal::where("id", $id)->update([
-                "no_jurnal"=> $no_jurnal
-            ]);
+            $no_jurnal = $this->generateKodeJurnal($id, $tgl, "umum");
             
             
             $coa = Coa::where(function($q) use($request){
@@ -2255,6 +2224,128 @@ class JurnalController extends Controller
         }
     }
 
+    public function storependapatanpmb(Request $req)
+    {
+        $request = json_decode($req->getContent());
+        $tgl = date('Y-m-d');
+        $this->checkOpenPeriode($tgl, true);
+        if(!isset($request->kode_rekening)){
+            abort(401, "Kode Rekening harus diisi!");
+        }else{
+            $coa = Coa::where("coa_code", $request->kode_rekening)->first();
+            if(!$coa){
+                abort(401, "Kode Rekening tidak ada!");
+            }
+        }
+        if(!isset($request->nominal)){
+            abort(401, "Nominal harus diisi!");
+        }
+        if(!isset($request->noformuir)){
+            abort(401, "No Formuir harus diisi!");
+        }
+        if(!isset($request->nama)){
+            abort(401, "Nama harus diisi!");
+        }
+        if(!isset($request->kode_prodi)){
+            abort(401, "Kode Prodi harus diisi!");
+        }
+        if(!isset($request->bank)){
+            abort(401, "Bank harus diisi!");
+        }
+
+        $pendapatanpmbid = Pendapatanpmb::create([
+            "kode_rekening"=> $request->kode_rekening,
+            "nominal"=> $request->nominal,
+            "noformuir"=> $request->noformuir,
+            "notes"=> $request->notes,
+            "nimsementara"=> $request->nimsementara,
+            "nama" => $request->nama,
+            "kode_prodi" => $request->kode_prodi,
+            "bank" => $request->bank
+        ])->id;
+        
+        $page_data = $this->tabledesign();
+        
+        $uk = Unitkerja::where("unitkerja_code", "1300")->first();
+        $id = Jurnal::create([
+            "unitkerja"=> $uk->id,
+            "unitkerja_label"=> $uk->unitkerja_name,
+            "no_jurnal"=> "JU########",
+            "tanggal_jurnal"=> $tgl,
+            "keterangan"=> $request->bank." ".$request->noformuir." ".$request->nama,
+            "apitype" => "apipendapatanpmb",
+            "clientreff" => $request->clientreff,
+            "user_creator_id"=> 2
+        ])->id;
+
+        $no_jurnal = $this->generateKodeJurnal($id, $tgl, "umum");
+
+        Pendapatanpmb::where("id", $pendapatanpmbid)->update([
+            "jurnal_id" => $id
+        ]);
+        
+        //$coa = Coa::where("coa_code", $request->kode_rekening)->first();
+        $coa = Coa::where("coa_code", "415100001")->first();
+        $no_seq = 0;
+        $idct = Transaction::create([
+            "no_seq" => $no_seq,
+            "parent_id" => $id,
+            "deskripsi"=> "",
+            "debet"=> 0,
+            "credit"=> $request->nominal,
+            "unitkerja"=> $uk->id,
+            "unitkerja_label"=> $uk->unitkerja_name,
+            "anggaran"=> 0,
+            "anggaran_label"=> "",
+            "tanggal"=> $tgl,
+            "keterangan"=> $request->bank." ".$request->noformuir." ".$request->nama,
+            "jenis_transaksi"=> 0,
+            "coa"=> $coa->id,
+            "coa_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,
+            "jenisbayar"=> $coa->jenisbayar,
+            "jenisbayar_label"=> $coa->jenisbayar_label,
+            "fheader"=> null,
+            "no_jurnal"=> $no_jurnal,
+            "apitype" => "apipendapatanpmb",
+            "clientreff" => $request->clientreff,
+            "user_creator_id" => 2
+        ])->id;
+        $this->summerizeJournal("store", $idct);
+        
+        $coa = Coa::where("kode_jenisbayar", $request->bank)->first();
+        $no_seq++;
+        $idct = Transaction::create([
+            "no_seq" => $no_seq,
+            "parent_id" => $id,
+            "deskripsi"=> "",
+            "debet"=> $request->nominal,
+            "credit"=> 0,
+            "unitkerja"=> $uk->id,
+            "unitkerja_label"=> $uk->unitkerja_name,
+            "anggaran"=> 0,
+            "anggaran_label"=> "",
+            "tanggal"=> $tgl,
+            "keterangan"=> $request->bank." ".$request->noformuir." ".$request->nama,
+            "jenis_transaksi"=> 0,
+            "coa"=> $coa->id,
+            "coa_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,
+            "jenisbayar"=> $coa->jenisbayar,
+            "jenisbayar_label"=> $coa->jenisbayar_label,
+            "fheader"=> null,
+            "no_jurnal"=> $no_jurnal,
+            "apitype" => "apipendapatanpmb",
+            "clientreff" => $request->clientreff,
+            "user_creator_id" => 2
+        ])->id;
+        $this->summerizeJournal("store", $idct);
+
+        return response()->json([
+            'status' => 201,
+            'message' => 'Buat Jurnal Berhasil '.$no_jurnal,
+            'data' => ['id' => $id, 'no_jurnal' => $no_jurnal]
+        ]);
+    }
+
     public function storeaccrumhs(Request $req)
     {
         $request = json_decode($req->getContent());
@@ -2310,15 +2401,7 @@ class JurnalController extends Controller
                 "user_creator_id"=> 2
             ])->id;
 
-            $no_jurnal = "JU";
-            for($i = 0; $i < 7-strlen((string)$id); $i++){
-                $no_jurnal .= "0";
-            }
-            $no_jurnal .= $id;
-            Jurnal::where("id", $id)->update([
-                "no_jurnal"=> $no_jurnal
-            ]);
-            
+            $no_jurnal = $this->generateKodeJurnal($id, $tgl, "umum");
             
             $coa = Coa::where(function($q) use($request){
                 if($request->prodi){
@@ -2548,14 +2631,7 @@ class JurnalController extends Controller
                 "user_creator_id"=> 2
             ])->id;
 
-            $no_jurnal = "JU";
-            for($i = 0; $i < 7-strlen((string)$id); $i++){
-                $no_jurnal .= "0";
-            }
-            $no_jurnal .= $id;
-            Jurnal::where("id", $id)->update([
-                "no_jurnal"=> $no_jurnal
-            ]);
+            $no_jurnal = $this->generateKodeJurnal($id, $tgl, "umum");
             
             $no_seq = 0;
             $coa = Coa::where('jeniscoa', 'PIUTANGMAHASISWA')->where('factive', 'on')->first();
@@ -3049,14 +3125,7 @@ class JurnalController extends Controller
                 "user_creator_id"=> 2
             ])->id;
 
-            $no_jurnal = "JU";
-            for($i = 0; $i < 7-strlen((string)$id); $i++){
-                $no_jurnal .= "0";
-            }
-            $no_jurnal .= $id;
-            Jurnal::where("id", $id)->update([
-                "no_jurnal"=> $no_jurnal
-            ]);
+            $no_jurnal = $this->generateKodeJurnal($id, $tgl, "umum");
             
             $no_seq = -1;
             $no_seq++;
@@ -3291,14 +3360,7 @@ class JurnalController extends Controller
                 "user_creator_id"=> 2
             ])->id;
 
-            $no_jurnal = "JU";
-            for($i = 0; $i < 7-strlen((string)$id); $i++){
-                $no_jurnal .= "0";
-            }
-            $no_jurnal .= $id;
-            Jurnal::where("id", $id)->update([
-                "no_jurnal"=> $no_jurnal
-            ]);
+            $no_jurnal = $this->generateKodeJurnal($id, $tgl, "umum");
             
             $no_seq = -1;
             foreach($requests_transaksi as $ct_request){
@@ -3679,14 +3741,7 @@ class JurnalController extends Controller
                     "user_creator_id"=> Auth::user()->id
                 ])->id;
     
-                $no_jurnal = "JU";
-                for($i = 0; $i < 7-strlen((string)$id); $i++){
-                    $no_jurnal .= "0";
-                }
-                $no_jurnal .= $id;
-                Jurnal::where("id", $id)->update([
-                    "no_jurnal"=> $no_jurnal
-                ]);
+                $no_jurnal = $this->generateKodeJurnal($id, $tgl, "umum");
                 
                 $coaum = Coa::where("factive", "on")->whereNull("fheader")->where("kode_jenisbayar", "UMKERJA1")->first();
                 $coabank = Coa::where("factive", "on")->whereNull("fheader")->where("kode_jenisbayar", "BANKBSIQQ")->first();
@@ -3935,14 +3990,7 @@ class JurnalController extends Controller
                     "user_creator_id"=> Auth::user()->id
                 ])->id;
     
-                $no_jurnal = "JU";
-                for($i = 0; $i < 7-strlen((string)$id); $i++){
-                    $no_jurnal .= "0";
-                }
-                $no_jurnal .= $id;
-                Jurnal::where("id", $id)->update([
-                    "no_jurnal"=> $no_jurnal
-                ]);
+                $no_jurnal = $this->generateKodeJurnal($id, $tgl, "umum");
                 
                 $coaum = Coa::where("factive", "on")->whereNull("fheader")->where("kode_jenisbayar", "UMKERJA1")->first();
 
@@ -4099,7 +4147,38 @@ class JurnalController extends Controller
             array_push($new_menu_field_ids, $idct);
         }
 
-        // foreach(Detailbiayapjk::whereParentId($id)->get() as $ch){
+        //update
+        //hapus yang lama jika ada
+        Detailpjk::where("kegiatan_id", $id)->where("isarchived", "on")->where("archivedby", Auth::user()->role)->delete();
+
+        //jika belum pernah, maka update archived
+        Detailpjk::where("kegiatan_id", $id)->whereNull("isarchived")->whereNull("archivedby")->update([
+            "isarchived" => "on",
+            "user_updater_id" => Auth::user()->id
+        ]);
+
+        $requests_ct4_detailkegiatan = json_decode($request->ct4_detailkegiatan, true);
+        $new_menu_field_ids = array();
+        foreach($requests_ct4_detailkegiatan as $ct_request){
+            $idct = Detailpjk::create([
+                "no_seq" => $ct_request["no_seq"],
+                "parent_id" => $pjk->id,
+                "kegiatan_id" => $id,
+                "detailbiayaproker_name" => $ct_request["detailbiayaproker_name"],
+                "deskripsibiaya" => $ct_request["deskripsibiaya"],
+                "standarbiaya" => $ct_request["standarbiaya"],
+                "volume" => $ct_request["volume"],
+                "satuan" => $ct_request["satuan"],
+                "satuan_label" => $ct_request["satuan_label"],
+                "status" => $ct_request["status"]=="pengajuan" || $ct_request["status"]==""?"terima": $ct_request["status"],
+                "komentarrevisi" => $ct_request["komentarrevisi"],
+                "user_creator_id" => Auth::user()->id,
+                "isarchived" => "on",
+                "archivedby" => Auth::user()->role,
+            ])->id;
+            array_push($new_menu_field_ids, $idct);
+        }
+        // foreach(Detailpjk::whereParentId($id)->get() as $ch){
         //     $is_still_exist = false;
         //     foreach($requests_ct1_detailbiayakegiatan as $ct_request){
         //         if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
@@ -4173,14 +4252,7 @@ class JurnalController extends Controller
                 "user_creator_id"=> Auth::user()->id
             ])->id;
 
-            $no_jurnal = "JU";
-            for($i = 0; $i < 7-strlen((string)$id); $i++){
-                $no_jurnal .= "0";
-            }
-            $no_jurnal .= $id;
-            Jurnal::where("id", $id_jurnal)->update([
-                "no_jurnal"=> $no_jurnal
-            ]);
+            $no_jurnal = $this->generateKodeJurnal($id_jurnal, $tgl, "umum");
 
             Pencairan::where("id", $id)->update([
                 "jurnal" => $id_jurnal
@@ -4279,19 +4351,19 @@ class JurnalController extends Controller
         if($finalappr){
             $ct1_detailbiayakegiatans = Detailbiayakegiatan::whereParentId($id)->where("isarchived", "on")->where("archivedby", $finalappr->role)->orderBy("no_seq")->get();
             
-            if(Detailbiayakegiatan::whereParentId($id)->where("isarchived", "on")->where("archivedby", $finalappr->role)->orderBy("no_seq")->count() > 1){
-                foreach($ct1_detailbiayakegiatans as $detailbiayakegiatans){
-                    $total_biaya += $detailbiayakegiatans->nominalbiaya;
-                }
+            foreach($ct1_detailbiayakegiatans as $detailbiayakegiatans){
+                $total_biaya += $detailbiayakegiatans->nominalbiaya;
             }
         }
 
         return $total_biaya;
     }
 
-    public function checkOpenPeriode($date){
-        if(Auth::user()->role == "admin"){
-            return true;
+    public function checkOpenPeriode($date, $pass = false){
+        if(!$pass){
+            if(Auth::user()->role == "admin"){
+                return true;
+            }
         }
         $opencloseperiode = Opencloseperiode::orderBy("id", "desc")->first();
         if($opencloseperiode->bulan_open == explode("-", $date)[1] && $opencloseperiode->tahun_open == explode("-", $date)[0]){
@@ -4473,6 +4545,34 @@ class JurnalController extends Controller
     
         $date = str_replace('/', '-', $tanggal);
         return date('Y-m-d', strtotime($date));
+    }
+
+    public function generateKodeJurnal($id, $tgl_jurnal, $jenis = "umum"){
+        $no_jurnal = "";
+        for($i = 0; $i < 4-strlen((string)$id); $i++){
+            $no_jurnal .= "0";
+        }
+        $no_jurnal .= $id;
+        if($jenis == "umum"){
+            $no_jurnal = $no_jurnal."JU";
+        }elseif($jenis == "kasmasuk"){
+            $no_jurnal = $no_jurnal."BKM";
+        }elseif($jenis == "kaskeluar"){
+            $no_jurnal = $no_jurnal."BKK";
+        }elseif($jenis == "bankmasuk"){
+            $no_jurnal = $no_jurnal."BBM";
+        }elseif($jenis == "bankkeluar"){
+            $no_jurnal = $no_jurnal."BBK";
+        }else{
+            $no_jurnal = $no_jurnal."JU";
+        }
+        $no_jurnal .= explode("-", $tgl_jurnal)[1];
+        $no_jurnal .= explode("-", $tgl_jurnal)[0];
+
+        Jurnal::where("id", $id)->update([
+            "no_jurnal"=> $no_jurnal
+        ]);
+        return $no_jurnal;
     }
 }
 

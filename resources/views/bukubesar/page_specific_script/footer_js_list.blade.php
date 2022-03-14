@@ -1,6 +1,6 @@
   <!-- Required vendors -->
   <script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
-	<script src="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/js/bootstrap-select.min.js") }} "></script>
+	<!-- <script src="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/js/bootstrap-select.min.js") }} "></script> -->
   <script src="{{ asset ("/assets/motaadmin/vendor/chart.js/Chart.bundle.min.js") }}"></script>
   <script src="{{ asset ("/assets/motaadmin/js/custom.min.js") }}"></script>
 	<script src="{{ asset ("/assets/motaadmin/js/deznav-init.js") }}"></script>
@@ -24,7 +24,7 @@
     <script src="{{ asset ("/assets/motaadmin/vendor/svganimation/svg.animation.js") }}"></script>
 
     <script src="{{ asset ("/assets/node_modules/@popperjs/core/dist/umd/popper.min.js") }}"></script>
-    <script src="{{ asset ("/assets/node_modules/gijgo/js/gijgo.min.js") }}"></script>
+    <!-- <script src="{{ asset ("/assets/node_modules/gijgo/js/gijgo.min.js") }}"></script> -->
     <script src="{{ asset ("/assets/node_modules/jquery-toast-plugin/dist/jquery.toast.min.js") }}"></script>
     <script src="{{ asset ("/assets/node_modules/autonumeric/dist/autoNumeric.min.js") }}"></script>
     <script src="{{ asset ("/assets/bootstrap/dist/js/bootstrap.bundle.min.js") }}"></script>
@@ -42,6 +42,22 @@
 <script>
 
   $(document).ready(function(){
+    
+    $('input[name=tanggal_jurnal_from], input[name=tanggal_jurnal_to]').pickadate({
+        format: 'dd/mm/yyyy',
+        formatSubmit: 'yyyy-mm-dd',
+        //hiddenName: true,
+        onStart: function(){
+            var date = new Date();
+                this.set('select', date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate(), { format: 'yyyy-mm-dd' });
+        },
+        onOpen: function(){
+            var $input = $('.datepicker-default');
+            if ($input.hasClass('picker__input--target')) {
+                $input.pickadate().pickadate('picker').close(true);
+            }
+        }
+    });
 
     $("#bukubesar").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false,
@@ -137,8 +153,10 @@
             data:{
               search : {
                 coa_code: $("#coa").val(),
-                bulan_periode: formatDate($("#bulan_periode").val()),
-                tahun_periode: formatDate($("#tahun_periode").val()),
+                // bulan_periode: formatDate($("#bulan_periode").val()),
+                // tahun_periode: formatDate($("#tahun_periode").val()),
+                tanggal_jurnal_from: $("input[name=tanggal_jurnal_from]").val().split("/")[2]+"-"+$("input[name=tanggal_jurnal_from]").val().split("/")[1]+"-"+$("input[name=tanggal_jurnal_from]").val().split("/")[0],
+                tanggal_jurnal_to: $("input[name=tanggal_jurnal_to]").val().split("/")[2]+"-"+$("input[name=tanggal_jurnal_to]").val().split("/")[1]+"-"+$("input[name=tanggal_jurnal_to]").val().split("/")[0],
                 unitkerja: $("#unitkerja").val(),
               },
               _token: $("input[name=_token]").val()
@@ -235,8 +253,10 @@
         dataType: "json",
         data: {
           coa: $("#coa").val(),
-          bulan_periode: formatDate($("#bulan_periode").val()),
-          tahun_periode: formatDate($("#tahun_periode").val()),
+          // bulan_periode: formatDate($("#bulan_periode").val()),
+          // tahun_periode: formatDate($("#tahun_periode").val()),
+          tanggal_jurnal_from: $("input[name=tanggal_jurnal_from]").val().split("/")[2]+"-"+$("input[name=tanggal_jurnal_from]").val().split("/")[1]+"-"+$("input[name=tanggal_jurnal_from]").val().split("/")[0],
+          tanggal_jurnal_to: $("input[name=tanggal_jurnal_to]").val().split("/")[2]+"-"+$("input[name=tanggal_jurnal_to]").val().split("/")[1]+"-"+$("input[name=tanggal_jurnal_to]").val().split("/")[0],
           _token: $("input[name=_token]").val()
         },
         success: function (data, params) {
@@ -284,12 +304,12 @@
       // get_saldo_awal();
     });
 
-    $("#bulan_periode").on("change", function() {
+    $("input[name=tanggal_jurnal_from]").on("change", function() {
       fetch_data();
       // get_saldo_awal();
     });
 
-    $("#tahun_periode").on("change", function() {
+    $("input[name=tanggal_jurnal_to]").on("change", function() {
       fetch_data();
       // get_saldo_awal();
     });

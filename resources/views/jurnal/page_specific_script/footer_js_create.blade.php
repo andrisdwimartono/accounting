@@ -697,7 +697,7 @@ $(document).ready(function() {
         $("#is_edit").val(0);
         $('#unitkerja').val(null).trigger('change');
         $("#anggaran_label").val("");
-        $("#no_jurnal").val("JU#######");
+        $("#no_jurnal").val("####JUMMYYYY");
         $('input[name=tanggal_jurnal]').val("");
         $('#coa_1').val(null).trigger('change');
         $('#deskripsi_1').val("");

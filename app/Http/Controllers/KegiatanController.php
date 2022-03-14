@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Kegiatan;
 use App\Models\Unitkerja;
 use App\Models\Iku;
+use App\Models\Programkerja;
 use App\Models\Detailbiayakegiatan;
 use App\Models\Coa;
 use App\Models\Approval;
@@ -21,6 +22,10 @@ use App\Models\Outputlpj;
 use App\Models\Settingpagupendapatan;
 use App\Models\Nilaipagu;
 use App\Models\Potensipendapatan;
+use App\Models\Detailkegiatan;
+use App\Models\Satuan;
+use App\Models\Detailbiayaproker;
+use App\Models\Detailpjk;
 
 class KegiatanController extends Controller
 {
@@ -32,7 +37,7 @@ class KegiatanController extends Controller
                 "kode_anggaran" => "text",
                 "unit_pelaksana" => "link",
                 "tahun" => "select",
-                "iku" => "link",
+                "programkerja" => "link",
                 "kegiatan_name" => "text",
                 "Deskripsi" => "textarea",
                 "output" => "text",
@@ -102,7 +107,8 @@ class KegiatanController extends Controller
                 "unit_pelaksana" => "unitkerjas",
                 "iku" => "ikus",
                 "coa" => "coas",
-                "user" => "users"
+                "user" => "users",
+                "programkerja" => "programkerjas"
             ]
         ];
 
@@ -117,7 +123,7 @@ class KegiatanController extends Controller
         $td["fieldsrules"] = [
             "unit_pelaksana" => "required|exists:unitkerjas,id",
             // "tahun" => "required|in:2020,2021,2022,2023",
-            // "iku" => "required|exists:ikus,id",
+            "programkerja" => "required|exists:programkerjas,id",
             "tanggal_kegiatan_submit" => "required",
             "kegiatan_name" => "required",
             "Deskripsi" => "nullable",
@@ -158,6 +164,19 @@ class KegiatanController extends Controller
         ];
 
         $td["fieldsmessages_ct3_outputrka"] = [
+            "required" => ":attribute harus diisi!!",
+            "min" => ":attribute minimal :min karakter!!",
+            "max" => ":attribute maksimal :max karakter!!",
+            "in" => "Tidak ada dalam pilihan :attribute!!",
+            "exists" => "Tidak ada dalam :attribute!!",
+            "date_format" => "Format tidak sesuai di :attribute!!"
+        ];
+
+        $td["fieldsrules_ct4_detailkegiatan"] = [
+            
+        ];
+
+        $td["fieldsmessages_ct4_detailkegiatan"] = [
             "required" => ":attribute harus diisi!!",
             "min" => ":attribute minimal :min karakter!!",
             "max" => ":attribute maksimal :max karakter!!",
@@ -361,6 +380,7 @@ class KegiatanController extends Controller
         $page_data = $this->tabledesign();
         $rules_ct1_detailbiayakegiatan = $page_data["fieldsrules_ct1_detailbiayakegiatan"];
         $requests_ct1_detailbiayakegiatan = json_decode($request->ct1_detailbiayakegiatan, true);
+        $totalbiayakegiatan = 0;
         foreach($requests_ct1_detailbiayakegiatan as $ct_request){
             $child_tb_request = new \Illuminate\Http\Request();
             $child_tb_request->replace($ct_request);
@@ -369,6 +389,7 @@ class KegiatanController extends Controller
                 $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
             }
             $child_tb_request->validate($rules_ct1_detailbiayakegiatan, $ct_messages);
+            $totalbiayakegiatan = $totalbiayakegiatan+$ct_request["nominalbiaya"];
         }
 
         $rules_ct3_outputrka = $page_data["fieldsrules_ct3_outputrka"];
@@ -383,6 +404,30 @@ class KegiatanController extends Controller
             $child_tb_request->validate($rules_ct3_outputrka, $ct_messages);
         }
 
+        $totaldetailkegiatan = 0;
+        $rules_ct4_detailkegiatan = $page_data["fieldsrules_ct4_detailkegiatan"];
+        $requests_ct4_detailkegiatan = json_decode($request->ct4_detailkegiatan, true);
+        foreach($requests_ct4_detailkegiatan as $ct_request){
+            $child_tb_request = new \Illuminate\Http\Request();
+            $child_tb_request->replace($ct_request);
+            $ct_messages = array();
+            foreach($page_data["fieldsmessages_ct4_detailkegiatan"] as $key => $value){
+                $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
+            }
+            $child_tb_request->validate($rules_ct4_detailkegiatan, $ct_messages);
+            $totaldetailkegiatan = $totaldetailkegiatan+$ct_request["standarbiaya"];
+        }
+        $plafon = $this->getdatakegiatanplafon2($request);
+
+        if($totaldetailkegiatan > $plafon){
+            abort(401, "Plafon > Total Kegiatan");
+        }
+
+        $lpjopen = $this->checklpjopen($request);
+        if($lpjopen > 0){
+            abort(401, "Masih ada yang belum dilakukan LPJ di tahun sebelumnya");
+        }
+
         $rules = $page_data["fieldsrules"];
         $messages = $page_data["fieldsmessages"];
         if($request->validate($rules, $messages)){
@@ -390,8 +435,8 @@ class KegiatanController extends Controller
                 "unit_pelaksana"=> $request->unit_pelaksana,
                 "unit_pelaksana_label"=> $request->unit_pelaksana_label,
                 "tanggal"=> $request->tanggal_kegiatan_submit,
-                // "iku"=> $request->iku,
-                // "iku_label"=> $request->iku_label,
+                "programkerja"=> $request->programkerja,
+                "programkerja_label"=> $request->programkerja_label,
                 "kegiatan_name"=> $request->kegiatan_name,
                 "Deskripsi"=> $request->Deskripsi,
                 "output"=> $request->output,
@@ -432,6 +477,20 @@ class KegiatanController extends Controller
                 ]);
             }
 
+            foreach($requests_ct4_detailkegiatan as $ct_request){
+                Detailkegiatan::create([
+                    "no_seq" => $ct_request["no_seq"],
+                    "parent_id" => $id,
+                    "detailbiayaproker_name" => $ct_request["detailbiayaproker_name"],
+                    "deskripsibiaya" => $ct_request["deskripsibiaya"],
+                    "standarbiaya" => $ct_request["standarbiaya"],
+                    "volume" => $ct_request["volume"],
+                    "satuan" => $ct_request["satuan"],
+                    "satuan_label" => $ct_request["satuan_label"],
+                    "user_creator_id" => Auth::user()->id
+                ]);
+            }
+
             foreach(Approvalsetting::where("jenismenu", "RKA")->get() as $appr){
                 Approval::create([
                     "no_seq" => $appr->no_seq,
@@ -445,7 +504,7 @@ class KegiatanController extends Controller
 
             return response()->json([
                 'status' => 201,
-                'message' => 'Created with id '.$id,
+                'message' => 'Created with id '.$id." ".$lpjopen,
                 'data' => ['id' => $id]
             ]);
         }
@@ -585,6 +644,18 @@ class KegiatanController extends Controller
             $child_tb_request->validate($rules_ct3_outputrka, $ct_messages);
         }
 
+        $rules_ct4_detailkegiatan = $page_data["fieldsrules_ct4_detailkegiatan"];
+        $requests_ct4_detailkegiatan = json_decode($request->ct4_detailkegiatan, true);
+        foreach($requests_ct4_detailkegiatan as $ct_request){
+            $child_tb_request = new \Illuminate\Http\Request();
+            $child_tb_request->replace($ct_request);
+            $ct_messages = array();
+            foreach($page_data["fieldsmessages_ct4_detailkegiatan"] as $key => $value){
+                $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
+            }
+            $child_tb_request->validate($rules_ct4_detailkegiatan, $ct_messages);
+        }
+
         $rules = $page_data["fieldsrules"];
         $messages = $page_data["fieldsmessages"];
         if($request->validate($rules, $messages)){
@@ -593,8 +664,8 @@ class KegiatanController extends Controller
                 "unit_pelaksana_label"=> $request->unit_pelaksana_label,
                 "tahun"=> $request->tahun,
                 "tahun_label"=> $request->tahun_label,
-                "iku"=> $request->iku,
-                "iku_label"=> $request->iku_label,
+                "programkerja"=> $request->programkerja,
+                "programkerja_label"=> $request->programkerja_label,
                 "kegiatan_name"=> $request->kegiatan_name,
                 "Deskripsi"=> $request->Deskripsi == ''?null:$request->Deskripsi,
                 "output"=> $request->output == ''?null:$request->output,
@@ -604,7 +675,6 @@ class KegiatanController extends Controller
             ]);
 
             $new_menu_field_ids = array();
-            // dd($requests_ct1_detailbiayakegiatan);
             foreach($requests_ct1_detailbiayakegiatan as $ct_request){
                 
                 if(isset($ct_request["id"]) && $ct_request["id"] != ""){
@@ -688,7 +758,53 @@ class KegiatanController extends Controller
                     Outputrka::whereId($ch->id)->delete();
                 }
             }
-    
+            
+            $new_menu_field_ids = array();
+            foreach($requests_ct4_detailkegiatan as $ct_request){
+                if(isset($ct_request["id"]) && $ct_request["id"] != ""){
+                    Detailkegiatan::where("id", $ct_request["id"])->update([
+                        "no_seq" => $ct_request["no_seq"],
+                        "parent_id" => $id,
+                        "detailbiayaproker_name" => $ct_request["detailbiayaproker_name"],
+                        "deskripsibiaya" => $ct_request["deskripsibiaya"],
+                        "standarbiaya" => $ct_request["standarbiaya"],
+                        "volume" => $ct_request["volume"],
+                        "satuan" => $ct_request["satuan"],
+                        "satuan_label" => $ct_request["satuan_label"],
+                        "status" => $ct_request["status"],
+                        "komentarrevisi" => $ct_request["komentarrevisi"],
+                        "user_updater_id" => Auth::user()->id
+                    ]);
+                }else{
+                    $idct = Detailkegiatan::create([
+                        "no_seq" => $ct_request["no_seq"],
+                        "parent_id" => $id,
+                        "detailbiayaproker_name" => $ct_request["detailbiayaproker_name"],
+                        "deskripsibiaya" => $ct_request["deskripsibiaya"],
+                        "standarbiaya" => $ct_request["standarbiaya"],
+                        "volume" => $ct_request["volume"],
+                        "satuan" => $ct_request["satuan"],
+                        "satuan_label" => $ct_request["satuan_label"],
+                        "status" => $ct_request["status"],
+                        "komentarrevisi" => $ct_request["komentarrevisi"],
+                        "user_creator_id" => Auth::user()->id
+                    ])->id;
+                    array_push($new_menu_field_ids, $idct);
+                }
+            }
+
+            foreach(Detailkegiatan::whereParentId($id)->get() as $ch){
+                $is_still_exist = false;
+                foreach($requests_ct4_detailkegiatan as $ct_request){
+                    if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
+                        $is_still_exist = true;
+                    }
+                }
+                if(!$is_still_exist){
+                    Detailkegiatan::whereId($ch->id)->delete();
+                }
+            }
+
             return response()->json([
                 'status' => 201,
                 'message' => 'Id '.$id.' is updated',
@@ -734,7 +850,6 @@ class KegiatanController extends Controller
             ]);
         } else {
             Kegiatan::where("id", $id)->update([
-                "tanggal_pencairan"=> $request->tanggal_pencairan,
                 "status" => "submitting"
             ]);
             
@@ -792,6 +907,18 @@ class KegiatanController extends Controller
                 $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
             }
             $child_tb_request->validate($rules_ct3_outputrka, $ct_messages);
+        }
+
+        $rules_ct4_detailkegiatan = $page_data["fieldsrules_ct4_detailkegiatan"];
+        $requests_ct4_detailkegiatan = json_decode($request->ct4_detailkegiatan, true);
+        foreach($requests_ct4_detailkegiatan as $ct_request){
+            $child_tb_request = new \Illuminate\Http\Request();
+            $child_tb_request->replace($ct_request);
+            $ct_messages = array();
+            foreach($page_data["fieldsmessages_ct4_detailkegiatan"] as $key => $value){
+                $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
+            }
+            $child_tb_request->validate($rules_ct4_detailkegiatan, $ct_messages);
         }
 
         //update
@@ -877,6 +1004,35 @@ class KegiatanController extends Controller
             ])->id;
             array_push($new_menu_field_ids, $idct);
         }
+
+        //update
+        //hapus yang lama jika ada
+        Detailkegiatan::where("parent_id", $id)->where("isarchived", "on")->where("archivedby", Auth::user()->role)->delete();
+
+        //jika belum pernah, maka update archived
+        Detailkegiatan::where("parent_id", $id)->whereNull("isarchived")->whereNull("archivedby")->update([
+            "isarchived" => "on",
+            "user_updater_id" => Auth::user()->id
+        ]);
+        $new_menu_field_ids = array();
+        foreach($requests_ct4_detailkegiatan as $ct_request){
+            $idct = Detailkegiatan::create([
+                "no_seq" => $ct_request["no_seq"],
+                "parent_id" => $id,
+                "detailbiayaproker_name" => $ct_request["detailbiayaproker_name"],
+                "deskripsibiaya" => $ct_request["deskripsibiaya"],
+                "standarbiaya" => $ct_request["standarbiaya"],
+                "volume" => $ct_request["volume"],
+                "satuan" => $ct_request["satuan"],
+                "satuan_label" => $ct_request["satuan_label"],
+                "status" => $ct_request["status"],
+                "komentarrevisi" => $ct_request["komentarrevisi"],
+                "user_creator_id" => Auth::user()->id,
+                "isarchived" => "on",
+                "archivedby" => Auth::user()->role,
+            ])->id;
+            array_push($new_menu_field_ids, $idct);
+        }
     }
 
     /**
@@ -931,14 +1087,14 @@ class KegiatanController extends Controller
         $rl = Auth::user()->role_label;
         $pass = Approvalsetting::where("jenismenu", "RKA")->where("role", Auth::user()->role)->first();
         foreach(Kegiatan::where(function($q) use ($keyword) {
-            $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+            $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("programkerja_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
         })->where(function($q) use ($ukl, $rl, $pass){
             if($rl != 'admin' && $rl != 'Administrator' && !$pass){
                 if($ukl){
                     $q->where("unit_pelaksana", $ukl);
                 }
             }
-        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "kode_anggaran", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status", "user_creator_id"]) as $kegiatan){
+        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "kode_anggaran", "unit_pelaksana_label", "tanggal","tahun_label", "programkerja_label", "kegiatan_name", "output", "status", "user_creator_id"]) as $kegiatan){
             $no = $no+1;
             $act = '';
             
@@ -1010,7 +1166,7 @@ class KegiatanController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Kegiatan::get()->count(),
             "recordsFiltered" => intval(Kegiatan::where(function($q) use ($keyword) {
-                $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+                $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("programkerja_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
@@ -1042,14 +1198,14 @@ class KegiatanController extends Controller
         $rl = Auth::user()->role_label;
         $pass = Approvalsetting::where("jenismenu", "RKA")->where("role", Auth::user()->role)->first();
         foreach(Kegiatan::where(function($q) use ($keyword) {
-            $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+            $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("programkerja_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
         })->where(function($q) use ($ukl, $rl, $pass){
             if($rl != 'admin' && $rl != 'Administrator' && !$pass){
                 if($ukl){
                     $q->where("unit_pelaksana", $ukl);
                 }
             }
-        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "kode_anggaran", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status", "user_creator_id"]) as $kegiatan){
+        })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "kode_anggaran", "unit_pelaksana_label", "tanggal","tahun_label", "programkerja_label", "kegiatan_name", "output", "status", "user_creator_id"]) as $kegiatan){
             $no = $no+1;
             $act = '';
             
@@ -1114,7 +1270,7 @@ class KegiatanController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Kegiatan::get()->count(),
             "recordsFiltered" => intval(Kegiatan::where(function($q) use ($keyword) {
-                $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+                $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("programkerja_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
@@ -1218,7 +1374,7 @@ class KegiatanController extends Controller
         $rl = Auth::user()->role_label;
         $pass = Approvalsetting::where("jenismenu", "RKA")->where("role", Auth::user()->role)->first();
         foreach(Kegiatan::where(function($q) use ($keyword) {
-            $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+            $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("programkerja_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
         })->where(function($q) use ($ukl, $rl, $pass){
             if($rl != 'admin' && $rl != 'Administrator' && !$pass){
                 if($ukl){
@@ -1227,7 +1383,7 @@ class KegiatanController extends Controller
             }
         })
         ->whereIn('status', array('process', 'approving', 'approved'))
-        ->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "kode_anggaran", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status"]) as $kegiatan){
+        ->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "kode_anggaran", "unit_pelaksana_label", "tanggal","tahun_label", "programkerja_label", "kegiatan_name", "output", "status"]) as $kegiatan){
             $no = $no+1;
             $status = $this->status($kegiatan->status);
             $act = $this->action($kegiatan);
@@ -1240,7 +1396,7 @@ class KegiatanController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Kegiatan::get()->count(),
             "recordsFiltered" => intval(Kegiatan::where(function($q) use ($keyword) {
-                $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+                $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("programkerja_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
@@ -1272,7 +1428,7 @@ class KegiatanController extends Controller
         $rl = Auth::user()->role_label;
         $pass = Approvalsetting::where("jenismenu", "pengajuan")->where("role", Auth::user()->role)->first();
         foreach(Kegiatan::where(function($q) use ($keyword) {
-            $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+            $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("programkerja_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
         })->where(function($q) use ($ukl, $rl, $pass){
             if($rl != 'admin' && $rl != 'Administrator' && !$pass){
                 if($ukl){
@@ -1281,7 +1437,7 @@ class KegiatanController extends Controller
             }
         })
         ->whereIn('status', array('approved','submitting', 'submitted'))
-        ->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "kode_anggaran", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status"]) as $kegiatan){
+        ->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "kode_anggaran", "unit_pelaksana_label", "tanggal","tahun_label", "programkerja_label", "kegiatan_name", "output", "status"]) as $kegiatan){
             $no = $no+1;
             $act = '
             <a href="/pengajuan/'.$kegiatan->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
@@ -1301,7 +1457,7 @@ class KegiatanController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Kegiatan::get()->count(),
             "recordsFiltered" => intval(Kegiatan::where(function($q) use ($keyword) {
-                $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+                $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("programkerja_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
@@ -1333,14 +1489,14 @@ class KegiatanController extends Controller
         $rl = Auth::user()->role_label;
         $pass = Approvalsetting::where("jenismenu", "PJK")->where("role", Auth::user()->role)->first();
         foreach(Kegiatan::where(function($q) use ($keyword) {
-            $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+            $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("programkerja_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
         })->where(function($q) use ($ukl, $rl, $pass){
             if($rl != 'admin' && $rl != 'Administrator' && !$pass && $rl != 'lpm'){
                 if($ukl){
                     $q->where("unit_pelaksana", $ukl);
                 }
             }
-        })->whereIn("status", ["finish", "paid"])->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "kode_anggaran", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status", "user_creator_id"]) as $kegiatan){
+        })->whereIn("status", ["finish", "paid"])->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "kode_anggaran", "unit_pelaksana_label", "tanggal","tahun_label", "programkerja_label", "kegiatan_name", "output", "status", "user_creator_id"]) as $kegiatan){
             $no = $no+1;
             $act = '';
             
@@ -1413,7 +1569,7 @@ class KegiatanController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Kegiatan::get()->count(),
             "recordsFiltered" => intval(Kegiatan::where(function($q) use ($keyword) {
-                $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+                $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("programkerja_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
             })->whereIn("status", ["finish", "paid"])->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
@@ -1452,7 +1608,7 @@ class KegiatanController extends Controller
         $dt = array();
         $no = 0;
         foreach(Kegiatan::where(function($q) use ($keyword) {
-            $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+            $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("programkerja_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
         })
         ->where(function($q) use ($unit_pelaksana) {
             if(isset($unit_pelaksana)){
@@ -1476,7 +1632,7 @@ class KegiatanController extends Controller
         //     }
         // })
         ->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])
-        ->get(["id", "kode_anggaran", "unit_pelaksana_label", "tanggal","tahun_label", "iku_label", "kegiatan_name", "output", "status"]) as $kegiatan){
+        ->get(["id", "kode_anggaran", "unit_pelaksana_label", "tanggal","tahun_label", "programkerja_label", "kegiatan_name", "output", "status"]) as $kegiatan){
             $no = $no+1;
             $status = $this->status($kegiatan->status);
             
@@ -1501,7 +1657,7 @@ class KegiatanController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => Kegiatan::get()->count(),
             "recordsFiltered" => intval(Kegiatan::where(function($q) use ($keyword) {
-                $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("iku_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+                $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("programkerja_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
@@ -1560,6 +1716,15 @@ class KegiatanController extends Controller
                     $ct3_outputrkas = Outputrka::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get();
                 }
             }
+
+            $ct4_detailkegiatans = Detailkegiatan::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+
+            foreach(Approval::where("parent_id", $request->id)->where("jenismenu", "RKA")->orderBy("no_seq", "desc")->get() as $app){
+                $ok = Detailkegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                if($ok){
+                    $ct4_detailkegiatans = Detailkegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get();
+                }
+            }
             
             $ct2_approvals = Approval::whereParentId($request->id)->where("jenismenu", "RKA")->get();
 
@@ -1570,7 +1735,29 @@ class KegiatanController extends Controller
                     "ct1_detailbiayakegiatan" => $ct1_detailbiayakegiatans,
                     "ct2_approval" => $ct2_approvals,
                     "ct3_outputrka" => $ct3_outputrkas,
+                    "ct4_detailkegiatan" => $ct4_detailkegiatans,
                     "kegiatan" => $kegiatan
+                ]
+            );
+
+            return response()->json($results);
+        }
+    }
+
+    public function getdatadetailkegiatan(Request $request){
+        if($request->ajax() || $request->wantsJson()){
+            $programkerja = Programkerja::whereId($request->programkerja)->first();
+            if(!$programkerja){
+                abort(404, "Data not found");
+            }
+
+            $ct4_detailkegiatans = Detailbiayaproker::whereParentId($request->programkerja)->orderBy("no_seq")->get();
+
+            $results = array(
+                "status" => 201,
+                "message" => "Data available",
+                "data" => [
+                    "ct4_detailkegiatan" => $ct4_detailkegiatans,
                 ]
             );
 
@@ -1617,6 +1804,15 @@ class KegiatanController extends Controller
                 }
             }
 
+            $ct4_detailkegiatans = Detailkegiatan::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+
+            foreach(Approval::where("parent_id", $request->id)->where("jenismenu", "RKA")->orderBy("no_seq", "desc")->get() as $app){
+                $ok = Detailkegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                if($ok){
+                    $ct4_detailkegiatans = Detailkegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get();
+                }
+            }
+
             $ct2_approvals = Approval::whereParentId($request->id)->where("jenismenu", "pengajuan")->get();
 
             $results = array(
@@ -1626,6 +1822,7 @@ class KegiatanController extends Controller
                     "ct1_detailbiayakegiatan" => $ct1_detailbiayakegiatans,
                     "ct2_approval" => $ct2_approvals,
                     "ct3_outputrka" => $ct3_outputrkas,
+                    "ct4_detailkegiatan" => $ct4_detailkegiatans,
                     "kegiatan" => $kegiatan
                 ]
             );
@@ -1669,6 +1866,16 @@ class KegiatanController extends Controller
                     $q->where("coa_name", "ILIKE", "%" . $request->term. "%");
                 })->whereNull("fheader")->whereIn("category", ["biaya", "biaya_lainnya"])->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("concat(concat(coa_code, ' '), coa_name) as text")]);
                 $count = Coa::count();
+            }elseif($request->field == "programkerja"){
+                $lists = Programkerja::where(function($q) use ($request) {
+                    $q->where("programkerja_name", "ILIKE", "%" . $request->term. "%");
+                })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("programkerja_name as text")]);
+                $count = Programkerja::count();
+            }elseif($request->field == "satuan"){
+                $lists = Satuan::where(function($q) use ($request) {
+                    $q->where("satuan_name", "ILIKE", "%" . $request->term. "%");
+                })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("satuan_name as text")]);
+                $count = Satuan::count();
             }
 
             $endCount = $offset + $resultCount;
@@ -2182,6 +2389,18 @@ class KegiatanController extends Controller
             $child_tb_request->validate($rules_ct1_detailbiayapjk, $ct_messages);
         }
 
+        $rules_ct4_detailkegiatan = $page_data["fieldsrules_ct4_detailkegiatan"];
+        $requests_ct4_detailkegiatan = json_decode($request->ct4_detailkegiatan, true);
+        foreach($requests_ct4_detailkegiatan as $ct_request){
+            $child_tb_request = new \Illuminate\Http\Request();
+            $child_tb_request->replace($ct_request);
+            $ct_messages = array();
+            foreach($page_data["fieldsmessages_ct4_detailkegiatan"] as $key => $value){
+                $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
+            }
+            $child_tb_request->validate($rules_ct4_detailkegiatan, $ct_messages);
+        }
+
         $rules = $page_data["fieldsrules"];
         $messages = $page_data["fieldsmessages"];
         Pjk::where("id", $thispjk->id)->update([
@@ -2293,6 +2512,52 @@ class KegiatanController extends Controller
             }
         }
 
+        $new_menu_field_ids = array();
+        foreach($requests_ct4_detailkegiatan as $ct_request){
+            if(isset($ct_request["id"]) && $ct_request["id"] != ""){
+                Detailpjk::where("id", $ct_request["id"])->update([
+                    "no_seq" => $ct_request["no_seq"],
+                    "parent_id" => $thispjk->id,
+                    "detailbiayaproker_name" => $ct_request["detailbiayaproker_name"],
+                    "deskripsibiaya" => $ct_request["deskripsibiaya"],
+                    "standarbiaya" => $ct_request["standarbiaya"],
+                    "volume" => $ct_request["volume"],
+                    "satuan" => $ct_request["satuan"],
+                    "satuan_label" => $ct_request["satuan_label"],
+                    'kegiatan_id' => $id,
+                    "desc_detail" => $ct_request["desc_detail"],
+                    "user_updater_id" => Auth::user()->id
+                ]);
+            }else{
+                $idct = Detailpjk::create([
+                    "no_seq" => $ct_request["no_seq"],
+                    "parent_id" => $thispjk->id,
+                    "detailbiayaproker_name" => $ct_request["detailbiayaproker_name"],
+                    "deskripsibiaya" => $ct_request["deskripsibiaya"],
+                    "standarbiaya" => $ct_request["standarbiaya"],
+                    "volume" => $ct_request["volume"],
+                    "satuan" => $ct_request["satuan"],
+                    "satuan_label" => $ct_request["satuan_label"],
+                    'kegiatan_id' => $id,
+                    "desc_detail" => $ct_request["desc_detail"],
+                    "user_creator_id" => Auth::user()->id
+                ])->id;
+                array_push($new_menu_field_ids, $idct);
+            }
+        }
+
+        foreach(Detailpjk::whereParentId($id)->get() as $ch){
+            $is_still_exist = false;
+            foreach($requests_ct4_detailkegiatan as $ct_request){
+                if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
+                    $is_still_exist = true;
+                }
+            }
+            if(!$is_still_exist){
+                Detailpjk::whereId($ch->id)->delete();
+            }
+        }
+
         return response()->json([
             'status' => 201,
             'message' => 'Id '.$id.' is updated',
@@ -2319,16 +2584,40 @@ class KegiatanController extends Controller
             $child_tb_request->validate($rules_ct1_detailbiayapjk, $ct_messages);
         }
 
+        $rules_ct3_outputrka = $page_data["fieldsrules_ct3_outputrka"];
+        $requests_ct3_outputrka = json_decode($request->ct3_outputrka, true);
+        foreach($requests_ct3_outputrka as $ct_request){
+            $child_tb_request = new \Illuminate\Http\Request();
+            $child_tb_request->replace($ct_request);
+            $ct_messages = array();
+            foreach($page_data["fieldsmessages_ct3_outputrka"] as $key => $value){
+                $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
+            }
+            $child_tb_request->validate($rules_ct3_outputrka, $ct_messages);
+        }
+
+        $rules_ct4_detailkegiatan = $page_data["fieldsrules_ct4_detailkegiatan"];
+        $requests_ct4_detailkegiatan = json_decode($request->ct4_detailkegiatan, true);
+        foreach($requests_ct4_detailkegiatan as $ct_request){
+            $child_tb_request = new \Illuminate\Http\Request();
+            $child_tb_request->replace($ct_request);
+            $ct_messages = array();
+            foreach($page_data["fieldsmessages_ct4_detailkegiatan"] as $key => $value){
+                $ct_messages[$key] = "No ".$ct_request["no_seq"]." ".$value;
+            }
+            $child_tb_request->validate($rules_ct4_detailkegiatan, $ct_messages);
+        }
+
         $rules = $page_data["fieldsrules"];
         $messages = $page_data["fieldsmessages"];
         if($request->validate($rules, $messages)){
-            $pjkid = pjk::create([
+            $pjkid = Pjk::create([
                 "unit_pelaksana"=> $request->unit_pelaksana,
                 "unit_pelaksana_label"=> $request->unit_pelaksana_label,
                 "tahun"=> $request->tahun,
                 "tahun_label"=> $request->tahun_label,
-                "iku"=> $request->iku,
-                "iku_label"=> $request->iku_label,
+                "programkerja"=> $request->programkerja,
+                "programkerja_label"=> $request->programkerja_label,
                 "kegiatan_name"=> $request->kegiatan_name,
                 "Deskripsi"=> $request->Deskripsi,
                 "output"=> $request->output,
@@ -2366,56 +2655,83 @@ class KegiatanController extends Controller
                 ]);
             }
 
-            $requests_ct3_outputlpj = json_decode($request->ct3_outputlpj, true);
+            $requests_ct3_outputrka = json_decode($request->ct3_outputrka, true);
             $new_menu_field_ids = array();
-            foreach($requests_ct3_outputlpj as $ct_request){
-                if(isset($ct_request["id"]) && $ct_request["id"] != ""){
-                    Outputlpj::where("id", $ct_request["id"])->update([
-                        "no_seq" => $ct_request["no_seq"],
-                        "parent_id" => $pjkid,
-                        "iku"=> $ct_request["iku"],
-                        "iku_label"=> $ct_request["iku_label"],
-                        "indikator"=> $ct_request["indikator"],
-                        "keterangan"=> $ct_request["keterangan"],
-                        "target"=> $ct_request["target"],
-                        "satuan_target"=> $ct_request["satuan_target"],
-                        "realisasi" => $ct_request["realisasi"],
-                        "satuan_realisasi" => $ct_request["satuan_realisasi"],
-                        "file_bukti" => $ct_request["file_bukti"],
-                        "link_bukti" => $ct_request["link_bukti"],
-                        "hasil_pencapaian" => $ct_request["hasil_pencapaian"],
-                        "user_updater_id" => Auth::user()->id
-                    ]);
-                }else{
-                    $idct = Outputlpj::create([
-                        "no_seq" => $ct_request["no_seq"],
-                        "parent_id" => $pjkid,
-                        "iku"=> $ct_request["iku"],
-                        "iku_label"=> $ct_request["iku_label"],
-                        "indikator"=> $ct_request["indikator"],
-                        "keterangan"=> $ct_request["keterangan"],
-                        "target"=> $ct_request["target"],
-                        "satuan_target"=> $ct_request["satuan_target"],
-                        "realisasi" => $ct_request["realisasi"],
-                        "satuan_realisasi" => $ct_request["satuan_realisasi"],
-                        "file_bukti" => $ct_request["file_bukti"],
-                        "link_bukti" => $ct_request["link_bukti"],
-                        "hasil_pencapaian" => $ct_request["hasil_pencapaian"],
-                        "user_creator_id" => Auth::user()->id
-                    ])->id;
-                    array_push($new_menu_field_ids, $idct);
-                }
+            foreach($requests_ct3_outputrka as $ct_request){
+                $idct = Outputlpj::create([
+                    "no_seq" => $ct_request["no_seq"],
+                    "parent_id" => $pjkid,
+                    "iku"=> $ct_request["iku"],
+                    "iku_label"=> $ct_request["iku_label"],
+                    "indikator"=> $ct_request["indikator"],
+                    "keterangan"=> $ct_request["keterangan"],
+                    "target"=> $ct_request["target"],
+                    "satuan_target"=> $ct_request["satuan_target"],
+                    "realisasi" => $ct_request["realisasi"],
+                    "satuan_realisasi" => $ct_request["satuan_realisasi"],
+                    "file_bukti" => $ct_request["file_bukti"],
+                    "link_bukti" => $ct_request["link_bukti"],
+                    "hasil_pencapaian" => $ct_request["hasil_pencapaian"],
+                    "user_creator_id" => Auth::user()->id
+                ])->id;
+                array_push($new_menu_field_ids, $idct);
             }
 
             foreach(Outputlpj::whereParentId($id)->get() as $ch){
                 $is_still_exist = false;
-                foreach($requests_ct3_outputlpj as $ct_request){
+                foreach($requests_ct3_outputrka as $ct_request){
                     if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
                         $is_still_exist = true;
                     }
                 }
                 if(!$is_still_exist){
                     Outputlpj::whereId($ch->id)->delete();
+                }
+            }
+
+            $new_menu_field_ids = array();
+            foreach($requests_ct4_detailkegiatan as $ct_request){
+                if(isset($ct_request["id"]) && $ct_request["id"] != ""){
+                    Detailpjk::where("id", $ct_request["id"])->update([
+                        "no_seq" => $ct_request["no_seq"],
+                        "parent_id" => $pjkid,
+                        "detailbiayaproker_name" => $ct_request["detailbiayaproker_name"],
+                        "deskripsibiaya" => $ct_request["deskripsibiaya"],
+                        "standarbiaya" => $ct_request["standarbiaya"],
+                        "volume" => $ct_request["volume"],
+                        "satuan" => $ct_request["satuan"],
+                        "satuan_label" => $ct_request["satuan_label"],
+                        'kegiatan_id' => $id,
+                        "desc_detail" => $ct_request["desc_detail"],
+                        "user_updater_id" => Auth::user()->id
+                    ]);
+                }else{
+                    $idct = Detailpjk::create([
+                        "no_seq" => $ct_request["no_seq"],
+                        "parent_id" => $pjkid,
+                        "detailbiayaproker_name" => $ct_request["detailbiayaproker_name"],
+                        "deskripsibiaya" => $ct_request["deskripsibiaya"],
+                        "standarbiaya" => $ct_request["standarbiaya"],
+                        "volume" => $ct_request["volume"],
+                        "satuan" => $ct_request["satuan"],
+                        "satuan_label" => $ct_request["satuan_label"],
+                        'kegiatan_id' => $id,
+                        "desc_detail" => $ct_request["desc_detail"],
+                        "user_creator_id" => Auth::user()->id
+                    ])->id;
+                    array_push($new_menu_field_ids, $idct);
+                }
+            }
+
+            foreach(Detailpjk::whereParentId($id)->get() as $ch){
+                $is_still_exist = false;
+                foreach($requests_ct4_detailkegiatan as $ct_request){
+                    if($ch->id == $ct_request["id"] || in_array($ch->id, $new_menu_field_ids)){
+                        $is_still_exist = true;
+                    }
+                }
+                if(!$is_still_exist){
+                    Detailpjk::whereId($ch->id)->delete();
                 }
             }
 
@@ -2476,10 +2792,19 @@ class KegiatanController extends Controller
 
                 $ct3_outputrkas = Outputlpj::whereParentId($pjk->id)->whereNull("isarchived")->orderBy("no_seq")->get();
 
-                foreach(Approval::where("parent_id", $pjk->id)->where("jenismenu", "LPJ")->orderBy("no_seq", "desc")->get() as $app){
+                foreach(Approval::where("parent_id", $pjk->id)->where("jenismenu", "PJK")->orderBy("no_seq", "desc")->get() as $app){
                     $ok = Outputlpj::whereParentId($pjk->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
                     if($ok){
                         $ct3_outputrkas = Outputlpj::whereParentId($pjk->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get();
+                    }
+                }
+
+                $ct4_detailkegiatans = Detailpjk::whereParentId($pjk->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+
+                foreach(Approval::where("parent_id", $pjk->id)->where("jenismenu", "PJK")->orderBy("no_seq", "desc")->get() as $app){
+                    $dtbk = Detailpjk::whereParentId($pjk->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                    if($dtbk){
+                        $ct4_detailkegiatans = Detailpjk::whereParentId($pjk->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get();
                     }
                 }
             
@@ -2493,7 +2818,8 @@ class KegiatanController extends Controller
                         "ct1_detailbiayakegiatan" => $ct1_detailbiayakegiatans,
                         "ct2_approval" => $ct2_approvals,
                         "ct3_outputrka" => $ct3_outputrkas,
-                        "kegiatan" => $pjk
+                        "kegiatan" => $pjk,
+                        "ct4_detailkegiatan" => $ct4_detailkegiatans
                     ]
                 );
             }else{
@@ -2515,6 +2841,15 @@ class KegiatanController extends Controller
                     }
                 }
 
+                $ct4_detailkegiatans = Detailkegiatan::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+
+                foreach(Approval::where("parent_id", $request->id)->where("jenismenu", "RKA")->orderBy("no_seq", "desc")->get() as $app){
+                    $dtbk = Detailkegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                    if($dtbk){
+                        $ct4_detailkegiatans = Detailkegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get();
+                    }
+                }
+
                 $ct2_approvals = [];
 
                 $results = array(
@@ -2524,7 +2859,8 @@ class KegiatanController extends Controller
                         "ct1_detailbiayakegiatan" => $ct1_detailbiayakegiatans,
                         "ct2_approval" => $ct2_approvals,
                         "ct3_outputrka" => $ct3_outputrkas,
-                        "kegiatan" => $kegiatan
+                        "kegiatan" => $kegiatan,
+                        "ct4_detailkegiatan" => $ct4_detailkegiatans
                     ]
                 );
             }
@@ -2735,6 +3071,290 @@ class KegiatanController extends Controller
                 );
     
                 return response()->json($results);
+
+            }
+        }
+    }
+
+    public function checklpjopen(Request $request){
+        if($request->ajax() || $request->wantsJson()){
+            if(isset($request->tanggal_kegiatan) && isset($request->unit_pelaksana)){
+                $tahun = explode("/", $request->tanggal_kegiatan)[2];
+                $tahun = ((int) $tahun)-1;
+                $valplafon = 0;
+                $valprocess = 0;
+                $valapproved = 0;
+                $valsubmitted = 0;
+                $valpaid = 0;
+                $valpjkprocess = 0;
+                $valpjkapproved = 0;
+                $valsisa = 0;
+
+                foreach(Kegiatan::where("unit_pelaksana", $request->unit_pelaksana)->whereBetween("tanggal", [$tahun."-01-01", $tahun."-12-31"])->where("user_creator_id", Auth::user()->id)->get() as $keg){
+                    if($keg->status == "process" || $keg->status == "approving"){
+                        $nom = 0;
+                        foreach(Detailbiayakegiatan::whereParentId($keg->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                            $nom += $det->nominalbiaya;
+                        }
+
+                        foreach(Approval::where("parent_id", $keg->id)->where("jenismenu", "RKA")->whereNotNull("status_approval")->orderBy("no_seq", "desc")->get() as $app){
+                            $dtbk = Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                            $nom = 0;
+                            if($dtbk){
+                                foreach(Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                    $nom += $det->nominalbiaya;
+                                }
+                            }
+                        }
+                        
+
+                        $valprocess = $valprocess+$nom;
+                    }elseif($keg->status == "approved" || $keg->status == "submitting"){
+                        $nom = 0;
+                        foreach(Detailbiayakegiatan::whereParentId($keg->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                            $nom += $det->nominalbiaya;
+                        }
+
+                        foreach(Approval::where("parent_id", $keg->id)->where("jenismenu", "RKA")->whereNotNull("status_approval")->orderBy("no_seq", "desc")->get() as $app){
+                            $dtbk = Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                            $nom = 0;
+                            if($dtbk){
+                                foreach(Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                    $nom += $det->nominalbiaya;
+                                }
+                            }
+                        }
+
+                        $valapproved = $valapproved+$nom;
+                    }elseif($keg->status == "submitted"){
+                        $nom = 0;
+                        foreach(Detailbiayakegiatan::whereParentId($keg->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                            $nom += $det->nominalbiaya;
+                        }
+
+                        foreach(Approval::where("parent_id", $keg->id)->where("jenismenu", "RKA")->whereNotNull("status_approval")->orderBy("no_seq", "desc")->get() as $app){
+                            $dtbk = Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                            $nom = 0;
+                            if($dtbk){
+                                foreach(Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                    $nom += $det->nominalbiaya;
+                                }
+                            }
+                        }
+
+                        $valsubmitted = $valsubmitted+$nom;
+                    }elseif($keg->status == "paid"){
+                        $pjk = Pjk::where("kegiatan_id", $keg->id)->first();
+                        if(!$pjk){
+                            $nom = 0;
+                            foreach(Detailbiayakegiatan::whereParentId($keg->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                                $nom += $det->nominalbiaya;
+                            }
+
+                            foreach(Approval::where("parent_id", $keg->id)->where("jenismenu", "RKA")->whereNotNull("status_approval")->orderBy("no_seq", "desc")->get() as $app){
+                                $dtbk = Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                                $nom = 0;
+                                if($dtbk){
+                                    foreach(Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                        $nom += $det->nominalbiaya;
+                                    }
+                                }
+                            }
+
+                            $valpaid = $valpaid+$nom;
+                        }elseif($pjk->status == "process" || $pjk->status == "approving"){
+                            $nom = 0;
+                            foreach(Detailbiayapjk::whereParentId($pjk->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                                $nom += $det->nominalbiaya;
+                            }
+
+                            foreach(Approval::where("parent_id", $pjk->id)->where("jenismenu", "PJK")->orderBy("no_seq", "desc")->get() as $app){
+                                $dtbk = Detailbiayapjk::whereParentId($pjk->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                                $nom = 0;
+                                if($dtbk){
+                                    foreach(Detailbiayapjk::whereParentId($pjk->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                        $nom += $det->nominalbiaya;
+                                    }
+                                }
+                            }
+
+                            $valpjkprocess = $valpjkprocess+$nom;
+                        }elseif($pjk->status == "approved"){
+                            $nom = 0;
+                            foreach(Detailbiayapjk::whereParentId($pjk->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                                $nom += $det->nominalbiaya;
+                            }
+
+                            foreach(Approval::where("parent_id", $pjk->id)->where("jenismenu", "PJK")->orderBy("no_seq", "desc")->get() as $app){
+                                $dtbk = Detailbiayapjk::whereParentId($pjk->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                                $nom = 0;
+                                if($dtbk){
+                                    foreach(Detailbiayapjk::whereParentId($pjk->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                        $nom += $det->nominalbiaya;
+                                    }
+                                }
+                            }
+
+                            $valpjkapproved = $valpjkapproved+$nom;
+                        }
+                        
+                    }
+                }
+
+                $valsisa = $valprocess+$valapproved+$valsubmitted+$valpaid+$valpjkprocess;
+                return $valsisa;
+            }
+        }
+    }
+
+    public function getdatakegiatanplafon2(Request $request){
+        if($request->ajax() || $request->wantsJson()){
+            if(isset($request->tanggal_kegiatan) && isset($request->unit_pelaksana)){
+                $valplafon = 0;
+                $valprocess = 0;
+                $valapproved = 0;
+                $valsubmitted = 0;
+                $valpaid = 0;
+                $valpjkprocess = 0;
+                $valpjkapproved = 0;
+                $valsisa = 0;
+
+                $tahun = explode("/", $request->tanggal_kegiatan)[2];
+                $sett = Settingpagupendapatan::where("tahun", $tahun)->orderBy("id", "desc")->first();
+                if($sett){
+                    $nilaipagu = Nilaipagu::where("parent_id", $sett->id)->where("unitkerja", $request->unit_pelaksana)->first();
+                    if($nilaipagu){
+                        $valplafon = $nilaipagu->maxbiaya;
+                    }
+                }
+
+                foreach(Kegiatan::where("unit_pelaksana", $request->unit_pelaksana)->whereBetween("tanggal", [$tahun."-01-01", $tahun."-12-31"])->get() as $keg){
+                    if($keg->status == "process" || $keg->status == "approving"){
+                        $nom = 0;
+                        foreach(Detailbiayakegiatan::whereParentId($keg->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                            $nom += $det->nominalbiaya;
+                        }
+
+                        foreach(Approval::where("parent_id", $keg->id)->where("jenismenu", "RKA")->whereNotNull("status_approval")->orderBy("no_seq", "desc")->get() as $app){
+                            $dtbk = Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                            $nom = 0;
+                            if($dtbk){
+                                foreach(Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                    $nom += $det->nominalbiaya;
+                                }
+                            }
+                        }
+
+                        $valprocess = $valprocess+$nom;
+                    }elseif($keg->status == "approved" || $keg->status == "submitting"){
+                        $nom = 0;
+                        foreach(Detailbiayakegiatan::whereParentId($keg->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                            $nom += $det->nominalbiaya;
+                        }
+
+                        foreach(Approval::where("parent_id", $keg->id)->where("jenismenu", "RKA")->whereNotNull("status_approval")->orderBy("no_seq", "desc")->get() as $app){
+                            $dtbk = Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                            $nom = 0;
+                            if($dtbk){
+                                foreach(Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                    $nom += $det->nominalbiaya;
+                                }
+                            }
+                        }
+
+                        $valapproved = $valapproved+$nom;
+                    }elseif($keg->status == "submitted"){
+                        $nom = 0;
+                        foreach(Detailbiayakegiatan::whereParentId($keg->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                            $nom += $det->nominalbiaya;
+                        }
+
+                        foreach(Approval::where("parent_id", $keg->id)->where("jenismenu", "RKA")->whereNotNull("status_approval")->orderBy("no_seq", "desc")->get() as $app){
+                            $dtbk = Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                            $nom = 0;
+                            if($dtbk){
+                                foreach(Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                    $nom += $det->nominalbiaya;
+                                }
+                            }
+                        }
+
+                        $valsubmitted = $valsubmitted+$nom;
+                    }elseif($keg->status == "paid"){
+                        $pjk = Pjk::where("kegiatan_id", $keg->id)->first();
+                        if(!$pjk){
+                            $nom = 0;
+                            foreach(Detailbiayakegiatan::whereParentId($keg->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                                $nom += $det->nominalbiaya;
+                            }
+
+                            foreach(Approval::where("parent_id", $keg->id)->where("jenismenu", "RKA")->whereNotNull("status_approval")->orderBy("no_seq", "desc")->get() as $app){
+                                $dtbk = Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                                $nom = 0;
+                                if($dtbk){
+                                    foreach(Detailbiayakegiatan::whereParentId($keg->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                        $nom += $det->nominalbiaya;
+                                    }
+                                }
+                            }
+
+                            $valpaid = $valpaid+$nom;
+                        }elseif($pjk->status == "process" || $pjk->status == "approving"){
+                            $nom = 0;
+                            foreach(Detailbiayapjk::whereParentId($pjk->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                                $nom += $det->nominalbiaya;
+                            }
+
+                            foreach(Approval::where("parent_id", $pjk->id)->where("jenismenu", "PJK")->orderBy("no_seq", "desc")->get() as $app){
+                                $dtbk = Detailbiayapjk::whereParentId($pjk->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                                $nom = 0;
+                                if($dtbk){
+                                    foreach(Detailbiayapjk::whereParentId($pjk->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                        $nom += $det->nominalbiaya;
+                                    }
+                                }
+                            }
+
+                            $valpjkprocess = $valpjkprocess+$nom;
+                        }elseif($pjk->status == "approved"){
+                            $nom = 0;
+                            foreach(Detailbiayapjk::whereParentId($pjk->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
+                                $nom += $det->nominalbiaya;
+                            }
+
+                            foreach(Approval::where("parent_id", $pjk->id)->where("jenismenu", "PJK")->orderBy("no_seq", "desc")->get() as $app){
+                                $dtbk = Detailbiayapjk::whereParentId($pjk->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                                $nom = 0;
+                                if($dtbk){
+                                    foreach(Detailbiayapjk::whereParentId($pjk->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get() as $det){
+                                        $nom += $det->nominalbiaya;
+                                    }
+                                }
+                            }
+
+                            $valpjkapproved = $valpjkapproved+$nom;
+                        }
+                        
+                    }
+                }
+
+                $valsisa = $valplafon-$valprocess-$valapproved-$valsubmitted-$valpaid-$valpjkprocess-$valpjkapproved;
+                $results = array(
+                    "status" => 201,
+                    "message" => "Data available",
+                    "data" => [
+                        "valplafon" => $valplafon,
+                        "valprocess" => $valprocess,
+                        "valapproved" => $valapproved,
+                        "valsubmitted" => $valsubmitted,
+                        "valpaid" => $valpaid,
+                        "valpjkprocess" => $valpjkprocess,
+                        "valpjkapproved" => $valpjkapproved,
+                        "valsisa" => $valsisa
+                    ]
+                );
+    
+                return $valsisa;
 
             }
         }

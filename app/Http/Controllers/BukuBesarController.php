@@ -99,6 +99,15 @@ class BukuBesarController extends Controller
             $tahun_periode = $request->search["tahun_periode"];
         }
 
+        $tanggal_jurnal_from = date('Y-m-d');
+        if(isset($request->search["tanggal_jurnal_from"])){
+            $tanggal_jurnal_from = $request->search["tanggal_jurnal_from"];
+        }
+        $tanggal_jurnal_to = date('Y-m-d');
+        if(isset($request->search["tanggal_jurnal_to"])){
+            $tanggal_jurnal_to = $request->search["tanggal_jurnal_to"];
+        }
+
         $unitkerja = 0;
         if(isset($request->search["unitkerja"])){
             $unitkerja = $request->search["unitkerja"];
@@ -120,8 +129,7 @@ class BukuBesarController extends Controller
         ->where(function($q) {
             $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
         })
-          ->whereMonth("tanggal", "=", $bulan_periode)
-          ->whereYear("tanggal", "=", $tahun_periode)
+          ->whereBetween("tanggal", [$tanggal_jurnal_from, $tanggal_jurnal_to])
           ->whereNull('isdeleted')
           ->where(function($q) use ($unitkerja){
                 if($unitkerja != 'null' && $unitkerja != 0){
@@ -143,8 +151,7 @@ class BukuBesarController extends Controller
                 })->where(function($q) {
                     $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
                 })->where("coa", $coa)
-                ->whereMonth("tanggal", "=", $bulan_periode)
-                ->whereYear("tanggal", "=", $tahun_periode)
+                ->whereBetween("tanggal", [$tanggal_jurnal_from, $tanggal_jurnal_to])
                 ->whereNull('isdeleted')
                 ->where(function($q) use ($unitkerja){
                     if($unitkerja != 'null' && $unitkerja != 0){
@@ -162,8 +169,10 @@ class BukuBesarController extends Controller
     {
         $data = $request->all();
         $coa = $data["coa"];
-        $bulan_periode = $data["bulan_periode"];
-        $tahun_periode = $data["tahun_periode"];
+        // $bulan_periode = $data["bulan_periode"];
+        // $tahun_periode = $data["tahun_periode"];
+        $tanggal_jurnal_from = $data["tanggal_jurnal_from"];
+        $tanggal_jurnal_to = $data["tanggal_jurnal_to"];
         $unitkerja = 0;
         if(isset($data["unitkerja"]) && $data["unitkerja"] != ""){
             $unitkerja = $request->search["unitkerja"];
@@ -177,7 +186,9 @@ class BukuBesarController extends Controller
             ->where(function($q) {
                 $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
             })
-            ->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
+            ->where(function($q) use($tanggal_jurnal_from, $yearopen){
+                $bulan_periode = explode("-", $tanggal_jurnal_from)[1];
+                $tahun_periode = explode("-", $tanggal_jurnal_from)[0];
                 if($bulan_periode >= $yearopen->bulan_tutup_tahun){
                     //only one year
                     $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){

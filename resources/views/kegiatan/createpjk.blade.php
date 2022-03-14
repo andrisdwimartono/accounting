@@ -51,16 +51,13 @@
                                                         <input name="tanggal_kegiatan" class="datepicker-default form-control form-control-sm tanggaljurnal1" id="datepicker" <?=$page_data["page_method_name"] == "View"?"readonly":""?>>
                                                     </div>
                                                 </div>
-                                                <!-- <div class="form-group row m-0">
-                                                    <label class="col-sm-4 col-form-label" for="iku">Indikator</label>
+                                                <div class="form-group row m-0">
+                                                    <label class="col-sm-4 col-form-label" for="programkerja">Program Kerja</label>
                                                     <div class="col-sm-6 cakfield">
-                                                        <select name="iku" id="iku" class="form-control select2bs4" style="width: 100%;" @if($page_data["page_method_name"] == "View") readonly @endif>
-                                                        
-
-                                                        </select>
-                                                        <input type="hidden" name="iku_label" id="iku_label">
+                                                        <select name="programkerja" id="programkerja" class="form-control select2bs4" style="width: 100%;" @if($page_data["page_method_name"] == "View") readonly @endif></select>
+                                                        <input type="hidden" name="programkerja_label" id="programkerja_label">
                                                     </div>
-                                                </div> -->
+                                                </div>
                                                 <div class="form-group row m-0">
                                                     <label class="col-sm-4 col-form-label" for="kegiatan_name">Nama Kegiatan</label>
                                                     <div class="col-sm-6 cakfield">
@@ -111,8 +108,67 @@
                                                     </div>
                                                     <input type="hidden" class="custom-file-input" id="laporan_pjk" name="laporan_pjk">    
                                                 </div>
+
+                                            <div class="form-group" >
+                                                <label for="ct4_detailkegiatan">Detail Biaya</label>
+                                                <div id="result">
+                                                    Event result:
+                                                </div>
+                                                <div class="table-responsive">
+                                                    <table id="caktable4" class="display" style="width: 100%">
+                                                        <thead>
+                                                            <tr>
+                                                                <th scope="col" style="width: 11%; overflow: hidden;">Biaya</th>
+                                                                <th scope="col" style="width: 11%; overflow: hidden;">Deskripsi</th>
+                                                                <th scope="col" style="width: 11%; overflow: hidden;">Volume</th>
+                                                                <th class="column-hidden">Satuan</th>
+                                                                <th scope="col" style="width: 11%; overflow: hidden;">Satuan</th>
+                                                                <th scope="col" style="width: 11%; overflow: hidden;">Nominal</th>
+                                                                <th scope="col" style="width: 10%;">Deskripsi LPJ</th>
+                                                                @if($page_data["page_method_name"] == "View")
+                                                                    <th scope="col" style="width: 7%;">Status</th>
+                                                                    <th scope="col" style="width: 10%;">Komentar Revisi</th>
+                                                                    <th class="column-hidden" scope="col" style="width: 5%;"></th>
+                                                                @else
+                                                                    <th scope="col" style="width: 10%;"></th>
+                                                                @endif
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            
+                                                        </tbody>
+                                                        <tfoot>
+                                                            <tr class="p-0">
+                                                                <td class="column-hidden"></td>
+                                                                    <td class="text-center">
+                                                                        <div class="form-group row m-0 p-0 properties">
+                                                                            @if($page_data["page_method_name"] == "Create"  || $page_data["page_method_name"] == "Update"  ||($page_data["lastapprove"] && $page_data["lastapprove"]->role == Auth::user()->role) || ($page_data["nextapprove"] && $page_data["nextapprove"]->role == Auth::user()->role)) 
+                                                                                <button type="button" id="addrow4" class="btn btn-primary shadow btn-xs sharp"  data-bs-toggle="tooltip" data-bs-placement="top" title="Tambah Detail Biaya"><i class="fa fa-plus"></i></button>
+                                                                            @endif
+                                                                        </div>
+                                                                    </td>
+                                                                    <td class="p-0"></td>
+                                                                    <td class="p-0"></td>
+                                                                    <td class="p-0 text-right">Total : </td>
+                                                                    <td class="p-0 text-right" id="totalnom4"></td>
+                                                                    <!-- <td class="p-0 text-right" id="totalkredit"></td> -->
+                                                                    @if($page_data["page_method_name"] == "View")
+                                                                        <td class="p-0"></td>
+                                                                    @else
+                                                                        <td class="p-0"></td>
+                                                                    @endif
+                                                                    <td class="column-hidden"></td>
+                                                                    
+                                                                </tr>
+                                                        </tfoot>
+                                                    </table>
+                                                </div>
+                                                <!-- <div class="text-danger col-sm-12" id="caktable1_message"></div> -->
+                                                <input type="hidden" name="ct4_detailkegiatan" class="form-control" id="ct4_detailkegiatan" placeholder="Enter Menu Field" @if($page_data["page_method_name"] == "View") readonly @endif>
+                                            </div>
+
                                             <div class="form-group">
-                                                <label for="ct1_detailbiayakegiatan">Detail Biaya</label>
+                                                <label for="ct1_detailbiayakegiatan">Detail Kode Rekening Biaya</label>
                                                 <div id="result">
                                                     Event result:
                                                 </div>
