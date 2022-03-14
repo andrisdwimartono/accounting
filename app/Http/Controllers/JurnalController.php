@@ -800,6 +800,7 @@ class JurnalController extends Controller
                 "nim"=> "",
                 "kode_va"=> "",
                 "fheader"=> "",
+                "no_jurnal"=> $jurnal->no_jurnal,
                 "user_creator_id" => Auth::user()->id
             ]);
             $this->summerizeJournal("updatelast", $request->id_bank_kas);
