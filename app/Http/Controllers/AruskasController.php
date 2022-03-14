@@ -288,7 +288,7 @@ class AruskasController extends Controller
             });
         })->whereNull("coas.fheader")
         ->where(function($q) use ($unitkerja){
-            if($unitkerja != null && $unitkerja != 0){
+            if($unitkerja != 'null' && $unitkerja != 0){
                 $q->where("aruskass.unitkerja", $unitkerja);
             }
         })
@@ -393,7 +393,7 @@ class AruskasController extends Controller
             });
         })->whereNull("coas.fheader")
         ->where(function($q) use ($unitkerja){
-            if($unitkerja != null && $unitkerja != 0){
+            if($unitkerja != 'null' && $unitkerja != 0){
                 $q->where("aruskass.unitkerja", $unitkerja);
             }
         })
@@ -454,10 +454,19 @@ class AruskasController extends Controller
 
     public function get_total_forecast(Request $request)
     {
-        // $unitkerja = 0;
-        // if(isset($request->search["unitkerja"])){
-        //     $unitkerja = $request->search["unitkerja"];
-        // }
+        $unitkerja = 0;
+        if(isset($request->search["unitkerja"])){
+            $unitkerja = $request->search["unitkerja"];
+        }
+
+        $bulan_periode = 1;
+        if(isset($request->search["bulan_periode"])){
+            $bulan_periode = $request->search["bulan_periode"];
+        }
+        $tahun_periode = 1;
+        if(isset($request->search["tahun_periode"])){
+            $tahun_periode = $request->search["tahun_periode"];
+        }
 
         $nominal = 0;
 
@@ -480,7 +489,7 @@ class AruskasController extends Controller
             });
         })->whereNull("coas.fheader")
         ->where(function($q) use ($unitkerja){
-            if($unitkerja != null && $unitkerja != 0){
+            if($unitkerja != 'null' && $unitkerja != 0){
                 $q->where("aruskass.unitkerja", $unitkerja);
             }
         })
@@ -570,7 +579,7 @@ class AruskasController extends Controller
             });
         })->whereNull("coas.fheader")
         ->where(function($q) use ($unitkerja){
-            if($unitkerja != null && $unitkerja != 0){
+            if($unitkerja != 'null' && $unitkerja != 0){
                 $q->where("aruskass.unitkerja", $unitkerja);
             }
         })
@@ -737,7 +746,7 @@ class AruskasController extends Controller
             });
         })->whereNull("coas.fheader")
         ->where(function($q) use ($unitkerja){
-            if($unitkerja != null && $unitkerja != 0){
+            if($unitkerja != 'null' && $unitkerja != 0){
                 $q->where("aruskass.unitkerja", $unitkerja);
             }
         })
@@ -802,7 +811,7 @@ class AruskasController extends Controller
         $dataUri = 'data:image/' . $type . ';base64,' . base64_encode($data);
 
         $uk = null;
-        if($unitkerja != null && $unitkerja != 0){
+        if($unitkerja != 'null' && $unitkerja != 0){
             $uk = Unitkerja::where("id", ($unitkerja?$unitkerja:0))->first();
         }
         $pdf = PDF::loadview("aruskas.print", ["aruskas" => $output,"data" => $request, "globalsetting" =>  Session::get('global_setting'), "bulan" => $this->convertBulan($bulan_periode), "tahun" => $tahun_periode, "unitkerja" => $unitkerja, "unitkerja_label" => $uk?$uk->unitkerja_name:"", "logo"=>$dataUri]);

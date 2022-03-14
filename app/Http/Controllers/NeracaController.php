@@ -268,7 +268,7 @@ class NeracaController extends Controller
         })
         ->where(function($q) use ($unitkerja){
             $q->where(function($q) use ($unitkerja){
-                if($unitkerja != null && $unitkerja != 0){
+                if($unitkerja != 'null' && $unitkerja != 0){
                     $q->where("neracas.unitkerja", $unitkerja);
                 }else{
                     $q->whereNull("coas.fheader");
@@ -513,7 +513,11 @@ class NeracaController extends Controller
         })
         ->where(function($q) use ($unitkerja){
             $q->where(function($q) use ($unitkerja){
+<<<<<<< HEAD
                 if($unitkerja != null && $unitkerja != 0 && $unitkerja != 'null'){
+=======
+                if($unitkerja != 'null' && $unitkerja != 0){
+>>>>>>> cb1468bce7c3a55bee287143152fdb41cf935899
                     $q->where("neracas.unitkerja", $unitkerja);
                 }else{
                     $q->whereNull("coas.fheader");
@@ -603,7 +607,11 @@ class NeracaController extends Controller
         }
         
         $uk = null;
+<<<<<<< HEAD
         if($unitkerja != null && $unitkerja != 0 && $unitkerja != 'null' ){
+=======
+        if($unitkerja != 'null' && $unitkerja != 0){
+>>>>>>> cb1468bce7c3a55bee287143152fdb41cf935899
             $uk = Unitkerja::where("id", ($unitkerja?$unitkerja:0))->first();
         }
 
