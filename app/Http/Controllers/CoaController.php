@@ -315,7 +315,7 @@ class CoaController extends Controller
                 ';
 
                 if($coa->fheader == 'on'){
-                    $act .= '<a href="#" class="row-add-child btn btn-primary shadow btn-xs sharp mr-1"><i class="fa fa-plus"></i></a>';
+                    $act .= '<button type="button" class="row-add-child btn btn-primary shadow btn-xs sharp mr-1"><i class="fa fa-plus"></i></button>';
                     // $act .= '<button type="button" class="row-add-child"> <i class="fas fa-plus text-info"></i> </button>';
                 }
 

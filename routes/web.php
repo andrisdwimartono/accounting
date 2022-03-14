@@ -77,10 +77,14 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/assignmenu/{user}', 'App\Http\Controllers\UserController@update_assignmenu');
         Route::post('/getdataassignmenuuser', 'App\Http\Controllers\UserController@getdataassignmenuuser');
         Route::post('/updateassignmenuuser/{user}', 'App\Http\Controllers\UserController@updateassignmenu');
+<<<<<<< HEAD
         Route::get('/change_password/{id}', 'App\Http\Controllers\UserController@change_password');
         Route::post('/update_password/{id}', 'App\Http\Controllers\UserController@update_password');
         
 
+=======
+        
+>>>>>>> a43549d68fd70344f9a5a872cd477707c3bd227a
         Route::get('/getusermenu', 'App\Http\Controllers\UserController@getUserMenu');
         
         Route::get('/unitkerja', 'App\Http\Controllers\UnitkerjaController@index')->name('unitkerja');
@@ -324,6 +328,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getoptionskegiatan', 'App\Http\Controllers\KegiatanController@getoptions');
         Route::post('/getlinkskegiatan', 'App\Http\Controllers\KegiatanController@getlinks');
         Route::post('/uploadfilekegiatan', 'App\Http\Controllers\KegiatanController@storeUploadFile');
+<<<<<<< HEAD
         Route::post('/processapprove', 'App\Http\Controllers\KegiatanController@processapprove');
         Route::post('/getdatakegiatanhistory', 'App\Http\Controllers\KegiatanController@getdatahistory');
         Route::post('/getdatapjkhistory', 'App\Http\Controllers\KegiatanController@getdatahistorypjk');
@@ -331,12 +336,18 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getlistpersetujuankegiatan', 'App\Http\Controllers\KegiatanController@get_list_persetujuankegiatan');
         Route::post('/getdatakegiatanplafon', 'App\Http\Controllers\KegiatanController@getdatakegiatanplafon');
 
+=======
+        Route::post('/processapprove', 'App\Http\Controllers\JurnalController@processapprove');
+
+        
+>>>>>>> a43549d68fd70344f9a5a872cd477707c3bd227a
         Route::get('/pjk/{kegiatan}/edit', 'App\Http\Controllers\KegiatanController@createpjk');
         Route::post('/storepjk', 'App\Http\Controllers\KegiatanController@storepjk');
         Route::post('/updatepjk/{kegiatan}', 'App\Http\Controllers\KegiatanController@updatepjk');
         Route::get('/pjk/{kegiatan}', 'App\Http\Controllers\KegiatanController@showpjk');
         Route::post('/processapprovepjk', 'App\Http\Controllers\JurnalController@processapprovepjk');
         Route::post('/getdatapjk', 'App\Http\Controllers\KegiatanController@getdatapjk');
+<<<<<<< HEAD
 
         Route::get('/pencairan', 'App\Http\Controllers\PencairanController@index');
         Route::post('/getlistpencairan', 'App\Http\Controllers\PencairanController@get_list');
@@ -360,6 +371,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/deletesettingpagupendapatan', 'App\Http\Controllers\SettingpagupendapatanController@destroy');
         Route::post('/getlinkssettingpagupendapatan', 'App\Http\Controllers\SettingpagupendapatanController@getlinks');
         Route::post('/getoptionssettingpagupendapatan', 'App\Http\Controllers\SettingpagupendapatanController@getoptions');
+=======
+        Route::post('/getdatapjk', 'App\Http\Controllers\KegiatanController@getdatapjk');
+        
+>>>>>>> a43549d68fd70344f9a5a872cd477707c3bd227a
     });
 });
 

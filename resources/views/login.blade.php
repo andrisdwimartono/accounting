@@ -27,7 +27,11 @@
 
     <style>
       body {
+<<<<<<< HEAD
         background : url("{{ asset ('/main_background/'.$globalsetting->main_background) }}") rgba(0, 0, 0, 0.05);
+=======
+        background : url("{{ asset ('/main_background/'.$globalsetting->main_background) }}") rgba(0, 0, 0, 0.51);
+>>>>>>> a43549d68fd70344f9a5a872cd477707c3bd227a
         background-size: cover;
         background-blend-mode: multiply;
       }  
@@ -39,7 +43,11 @@
     <!-- <h4 style="position:absolute;top:80px;"><span style="white-space: pre-line; color:#ddd;">{{$globalsetting->nama_sia}}</span></h4> -->
     <div class="row" style="position: absolute;left: 15vh;">
       <div class="col-md-4">
+<<<<<<< HEAD
           @if($globalsetting->logo_sia)
+=======
+        @if($globalsetting->logo_sia)
+>>>>>>> a43549d68fd70344f9a5a872cd477707c3bd227a
             <img class="mb-4" src="{{ asset ('/logo_instansi/'.$globalsetting->logo_instansi) }}" alt="" height="100">
           @else
             <img class="mb-4" src="{{ asset ('/assets/images/logo_sia_default.png') }}" alt="" height="100">

@@ -210,7 +210,11 @@ class RoleController extends Controller
         $no = 0;
         // dd(role::find(1)->get());
         foreach(role::where(function($q) use ($keyword) {
+<<<<<<< HEAD
             $q->where("nama", "ILIKE", "%" . $keyword. "%")->orWhere("alias", "ILIKE", "%" . $keyword. "%");
+=======
+            $q->where("nama", "LIKE", "%" . $keyword. "%")->orWhere("alias", "LIKE", "%" . $keyword. "%");
+>>>>>>> a43549d68fd70344f9a5a872cd477707c3bd227a
         })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["id", "nama", "alias"]) as $role){
             $no = $no+1;
             $act = '
@@ -231,7 +235,11 @@ class RoleController extends Controller
             "draw" => intval($request->draw),
             "recordsTotal" => role::get()->count(),
             "recordsFiltered" => intval(role::where(function($q) use ($keyword) {
+<<<<<<< HEAD
                 $q->where("nama", "ILIKE", "%" . $keyword. "%")->orWhere("alias", "ILIKE", "%" . $keyword. "%");
+=======
+                $q->where("nama", "LIKE", "%" . $keyword. "%")->orWhere("alias", "LIKE", "%" . $keyword. "%");
+>>>>>>> a43549d68fd70344f9a5a872cd477707c3bd227a
             })->orderBy($orders[0], $orders[1])->get()->count()),
             "data" => $dt
         );
@@ -391,11 +399,18 @@ class RoleController extends Controller
 
     public function getRoleMenu(){
         if(Auth::user()){
+<<<<<<< HEAD
             // dd(Auth::user()->role_label);
             $user_menus = User_role_menu::find(1)
             ->select(['menus.*'])
             ->leftJoin('menus','menus.id','user_role_menus.menu_id')
             ->where("role",Auth::user()->role_label)->where("is_granted", "on")
+=======
+            $user_menus = User_role_menu::find(1)
+            ->select(['menus.*'])
+            ->leftJoin('menus','menus.id','user_role_menus.menu_id')
+            ->where("role",Auth::user()->role)->where("is_granted", "on")
+>>>>>>> a43549d68fd70344f9a5a872cd477707c3bd227a
             ->where("is_shown_at_side_menu", "on")->orderBy("mp_sequence", "ASC")->orderBy("m_sequence", "ASC")
             ->get();
 
