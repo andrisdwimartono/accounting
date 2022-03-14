@@ -820,7 +820,7 @@ class JurnalController extends Controller
 
             return response()->json([
                 'status' => 201,
-                'message' => 'No Jurnal '.$request->no_jurnal." telah diupdate",
+                'message' => 'No Jurnal '.$request->no_jurnal." telah diupdate".var_dump($new_menu_field_ids),
                 'data' => ['id' => $id, 'no_jurnal' => $request->no_jurnal]
             ]);
         }
