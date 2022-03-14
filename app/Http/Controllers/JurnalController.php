@@ -717,6 +717,8 @@ class JurnalController extends Controller
                 "user_updater_id"=> Auth::user()->id
             ]);
 
+            $jurnal = Jurnal::where("id", $id)->first();
+
             $new_menu_field_ids = array();
             foreach($requests_transaksi as $ct_request){
                 if(isset($ct_request["id"]) && $ct_request["id"] != ""){
@@ -767,7 +769,7 @@ class JurnalController extends Controller
                         "nim"=> $ct_request["nim"],
                         "kode_va"=> $ct_request["kode_va"],
                         "fheader"=> $ct_request["fheader"],
-                        "no_jurnal"=> $request->no_jurnal,
+                        "no_jurnal"=> $jurnal->no_jurnal,
                         "user_creator_id" => Auth::user()->id
                     ])->id;
                     array_push($new_menu_field_ids, $idct);
