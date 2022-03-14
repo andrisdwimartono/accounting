@@ -744,6 +744,7 @@ class JurnalController extends Controller
                         "nim"=> $ct_request["nim"],
                         "kode_va"=> $ct_request["kode_va"],
                         "fheader"=> $ct_request["fheader"],
+                        "no_jurnal"=> $jurnal->no_jurnal,
                         "user_updater_id" => Auth::user()->id
                     ]);
                     $this->summerizeJournal("updatelast", $ct_request["id"]);
