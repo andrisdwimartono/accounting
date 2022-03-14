@@ -124,7 +124,7 @@ class BukuBesarController extends Controller
           ->whereYear("tanggal", "=", $tahun_periode)
           ->whereNull('isdeleted')
           ->where(function($q) use ($unitkerja){
-                if($unitkerja != null && $unitkerja != 0){
+                if($unitkerja != 'null' && $unitkerja != 0){
                     $q->where("unitkerja", $unitkerja);
                 }
             })
@@ -147,7 +147,7 @@ class BukuBesarController extends Controller
                 ->whereYear("tanggal", "=", $tahun_periode)
                 ->whereNull('isdeleted')
                 ->where(function($q) use ($unitkerja){
-                    if($unitkerja != null && $unitkerja != 0){
+                    if($unitkerja != 'null' && $unitkerja != 0){
                         $q->where("unitkerja", $unitkerja);
                     }
                 })
@@ -193,7 +193,7 @@ class BukuBesarController extends Controller
                 }
             })
             ->where(function($q) use ($unitkerja){
-                if($unitkerja != null && $unitkerja != 0){
+                if($unitkerja != 'null' && $unitkerja != 0){
                     $q->where("aruskass.unitkerja", $unitkerja);
                 }
             })

@@ -339,7 +339,7 @@ class LabarugiController extends Controller
         })
         ->where(function($q) use ($unitkerja){
             $q->where(function($q) use ($unitkerja){
-                if($unitkerja != null && $unitkerja != 0){
+                if($unitkerja != 'null' && $unitkerja != 0){
                     $q->where("labarugis.unitkerja", $unitkerja);
                 }else{
                     $q->whereNull("coas.fheader");
@@ -591,7 +591,7 @@ class LabarugiController extends Controller
         })
         ->where(function($q) use ($unitkerja){
             $q->where(function($q) use ($unitkerja){
-                if($unitkerja != null && $unitkerja != 0){
+                if($unitkerja != 'null' && $unitkerja != 0){
                     $q->where("labarugis.unitkerja", $unitkerja);
                 }else{
                     $q->whereNull("coas.fheader");
