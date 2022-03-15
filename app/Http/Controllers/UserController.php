@@ -759,18 +759,11 @@ class UserController extends Controller
 
     public function getRoleMenu(){
         if(Auth::user()){
-<<<<<<< HEAD
             
             $user_menus = User_role_menu::find(1)
             ->select(['menus.*'])
             ->leftJoin('menus','menus.id','user_role_menus.menu_id')
             ->where("role",Auth::user()->role_label)->where("is_granted", "on")
-=======
-            $user_menus = User_role_menu::find(1)
-            ->select(['menus.*'])
-            ->leftJoin('menus','menus.id','user_role_menus.menu_id')
-            ->where("role",Auth::user()->role)->where("is_granted", "on")
->>>>>>> a43549d68fd70344f9a5a872cd477707c3bd227a
             ->where("is_shown_at_side_menu", "on")->orderBy("mp_sequence", "ASC")->orderBy("m_sequence", "ASC")
             ->get();
 
