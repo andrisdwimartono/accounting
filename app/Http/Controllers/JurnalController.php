@@ -816,7 +816,7 @@ class JurnalController extends Controller
                 }
                 if(!$is_still_exist){
                     $this->summerizeJournal("delete", $ch->id);
-                    Transaction::whereId($ch->id)->delete();
+                    //Transaction::whereId($ch->id)->delete();
                     $arr .= $arr.' | '.$ch->id.' deleted';
                 }
             }
