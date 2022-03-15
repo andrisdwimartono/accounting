@@ -805,22 +805,24 @@ class JurnalController extends Controller
             ]);
             $this->summerizeJournal("updatelast", $request->id_bank_kas);
 
+            $arr = array();
             foreach(Transaction::whereParentId($id)->get() as $ch){
-                    $is_still_exist = false;
-                    foreach($requests_transaksi as $ct_request){
-                        if($ch->id == $ct_request["id"] || $ch->id == $request->id_bank_kas || in_array($ch->id, $new_menu_field_ids)){
-                            $is_still_exist = true;
-                        }
-                    }
-                    if(!$is_still_exist){
-                        $this->summerizeJournal("delete", $ch->id);
-                        Transaction::whereId($ch->id)->delete();
+                array_push($arr, $ch->id);
+                $is_still_exist = false;
+                foreach($requests_transaksi as $ct_request){
+                    if($ch->id == $ct_request["id"] || $ch->id == $request->id_bank_kas || in_array($ch->id, $new_menu_field_ids)){
+                        $is_still_exist = true;
                     }
                 }
+                if(!$is_still_exist){
+                    $this->summerizeJournal("delete", $ch->id);
+                    Transaction::whereId($ch->id)->delete();
+                }
+            }
 
             return response()->json([
                 'status' => 201,
-                'message' => 'No Jurnal '.$request->no_jurnal." telah diupdate",
+                'message' => 'No Jurnal '.$request->no_jurnal." telah diupdate".implode(" ",$arr),
                 'data' => ['id' => $id, 'no_jurnal' => $request->no_jurnal]
             ]);
         }
