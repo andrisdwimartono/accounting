@@ -785,7 +785,7 @@ class JurnalController extends Controller
             $x .= ' | '.$request->id_bank_kas.' bank ';
             Transaction::where("id", $request->id_bank_kas)->update([
                 "no_seq" => $no_seq,
-                "parent_id" => $id,
+                //"parent_id" => $id,
                 "deskripsi"=> "",
                 "debet"=> $request->jurnal_type=="KM"||$request->jurnal_type=="BM"?$total_nominal:0,
                 "credit"=> $request->jurnal_type=="KK"||$request->jurnal_type=="BK"?$total_nominal:0,
@@ -819,7 +819,7 @@ class JurnalController extends Controller
                 }
                 if(!$is_still_exist){
                     $this->summerizeJournal("delete", $ch->id);
-                    //Transaction::whereId($ch->id)->delete();
+                    Transaction::whereId($ch->id)->delete();
                     $arr .= $arr.' | '.$ch->id.' deleted';
                 }
             }
