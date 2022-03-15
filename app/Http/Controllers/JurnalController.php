@@ -718,11 +718,13 @@ class JurnalController extends Controller
             ]);
 
             $jurnal = Jurnal::where("id", $id)->first();
+            $x = '';
             $new_menu_field_ids = array();
             foreach($requests_transaksi as $ct_request){
                 if(isset($ct_request["id"]) && $ct_request["id"] != ""){
                     $coa = Coa::where("id", $ct_request["coa"])->first();
                     $this->summerizeJournal("updatefirst", $ct_request["id"]);
+                    $x .= ' | '.$ct_request["id"].' update ';
                     Transaction::where("id", $ct_request["id"])->update([
                         "no_seq" => $ct_request["no_seq"],
                         //"parent_id" => $id,
@@ -772,6 +774,7 @@ class JurnalController extends Controller
                         "no_jurnal"=> $jurnal->no_jurnal,
                         "user_creator_id" => Auth::user()->id
                     ])->id;
+                    $x .= ' | '.$idct.' create ';
                     array_push($new_menu_field_ids, $idct);
                     $this->summerizeJournal("store", $idct);
                 }
@@ -779,6 +782,7 @@ class JurnalController extends Controller
 
             $coa = Coa::where("id", $request->bank_kas)->first();
             $this->summerizeJournal("updatefirst", $request->id_bank_kas);
+            $x .= ' | '.$request->id_bank_kas.' bank ';
             Transaction::where("id", $request->id_bank_kas)->update([
                 "no_seq" => $no_seq,
                 //"parent_id" => $id,
@@ -804,23 +808,26 @@ class JurnalController extends Controller
             ]);
             $this->summerizeJournal("updatelast", $request->id_bank_kas);
 
+            $arr = '';
             foreach(Transaction::whereParentId($id)->get() as $ch){
                 $is_still_exist = false;
                 foreach($requests_transaksi as $ct_request){
                     if($ch->id == $ct_request["id"] || $ch->id == $request->id_bank_kas || in_array($ch->id, $new_menu_field_ids)){
                         $is_still_exist = true;
+                        $arr .= $arr.' | '.$ch->id.' not';
                     }
                 }
                 if(!$is_still_exist){
                     $this->summerizeJournal("delete", $ch->id);
                     Transaction::whereId($ch->id)->delete();
+                    $arr .= $arr.' | '.$ch->id.' deleted';
                 }
             }
 
             return response()->json([
                 'status' => 201,
                 'message' => 'No Jurnal '.$request->no_jurnal." telah diupdate ",
-                'data' => ['id' => $id, 'no_jurnal' => $request->no_jurnal]
+                'data' => ['id' => $id, 'no_jurnal' => $request->no_jurnal, $arr, $x]
             ]);
         }
     }
