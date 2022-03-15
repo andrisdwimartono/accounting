@@ -476,7 +476,7 @@ class NeracasaldoController extends Controller
         })
         ->where(function($q) use ($unitkerja){
             $q->where(function($q) use ($unitkerja){
-                if($unitkerja != null && $unitkerja != 0){
+                if($unitkerja != "null" && $unitkerja != 0){
                     $q->where("neracasaldos.unitkerja", $unitkerja);
                 }else{
                     $q->whereNull("coas.fheader");
@@ -565,7 +565,7 @@ class NeracasaldoController extends Controller
         }
 
         $uk = null;
-        if($unitkerja != null && $unitkerja != 0){
+        if($unitkerja != "null" && $unitkerja != 0){
             $uk = Unitkerja::where("id", ($unitkerja?$unitkerja:0))->first();
         }
 
