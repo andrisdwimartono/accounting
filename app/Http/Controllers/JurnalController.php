@@ -805,18 +805,19 @@ class JurnalController extends Controller
             ]);
             $this->summerizeJournal("updatelast", $request->id_bank_kas);
 
-            $arr = array();
+            $arr = '';
             foreach(Transaction::whereParentId($id)->get() as $ch){
-                array_push($arr, $ch->id);
                 $is_still_exist = false;
                 foreach($requests_transaksi as $ct_request){
                     if($ch->id == $ct_request["id"] || $ch->id == $request->id_bank_kas || in_array($ch->id, $new_menu_field_ids)){
                         $is_still_exist = true;
+                        $arr .= $arr.' | '.$ch->id.' not';
                     }
                 }
                 if(!$is_still_exist){
                     $this->summerizeJournal("delete", $ch->id);
                     Transaction::whereId($ch->id)->delete();
+                    $arr .= $arr.' | '.$ch->id.' deleted';
                 }
             }
 
