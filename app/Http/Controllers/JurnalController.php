@@ -718,12 +718,13 @@ class JurnalController extends Controller
             ]);
 
             $jurnal = Jurnal::where("id", $id)->first();
-
+            $x = '';
             $new_menu_field_ids = array();
             foreach($requests_transaksi as $ct_request){
                 if(isset($ct_request["id"]) && $ct_request["id"] != ""){
                     $coa = Coa::where("id", $ct_request["coa"])->first();
                     $this->summerizeJournal("updatefirst", $ct_request["id"]);
+                    $x .= ' | '.$ct_request["id"].' update ';
                     Transaction::where("id", $ct_request["id"])->update([
                         "no_seq" => $ct_request["no_seq"],
                         "parent_id" => $id,
@@ -773,6 +774,7 @@ class JurnalController extends Controller
                         "no_jurnal"=> $jurnal->no_jurnal,
                         "user_creator_id" => Auth::user()->id
                     ])->id;
+                    $x .= ' | '.$idct.' create ';
                     array_push($new_menu_field_ids, $idct);
                     $this->summerizeJournal("store", $idct);
                 }
@@ -780,6 +782,7 @@ class JurnalController extends Controller
 
             $coa = Coa::where("id", $request->bank_kas)->first();
             $this->summerizeJournal("updatefirst", $request->id_bank_kas);
+            $x .= ' | '.$request->id_bank_kas.' bank ';
             Transaction::where("id", $request->id_bank_kas)->update([
                 "no_seq" => $no_seq,
                 "parent_id" => $id,
