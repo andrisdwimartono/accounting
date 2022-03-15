@@ -823,7 +823,7 @@ class JurnalController extends Controller
 
             return response()->json([
                 'status' => 201,
-                'message' => 'No Jurnal '.$request->no_jurnal." telah diupdate".implode(" ",$arr),
+                'message' => 'No Jurnal '.$request->no_jurnal." telah diupdate ".$arr,
                 'data' => ['id' => $id, 'no_jurnal' => $request->no_jurnal]
             ]);
         }
