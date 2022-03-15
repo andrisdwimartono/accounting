@@ -205,11 +205,7 @@
               $( api.column( 4 ).footer() ).html(formatRupiahWNegative(kredit,"."));
 
               $( 'tr:eq(1) td:eq(1)', api.table().footer() ).addClass("right total").html(saldo>0?"SURPLUS":"DEFISIT");
-<<<<<<< HEAD
-              $( 'tr:eq(1) td:eq(3)', api.table().footer() ).html(formatRupiahWNegative(saldo,"."));
-=======
               $( 'tr:eq(1) td:eq(3)', api.table().footer() ).html(saldo_akhir);
->>>>>>> a529155739f44b5621e6c4b9e1571a98aee61707
               $( 'tr:eq(1) td:eq(4)', api.table().footer() ).html("");
             },
             "columnDefs": [

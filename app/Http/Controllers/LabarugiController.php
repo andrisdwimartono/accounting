@@ -339,11 +339,7 @@ class LabarugiController extends Controller
         })
         ->where(function($q) use ($unitkerja){
             $q->where(function($q) use ($unitkerja){
-<<<<<<< HEAD
-                if($unitkerja != null && $unitkerja != "null" && $unitkerja != 0){
-=======
                 if($unitkerja != 'null' && $unitkerja != 0){
->>>>>>> cb1468bce7c3a55bee287143152fdb41cf935899
                     $q->where("labarugis.unitkerja", $unitkerja);
                 }else{
                     $q->whereNull("coas.fheader");
@@ -596,11 +592,7 @@ class LabarugiController extends Controller
         })
         ->where(function($q) use ($unitkerja){
             $q->where(function($q) use ($unitkerja){
-<<<<<<< HEAD
-                if($unitkerja != null && $unitkerja != "null" && $unitkerja != 0){
-=======
                 if($unitkerja != 'null' && $unitkerja != 0){
->>>>>>> cb1468bce7c3a55bee287143152fdb41cf935899
                     $q->where("labarugis.unitkerja", $unitkerja);
                 }else{
                     $q->whereNull("coas.fheader");
