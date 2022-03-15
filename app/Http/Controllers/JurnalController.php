@@ -1019,7 +1019,8 @@ class JurnalController extends Controller
                 "message" => "Data available",
                 "data" => [
                     "transaksi" => $transaksis,
-                    "jurnal" => $jurnal
+                    "jurnal" => $jurnal,
+                    "arr_c" => count($transaksis)-1
                 ]
             );
 
