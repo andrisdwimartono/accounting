@@ -774,7 +774,6 @@ function getdata(){
                             var newState = new Option(data.data.jurnal[Object.keys(data.data.jurnal)[i]+"_label"], data.data.jurnal[Object.keys(data.data.jurnal)[i]], true, false);
                             $("#"+Object.keys(data.data.jurnal)[i]).append(newState).trigger("change");
 
-                            $("input[name='id_bank_kas']").val(data.data.jurnal[Object.keys(data.data.jurnal)[i]]);
                             $("input[name='bank_kas_label']").val(data.data.jurnal[Object.keys(data.data.jurnal)[i]+"_label"]);
                         }else{
                             $("#"+Object.keys(data.data.jurnal)[i]).empty();
