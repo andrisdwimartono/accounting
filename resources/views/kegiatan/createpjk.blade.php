@@ -124,10 +124,11 @@
                                                                 <th class="column-hidden">Satuan</th>
                                                                 <th scope="col" style="width: 11%; overflow: hidden;">Satuan</th>
                                                                 <th scope="col" style="width: 11%; overflow: hidden;">Nominal</th>
-                                                                <th scope="col" style="width: 10%;">Deskripsi LPJ</th>
+                                                                <th scope="col" style="width: 10%;">Deskripsi<br>LPJ</th>
                                                                 @if($page_data["page_method_name"] == "View")
                                                                     <th scope="col" style="width: 7%;">Status</th>
-                                                                    <th scope="col" style="width: 10%;">Komentar Revisi</th>
+                                                                    <th scope="col" style="width: 8%;">Komentar<br>Revisi</th>
+                                                                    <th scope="col" style="width: 2%;"></th>
                                                                     <th class="column-hidden" scope="col" style="width: 5%;"></th>
                                                                 @else
                                                                     <th scope="col" style="width: 10%;"></th>
@@ -182,8 +183,9 @@
                                                                 <th scope="col" style="width: 13%;">Nominal</th>
                                                                 <th scope="col" style="width: 15%;">Deskripsi LPJ</th>
                                                                 @if($page_data["page_method_name"] == "View")
-                                                                    <th scope="col" style="width: 13%;">Status</th>
-                                                                    <th scope="col" style="width: 13%;">Komentar Revisi</th>
+                                                                    <th scope="col" style="width: 10%;">Status</th>
+                                                                    <th scope="col" style="width: 11%;">Komentar<br>Revisi</th>
+                                                                    <th scope="col" style="width: 5%;"></th>
                                                                     <th class="column-hidden" scope="col"></th>
                                                                 @else
                                                                     <th scope="col" style="width: 10%;"></th>
@@ -332,7 +334,7 @@
                                                 <button type="button" class="btn btn-success" id="historyrka"><i class="fas fa-list"></i> Histori</button>
                                             </div>
                                             <div class="col-sm-4">
-                                                @if(($page_data["lastapprove"] && $page_data["lastapprove"]->role == Auth::user()->role) || ($page_data["nextapprove"] && $page_data["nextapprove"]->role == Auth::user()->role))
+                                                @if(($page_data["lastapprove"] && $page_data["lastapprove"]->role == Auth::user()->role) || ($page_data["nextapprove"] && $page_data["nextapprove"]->role == Auth::user()->role) || Auth::user()->role == 'lpm')
                                                 <button type="button" class="btn btn-primary" id="approverka"><i class="fas fa-check"></i> Terima</button>
                                                 @endif
                                             </div>

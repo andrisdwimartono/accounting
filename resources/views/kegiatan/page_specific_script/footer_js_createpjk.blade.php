@@ -616,7 +616,7 @@ function getdata(){
                     
                     $("input[name='desc_detail_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"']").val(data.data.ct1_detailbiayakegiatan[i].desc_detail);
 
-                    $("#caktable1 > tbody > tr[row-seq="+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"]").find("td:eq(8)").text(data.data.ct1_detailbiayakegiatan[i].id);
+                    $("#caktable1 > tbody > tr[row-seq="+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"]").find("td:eq(9)").text(data.data.ct1_detailbiayakegiatan[i].id);
                     
                     
 
@@ -729,6 +729,8 @@ function getdata(){
                     $("input[name='desc_detail4_"+(parseInt(data.data.ct4_detailkegiatan[i].no_seq)+1)+"']").val(data.data.ct4_detailkegiatan[i].desc_detail);
 
                     $("input[name='komentarrevisi_"+(parseInt(data.data.ct4_detailkegiatan[i].no_seq)+1)+"']").val(data.data.ct4_detailkegiatan[i].komentarrevisi);
+
+                    $("#caktable4 > tbody > tr[row-seq="+(parseInt(data.data.ct4_detailkegiatan[i].no_seq)+1)+"]").find("td:eq(11)").text(data.data.ct4_detailkegiatan[i].id);
                 }
             }
         cto_loading_hide();
@@ -1248,15 +1250,13 @@ function processapprove(status, komentar = ""){
                 nominalbiaya = AutoNumeric.getNumber("#nom_"+$(tr).attr("row-seq"));
             }else if(index == 4){
                 desc_detail = $(td).find("input").val();
-            }else if(index == 8){
+            }else if(index == 9){
                 id = $(td).text();
             }else if(index == 7){
                 komentarrevisi = $(td).find("input").val();
             }else if(index == 6){
                 status = $(td).find("select").val();
             }
-            console.log(index);
-            console.log(td);
         });
         if(coa != '')
             ctct1_detailbiayakegiatan.push({"no_seq": index, "coa": coa, "coa_label": coa_label, "deskripsibiaya": deskripsibiaya, "nominalbiaya": nominalbiaya, "id": id, "desc_detail": desc_detail, "komentarrevisi": komentarrevisi, "status": status});
@@ -1438,6 +1438,8 @@ function processapprove(status, komentar = ""){
                 });
             }
         }
+    }).then(function(){
+        location.reload();
     });
     cto_loading_hide();
     <?php } ?>
@@ -1559,8 +1561,8 @@ $(document).keydown(function(event) {
                     +"<td class=\"column-hidden\"></td>"
                     +"<td class=\"p-0\"><select name=\"status_"+rowlen+"\" id=\"status_"+rowlen+"\" class=\"status_acc form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
                     +"<td class=\"p-0\"><input type=\"text\" name=\"komentarrevisi_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"komentarrevisi_"+rowlen+"\"></td>"
+                    +"<td class=\"p-0 text-center\"><button id=\"row_delete_"+rowlen+"\" class=\"bg-white border-0\"><i class=\"text-danger fas fa-minus-circle row-delete\" style=\"cursor: pointer;\"></i></button></td>"
                     +"<td class=\"column-hidden\"></td>"
-                    // +"<td class=\"p-0 text-center\"><button type=\"button\" id=\"row_show_history_"+rowlen+"\" class=\"bg-white border-0 row-show-history\"><i class=\"text-info fas fa-list\" style=\"cursor: pointer;\"></i></button></td>"
                     +"</tr>"
                 @else 
                     "<tr row-seq=\""+rowlen+"\" class=\"addnewrow\">"
@@ -1808,8 +1810,8 @@ $(document).keydown(function(event) {
                     +"<td class=\"column-hidden\"></td>"
                     +"<td class=\"p-0\"><select name=\"status4_"+rowlen+"\" id=\"status4_"+rowlen+"\" class=\"status_acc form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
                     +"<td class=\"p-0\"><input type=\"text\" name=\"komentarrevisi_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"komentarrevisi_"+rowlen+"\"></td>"
-                    // +"<td class=\"p-0 text-center\"><button id=\"row_delete4_"+rowlen+"\" class=\"bg-white border-0\"><i class=\"text-danger fas fa-minus-circle row-delete\" style=\"cursor: pointer;\"></i></button></td>"
-                    // +"<td class=\"column-hidden\"></td>"
+                    +"<td class=\"p-0 text-center\"><button id=\"row_delete4_"+rowlen+"\" class=\"bg-white border-0\"><i class=\"text-danger fas fa-minus-circle row-delete\" style=\"cursor: pointer;\"></i></button></td>"
+                    +"<td class=\"column-hidden\"></td>"
                     +"</tr>"
                 @else 
                 "<tr row-seq=\""+rowlen+"\" class=\"addnewrow4\">"

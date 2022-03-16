@@ -30,6 +30,7 @@ use App\Models\Pencairan;
 use App\Models\Pencairanrka;
 use App\Models\Pendapatanpmb;
 use App\Models\Detailpjk;
+use App\Models\Outputlpj;
 
 use App\Exports\JurnalExport;
 use PDF;
@@ -3904,7 +3905,12 @@ class JurnalController extends Controller
             $last_approval = Approval::where("jenismenu", "PJK")->where("parent_id", $kegiatan->id)->where("no_seq", ((int)$request->no_seq)+1)->first();
 
             if(!(($this->lastapprovepjk($kegiatan->id) && $this->lastapprovepjk($kegiatan->id)->role == Auth::user()->role_label) || ($this->nextapprovepjk($kegiatan->id) && $this->nextapprovepjk($kegiatan->id)->role == Auth::user()->role_label))){
-                abort(403, " Tidak bisa melakukan approval!");
+                $pjk = Pjk::where("kegiatan_id", $kegiatan->id)->first();
+                if($pjk && $pjk->status == "approved" && Auth::user()->role == 'lpm'){
+                    
+                }else{
+                    abort(403, " Tidak bisa melakukan approval!");
+                }
             }
 
             // if($last_approval && $last_approval->status_approval != "approve"){
@@ -3918,7 +3924,7 @@ class JurnalController extends Controller
             //     abort(403, $last_approval->role_label." tidak/belum menerima pengajuan ini!");
             // }
 
-            if(!Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("role", Auth::user()->role_label)->update([
+            if(Auth::user()->role != 'lpm' && !Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("role", Auth::user()->role_label)->update([
                 "role"                    => Auth::user()->role,
                 "jenismenu"               => "PJK",
                 "user"                    => Auth::user()->id,
@@ -3946,8 +3952,8 @@ class JurnalController extends Controller
                         "status" => "process"
                     ]);
                 }
-
-                $this->checkOpenPeriode($tgl);
+                
+                //$this->checkOpenPeriode($tgl);
                 $kegiatan = Kegiatan::where("id", $request->id)->first();
                 
                 $trans = Transaction::where("idjurnalreference", $jurnalkeg->id)->first();
@@ -3970,6 +3976,13 @@ class JurnalController extends Controller
                 }
             }elseif(Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->count() == Approval::where("jenismenu", "PJK")->where("parent_id", $pjk->id)->where("status_approval", "approve")->count()){
                 if(Jurnal::where("idjurnalreference", $jurnalkeg->id)->count() > 0){
+                    if(Auth::user()->role == 'lpm'){
+                        $this->updatepjk($request, $request->id);
+                        return response()->json([
+                            "status" => 200,
+                            "message" => "Hasil Pencapaian berhasil diupdate"
+                        ]);
+                    }
                     abort(403, "Sudah approved dan terjurnal");
                 }
                 $this->checkOpenPeriode($tgl);
@@ -4089,9 +4102,27 @@ class JurnalController extends Controller
         $kegiatan = Kegiatan::where("id",$id)->first();
         $pjk = Pjk::where("kegiatan_id",$id)->first();
         if($pjk->status != "process" && $pjk->status != "approving"){
-            abort(403, "tidak dapat diubah, status masih/sudah ".$pjk->status);
+            if(Auth::user()->role != 'lpm'){
+                abort(403, "tidak dapat diubah, status masih/sudah ".$pjk->status);
+            }
         }
 
+        if($pjk->status == "approved" && Auth::user()->role == 'lpm'){
+            $requests_ct3_outputlpj = json_decode($request->ct3_outputrka, true);
+            $new_menu_field_ids = array();
+            foreach($requests_ct3_outputlpj as $ct_request){
+                if(isset($ct_request["id"]) && $ct_request["id"] != ""){
+                    if(Auth::user()->role == "lpm"){
+                        Outputlpj::where("id", $ct_request["id"])->update([
+                            "hasil_pencapaian" => $ct_request["hasil_pencapaian"],
+                            "user_updater_id" => Auth::user()->id
+                        ]);
+                    }
+                }
+            }
+            return;
+        }
+        
         $page_data = $this->tabledesign();
         $rules_ct1_detailbiayakegiatan = $page_data["fieldsrules_ct1_detailbiayakegiatan"];
         $requests_ct1_detailbiayakegiatan = json_decode($request->ct1_detailbiayakegiatan, true);
