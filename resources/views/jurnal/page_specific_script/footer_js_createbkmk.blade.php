@@ -275,7 +275,6 @@ $("#unitkerja").on("change", function() {
 
 $("#bank_kas").on("change", function() {
     $("#bank_kas_label").val($("#bank_kas option:selected").text());
-    $("#id_bank_kas").val($("#bank_kas option:selected").val());
 });
 
 $("#anggaran").on("change", function() {
@@ -685,7 +684,7 @@ $(document).ready(function() {
         $("#is_edit").val(0);
         $('#unitkerja').val(null).trigger('change');
         $("#anggaran_label").val("");
-        $("#no_jurnal").val("####<?=$page_data["page_job"]=="KM"?"BKM":($page_data["page_job"]=="KK"?"BKK":($page_data["page_job"]=="BM"?"BBM":"BBK"))?>MMYYYY");
+        $("#no_jurnal").val("<?=$page_data["page_job"]?>#######");
         $('input[name=tanggal_jurnal]').val("");
         $('#coa_1').val(null).trigger('change');
         $('#deskripsi_1').val("");
@@ -711,16 +710,16 @@ $(document).ready(function() {
 
     $("#simpan_kas_bank").click(function(){
         <?php if($page_data["page_job"]=="KM"){ ?>
-            localStorage.setItem("simpan_kas_bank_km_id", $("input[name=id_bank_kas]").val());
+            localStorage.setItem("simpan_kas_bank_km_id", $("input[name=bank_kas]").val());
             localStorage.setItem("simpan_kas_bank_km_label", $("input[name=bank_kas_label]").val());
         <?php }elseif($page_data["page_job"]=="KK"){ ?>
-            localStorage.setItem("simpan_kas_bank_kk_id", $("input[name=id_bank_kas]").val());
+            localStorage.setItem("simpan_kas_bank_kk_id", $("input[name=bank_kas]").val());
             localStorage.setItem("simpan_kas_bank_kk_label", $("input[name=bank_kas_label]").val());
         <?php }elseif($page_data["page_job"]=="BM"){ ?>
-            localStorage.setItem("simpan_kas_bank_bm_id", $("input[name=id_bank_kas]").val());
+            localStorage.setItem("simpan_kas_bank_bm_id", $("input[name=bank_kas]").val());
             localStorage.setItem("simpan_kas_bank_bm_label", $("input[name=bank_kas_label]").val());
         <?php }elseif($page_data["page_job"]=="BK"){ ?>
-            localStorage.setItem("simpan_kas_bank_bk_id", $("input[name=id_bank_kas]").val());
+            localStorage.setItem("simpan_kas_bank_bk_id", $("input[name=bank_kas]").val());
             localStorage.setItem("simpan_kas_bank_bk_label", $("input[name=bank_kas_label]").val());
         <?php } ?>
     });
@@ -745,7 +744,6 @@ $(document).ready(function() {
         $("select[name='bank_kas']").empty();
         var newState = new Option(simpan_kas_bank_km_label, simpan_kas_bank_km_id, true, false);
         $("#bank_kas").append(newState).trigger('change');
-        $("input[name='id_bank_kas']").val(simpan_kas_bank_km_id);
         $("input[name='bank_kas_label']").val(simpan_kas_bank_km_label);
     }
 
@@ -774,7 +772,6 @@ function getdata(){
                             var newState = new Option(data.data.jurnal[Object.keys(data.data.jurnal)[i]+"_label"], data.data.jurnal[Object.keys(data.data.jurnal)[i]], true, false);
                             $("#"+Object.keys(data.data.jurnal)[i]).append(newState).trigger("change");
 
-                            $("input[name='id_bank_kas']").val(data.data.jurnal[Object.keys(data.data.jurnal)[i]]);
                             $("input[name='bank_kas_label']").val(data.data.jurnal[Object.keys(data.data.jurnal)[i]+"_label"]);
                         }else{
                             $("#"+Object.keys(data.data.jurnal)[i]).empty();
@@ -1140,7 +1137,11 @@ function validatequickModalForm_transaksi(){
 function convertCode(data){
     var val = "";
     for(var i = 0; i < data.length; i++){
-        if(i == 2 || i == 6){
+        if(i == 0){
+          val = val+data.charAt(i)+"-";
+        }else if(i == 2 || i == 4){
+          val = val+data.charAt(i)+"-";
+        }else if(i > 4 && (i-4)%3 == 0 && i != data.length-1){
           val = val+data.charAt(i)+"-";
         }else{
           val = val+data.charAt(i);
