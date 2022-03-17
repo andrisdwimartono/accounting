@@ -61,13 +61,15 @@ function format ( d ) {
     // `d` is the original data object for the row
     var table = ''
     table += '<table cellpadding="5" cellspacing="0" border="0" style="margin-left:50px;width:80%;">'
-    table += '<tr><th>Kode Rekening</th><th>Deskripsi</th><th>Nominal</th></tr>'
+    table += '<tr><th>Biaya</th><th>Volume</th><th>Satuan</th><th>Deskripsi</th><th>Nominal</th></tr>'
 
     for(var i=0; i<d[7].length; i++){
       table += '<tr>'
       table += '<td>'+d[7][i][0]+'</td>'
       table += '<td>'+d[7][i][1]+'</td>'
       table += '<td>'+d[7][i][2]+'</td>'
+      table += '<td>'+d[7][i][3]+'</td>'
+      table += '<td>'+d[7][i][4]+'</td>'
       table += '</tr>'
     }
     table += '</table>';
@@ -193,6 +195,9 @@ function format ( d ) {
   });
 
   $("#unitkerja").select2({
+    placeholder: "Pilih satu",
+    allowClear: true,
+    theme: "bootstrap4",
     ajax: {
         url: "/getlinks{{$page_data["page_data_urlname"]}}",
         type: "post",
@@ -224,6 +229,9 @@ function format ( d ) {
   });
 
   $.ajax({
+      placeholder: "Pilih satu",
+      allowClear: true,
+      theme: "bootstrap4",
       url: "/getoptions{{$page_data["page_data_urlname"]}}",
       type: "post",
       data: {

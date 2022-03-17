@@ -1639,14 +1639,15 @@ class KegiatanController extends Controller
 
             $detail = array();
             $total = 0;
-            foreach(Detailbiayakegiatan::whereParentId($kegiatan->id)->get() as $db){
-                $nom =  "<span class='cak-rp'>Rp</span> <span class='cak-nom'>".number_format($db->nominalbiaya,0,",",".")."</span>";
-                $total += (float) $db->nominalbiaya;
-                array_push($detail, array($db->coa_label, $db->deskripisibiaya, $nom));
+            foreach(Detailkegiatan::whereParentId($kegiatan->id)->get() as $db){
+                $nom =  "<span class='cak-rp'>Rp</span> <span class='cak-nom'>".number_format($db->standarbiaya,0,",",".")."</span>";
+                $vol =  "<span class='cak-nom'>".number_format($db->volume,0,",",".")."</span>";
+                $total += (float) $db->standarbiaya;
+                array_push($detail, array($db->detailbiayaproker_name, $vol, $db->satuan_label, $db->deskripsibiaya, $nom));
             }
             $tot =  "<b><span class='cak-rp'>Rp</span> <span class='cak-nom'>".number_format($total,0,",",".")."</span></b>";
                 
-            array_push($detail, array("", "<b>TOTAL</b>", $tot));
+            array_push($detail, array("","","", "<b>TOTAL</b>", $tot));
             // $detail = Detailbiayakegiatan::whereParentId($kegiatan->id)->get();
 
             array_push($dt, array($kegiatan->id, $kegiatan->kode_anggaran, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $kegiatan->output, $status, $detail));
