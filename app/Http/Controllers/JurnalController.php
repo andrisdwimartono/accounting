@@ -922,8 +922,18 @@ class JurnalController extends Controller
         
         $dt = array();
         $no = 0;
+        $id_saldo_awal = array();
+        if(isset($request->saldo_awal) && $request->saldo_awal){
+            foreach(Transaction::whereNull("isdeleted")->where("deskripsi", "Saldo Awal")->groupBy("parent_id")->get(["parent_id"]) as $tr){
+                array_push($id_saldo_awal, $tr->parent_id);
+            }
+        }
         foreach(Jurnal::where(function($q) use ($request) {
             $q->where("no_jurnal", "LIKE", "%" . $request->no_jurnal_search. "%");
+        })->where(function($q) use ($request, $id_saldo_awal){
+            if($request->saldo_awal == "1"){
+                $q->whereIn("id", $id_saldo_awal);
+            }
         })->whereNull("isdeleted")->whereBetween("tanggal_jurnal", [$request->tanggal_jurnal_from, $request->tanggal_jurnal_to])->orderBy("no_jurnal", $request->ordering)->get(["id", "keterangan", "no_jurnal", "tanggal_jurnal"]) as $jurnal){
             $no = $no+1;
             $act = '

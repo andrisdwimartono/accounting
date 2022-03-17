@@ -837,7 +837,9 @@ function getlist(){
             no_jurnal_search: $("#no_jurnal_search").val(),
             tanggal_jurnal_to: $("input[name=tanggal_jurnal_to]").val().split("/")[2]+"-"+ $("input[name=tanggal_jurnal_to]").val().split("/")[1]+"-"+ $("input[name=tanggal_jurnal_to]").val().split("/")[0],
             tanggal_jurnal_from: $("input[name=tanggal_jurnal_from]").val().split("/")[2]+"-"+$("input[name=tanggal_jurnal_from]").val().split("/")[1]+"-"+$("input[name=tanggal_jurnal_from]").val().split("/")[0],
-            ordering: $("#column_no_jurnal").attr("data-ordering")
+            ordering: $("#column_no_jurnal").attr("data-ordering")<?php if(isset($page_data["page_job"]) && $page_data["page_job"] == "Saldo Awal"){ ?>,
+            saldo_awal : 1
+            <?php } ?>
         },
         success: function(data){
             $("#caktable2").find('tbody').empty();
