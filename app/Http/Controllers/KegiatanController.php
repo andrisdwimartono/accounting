@@ -1639,12 +1639,12 @@ class KegiatanController extends Controller
             $detail = array();
             $total = 0;
 
-            $ct4_detailkegiatans = Detailkegiatan::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+            $ct4_detailkegiatans = Detailkegiatan::whereParentId($kegiatan->id)->whereNull("isarchived")->orderBy("no_seq")->get();
 
-            foreach(Approval::where("parent_id", $request->id)->where("jenismenu", "RKA")->orderBy("no_seq", "desc")->get() as $app){
-                $ok = Detailkegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+            foreach(Approval::where("parent_id", $kegiatan->id)->where("jenismenu", "RKA")->orderBy("no_seq", "desc")->get() as $app){
+                $ok = Detailkegiatan::whereParentId($kegiatan->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
                 if($ok){
-                    $ct4_detailkegiatans = Detailkegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get();
+                    $ct4_detailkegiatans = Detailkegiatan::whereParentId($kegiatan->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get();
                 }
             }
             
