@@ -1636,10 +1636,19 @@ class KegiatanController extends Controller
             $no = $no+1;
             $status = $this->status($kegiatan->status);
             
-
             $detail = array();
             $total = 0;
-            foreach(Detailkegiatan::whereParentId($kegiatan->id)->get() as $db){
+
+            $ct4_detailkegiatans = Detailkegiatan::whereParentId($request->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+
+            foreach(Approval::where("parent_id", $request->id)->where("jenismenu", "RKA")->orderBy("no_seq", "desc")->get() as $app){
+                $ok = Detailkegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                if($ok){
+                    $ct4_detailkegiatans = Detailkegiatan::whereParentId($request->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get();
+                }
+            }
+            
+            foreach($ct4_detailkegiatans as $db){
                 $nom =  "<span class='cak-rp'>Rp</span> <span class='cak-nom'>".number_format($db->standarbiaya,0,",",".")."</span>";
                 $vol =  "<span class='cak-nom'>".number_format($db->volume,0,",",".")."</span>";
                 $total += (float) $db->standarbiaya;
