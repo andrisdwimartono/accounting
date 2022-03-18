@@ -20,6 +20,7 @@ use App\Models\Opencloseperiode;
 use App\Models\Fakultas;
 use App\Models\Prodi;
 use App\Exports\JurnalExport;
+use App\Models\Globalsetting;
 use PDF;
 use Excel;
 use Session;
@@ -3678,7 +3679,133 @@ class JurnalController extends Controller
         return $pecahkan[$d1] . ' ' . $bulan[ (int)$pecahkan[$d2] ] . ' ' . $pecahkan[$d3];
     }
 
-    
+    /**
+    * Show the form for creating a new resource.
+    *
+    * @return \Illuminate\Http\Response
+    */
+    public function createjurnaltutupbuku()
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "Create";
+        $page_data["footer_js_page_specific_script"] = ["jurnal.page_specific_script.footer_js_jurnaltutupbuku"];
+        $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_create"];
+        
+        return view("jurnal.jurnaltutupbuku", ["page_data" => $page_data]);
+    }
+
+    public function storejurnaltutupbuku(Request $request){
+        $request->bulan_open = $request->bulan_open>9?$request->bulan_open:"0".$request->bulan_open;
+        $date = date("Y-m-t", strtotime($request->tahun_open."-".$request->bulan_open."-01"));
+        $this->checkOpenPeriode($date);
+
+        $bulan_periode = 1;
+        if(isset($request->bulan_open)){
+            $bulan_periode = $request->bulan_open;
+        }
+        $tahun_periode = 1;
+        if(isset($request->tahun_open)){
+            $tahun_periode = $request->tahun_open;
+        }
+        
+        $jurnaltutupbuku = Jurnal::where("apitype", "TUTUPBUKU")->whereNull("isdeleted")->where("tanggal_jurnal", $date)->first();
+        if($jurnaltutupbuku){
+            Jurnal::where("id", $jurnaltutupbuku->id)->update([
+                "isdeleted" => "on",
+                "alasan_hapus" => "Re-Run"
+            ]);
+            foreach(Transaction::where("parent_id", $jurnaltutupbuku->id)->get() as $ch){
+                $this->summerizeJournal("delete", $ch->id);
+                Transaction::whereId($ch->id)->delete();
+            }
+        }
+        $dt = array();
+        $no = 0;
+        $yearopen = Globalsetting::where("id", 1)->first();
+        //'tahun_periode', 'bulan_periode', 'coa', 'coa_label', 'fheader', 'debet', 'credit', 'unitkerja', 'unitkerja_label',
+        $uk = Unitkerja::where("unitkerja_code", "15")->first();
+        $id = Jurnal::create([
+            "unitkerja"=> $uk->id,
+            "unitkerja_label"=> $uk->unitkerja_name,
+            "no_jurnal"=> "JU########",
+            "tanggal_jurnal"=> $date,
+            "keterangan"=> "Jurnal Tutup Buku Bulan ".$request->bulan_open_label." Tahun ".$request->tahun_open,
+            "apitype" => "TUTUPBUKU",
+            "user_creator_id"=> Auth::user()->id
+        ])->id;
+
+        $no_jurnal = "JU";
+        for($i = 0; $i < 7-strlen((string)$id); $i++){
+            $no_jurnal .= "0";
+        }
+        $no_jurnal .= $id;
+        Jurnal::where("id", $id)->update([
+            "no_jurnal"=> $no_jurnal
+        ]);
+        $no_seq = 0;
+        $totaldebet = 0;
+        $totalcredit = 0;
+        foreach(Labarugi::where("tahun_periode", $tahun_periode)->where("bulan_periode", $bulan_periode)->whereNull("fheader")
+          ->get() as $labarugi){
+            $coa = Coa::where("id", $labarugi->coa)->first();
+            $totaldebet += $labarugi->debet;
+            $totalcredit += $labarugi->credit;
+            $idct = Transaction::create([
+                "no_seq" => $no_seq++,
+                "parent_id" => $id,
+                "deskripsi"=> "",
+                "debet"=> $labarugi->debet-$labarugi->credit>=0?$labarugi->debet-$labarugi->credit:0,
+                "credit"=> $labarugi->credit-$labarugi->debet>=0?$labarugi->credit-$labarugi->debet:0,
+                "unitkerja"=> $labarugi->unitkerja,
+                "unitkerja_label"=> $labarugi->unitkerja_label,
+                "anggaran"=> 0,
+                "anggaran_label"=> "",
+                "tanggal"=> $date,
+                "keterangan"=> "Jurnal Tutup Buku Bulan ".$request->bulan_open_label." Tahun ".$request->tahun_open,
+                "jenis_transaksi"=> 0,
+                "coa"=> $coa->id,
+                "coa_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,
+                "jenisbayar"=> $coa->jenisbayar,
+                "jenisbayar_label"=> $coa->jenisbayar_label,
+                "fheader"=> null,
+                "no_jurnal"=> $no_jurnal,
+                "apitype" => "TUTUPBUKU",
+                "user_creator_id" => Auth::user()->id
+            ])->id;
+            $this->summerizeJournal("store", $idct);
+        }
+
+        $coa = Coa::where("coa_code", '30400000')->first();
+        $idct = Transaction::create([
+            "no_seq" => $no_seq,
+            "parent_id" => $id,
+            "deskripsi"=> "",
+            "debet"=> $totalcredit-$totaldebet>=0?$totalcredit-$totaldebet:0,
+            "credit"=> $totaldebet-$totalcredit>=0?$totaldebet-$totalcredit:0,
+            "unitkerja"=> $uk->id,
+            "unitkerja_label"=> $uk->unitkerja_name,
+            "anggaran"=> 0,
+            "anggaran_label"=> "",
+            "tanggal"=> $date,
+            "keterangan"=> "Jurnal Tutup Buku Bulan ".$request->bulan_open_label." Tahun ".$request->tahun_open,
+            "jenis_transaksi"=> 0,
+            "coa"=> $coa->id,
+            "coa_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,
+            "jenisbayar"=> $coa->jenisbayar,
+            "jenisbayar_label"=> $coa->jenisbayar_label,
+            "fheader"=> null,
+            "no_jurnal"=> $no_jurnal,
+            "apitype" => "TUTUPBUKU",
+            "user_creator_id" => Auth::user()->id
+        ])->id;
+        $this->summerizeJournal("store", $idct);
+
+        return response()->json([
+            'status' => 201,
+            'message' => "Jurnal Tutup Buku telah dibuat",
+            'data' => ['id' => 2]
+        ]);
+    }
 }
 
     

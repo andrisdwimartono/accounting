@@ -1,0 +1,226 @@
+<!-- Required vendors -->
+<script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
+	<!-- <script src="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/js/bootstrap-select.min.js") }} "></script> -->
+    <script src="{{ asset ("/assets/motaadmin/vendor/chart.js/Chart.bundle.min.js") }}"></script>
+    <script src="{{ asset ("/assets/motaadmin/js/custom.min.js") }}"></script>
+	<script src="{{ asset ("/assets/motaadmin/js/deznav-init.js") }}"></script>
+	<!-- Apex Chart -->
+	<script src="{{ asset ("/assets/motaadmin/vendor/apexchart/apexchart.js") }}"></script>
+
+    <script src="{{ asset ("/assets/motaadmin/vendor/moment/moment.min.js") }}"></script>
+
+    <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.js") }}"></script>
+    <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.time.js") }}"></script>
+    <script src="{{ asset ("/assets/motaadmin/vendor/pickadate/picker.date.js") }}"></script>
+    <!-- Pickdate -->
+    <!-- <script src="{{ asset ("/assets/motaadmin/js/plugins-init/pickadate-init.js") }}"></script> -->
+
+	<!-- Svganimation scripts -->
+    <script src="{{ asset ("/assets/motaadmin/vendor/svganimation/vivus.min.js") }}"></script>
+    <script src="{{ asset ("/assets/motaadmin/vendor/svganimation/svg.animation.js") }}"></script>
+
+    <script src="{{ asset ("/assets/node_modules/@popperjs/core/dist/umd/popper.min.js") }}"></script>
+    <script src="{{ asset ("/assets/node_modules/gijgo/js/gijgo.min.js") }}"></script>
+    <script src="{{ asset ("/assets/node_modules/jquery-toast-plugin/dist/jquery.toast.min.js") }}"></script>
+    <script src="{{ asset ("/assets/node_modules/autonumeric/dist/autoNumeric.min.js") }}"></script>
+    <script src="{{ asset ("/assets/bootstrap/dist/js/bootstrap.bundle.min.js") }}"></script>
+    <script src="{{ asset ("/assets/bower_components/jquery-validation/dist/jquery.validate.min.js") }}"></script>
+    <script src="{{ asset ("/assets/bower_components/select2/dist/js/select2.full.min.js") }}"></script>
+    <script src="{{ asset ("/assets/datatables/js/jquery.dataTables.min.js") }}"></script>
+    <script src="{{ asset ("/assets/datatables/js/dataTables.bootstrap4.min.js") }}"></script>
+    <script src="{{ asset ("/assets/datatables/js/dataTables.rowReorder.min.js") }}"></script>
+    <script src="{{ asset ("/assets/datatables/js/dataTables.buttons.min.js") }}"></script>
+    <script src="{{ asset ("/assets/cto/js/cakrudtemplate.js") }}"></script>
+    <script src="{{ asset ("/assets/cto/js/cto_loadinganimation.min.js") }}"></script>
+    <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
+<script>
+    var editor;
+
+
+$(function () {
+
+    $.validator.setDefaults({
+        submitHandler: function (form, event) {
+            event.preventDefault();
+            cto_loading_show();
+            var quickForm = $("#quickForm");
+
+            var values = $('#quickForm').serialize();
+            var bulan_open = $("#bulan_open").val();
+            values = values + "&bulan_open=" + bulan_open;
+            var ajaxRequest;
+            ajaxRequest = $.ajax({
+                url: "/storejurnaltutupbuku",
+                type: "post",
+                data: values,
+                success: function(data){
+                    if(data.status >= 200 && data.status <= 299){
+                        id_jurnaltutupbuku = data.data.id;
+                            $.toast({
+                                text: data.message,
+                                heading: 'Status',
+                                icon: 'success',
+                                showHideTransition: 'fade',
+                                allowToastClose: true,
+                                hideAfter: 3000,
+                                position: 'mid-center',
+                                textAlign: 'left'
+                            });
+                    }
+                    cto_loading_hide();
+                    
+                    getdata();
+                    
+                },
+                error: function (err) {
+                    if (err.status == 422) {
+                        $.each(err.responseJSON.errors, function (i, error) {
+                            var validator = $("#quickForm").validate();
+                            var errors = {};
+                            errors[i] = error[0];
+                            validator.showErrors(errors);
+                    });
+                }
+                cto_loading_hide();
+            }
+        });
+    }
+});
+
+$("select").select2({
+    placeholder: "Pilih satu",
+    allowClear: true,
+    theme: "bootstrap4" @if($page_data["page_method_name"] == "View"),
+    disabled: true @endif
+});
+
+$("#bulan_open").select2({
+    placeholder: "Pilih satu",
+    allowClear: true,
+    theme: "bootstrap4",
+    disabled: true
+});
+
+$("#bulan_open").on("change", function() {
+    $("#bulan_open_label").val($("#bulan_open option:selected").text());
+});
+var fields = $("#quickForm").serialize();
+
+$.ajax({
+    url: "/getoptionsopencloseperiode",
+    type: "post",
+    data: {
+        fieldname: "bulan_open",
+        _token: $("#quickForm input[name=_token]").val()
+    },
+    success: function(data){
+        for(var i = 0; i < data.length; i++){
+            if(data[i].name){
+                var newState = new Option(data[i].label, data[i].name, true, false);
+                $("#bulan_open").append(newState).trigger("change");
+            }
+        }
+    },
+    error: function (err) {
+        if (err.status == 422) {
+            $.each(err.responseJSON.errors, function (i, error) {
+                var validator = $("#quickForm").validate();
+                var errors = {}
+                errors[i] = error[0];
+                validator.showErrors(errors);
+            });
+        }
+    }
+});
+
+$("#quickForm").validate({
+    rules: {
+        bulan_open :{
+            required: true
+        },
+        tahun_open :{
+            required: true,
+            minlength:4
+        },
+    },
+    messages: {
+        bulan_open :{
+            required: "Bulan harus diisi!!"
+        },
+        tahun_open :{
+            required: "Tahun harus diisi!!",
+            minlength: "Tahun minimal 4 karakter!!"
+        },
+    },
+    errorElement: "span",
+    errorPlacement: function (error, element) {
+        error.addClass("invalid-feedback");
+        element.closest(".cakfield").append(error);
+    },
+    highlight: function (element, errorClass, validClass) {
+        $(element).addClass("is-invalid");
+    },
+    unhighlight: function (element, errorClass, validClass) {
+        $(element).removeClass("is-invalid");
+    }
+    });
+
+});
+$(document).ready(function() {
+    getdata();
+} );
+
+function getdata(){
+    cto_loading_show();
+    $.ajax({
+        url: "/getdataopencloseperiode",
+        type: "post",
+        data: {
+            _token: $("#quickForm input[name=_token]").val()
+        },
+        success: function(data){
+            for(var i = 0; i < Object.keys(data.data.opencloseperiode).length; i++){
+                if(["ewfsdfsafdsafasdfasdferad"].includes(Object.keys(data.data.opencloseperiode)[i])){
+                    $("input[name="+Object.keys(data.data.opencloseperiode)[i]+"]").prop("checked", data.data.opencloseperiode[Object.keys(data.data.opencloseperiode)[i]]);
+                }else{
+                    try{
+                        anObject[Object.keys(data.data.opencloseperiode)[i]].set(data.data.opencloseperiode[Object.keys(data.data.opencloseperiode)[i]]);
+                    }catch(err){
+                        $("input[name="+Object.keys(data.data.opencloseperiode)[i]+"]").val(data.data.opencloseperiode[Object.keys(data.data.opencloseperiode)[i]]);
+                    }
+                    $("textarea[name="+Object.keys(data.data.opencloseperiode)[i]+"]").val(data.data.opencloseperiode[Object.keys(data.data.opencloseperiode)[i]]);
+                        if(["ewfsdfsafdsafasdfasdferad"].includes(Object.keys(data.data.opencloseperiode)[i])){
+                            if(data.data.opencloseperiode[Object.keys(data.data.opencloseperiode)[i]] != null){
+                                $("#btn_"+Object.keys(data.data.opencloseperiode)[i]+"").removeAttr("disabled");
+                                $("#btn_"+Object.keys(data.data.opencloseperiode)[i]+"").addClass("btn-success text-white");
+                                $("#btn_"+Object.keys(data.data.opencloseperiode)[i]+"").removeClass("btn-primary");
+                                var filename = Object.keys(data.data.opencloseperiode)[i];
+                                $("label[for=upload_"+Object.keys(data.data.opencloseperiode)[i]+"]").html(filename);
+                                $("#btn_"+Object.keys(data.data.opencloseperiode)[i]+"").html("Download");
+                            }
+                        }
+                }
+                $("select[name="+Object.keys(data.data.opencloseperiode)[i]+"]").val(data.data.opencloseperiode[Object.keys(data.data.opencloseperiode)[i]]).change();
+                }
+
+        cto_loading_hide();
+    },
+        error: function (err) {
+            // console.log(err);
+            if (err.status >= 400 && err.status <= 500) {
+                $.toast({
+                    text: err.status+" "+err.responseJSON.message,
+                    heading: 'Status',
+                    icon: 'warning',
+                    showHideTransition: 'fade',
+                    allowToastClose: true,
+                    hideAfter: 3000,
+                    position: 'mid-center',
+                    textAlign: 'left'
+                });
+            }
+            cto_loading_hide();
+        }
+    });
+}
+</script>

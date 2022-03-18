@@ -153,6 +153,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/jurnalbkmk/print', 'App\Http\Controllers\JurnalController@bkmkprint');
         Route::post('/jurnal/excel', 'App\Http\Controllers\JurnalController@excel');
         Route::post('/jurnalbkmk/excel', 'App\Http\Controllers\JurnalController@bkmkexcel');
+        Route::get('/createjurnaltutupbuku', 'App\Http\Controllers\JurnalController@createjurnaltutupbuku');
+        Route::post('/storejurnaltutupbuku', 'App\Http\Controllers\JurnalController@storejurnaltutupbuku');
 
         Route::get('/bukubesar', 'App\Http\Controllers\BukuBesarController@index')->name('bukubesar');
         Route::post('/getlistbukubesar', 'App\Http\Controllers\BukuBesarController@get_list');
