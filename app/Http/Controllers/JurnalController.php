@@ -3719,86 +3719,86 @@ class JurnalController extends Controller
                 Transaction::whereId($ch->id)->delete();
             }
         }
-        $dt = array();
-        $no = 0;
-        $yearopen = Globalsetting::where("id", 1)->first();
-        //'tahun_periode', 'bulan_periode', 'coa', 'coa_label', 'fheader', 'debet', 'credit', 'unitkerja', 'unitkerja_label',
-        $uk = Unitkerja::where("unitkerja_code", "15")->first();
-        $id = Jurnal::create([
-            "unitkerja"=> $uk->id,
-            "unitkerja_label"=> $uk->unitkerja_name,
-            "no_jurnal"=> "JU########",
-            "tanggal_jurnal"=> $date,
-            "keterangan"=> "Jurnal Tutup Buku Bulan ".$request->bulan_open_label." Tahun ".$request->tahun_open,
-            "apitype" => "TUTUPBUKU",
-            "user_creator_id"=> Auth::user()->id
-        ])->id;
+        // $dt = array();
+        // $no = 0;
+        // $yearopen = Globalsetting::where("id", 1)->first();
+        // //'tahun_periode', 'bulan_periode', 'coa', 'coa_label', 'fheader', 'debet', 'credit', 'unitkerja', 'unitkerja_label',
+        // $uk = Unitkerja::where("unitkerja_code", "15")->first();
+        // $id = Jurnal::create([
+        //     "unitkerja"=> $uk->id,
+        //     "unitkerja_label"=> $uk->unitkerja_name,
+        //     "no_jurnal"=> "JU########",
+        //     "tanggal_jurnal"=> $date,
+        //     "keterangan"=> "Jurnal Tutup Buku Bulan ".$request->bulan_open_label." Tahun ".$request->tahun_open,
+        //     "apitype" => "TUTUPBUKU",
+        //     "user_creator_id"=> Auth::user()->id
+        // ])->id;
 
-        $no_jurnal = "JU";
-        for($i = 0; $i < 7-strlen((string)$id); $i++){
-            $no_jurnal .= "0";
-        }
-        $no_jurnal .= $id;
-        Jurnal::where("id", $id)->update([
-            "no_jurnal"=> $no_jurnal
-        ]);
-        $no_seq = 0;
-        $totaldebet = 0;
-        $totalcredit = 0;
-        foreach(Labarugi::where("tahun_periode", $tahun_periode)->where("bulan_periode", $bulan_periode)->whereNull("fheader")
-          ->get() as $labarugi){
-            $coa = Coa::where("id", $labarugi->coa)->first();
-            $totaldebet += $labarugi->debet;
-            $totalcredit += $labarugi->credit;
-            $idct = Transaction::create([
-                "no_seq" => $no_seq++,
-                "parent_id" => $id,
-                "deskripsi"=> "",
-                "debet"=> $labarugi->credit-$labarugi->debet>=0?$labarugi->credit-$labarugi->debet:0,
-                "credit"=> $labarugi->debet-$labarugi->credit>=0?$labarugi->debet-$labarugi->credit:0,
-                "unitkerja"=> $labarugi->unitkerja,
-                "unitkerja_label"=> $labarugi->unitkerja_label,
-                "anggaran"=> 0,
-                "anggaran_label"=> "",
-                "tanggal"=> $date,
-                "keterangan"=> "Jurnal Tutup Buku Bulan ".$request->bulan_open_label." Tahun ".$request->tahun_open,
-                "jenis_transaksi"=> 0,
-                "coa"=> $coa->id,
-                "coa_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,
-                "jenisbayar"=> $coa->jenisbayar,
-                "jenisbayar_label"=> $coa->jenisbayar_label,
-                "fheader"=> null,
-                "no_jurnal"=> $no_jurnal,
-                "apitype" => "TUTUPBUKU",
-                "user_creator_id" => Auth::user()->id
-            ])->id;
-            $this->summerizeJournal("store", $idct);
-        }
+        // $no_jurnal = "JU";
+        // for($i = 0; $i < 7-strlen((string)$id); $i++){
+        //     $no_jurnal .= "0";
+        // }
+        // $no_jurnal .= $id;
+        // Jurnal::where("id", $id)->update([
+        //     "no_jurnal"=> $no_jurnal
+        // ]);
+        // $no_seq = 0;
+        // $totaldebet = 0;
+        // $totalcredit = 0;
+        // foreach(Labarugi::where("tahun_periode", $tahun_periode)->where("bulan_periode", $bulan_periode)->whereNull("fheader")
+        //   ->get() as $labarugi){
+        //     $coa = Coa::where("id", $labarugi->coa)->first();
+        //     $totaldebet += $labarugi->debet;
+        //     $totalcredit += $labarugi->credit;
+        //     $idct = Transaction::create([
+        //         "no_seq" => $no_seq++,
+        //         "parent_id" => $id,
+        //         "deskripsi"=> "",
+        //         "debet"=> $labarugi->credit-$labarugi->debet>=0?$labarugi->credit-$labarugi->debet:0,
+        //         "credit"=> $labarugi->debet-$labarugi->credit>=0?$labarugi->debet-$labarugi->credit:0,
+        //         "unitkerja"=> $labarugi->unitkerja,
+        //         "unitkerja_label"=> $labarugi->unitkerja_label,
+        //         "anggaran"=> 0,
+        //         "anggaran_label"=> "",
+        //         "tanggal"=> $date,
+        //         "keterangan"=> "Jurnal Tutup Buku Bulan ".$request->bulan_open_label." Tahun ".$request->tahun_open,
+        //         "jenis_transaksi"=> 0,
+        //         "coa"=> $coa->id,
+        //         "coa_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,
+        //         "jenisbayar"=> $coa->jenisbayar,
+        //         "jenisbayar_label"=> $coa->jenisbayar_label,
+        //         "fheader"=> null,
+        //         "no_jurnal"=> $no_jurnal,
+        //         "apitype" => "TUTUPBUKU",
+        //         "user_creator_id" => Auth::user()->id
+        //     ])->id;
+        //     $this->summerizeJournal("store", $idct);
+        // }
 
-        $coa = Coa::where("coa_code", '30400000')->first();
-        $idct = Transaction::create([
-            "no_seq" => $no_seq,
-            "parent_id" => $id,
-            "deskripsi"=> "",
-            "debet"=> $totaldebet-$totalcredit>=0?$totaldebet-$totalcredit:0,
-            "credit"=> $totalcredit-$totaldebet>=0?$totalcredit-$totaldebet:0,
-            "unitkerja"=> $uk->id,
-            "unitkerja_label"=> $uk->unitkerja_name,
-            "anggaran"=> 0,
-            "anggaran_label"=> "",
-            "tanggal"=> $date,
-            "keterangan"=> "Jurnal Tutup Buku Bulan ".$request->bulan_open_label." Tahun ".$request->tahun_open,
-            "jenis_transaksi"=> 0,
-            "coa"=> $coa->id,
-            "coa_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,
-            "jenisbayar"=> $coa->jenisbayar,
-            "jenisbayar_label"=> $coa->jenisbayar_label,
-            "fheader"=> null,
-            "no_jurnal"=> $no_jurnal,
-            "apitype" => "TUTUPBUKU",
-            "user_creator_id" => Auth::user()->id
-        ])->id;
-        $this->summerizeJournal("store", $idct);
+        // $coa = Coa::where("coa_code", '30400000')->first();
+        // $idct = Transaction::create([
+        //     "no_seq" => $no_seq,
+        //     "parent_id" => $id,
+        //     "deskripsi"=> "",
+        //     "debet"=> $totaldebet-$totalcredit>=0?$totaldebet-$totalcredit:0,
+        //     "credit"=> $totalcredit-$totaldebet>=0?$totalcredit-$totaldebet:0,
+        //     "unitkerja"=> $uk->id,
+        //     "unitkerja_label"=> $uk->unitkerja_name,
+        //     "anggaran"=> 0,
+        //     "anggaran_label"=> "",
+        //     "tanggal"=> $date,
+        //     "keterangan"=> "Jurnal Tutup Buku Bulan ".$request->bulan_open_label." Tahun ".$request->tahun_open,
+        //     "jenis_transaksi"=> 0,
+        //     "coa"=> $coa->id,
+        //     "coa_label"=> $this->convertCode($coa->coa_code)." ".$coa->coa_name,
+        //     "jenisbayar"=> $coa->jenisbayar,
+        //     "jenisbayar_label"=> $coa->jenisbayar_label,
+        //     "fheader"=> null,
+        //     "no_jurnal"=> $no_jurnal,
+        //     "apitype" => "TUTUPBUKU",
+        //     "user_creator_id" => Auth::user()->id
+        // ])->id;
+        // $this->summerizeJournal("store", $idct);
 
         return response()->json([
             'status' => 201,
