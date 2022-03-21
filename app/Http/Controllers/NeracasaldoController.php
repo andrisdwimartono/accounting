@@ -633,7 +633,7 @@ class NeracasaldoController extends Controller
     }
 
     public function patokanUrutan($coa_code){
-        for($i = 0; $i < 11-len($coa_code); $i++){
+        for($i = 0; $i < 11-strlen($coa_code); $i++){
             $coa_code .= '0';
         }
 
