@@ -40,6 +40,7 @@
     <script src="{{ asset ("/assets/cto/js/dateformatvalidation.min.js") }}"></script>
 
 <script>
+
   $(document).ready(function(){
     
     $('input[name=tanggal_jurnal_from], input[name=tanggal_jurnal_to]').pickadate({
@@ -57,10 +58,13 @@
             }
         }
     });
+
     $("#bukubesar").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false,
     }).buttons().container().appendTo('#bukubesar_wrapper .col-md-6:eq(0)');
+
     var today = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+
 	  var table = null;
     var dataTable;
   
@@ -68,6 +72,7 @@
       var e = document.getElementById("coa");
       coa = e.options[e.selectedIndex].text;
       cat = coa.substring(0, coa.indexOf("-")); 
+
       cto_loading_show();
       var target = [];
       $('#bukubesar thead tr th').each(function(i, obj) {
@@ -180,6 +185,7 @@
                 else saldo_kredit = formatRupiah(saldo,".");
               }
                 
+
               // Update footer
               $( api.column( 3 ).footer() ).html("JUMLAH");
               $( api.column( 4 ).footer() ).html(formatRupiah(debet,"."));
@@ -227,6 +233,7 @@
       cto_loading_hide();
       table = dataTable;
     }
+
     function convertCode(data){
       var val = "";
       for(var i = 0; i < data.length; i++){
@@ -238,6 +245,7 @@
       }
       return val;
     }
+
     function get_saldo_awal(){
       $.ajax({
         url: "/getsaldoawal",
@@ -274,33 +282,43 @@
           $( 'tr:eq(2) td:eq(1)', $('#bukubesar').dataTable().api().table().footer() ).html(saldo_debet);
           $( 'tr:eq(2) td:eq(2)', $('#bukubesar').dataTable().api().table().footer() ).html(saldo_kredit);        
         },
+
         cache: true
       })
     }
+
+
     $("select").select2({
       placeholder: "Pilih satu",
       allowClear: true,
       theme: "bootstrap4" @if($page_data["page_method_name"] == "View"),
       disabled: true @endif
     });
+
     $.fn.modal.Constructor.prototype._enforceFocus = function() {
+
     };
+
     $("#coa").on("change", function() {
       fetch_data();
       // get_saldo_awal();
     });
+
     $("input[name=tanggal_jurnal_from]").on("change", function() {
       fetch_data();
       // get_saldo_awal();
     });
+
     $("input[name=tanggal_jurnal_to]").on("change", function() {
       fetch_data();
       // get_saldo_awal();
     });
+
     $("#unitkerja").on("change", function() {
       fetch_data();
       // get_saldo_awal();
     });
+
     $("#coa").select2({
       placeholder: "Pilih satu",
       allowClear: true,
@@ -332,6 +350,7 @@
       },
       theme : "bootstrap4"
     });
+
     $("#unitkerja").select2({
       placeholder: "Pilih satu",
       allowClear: true,
@@ -367,5 +386,8 @@
     var menu = "laporan"
     var submenu = "bukubesar"
   });
+
   
+
+
 </script>
