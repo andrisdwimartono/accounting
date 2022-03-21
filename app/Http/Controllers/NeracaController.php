@@ -283,8 +283,8 @@ class NeracaController extends Controller
           ->get() as $neraca){
             
             $no = $no+1;
-            $coa_code = $this->patokanUrutan($neracasaldo->coa_code."");
-            $dt[$neraca->id] = array($neraca->id, $neracasaldo->coa_code, $neraca->coa_name, $neraca->debet, $neraca->credit, $neraca->coa, $neraca->level_coa, $neraca->fheader, $coa_code);
+            $coa_code = $this->patokanUrutan($neraca->coa_code."");
+            $dt[$neraca->id] = array($neraca->id, $neraca->coa_code, $neraca->coa_name, $neraca->debet, $neraca->credit, $neraca->coa, $neraca->level_coa, $neraca->fheader, $coa_code);
         }
         
 
