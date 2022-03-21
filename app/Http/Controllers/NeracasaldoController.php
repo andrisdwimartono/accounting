@@ -334,11 +334,11 @@ class NeracasaldoController extends Controller
         // array_multisort($columns, SORT_ASC, $dt);
 
         usort($dt, function($a, $b) {
-            return $a[8] <=> $b[8];
+            return (int)$a[8] <=> (int)$b[8];
         });
 
         // convert array
-        $dt = array_values($dt);
+        //$dt = array_values($dt);
 
         $output = array(
             "draw" => intval($request->draw),
