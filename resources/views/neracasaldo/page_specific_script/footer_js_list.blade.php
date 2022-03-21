@@ -177,8 +177,8 @@
 
               for(var i = 0; i < data.length; i++){
                 if(data[i][6] == 1){ // if level_coa < 1
-                  debet = debet+intVal(data[i][3]);
-                  kredit = kredit+intVal(data[i][4]);
+                  debet = debet+parseFloat(data[i][3]);
+                  kredit = kredit+parseFloat(data[i][4]);
                 }
               }
 
