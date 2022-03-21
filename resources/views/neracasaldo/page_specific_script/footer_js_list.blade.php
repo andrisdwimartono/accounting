@@ -176,7 +176,7 @@
               kredit = 0;
 
               for(var i = 0; i < data.length; i++){
-                if(data[i][6] == 1){ // if level_coa < 1
+                if(data[i][7] != 'on'){ // if level_coa < 1
                   debet = debet+parseFloat(data[i][3]);
                   kredit = kredit+parseFloat(data[i][4]);
                 }
