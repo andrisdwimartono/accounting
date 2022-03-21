@@ -283,7 +283,8 @@ class NeracaController extends Controller
           ->get() as $neraca){
             
             $no = $no+1;
-            $dt[$neraca->id] = array($neraca->id, $neraca->coa_code, $neraca->coa_name, $neraca->debet, $neraca->credit, $neraca->coa, $neraca->level_coa, $neraca->fheader);
+            $coa_code = $this->patokanUrutan($neracasaldo->coa_code."");
+            $dt[$neraca->id] = array($neraca->id, $neracasaldo->coa_code, $neraca->coa_name, $neraca->debet, $neraca->credit, $neraca->coa, $neraca->level_coa, $neraca->fheader, $coa_code);
         }
         
 
@@ -316,10 +317,13 @@ class NeracaController extends Controller
         }
         
         // sort by code
-        $columns = array_column($dt, 2);
-        array_multisort($columns, SORT_ASC, $dt);
-        // convert array
-        $dt = array_values($dt);
+        // $columns = array_column($dt, 2);
+        // array_multisort($columns, SORT_ASC, $dt);
+        // // convert array
+        // $dt = array_values($dt);
+        usort($dt, function($a, $b) {
+            return (int)$a[8] <=> (int)$b[8];
+        });
         
         $output = array(
             "draw" => intval($request->draw),
@@ -667,5 +671,13 @@ class NeracaController extends Controller
         $padd = (((int) $level-1)*20);
         $html = "<span style='padding-left:".strval($padd)."px'>".$data."</span>";        
         return $html;
+    }
+    
+    public function patokanUrutan($coa_code){
+        for($i = 0; $i < 12-strlen($coa_code); $i++){
+            $coa_code .= '0';
+        }
+
+        return $coa_code;
     }
 }
