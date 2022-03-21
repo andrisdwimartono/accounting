@@ -303,7 +303,8 @@ class NeracasaldoController extends Controller
           ->get() as $neracasaldo){
             
             $no = $no+1;
-            $dt[$neracasaldo->id] = array($neracasaldo->id, $neracasaldo->coa_code, $neracasaldo->coa_name, $neracasaldo->debet, $neracasaldo->credit, $neracasaldo->coa, $neracasaldo->level_coa, $neracasaldo->fheader, $this->patokanUrutan($neracasaldo->coa_code));
+            $coa_code = $this->patokanUrutan($neracasaldo->coa_code."");
+            $dt[$neracasaldo->id] = array($neracasaldo->id, $neracasaldo->coa_code, $neracasaldo->coa_name, $neracasaldo->debet, $neracasaldo->credit, $neracasaldo->coa, $neracasaldo->level_coa, $neracasaldo->fheader, $coa_code);
         }
         
         // get nominal
@@ -638,7 +639,7 @@ class NeracasaldoController extends Controller
     }
 
     public function patokanUrutan($coa_code){
-        for($i = 0; $i < 11-strlen($coa_code); $i++){
+        for($i = 0; $i < 12-strlen($coa_code); $i++){
             $coa_code .= '0';
         }
 
