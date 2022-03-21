@@ -330,8 +330,13 @@ class NeracasaldoController extends Controller
 
         
         // sort by code
-        $columns = array_column($dt, 8);
-        array_multisort($columns, SORT_ASC, $dt);
+        // $columns = array_column($dt, 8);
+        // array_multisort($columns, SORT_ASC, $dt);
+
+        usort($dt, function($a, $b) {
+            return $a[8] <=> $b[8];
+        });
+
         // convert array
         $dt = array_values($dt);
 
