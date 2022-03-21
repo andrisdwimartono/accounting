@@ -303,7 +303,7 @@ class NeracasaldoController extends Controller
           ->get() as $neracasaldo){
             
             $no = $no+1;
-            $dt[$neracasaldo->id] = array($neracasaldo->id, $neracasaldo->coa_code, $neracasaldo->coa_name, $neracasaldo->debet, $neracasaldo->credit, $neracasaldo->coa, $neracasaldo->level_coa, $neracasaldo->fheader);
+            $dt[$neracasaldo->id] = array($neracasaldo->id, $neracasaldo->coa_code, $neracasaldo->coa_name, $neracasaldo->debet, $neracasaldo->credit, $neracasaldo->coa, $neracasaldo->level_coa, $neracasaldo->fheader, $this->patokanUrutan($neracasaldo->coa_code));
         }
         
         // get nominal
@@ -330,7 +330,7 @@ class NeracasaldoController extends Controller
 
         
         // sort by code
-        $columns = array_column($dt, 1);
+        $columns = array_column($dt, 8);
         array_multisort($columns, SORT_ASC, $dt);
         // convert array
         $dt = array_values($dt);
@@ -630,5 +630,13 @@ class NeracasaldoController extends Controller
         $padd = (((int) $level-1)*20);
         $html = "<span style='padding-left:".strval($padd)."px'>".$data."</span>";        
         return $html;
+    }
+
+    public function patokanUrutan($coa_code){
+        for($i = 0; $i < 11-len($coa_code); $i++){
+            $coa_code .= '0';
+        }
+
+        return $coa_code;
     }
 }
