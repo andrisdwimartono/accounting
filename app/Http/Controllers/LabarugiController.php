@@ -388,7 +388,7 @@ class LabarugiController extends Controller
         
         // sort by code
         $columns = array_column($dt, 1);
-        array_multisort($columns, SORT_ASC, $dt);
+        array_multisort($columns, SORT_ASC, SORT_STRING, $dt);
         // convert array
         $dt = array_values($dt);
         
