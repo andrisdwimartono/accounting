@@ -86,21 +86,22 @@ function formatRupiahWNegative(angka, prefix){
     var negatif = "";
     if(angka < 0){
         negatif = "-";
-    }
-    var number_string = angka.toString().replace(/[^,\d]/g, '').toString(),
-    split   		= number_string.split(','),
-    sisa     		= split[0].length % 3,
-    rupiah     		= split[0].substr(0, sisa),
-    ribuan     		= split[0].substr(sisa).match(/\d{3}/gi);
-
-    // tambahkan titik jika yang di input sudah menjadi angka ribuan
-    if(ribuan){
-        separator = sisa ? '.' : '';
-        rupiah += separator + ribuan.join('.');
+        angka = angka*(-1);
     }
 
-    rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
-    return prefix == undefined ? rupiah : (rupiah ? '<span class="cak-rp">Rp </span><span class="cak-nom">' + negatif+rupiah : '</span>');
+    var angka_string = angka.toString();
+    var angka_string_el = angka_string.split(".");
+    var number = "";
+    var x = 0;
+    for(var i = angka_string_el[0].length-1; i >= 0; i--){
+      x++;
+      number = angka_string_el[0][i]+number;
+      if(x%3 == 0 && x != angka_string_el[0].length-1){
+        number = "."+number;
+      }
+    }
+    
+    return prefix == undefined ? number : (number ? '<span class="cak-rp">Rp </span><span class="cak-nom">' + negatif+number : '</span>');
 }
 
 
