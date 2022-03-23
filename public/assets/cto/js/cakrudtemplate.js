@@ -102,7 +102,10 @@ function formatRupiahWNegative(angka, prefix){
     }
 
     if(angka_string_el[1] !== undefined){
-      number = number+","+angka_string_el[1].substring(0,2);
+      var n = parseFloat("0."+angka_string_el[1]).toFixed(2);
+      var n2 = n.toString();
+      var n3 = n2.split(".");
+      number = number+","+n3[1];
     }else{
       number = number+",00";
     }
