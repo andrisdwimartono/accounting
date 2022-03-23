@@ -65,6 +65,15 @@ class BukuBesarExport implements FromView, WithStyles
         if(isset($this->request->search["tahun_periode"])){
             $tahun_periode = $this->request->search["tahun_periode"];
         }
+        $tanggal_jurnal_from = date('Y-m-d');
+        if(isset($this->request->search["tanggal_jurnal_from"])){
+            $tanggal_jurnal_from = $this->request->search["tanggal_jurnal_from"];
+        }
+        $tanggal_jurnal_to = date('Y-m-d');
+        if(isset($this->request->search["tanggal_jurnal_to"])){
+            $tanggal_jurnal_to = $this->request->search["tanggal_jurnal_to"];
+        }
+
         $unitkerja = 0;
         if(isset($this->request->search["unitkerja"])){
             $unitkerja = $this->request->search["unitkerja"];
@@ -87,11 +96,10 @@ class BukuBesarExport implements FromView, WithStyles
           ->where(function($q) {
                 $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
             })
-          ->whereMonth("tanggal", "=", $bulan_periode)
-          ->whereYear("tanggal", "=", $tahun_periode)
+            ->whereBetween("tanggal", [$tanggal_jurnal_from, $tanggal_jurnal_to])
           ->whereNull('isdeleted')
           ->where(function($q) use ($unitkerja){
-            if($unitkerja != null && $unitkerja != 0){
+            if($unitkerja != 'null' && $unitkerja != 0){
                 $q->where("unitkerja", $unitkerja);
             }
         })
@@ -116,7 +124,7 @@ class BukuBesarExport implements FromView, WithStyles
           }
 
         $uk = null;
-        if($unitkerja != null && $unitkerja != 0){
+        if($unitkerja != 'null' && $unitkerja != 0){
             $uk = Unitkerja::where("id", ($unitkerja?$unitkerja:0))->first();
         }
 
@@ -132,8 +140,8 @@ class BukuBesarExport implements FromView, WithStyles
             "cre" => (int) $cre_total,
             "sal_deb" => (int) $sal_deb,
             "sal_cre" => (int) $sal_cre,
-            "bulan" => $this->convertBulan($bulan_periode), 
-            "tahun" => $tahun_periode, 
+            "bulan" => $tanggal_jurnal_from . ' - ', 
+            "tahun" => $tanggal_jurnal_to, 
             "unitkerja" => $unitkerja, 
             "unitkerja_label" => $uk?$uk->unitkerja_name:"",
             "coa" => $dc, 

@@ -95,10 +95,10 @@
                       var url = '/bukubesar/print';
                       var form = $('<form action="' + url + '" target="_blank" method="post">' +
                         '<input type="hidden" name="_token" value="'+$("input[name=_token]").val()+'" />' +
-                        '<input type="hidden" name="search[bulan_periode]" value="'+$("#bulan_periode").val()+'" />' +
-                        '<input type="hidden" name="search[tahun_periode]" value="'+$("#tahun_periode").val()+'" />' +
+                        '<input type="hidden" name="search[tanggal_jurnal_from]" value="'+$("#tanggal_jurnal_from").val()+'" />' +
+                        '<input type="hidden" name="search[tanggal_jurnal_to]" value="'+$("#tanggal_jurnal_to").val()+'" />' +
                         '<input type="hidden" name="search[coa_code]" value="'+$("#coa").val()+'" />' +
-                        '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja").val()+'" />' +
+                        '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja_label").val()+'" />' +
                         '</form>');
                       $('body').append(form);
                       form.submit();
@@ -115,10 +115,10 @@
                       var url = '/bukubesar/excel';
                       var form = $('<form action="' + url + '" target="_blank" method="post">' +
                         '<input type="hidden" name="_token" value="'+$("input[name=_token]").val()+'" />' +
-                        '<input type="hidden" name="search[bulan_periode]" value="'+$("#bulan_periode").val()+'" />' +
-                        '<input type="hidden" name="search[tahun_periode]" value="'+$("#tahun_periode").val()+'" />' +
+                        '<input type="hidden" name="search[tanggal_jurnal_from]" value="'+$("#tanggal_jurnal_from").val()+'" />' +
+                        '<input type="hidden" name="search[tanggal_jurnal_to]" value="'+$("#tanggal_jurnal_to").val()+'" />' +
                         '<input type="hidden" name="search[coa_code]" value="'+$("#coa").val()+'" />' +
-                        '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja").val()+'" />' +
+                        '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja_label").val()+'" />' +
                         '</form>');
                       $('body').append(form);
                       form.submit();
@@ -148,7 +148,7 @@
           "order": [[ 1, "asc" ]],
           "fixedColumns": true,
           "ajax" : {
-            url:"/getlist{{$page_data["page_data_urlname"]}}",
+            url:"/getlist{{$page_data['page_data_urlname']}}",
             type:"POST",
             data:{
               search : {
@@ -316,6 +316,7 @@
 
     $("#unitkerja").on("change", function() {
       fetch_data();
+      $("#unitkerja_label").val($("#unitkerja option:selected").text());
       // get_saldo_awal();
     });
 
@@ -324,7 +325,7 @@
       allowClear: true,
       theme: "bootstrap4",
       ajax: {
-          url: "/getlinks{{$page_data["page_data_urlname"]}}",
+          url: "/getlinks{{$page_data['page_data_urlname']}}",
           type: "post",
           dataType: "json",
           data: function(params) {
@@ -356,7 +357,7 @@
       allowClear: true,
       theme: "bootstrap4",
       ajax: {
-          url: "/getlinks{{$page_data["page_data_urlname"]}}",
+          url: "/getlinks{{$page_data['page_data_urlname']}}",
           type: "post",
           dataType: "json",
           data: function(params) {

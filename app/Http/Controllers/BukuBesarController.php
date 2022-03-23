@@ -311,13 +311,13 @@ class BukuBesarController extends Controller
         if(isset($request->search["coa_code"])){
             $coa = $request->search["coa_code"];
         }
-        $bulan_periode = 1;
-        if(isset($request->search["bulan_periode"])){
-            $bulan_periode = $request->search["bulan_periode"];
+        $tanggal_jurnal_from = date('Y-m-d');
+        if(isset($request->search["tanggal_jurnal_from"])){
+            $tanggal_jurnal_from = $request->search["tanggal_jurnal_from"];
         }
-        $tahun_periode = 1;
-        if(isset($request->search["tahun_periode"])){
-            $tahun_periode = $request->search["tahun_periode"];
+        $tanggal_jurnal_to = date('Y-m-d');
+        if(isset($request->search["tanggal_jurnal_to"])){
+            $tanggal_jurnal_to = $request->search["tanggal_jurnal_to"];
         }
 
         $unitkerja = 0;
@@ -345,8 +345,7 @@ class BukuBesarController extends Controller
           ->where(function($q) {
                 $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
             })
-          ->whereMonth("tanggal", "=", $bulan_periode)
-          ->whereYear("tanggal", "=", $tahun_periode)
+            ->whereBetween("tanggal", [$tanggal_jurnal_from, $tanggal_jurnal_to])
           ->whereNull('isdeleted')
           ->where(function($q) use ($unitkerja){
             if($unitkerja != null && $unitkerja != 0){
@@ -399,7 +398,7 @@ class BukuBesarController extends Controller
         if($unitkerja != null && $unitkerja != 0){
             $uk = Unitkerja::where("id", ($unitkerja?$unitkerja:0))->first();
         }
-        $pdf = PDF::loadview("bukubesar.print", ["bukubesar" => $output,"data" => $request, "globalsetting" => Session::get('global_setting'), "bulan" => $this->convertBulan($bulan_periode), "tahun" => $tahun_periode, "coa" => $dc, "unitkerja" => $unitkerja, "unitkerja_label" => $uk?$uk->unitkerja_name:"", "logo" => $dataUri]);
+        $pdf = PDF::loadview("bukubesar.print", ["bukubesar" => $output,"data" => $request, "globalsetting" => Session::get('global_setting'), "bulan" => $tanggal_jurnal_from, "tahun" => $tanggal_jurnal_to, "coa" => $dc, "unitkerja" => $unitkerja, "unitkerja_label" => $uk?$uk->unitkerja_name:"", "logo" => $dataUri]);
         $pdf->getDomPDF();
         $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
         return $pdf->stream('bukubesar.pdf');
