@@ -106,7 +106,7 @@
 
         <footer>
         </footer>
-
+            var_dump($neraca);
         <main>
         <table class="table" border=1>
                 <thead >
