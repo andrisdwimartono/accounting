@@ -96,7 +96,7 @@ function formatRupiahWNegative(angka, prefix){
     for(var i = angka_string_el[0].length-1; i >= 0; i--){
       x++;
       number = angka_string_el[0][i]+number;
-      if(x%3 == 0 && x != angka_string_el[0].length-1){
+      if(x%3 == 0 && x < angka_string_el[0].length-1){
         number = "."+number;
       }
     }
