@@ -466,7 +466,7 @@ class NeracasaldoController extends Controller
             if($bulan_periode >= $yearopen->bulan_tutup_tahun){
                 //only one year
                 $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
-                    $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    $q->where("bulan_periode", ">=", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
                 });
             }else{
                 //cross year
@@ -478,7 +478,7 @@ class NeracasaldoController extends Controller
             }
             $q->orWhere(function($q){
                 $q->whereNull("bulan_periode");
-            });  
+            });
         })
         ->where(function($q) use ($unitkerja){
             $q->where(function($q) use ($unitkerja){
@@ -496,7 +496,8 @@ class NeracasaldoController extends Controller
         ->orderBy("coas.level_coa", "desc")
           ->get() as $neraca){    
             $no = $no+1;
-            $dt[$neraca->id] = array($neraca->id, $neraca->coa_code, $neraca->coa_name, $neraca->debet, $neraca->credit, $neraca->coa, $neraca->level_coa, $neraca->fheader);
+            $coa_code = $this->patokanUrutan($neraca->coa_code."");
+            $dt[$neraca->id] = array($neraca->id, $neraca->coa_code, $neraca->coa_name, $neraca->debet, $neraca->credit, $neraca->coa, $neraca->level_coa, $neraca->fheader, $coa_code);
         }
         
 
@@ -529,10 +530,14 @@ class NeracasaldoController extends Controller
         }
         
         // sort by code
-        $columns = array_column($dt, 1);
-        array_multisort($columns, SORT_ASC, SORT_STRING, $dt);
-        // convert array
-        $dt = array_values($dt);
+        // $columns = array_column($dt, 1);
+        // array_multisort($columns, SORT_ASC, SORT_STRING, $dt);
+        // // convert array
+        // $dt = array_values($dt);
+
+        usort($dt, function($a, $b) {
+            return (int)$a[8] <=> (int)$b[8];
+        });
         
         // re-formatting
         $deb_total = 0;
