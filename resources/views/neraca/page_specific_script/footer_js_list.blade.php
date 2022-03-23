@@ -326,7 +326,7 @@
 
     $("#unitkerja").on("change", function() {
       fetch_data();
-      $("#unitkerja_label").val($("#unitkerja option:selected").text());
+      $("#unitkerja_label").val($("#unitkerja option:selected").val());
     });
 
 

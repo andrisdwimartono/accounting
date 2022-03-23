@@ -154,11 +154,11 @@ $.fn.modal.Constructor.prototype._enforceFocus = function() {
 };
 
 $("#unitkerja").on("change", function() {
-    $("#unitkerja_label").val($("#unitkerja option:selected").text());
+    $("#unitkerja_label").val($("#unitkerja option:selected").val());
 });
 
 $("#unitkerja").on("change", function() {
-    $("#unitkerja_label").val($("#unitkerja option:selected").text());
+    $("#unitkerja_label").val($("#unitkerja option:selected").val());
 });
 
 $("#anggaran").on("change", function() {
