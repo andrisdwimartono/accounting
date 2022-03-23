@@ -100,6 +100,8 @@ function formatRupiahWNegative(angka, prefix){
         number = "."+number;
       }
     }
+
+    number = number+angka_string_el[1];
     
     return prefix == undefined ? number : (number ? '<span class="cak-rp">Rp </span><span class="cak-nom">' + negatif+number : '</span>');
 }
