@@ -66,20 +66,28 @@ function formatDate(date) {
 }
 
 function formatRupiah(angka, prefix){
-    var number_string = angka.toString().replace(/[^,\d]/g, '').toString(),
-    split   		= number_string.split(','),
-    sisa     		= split[0].length % 3,
-    rupiah     		= split[0].substr(0, sisa),
-    ribuan     		= split[0].substr(sisa).match(/\d{3}/gi);
-
-    // tambahkan titik jika yang di input sudah menjadi angka ribuan
-    if(ribuan){
-        separator = sisa ? '.' : '';
-        rupiah += separator + ribuan.join('.');
+  var angka_string = angka.toString();
+  var angka_string_el = angka_string.split(".");
+  var number = "";
+  var x = 0;
+  for(var i = angka_string_el[0].length-1; i >= 0; i--){
+    x++;
+    number = angka_string_el[0][i]+number;
+    if(x%3 == 0 && x < angka_string_el[0].length){
+      number = "."+number;
     }
+  }
 
-    rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
-    return prefix == undefined ? rupiah : (rupiah ? '<span class="cak-rp">Rp </span><span class="cak-nom">' + rupiah : '</span>');
+  if(angka_string_el[1] !== undefined){
+    var n = parseFloat("0."+angka_string_el[1]).toFixed(2);
+    var n2 = n.toString();
+    var n3 = n2.split(".");
+    number = number+","+n3[1];
+  }else{
+    number = number+",00";
+  }
+  
+  return prefix == undefined ? number : (number ? '<span class="cak-rp">Rp </span><span class="cak-nom">' + number : '</span>');
 }
 
 function formatRupiahWNegative(angka, prefix){
