@@ -1126,7 +1126,7 @@ function convertCode(data){
      $("#totaldebet").text('Rp '+totaldebet.toLocaleString('id'));
      $("#totalkredit").text('Rp '+totalkredit.toLocaleString('id'));
      $("#totalselisih").text('Rp '+(totaldebet-totalkredit).toLocaleString('id'));
-     if(totaldebet-totalkredit != 0){
+     if(totaldebet-totalkredit != 0,00){
         $("#totalselisih").addClass("border-danger");
         $("#totalselisih").addClass("text-danger");
      }else{
