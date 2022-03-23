@@ -181,7 +181,7 @@
               debet = 0;
               kredit = 0;
               for(var i = 0; i < data.length; i++){
-                if(data[i][6] == 1){ // if level_coa < 1
+                if(data[i][7] != "on"){ // if level_coa < 1
                   debet = debet+intVal(data[i][3]);
                   kredit = kredit+intVal(data[i][4]);
                 }
