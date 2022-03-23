@@ -77,6 +77,7 @@
                                         <div class="col-sm-9 right">
                                             <select name="unitkerja" id="unitkerja" class="form-control select2bs4staticBackdrop" data-row="1" style="width: 100%;">
                                             </select>
+                                            <input type="hidden" name="unitkerja_label" id="unitkerja_label">
                                         </div>
                                     </div>                        
                                 </div>
