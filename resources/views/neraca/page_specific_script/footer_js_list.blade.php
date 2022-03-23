@@ -104,7 +104,7 @@
                         '<input type="hidden" name="search[bulan_periode]" value="'+$("#bulan_periode").val()+'" />' +
                         '<input type="hidden" name="search[tahun_periode]" value="'+$("#tahun_periode").val()+'" />' +
                         '<input type="hidden" name="search[child_level]" value="'+$("#child_level").val()+'" />' +
-                        '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja").val()+'" />' +
+                        '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja_label").val()+'" />' +
                         '</form>');
                       $('body').append(form);
                       form.submit();
@@ -124,7 +124,7 @@
                         '<input type="hidden" name="search[bulan_periode]" value="'+$("#bulan_periode").val()+'" />' +
                         '<input type="hidden" name="search[tahun_periode]" value="'+$("#tahun_periode").val()+'" />' +
                         '<input type="hidden" name="search[child_level]" value="'+$("#child_level").val()+'" />' +
-                        '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja").val()+'" />' +
+                        '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja_label").val()+'" />' +
                         '</form>');
                       $('body').append(form);
                       form.submit();
@@ -326,6 +326,7 @@
 
     $("#unitkerja").on("change", function() {
       fetch_data();
+      $("#unitkerja_label").val($("#unitkerja option:selected").text());
     });
 
 

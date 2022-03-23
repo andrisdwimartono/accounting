@@ -1,5 +1,5 @@
-  <!-- Required vendors -->
-  <script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
+<!-- Required vendors -->
+<script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
 	<script src="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/js/bootstrap-select.min.js") }} "></script>
   <script src="{{ asset ("/assets/motaadmin/vendor/chart.js/Chart.bundle.min.js") }}"></script>
   <script src="{{ asset ("/assets/motaadmin/js/custom.min.js") }}"></script>
@@ -45,9 +45,7 @@
     $("#neracasaldo").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false,
     }).buttons().container().appendTo('#neracasaldo_wrapper .col-md-6:eq(0)');
-
     fetch_data();
-
     var today = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
         $('#startDate').datepicker({
             uiLibrary: 'bootstrap4',
@@ -75,7 +73,6 @@
                     this.set('select', date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate(), { format: 'yyyy-mm-dd' });
             }
         });
-
 	  var table = null;
     var dataTable;
   
@@ -103,13 +100,12 @@
                         '<input type="hidden" name="_token" value="'+$("input[name=_token]").val()+'" />' +
                         '<input type="hidden" name="search[bulan_periode]" value="'+$("#bulan_periode").val()+'" />' +
                         '<input type="hidden" name="search[tahun_periode]" value="'+$("#tahun_periode").val()+'" />' +
-                        '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja").val()+'" />' +
+                        '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja_label").val()+'" />' +
                         '</form>');
                       $('body').append(form);
                       form.submit();
                     },
                 },
-
                 {
                     text: "Excel <span class='btn-icon-right'><i class='fa fa-print'></i></span>",
                     className: "btn btn-success",
@@ -123,7 +119,7 @@
                         '<input type="hidden" name="_token" value="'+$("input[name=_token]").val()+'" />' +
                         '<input type="hidden" name="search[bulan_periode]" value="'+$("#bulan_periode").val()+'" />' +
                         '<input type="hidden" name="search[tahun_periode]" value="'+$("#tahun_periode").val()+'" />' +
-                        '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja").val()+'" />' +
+                        '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja_label").val()+'" />' +
                         '</form>');
                       $('body').append(form);
                       form.submit();
@@ -174,20 +170,17 @@
               
               debet = 0;
               kredit = 0;
-
               for(var i = 0; i < data.length; i++){
                 if(data[i][7] != 'on'){ // if level_coa < 1
                   debet = debet+parseFloat(data[i][3]);
                   kredit = kredit+parseFloat(data[i][4]);
                 }
               }
-
               saldo = debet-kredit
               saldo_debet = "";
               saldo_kredit = "";
               if(saldo<0) saldo_debet = formatRupiahWNegative(saldo,".");
               else saldo_kredit = formatRupiahWNegative(saldo,".");
-
               // Update footer
               $( api.column( 2 ).footer() ).html("JUMLAH");
               $( api.column( 3 ).footer() ).html(formatRupiahWNegative(debet,"."));
@@ -271,7 +264,6 @@
       cto_loading_hide();
       table = dataTable;
     }
-
     function convertCode(data){
       var val = "";
       for(var i = 0; i < data.length; i++){
@@ -287,31 +279,24 @@
       }
       return val;
     }
-
-
     $("select").select2({
       placeholder: "Pilih satu",
       allowClear: true,
       theme: "bootstrap4" @if($page_data["page_method_name"] == "View"),
       disabled: true @endif
     });
-
     $.fn.modal.Constructor.prototype._enforceFocus = function() {
-
     };
-
     $("#bulan_periode").on("change", function() {
       fetch_data();
     });
-
     $("#tahun_periode").on("change", function() {
       fetch_data();
     });
-
     $("#unitkerja").on("change", function() {
       fetch_data();
+      $("#unitkerja_label").val($("#unitkerja option:selected").text());
     });
-
     $("#coa").select2({
       ajax: {
           url: "/getlinks{{$page_data["page_data_urlname"]}}",
@@ -342,7 +327,6 @@
           cache: true
       }
     });
-
     $("#unitkerja").select2({
       placeholder: "Pilih satu",
       allowClear: true,

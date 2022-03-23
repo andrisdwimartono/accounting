@@ -103,7 +103,7 @@
                         '<input type="hidden" name="_token" value="'+$("input[name=_token]").val()+'" />' +
                         '<input type="hidden" name="search[bulan_periode]" value="'+$("#bulan_periode").val()+'" />' +
                         '<input type="hidden" name="search[tahun_periode]" value="'+$("#tahun_periode").val()+'" />' +
-                        '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja").val()+'" />' +
+                        '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja_label"").val()+'" />' +
                         '</form>');
                       $('body').append(form);
                       form.submit();
@@ -123,7 +123,7 @@
                         '<input type="hidden" name="_token" value="'+$("input[name=_token]").val()+'" />' +
                         '<input type="hidden" name="search[bulan_periode]" value="'+$("#bulan_periode").val()+'" />' +
                         '<input type="hidden" name="search[tahun_periode]" value="'+$("#tahun_periode").val()+'" />' +
-                        '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja").val()+'" />' +
+                        '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja_label").val()+'" />' +
                         '</form>');
                       $('body').append(form);
                       form.submit();
@@ -158,7 +158,7 @@
               search : {
                 bulan_periode: $("#bulan_periode").val(),
                 tahun_periode: $("#tahun_periode").val(),
-                unitkerja: $("#unitkerja").val(),
+                unitkerja: $("#unitkerja_label"").val(),
               },  
               _token: $("input[name=_token]").val()
             },
@@ -317,6 +317,7 @@
 
     $("#unitkerja").on("change", function() {
       fetch_data();
+      $("#unitkerja_label").val($("#unitkerja option:selected").text());
       // get_saldo_awal();
     });
 
