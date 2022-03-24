@@ -98,7 +98,13 @@ function formatRupiahWNegative(angka, prefix){
     }
 
     var angka_string = angka.toString();
-    var angka_string_el = angka_string.split(".");
+    var angka_string_el = [];
+    if(angka_string.indexOf('.') <= -1){
+      angka_string_el[0] = angka_string;
+      angka_string_el[1] = "00";
+    }else{
+      angka_string_el = angka_string.split(".");
+    }
     var number = "";
     var x = 0;
     for(var i = angka_string_el[0].length-1; i >= 0; i--){
@@ -109,7 +115,14 @@ function formatRupiahWNegative(angka, prefix){
       }
     }
 
-    
+    if(angka_string_el[1] !== undefined){
+      var n = parseFloat("0."+angka_string_el[1]).toFixed(2);
+      var n2 = n.toString();
+      var n3 = n2.split(".");
+      number = number+","+n3[1];
+    }else{
+      number = number+",00";
+    }
     
     return prefix == undefined ? number : (number ? '<span class="cak-rp">Rp </span><span class="cak-nom">' + negatif+number : '</span>');
 }
