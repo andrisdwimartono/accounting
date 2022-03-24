@@ -213,8 +213,8 @@
               $( api.column( 4 ).footer() ).html(formatRupiahWNegative(debet,"."));
               $( api.column( 5 ).footer() ).html(formatRupiahWNegative(kredit,"."));
               $( 'tr:eq(1) td:eq(3)', api.table().footer() ).html("JUMLAH TOTAL").addClass("text-right");
-              $( 'tr:eq(1) td:eq(4)', api.table().footer() ).html(sd);
-              $( 'tr:eq(1) td:eq(5)', api.table().footer() ).html(sk);
+              $( 'tr:eq(1) td:eq(4)', api.table().footer() ).html(saldo_debet);
+              $( 'tr:eq(1) td:eq(5)', api.table().footer() ).html(saldo_kredit);
               
               $( 'tr:eq(2) td:eq(3)', api.table().footer() ).html("SALDO TOTAL").addClass("text-right");
               $( 'tr:eq(2) td:eq(4)', api.table().footer() ).html(saldo_debet_total);

@@ -98,13 +98,7 @@ function formatRupiahWNegative(angka, prefix){
     }
 
     var angka_string = angka.toString();
-    var angka_string_el = [];
-    if(angka_string.indexOf('.') <= -1){
-      angka_string_el[0] = angka_string;
-      angka_string_el[1] = "00";
-    }else{
-      angka_string_el = angka_string.split(".");
-    }
+    var angka_string_el = angka_string.split(".");
     var number = "";
     var x = 0;
     for(var i = angka_string_el[0].length-1; i >= 0; i--){
