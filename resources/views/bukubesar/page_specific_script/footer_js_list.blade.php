@@ -182,15 +182,13 @@
               
               if(category == "aset" || category == 'biaya'|| category == 'biaya_lainnya'){
                 saldo = debet-kredit
-                if(saldo>0) saldo_kredit = formatRupiah(saldo,".");
-                else saldo_debet = formatRupiah(saldo,".");
+                saldo_debet = formatRupiah(saldo,".");
+                saldo_kredit = "";
               } else {
                 saldo = kredit-debet
-                if(saldo>0) saldo_debet = formatRupiah(saldo,".");
-                else saldo_kredit = formatRupiah(saldo,".");
+                saldo_debet = "";
+                saldo_kredit = formatRupiah(saldo,".");
               }
-                
-
               // Update footer
               $( api.column( 3 ).footer() ).html("JUMLAH");
               $( api.column( 4 ).footer() ).html(formatRupiah(debet,"."));
