@@ -80,6 +80,7 @@ class BukuBesarController extends Controller
     public function get_list(Request $request)
     {
         $coa = null;
+        $coa_model = null;
         $list_column = array("id","tanggal", "coa_code", "no_jurnal", "deskripsi", "debet", "kredit");
         
         $keyword = null;
@@ -89,6 +90,7 @@ class BukuBesarController extends Controller
         }
         if(isset($request->search["coa_code"])){
             $coa = $request->search["coa_code"];
+            $coa_model = Coa::where("id", $coa)->first();
         }
         $bulan_periode = 1;
         if(isset($request->search["bulan_periode"])){
@@ -141,7 +143,7 @@ class BukuBesarController extends Controller
           ->limit($limit[1])
           ->get(["id", "tanggal", "no_jurnal", "deskripsi", "debet", "credit"])) as $bukubesar){
             $no = $no+1;
-            array_push($dt, array($bukubesar->id, $bukubesar->tanggal, $bukubesar->no_jurnal, $bukubesar->deskripsi, $bukubesar->debet, $bukubesar->credit));
+            array_push($dt, array($bukubesar->id, $bukubesar->tanggal, $bukubesar->no_jurnal, $bukubesar->deskripsi, $bukubesar->debet, $bukubesar->credit, $coa_model->category));
     }
         $output = array(
             "draw" => intval($request->draw),

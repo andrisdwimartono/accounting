@@ -530,14 +530,10 @@ class NeracasaldoController extends Controller
         }
         
         // sort by code
-        // $columns = array_column($dt, 1);
-        // array_multisort($columns, SORT_ASC, SORT_STRING, $dt);
-        // // convert array
-        // $dt = array_values($dt);
-
-        usort($dt, function($a, $b) {
-            return (int)$a[8] <=> (int)$b[8];
-        });
+        $columns = array_column($dt, 1);
+        array_multisort($columns, SORT_ASC, SORT_STRING, $dt);
+        // convert array
+        $dt = array_values($dt);
         
         // re-formatting
         $deb_total = 0;

@@ -163,10 +163,15 @@
             },
           },
           
-          "footerCallback": function ( row, data, start, end, display ) {
+          "footerCallback": function ( row, data, start, end, display, category) {
               var api = this.api(), data;
               var api2 = this.api(), data;
-  
+
+              var category = null;
+              if(data.length > 0){
+                category = data[0][6];
+              }
+              
               var intVal = function ( i ) {
                   return typeof i === 'string' ? i.replace(/[\$,]/g, '')*1 : typeof i === 'number' ?i : 0;
               };
@@ -175,7 +180,7 @@
               saldo_debet = "";
               saldo_kredit = "";
               
-              if(cat == 1 || cat == 5|| cat == 6){
+              if(category == "aset" || category == 'biaya'|| category == 'biaya_lainnya'){
                 saldo = debet-kredit
                 if(saldo>0) saldo_kredit = formatRupiah(saldo,".");
                 else saldo_debet = formatRupiah(saldo,".");
