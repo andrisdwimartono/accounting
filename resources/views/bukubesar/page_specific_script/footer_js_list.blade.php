@@ -95,8 +95,8 @@
                       var url = '/bukubesar/print';
                       var form = $('<form action="' + url + '" target="_blank" method="post">' +
                         '<input type="hidden" name="_token" value="'+$("input[name=_token]").val()+'" />' +
-                        '<input type="hidden" name="search[tanggal_jurnal_from]" value="'+$("#tanggal_jurnal_from").val()+'" />' +
-                        '<input type="hidden" name="search[tanggal_jurnal_to]" value="'+$("#tanggal_jurnal_to").val()+'" />' +
+                        '<input type="hidden" name="search[tanggal_jurnal_from]" value="'+convertDate($("#tanggal_jurnal_from").val())+'" />' +
+                        '<input type="hidden" name="search[tanggal_jurnal_to]" value="'+convertDate($("#tanggal_jurnal_to").val())+'" />' +
                         '<input type="hidden" name="search[coa_code]" value="'+$("#coa").val()+'" />' +
                         '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja_label").val()+'" />' +
                         '</form>');
@@ -115,8 +115,8 @@
                       var url = '/bukubesar/excel';
                       var form = $('<form action="' + url + '" target="_blank" method="post">' +
                         '<input type="hidden" name="_token" value="'+$("input[name=_token]").val()+'" />' +
-                        '<input type="hidden" name="search[tanggal_jurnal_from]" value="'+$("#tanggal_jurnal_from").val()+'" />' +
-                        '<input type="hidden" name="search[tanggal_jurnal_to]" value="'+$("#tanggal_jurnal_to").val()+'" />' +
+                        '<input type="hidden" name="search[tanggal_jurnal_from]" value="'+convertDate($("#tanggal_jurnal_from").val())+'" />' +
+                        '<input type="hidden" name="search[tanggal_jurnal_to]" value="'+convertDate($("#tanggal_jurnal_to").val())+'" />' +
                         '<input type="hidden" name="search[coa_code]" value="'+$("#coa").val()+'" />' +
                         '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja_label").val()+'" />' +
                         '</form>');
@@ -244,6 +244,13 @@
           }
       }
       return val;
+    }
+
+    function convertDate(data){
+      var d = data.substring(0,2),
+          m = data.substring(3,5),
+          y = data.substring(6,10);
+      return y + "-" + m + "-" + d
     }
 
     function get_saldo_awal(){

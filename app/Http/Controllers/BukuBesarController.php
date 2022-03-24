@@ -407,6 +407,7 @@ class BukuBesarController extends Controller
     public function excel(Request $request)
     {
         $date = date("m-d-Y h:i:s a", time());
+        // dd($request);
         return Excel::download(new BukuBesarExport($request), 'bukubesar_'.$date.'.xlsx');
     }
 

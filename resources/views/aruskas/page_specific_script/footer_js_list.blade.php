@@ -279,6 +279,13 @@
       table = dataTable;
     }
 
+    function convertDate(data){
+      var d = data.substring(0,2),
+          m = data.substring(3,5),
+          y = data.substring(6,10);
+      return y + "-" + m + "-" + d
+    }
+
     function convertCode(data){
       var val = "";
       for(var i = 0; i < data.length; i++){

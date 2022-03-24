@@ -80,7 +80,7 @@ class NeracaSaldoExport implements FromView, WithStyles
             if($bulan_periode >= $yearopen->bulan_tutup_tahun){
                 //only one year
                 $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
-                    $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    $q->where("bulan_periode", ">=", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
                 });
             }else{
                 //cross year
@@ -92,7 +92,7 @@ class NeracaSaldoExport implements FromView, WithStyles
             }
             $q->orWhere(function($q){
                 $q->whereNull("bulan_periode");
-            });  
+            });
         })
         ->where(function($q) use ($unitkerja){
             $q->where(function($q) use ($unitkerja){
