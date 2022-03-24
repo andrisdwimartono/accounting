@@ -180,6 +180,8 @@
               kredit = api.column( 5 ).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
               saldo_debet = "";
               saldo_kredit = "";
+              sd = "";
+              sk = "";
               var saldo_debet_total = "";
               var saldo_credit_total = "";
               if(category == "aset" || category == 'biaya'|| category == 'biaya_lainnya'){
@@ -187,25 +189,30 @@
                 saldo_debet = formatRupiahWNegative(saldo,".");
                 saldo_kredit = "";
                 if(data.length > 0){
-                  saldo_total = data[0][8]-data[0][7];
-                  saldo_debet_total = formatRupiahWNegative(saldo_total,".");
-                  saldo_credit_total = "";
+                  sd = formatRupiahWNegative(data[0][7],".");
+                  sk = formatRupiahWNegative(data[0][8],".");
+                  saldo_total = data[0][7]-data[0][8];
+                  saldo_debet_total = "";
+                  saldo_credit_total = formatRupiahWNegative(saldo_total,".");
                 }
               } else {
                 saldo = debet-kredit;
                 saldo_debet = "";
                 saldo_kredit = formatRupiahWNegative(saldo,".");
+                
                 if(data.length > 0){
-                  saldo_total = data[0][7]-data[0][8];
-                  saldo_debet_total = "";
-                  saldo_credit_total = formatRupiahWNegative(saldo_total,".");
+                  sd = formatRupiahWNegative(data[0][7],".");
+                  sk = formatRupiahWNegative(data[0][8],".");
+                  saldo_total = data[0][8]-data[0][7];
+                  saldo_debet_total = formatRupiahWNegative(saldo_total,".");
+                  saldo_credit_total = "";
                 }
               }
               // Update footer
               $( api.column( 3 ).footer() ).html("JUMLAH");
               $( api.column( 4 ).footer() ).html(formatRupiahWNegative(debet,"."));
               $( api.column( 5 ).footer() ).html(formatRupiahWNegative(kredit,"."));
-              $( 'tr:eq(1) td:eq(3)', api.table().footer() ).html("SALDO PER HALAMAN").addClass("text-right");
+              $( 'tr:eq(1) td:eq(3)', api.table().footer() ).html("JUMLAH TOTAL").addClass("text-right");
               $( 'tr:eq(1) td:eq(4)', api.table().footer() ).html(saldo_debet);
               $( 'tr:eq(1) td:eq(5)', api.table().footer() ).html(saldo_kredit);
               
