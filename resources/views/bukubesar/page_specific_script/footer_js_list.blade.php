@@ -181,11 +181,11 @@
               saldo_kredit = "";
               
               if(category == "aset" || category == 'biaya'|| category == 'biaya_lainnya'){
-                saldo = debet-kredit
+                saldo = kredit-debet
                 saldo_debet = formatRupiah(saldo,".");
                 saldo_kredit = "";
               } else {
-                saldo = kredit-debet
+                saldo = debet-kredit;
                 saldo_debet = "";
                 saldo_kredit = formatRupiah(saldo,".");
               }
