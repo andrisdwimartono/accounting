@@ -96,6 +96,26 @@ function format ( d ) {
         { "width": "300px" },
         { "width": "300px" },
         ],
+        buttons: [
+        {
+          text: "PDF <span class='btn-icon-right'><i class='fa fa-print'></i></span>",
+          className: "btn btn-primary",
+          init: function(api, node, config) {
+            $(node).removeClass('dt-button')
+          },
+          action: function ( e, dt, node, config ) {
+            var url = '/kegiatan/laporan/print';
+            var form = $('<form action="' + url + '" target="_blank" method="post">' +
+                        '<input type="hidden" name="_token" value="'+$("input[name=_token]").val()+'" />' +
+                        '<input type="hidden" name="search[bulan_periode]" value="'+$("#bulan_periode").val()+'" />' +
+                        '<input type="hidden" name="search[tahun_periode]" value="'+$("#tahun_periode").val()+'" />' +
+                        '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja").val()+'" />' +
+                        '</form>');
+            $('body').append(form);
+            form.submit();
+          },
+        },
+        ],
         aoColumnDefs: [
             { 
               "targets": [7],
@@ -242,7 +262,7 @@ function format ( d ) {
           for(var i = 0; i < data.length; i++){
               if(data[i].name){
                   var newState = new Option(data[i].label, data[i].name, true, false);
-                  $("#status").append(newState).trigger("change");
+                  $("#status").append(newState);
               }
           }
       },

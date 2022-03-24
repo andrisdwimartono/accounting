@@ -305,7 +305,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/pertanggungjawaban', 'App\Http\Controllers\KegiatanController@pertanggungjawaban');
         Route::post('/getlistpertanggungjawaban', 'App\Http\Controllers\KegiatanController@get_list_pertanggungjawaban');
         
-        Route::get('/kegiatan/laporan', 'App\Http\Controllers\KegiatanController@laporan');        
+        Route::get('/kegiatan/laporan', 'App\Http\Controllers\KegiatanController@laporan');     
+        Route::post('/kegiatan/laporan/print', 'App\Http\Controllers\KegiatanController@print');        
         Route::post('/getlistlaporan/{jenis}', 'App\Http\Controllers\KegiatanController@get_list_laporan');
         Route::get('/pengajuan-laporan', 'App\Http\Controllers\KegiatanController@laporan_pengajuan');        
         Route::get('/pencairan-laporan', 'App\Http\Controllers\KegiatanController@laporan_pencairan');                

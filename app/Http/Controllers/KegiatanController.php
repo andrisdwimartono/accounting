@@ -26,6 +26,8 @@ use App\Models\Detailkegiatan;
 use App\Models\Satuan;
 use App\Models\Detailbiayaproker;
 use App\Models\Detailpjk;
+use PDF;
+use Session;
 
 class KegiatanController extends Controller
 {
@@ -352,6 +354,113 @@ class KegiatanController extends Controller
         $page_data["header_js_page_specific_script"] = ["kegiatan.page_specific_script.header_js_list"];
         
         return view("kegiatan.laporan", ["page_data" => $page_data]);
+    }
+
+    public function print(Request $request)
+    {
+        $list_column = array("id", "kode_anggaran", "unit_pelaksana_label", "tanggal", "kegiatan_name", "output", "id");
+        $keyword = null;
+        if(isset($request->search["value"])){
+            $keyword = $request->search["value"];
+        }
+
+        $unit_pelaksana = null;
+        if(isset($request->search["unit_pelaksana"])){
+            $unit_pelaksana = $request->search["unit_pelaksana"];
+        }
+
+        $status = null;
+        if(isset($request->search["status"])){
+            $status = $request->search["status"];
+        }
+
+        $orders = array("id", "ASC");
+        if(isset($request->order)){
+            $orders = array($list_column[$request->order["0"]["column"]], $request->order["0"]["dir"]);
+        }
+
+        $limit = null;
+        if(isset($request->length) && $request->length != -1){
+            $limit = array(intval($request->start), intval($request->length));
+        }
+
+        $dt = array();
+        $no = 0;
+        foreach(Kegiatan::where(function($q) use ($keyword) {
+            $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("programkerja_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+        })
+        ->where(function($q) use ($unit_pelaksana) {
+            if(isset($unit_pelaksana)){
+                $q->where("unit_pelaksana", $unit_pelaksana);
+            }
+        })
+        ->where(function($q) use ($status) {
+            if(isset($status)){
+                $q->where("status", $status);
+            }
+        })
+        // ->where(function($q) use ($jenis) {
+        //     if($jenis=='kegiatan'){
+        //         $q->whereIn("status", array("process","approved"));
+        //     } else if($jenis=='pengajuan'){
+        //         $q->whereIn("status", array("submitted","submitting"));
+        //     } else if($jenis=='pencairan'){
+        //         $q->whereIn("status", array("paid"));
+        //     } else if($jenis=='pertanggungjawaban'){
+        //         $q->whereIn("status", array("reporting", "reported"));
+        //     }
+        // })
+        ->orderBy($orders[0], $orders[1])
+        ->get(["id", "kode_anggaran", "unit_pelaksana_label", "tanggal","tahun_label", "programkerja_label", "kegiatan_name", "output", "status"]) as $kegiatan){
+            $no = $no+1;
+            $status = $this->status($kegiatan->status);
+            
+            $detail = array();
+            $total = 0;
+
+            $ct4_detailkegiatans = Detailkegiatan::whereParentId($kegiatan->id)->whereNull("isarchived")->orderBy("no_seq")->get();
+
+            foreach(Approval::where("parent_id", $kegiatan->id)->where("jenismenu", "RKA")->orderBy("no_seq", "desc")->get() as $app){
+                $ok = Detailkegiatan::whereParentId($kegiatan->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->first();
+                if($ok){
+                    $ct4_detailkegiatans = Detailkegiatan::whereParentId($kegiatan->id)->where("isarchived", "on")->where("archivedby", $app->role)->orderBy("no_seq")->get();
+                }
+            }
+            
+            foreach($ct4_detailkegiatans as $db){
+                $nom =  "<span class='cak-rp'>Rp</span> <span class='cak-nom'>".number_format($db->standarbiaya,0,",",".")."</span>";
+                $vol =  "<span class='cak-nom'>".number_format($db->volume,0,",",".")."</span>";
+                $total += (float) $db->standarbiaya;
+                array_push($detail, array($db->detailbiayaproker_name, $vol, $db->satuan_label, $db->deskripsibiaya, $nom));
+            }
+            $tot =  "<b><span class='cak-rp'>Rp</span> <span class='cak-nom'>".number_format($total,0,",",".")."</span></b>";
+                
+            array_push($detail, array("","","", "<b>TOTAL</b>", $tot));
+            // $detail = Detailbiayakegiatan::whereParentId($kegiatan->id)->get();
+
+            array_push($dt, array($kegiatan->id, $kegiatan->kode_anggaran, $kegiatan->unit_pelaksana_label,$kegiatan->tanggal, $kegiatan->kegiatan_name, $kegiatan->output, $status, $detail));
+        }
+
+        $output = array(
+            "draw" => intval($request->draw),
+            "recordsTotal" => Kegiatan::get()->count(),
+            "recordsFiltered" => intval(Kegiatan::where(function($q) use ($keyword) {
+                $q->where("kode_anggaran", "ILIKE", "%" . $keyword. "%")->where("unit_pelaksana_label", "ILIKE", "%" . $keyword. "%")->orWhere("tahun_label", "ILIKE", "%" . $keyword. "%")->orWhere("programkerja_label", "ILIKE", "%" . $keyword. "%")->orWhere("kegiatan_name", "ILIKE", "%" . $keyword. "%")->orWhere("output", "ILIKE", "%" . $keyword. "%");
+            })->orderBy($orders[0], $orders[1])->get()->count()),
+            "data" => $dt
+        );
+
+        $gs = Session::get('global_setting');
+        $image =  base_path() . '/public/logo_instansi/'.$gs->logo_instansi;
+        $type = pathinfo($image, PATHINFO_EXTENSION);
+        $data = file_get_contents($image);
+        $dataUri = 'data:image/' . $type . ';base64,' . base64_encode($data);
+
+        $pdf = PDF::loadview("kegiatan.laporan_print", ["output" => $output,"data" => $request, "globalsetting" => Session::get('global_setting'), "logo"=>$dataUri]);
+        $pdf->setPaper('A4', 'Landscape');
+        $pdf->getDomPDF();
+        $pdf->setOptions(["isPhpEnabled"=> true,"isJavascriptEnabled"=>true,'isRemoteEnabled'=>true,'isHtml5ParserEnabled' => true]);
+        return $pdf->stream('rka.pdf');
     }
 
     /**
@@ -1115,36 +1224,7 @@ class KegiatanController extends Controller
 
                 <button type="button" class="row-delete btn btn-danger shadow btn-xs sharp"> <i class="fas fa-minus-circle text-white"></i> </button>';
             }
-
-
-            
-            $status = "";
-            switch ($kegiatan->status) {
-                case "process":
-                    $status = "<span class='badge light badge-secondary' style='width:70px'>".$kegiatan->status."</span>";
-                    break;
-                case "approving":
-                    $status = "<span class='badge light badge-secondary' style='width:70px'>".$kegiatan->status."</span>";
-                    break;
-                case "approved":
-                    $status = "<span class='badge light badge-primary' style='width:70px'>".$kegiatan->status."</span>";
-                    break;
-                case "submitting":
-                    $status = "<span class='badge light badge-secondary' style='width:70px'>".$kegiatan->status."</span>";
-                    break;
-                case "submitted":
-                    $status = "<span class='badge light badge-info' style='width:70px'>".$kegiatan->status."</span>";
-                    break;
-                case "paid":
-                    $status = "<span class='badge light badge-success' style='width:70px'>".$kegiatan->status."</span>";
-                    break;
-                case "reporting":
-                    $status = "<span class='badge light badge-warning' style='width:70px'>".$kegiatan->status."</span>";
-                    break;
-                case "finish":
-                    $status = "<span class='badge light badge-warning' style='width:70px'>".$kegiatan->status."</span>";
-                    break;
-            }
+            $status = $this->get_status($kegiatan);
 
             $lpjact = "";
             if($kegiatan->status == "approved"){
@@ -1172,6 +1252,37 @@ class KegiatanController extends Controller
         );
 
         echo json_encode($output);
+    }
+
+    public function get_status($kegiatan){
+        $status = "";
+        switch ($kegiatan->status) {
+            case "process":
+                $status = "<span class='badge light badge-secondary' style='width:70px'>".$kegiatan->status."</span>";
+                break;
+            case "approving":
+                $status = "<span class='badge light badge-secondary' style='width:70px'>".$kegiatan->status."</span>";
+                break;
+            case "approved":
+                $status = "<span class='badge light badge-primary' style='width:70px'>".$kegiatan->status."</span>";
+                break;
+            case "submitting":
+                $status = "<span class='badge light badge-secondary' style='width:70px'>".$kegiatan->status."</span>";
+                break;
+            case "submitted":
+                $status = "<span class='badge light badge-info' style='width:70px'>".$kegiatan->status."</span>";
+                break;
+            case "paid":
+                $status = "<span class='badge light badge-success' style='width:70px'>".$kegiatan->status."</span>";
+                break;
+            case "reporting":
+                $status = "<span class='badge light badge-warning' style='width:70px'>".$kegiatan->status."</span>";
+                break;
+            case "finish":
+                $status = "<span class='badge light badge-warning' style='width:70px'>".$kegiatan->status."</span>";
+                break;
+        }
+        return $status;
     }
 
     public function get_list_persetujuankegiatan(Request $request)
