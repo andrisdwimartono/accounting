@@ -125,6 +125,20 @@ class BukuBesarController extends Controller
             $limit = array(intval($request->start), intval($request->length));
         }
 
+        $tot = Transaction::where("coa", $coa)
+        ->where(function($q) {
+            $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
+        })
+          ->whereBetween("tanggal", [$tanggal_jurnal_from, $tanggal_jurnal_to])
+          ->whereNull('isdeleted')
+          ->where(function($q) use ($unitkerja){
+                if($unitkerja != 'null' && $unitkerja != 0){
+                    $q->where("unitkerja", $unitkerja);
+                }
+            })
+          ->groupBy("coa")
+          ->select(["coa", DB::raw("SUM(transactions.debet) as debet"), DB::raw("SUM(transactions.credit) as credit")])->first();
+
         $dt = array();
         $no = 0;
         foreach((Transaction::where("coa", $coa)
@@ -143,8 +157,8 @@ class BukuBesarController extends Controller
           ->limit($limit[1])
           ->get(["id", "tanggal", "no_jurnal", "deskripsi", "debet", "credit"])) as $bukubesar){
             $no = $no+1;
-            array_push($dt, array($bukubesar->id, $bukubesar->tanggal, $bukubesar->no_jurnal, $bukubesar->deskripsi, $bukubesar->debet, $bukubesar->credit, $coa_model->category));
-    }
+            array_push($dt, array($bukubesar->id, $bukubesar->tanggal, $bukubesar->no_jurnal, $bukubesar->deskripsi, $bukubesar->debet, $bukubesar->credit, $coa_model->category, $tot->debet, $tot->credit));
+        }
         $output = array(
             "draw" => intval($request->draw),
             "recordsTotal" => Transaction::get()->count(),

@@ -168,6 +168,7 @@
               var api2 = this.api(), data;
 
               var category = null;
+              
               if(data.length > 0){
                 category = data[0][6];
               }
@@ -179,24 +180,38 @@
               kredit = api.column( 5 ).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
               saldo_debet = "";
               saldo_kredit = "";
-              
+              var saldo_debet_total = "";
+              var saldo_credit_total = "";
               if(category == "aset" || category == 'biaya'|| category == 'biaya_lainnya'){
                 saldo = kredit-debet
-                saldo_debet = formatRupiah(saldo,".");
+                saldo_debet = formatRupiahWNegative(saldo,".");
                 saldo_kredit = "";
+                if(data.length > 0){
+                  saldo_total = data[0][8]-data[0][7];
+                  saldo_debet_total = formatRupiahWNegative(saldo_total,".");
+                  saldo_credit_total = "";
+                }
               } else {
                 saldo = debet-kredit;
                 saldo_debet = "";
-                saldo_kredit = formatRupiah(saldo,".");
+                saldo_kredit = formatRupiahWNegative(saldo,".");
+                if(data.length > 0){
+                  saldo_total = data[0][7]-data[0][8];
+                  saldo_debet_total = "";
+                  saldo_credit_total = formatRupiahWNegative(saldo_total,".");
+                }
               }
               // Update footer
               $( api.column( 3 ).footer() ).html("JUMLAH");
-              $( api.column( 4 ).footer() ).html(formatRupiah(debet,"."));
-              $( api.column( 5 ).footer() ).html(formatRupiah(kredit,"."));
-              $( 'tr:eq(1) td:eq(3)', api.table().footer() ).html("SALDO");
+              $( api.column( 4 ).footer() ).html(formatRupiahWNegative(debet,"."));
+              $( api.column( 5 ).footer() ).html(formatRupiahWNegative(kredit,"."));
+              $( 'tr:eq(1) td:eq(3)', api.table().footer() ).html("SALDO PER HALAMAN").addClass("text-right");
               $( 'tr:eq(1) td:eq(4)', api.table().footer() ).html(saldo_debet);
               $( 'tr:eq(1) td:eq(5)', api.table().footer() ).html(saldo_kredit);
               
+              $( 'tr:eq(2) td:eq(3)', api.table().footer() ).html("SALDO TOTAL").addClass("text-right");
+              $( 'tr:eq(2) td:eq(4)', api.table().footer() ).html(saldo_debet_total);
+              $( 'tr:eq(2) td:eq(5)', api.table().footer() ).html(saldo_credit_total);
             },
             "columnDefs": [
               { 
@@ -220,14 +235,14 @@
                 "targets": 4,
                 "width": 130,
                 "render":  function ( data, type, row, meta ) {
-                  return formatRupiah(row[4],".") ;
+                  return formatRupiahWNegative(row[4],".") ;
                 }
               },
               { 
                 "targets": 5,
                 "width": 130,
                 "render":  function ( data, type, row, meta ) {
-                  return formatRupiah(row[5],".") ;
+                  return formatRupiahWNegative(row[5],".") ;
                 }
               },
               
@@ -281,12 +296,12 @@
                 
             if(cat == 1 || cat == 5|| cat == 6){
               saldo = debet-kredit
-              if(saldo>0) saldo_kredit = formatRupiah(saldo,".");
-              else saldo_debet = formatRupiah(saldo,".");
+              if(saldo>0) saldo_kredit = formatRupiahWNegative(saldo,".");
+              else saldo_debet = formatRupiahWNegative(saldo,".");
             } else {
               saldo = kredit-debet
-              if(saldo>0) saldo_debet = formatRupiah(saldo,".");
-              else saldo_kredit = formatRupiah(saldo,".");
+              if(saldo>0) saldo_debet = formatRupiahWNegative(saldo,".");
+              else saldo_kredit = formatRupiahWNegative(saldo,".");
             }
           }  
           $( 'tr:eq(2) td:eq(1)', $('#bukubesar').dataTable().api().table().footer() ).html(saldo_debet);
