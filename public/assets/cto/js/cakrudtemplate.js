@@ -109,14 +109,7 @@ function formatRupiahWNegative(angka, prefix){
       }
     }
 
-    if(angka_string_el[1] !== undefined){
-      var n = parseFloat("0."+angka_string_el[1]).toFixed(2);
-      var n2 = n.toString();
-      var n3 = n2.split(".");
-      number = number+","+n3[1];
-    }else{
-      number = number+",00";
-    }
+    
     
     return prefix == undefined ? number : (number ? '<span class="cak-rp">Rp </span><span class="cak-nom">' + negatif+number : '</span>');
 }
