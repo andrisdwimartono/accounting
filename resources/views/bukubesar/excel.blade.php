@@ -19,7 +19,7 @@
         <tr>
             <th>Tanggal</th>
             <th>No. Jurnal</th>
-            <th>Deskripsi</th>
+            <th>Keterangan</th>
             <th>Debet</th>
             <th>Kredit</th>
         </tr>

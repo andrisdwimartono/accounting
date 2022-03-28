@@ -47,7 +47,7 @@ class BukuBesarExport implements FromView, WithStyles
     public function view(): View
     {
         $coa = null;
-        $list_column = array("id","tanggal", "coa_code", "no_jurnal", "deskripsi", "debet", "kredit");
+        $list_column = array("id","tanggal", "coa_code", "no_jurnal", "keterangan", "debet", "kredit");
         
         $keyword = null;
         
@@ -103,12 +103,12 @@ class BukuBesarExport implements FromView, WithStyles
                 $q->where("unitkerja", $unitkerja);
             }
         })
-          ->get(["id", "tanggal", "no_jurnal", "deskripsi", "debet", "credit"])) as $bukubesar){
+          ->get(["id", "tanggal", "no_jurnal", "keterangan", "debet", "credit"])) as $bukubesar){
         
             $no = $no+1;
             $deb = $bukubesar->debet;
             $cre = $bukubesar->credit;
-            array_push($dt, array($bukubesar->id, $bukubesar->tanggal, $bukubesar->no_jurnal, $bukubesar->deskripsi, $deb, $cre));
+            array_push($dt, array($bukubesar->id, $bukubesar->tanggal, $bukubesar->no_jurnal, $bukubesar->keterangan, $deb, $cre));
             $deb_total += (int) $bukubesar->debet;
             $cre_total += (int) $bukubesar->credit;
         }
