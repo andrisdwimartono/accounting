@@ -81,7 +81,7 @@ class BukuBesarController extends Controller
     {
         $coa = null;
         $coa_model = null;
-        $list_column = array("id","tanggal", "coa_code", "no_jurnal", "deskripsi", "debet", "kredit");
+        $list_column = array("id","tanggal", "coa_code", "no_jurnal", "keterangan", "debet", "kredit");
         
         $keyword = null;
         
@@ -155,9 +155,9 @@ class BukuBesarController extends Controller
           ->orderBy($orders[0], $orders[1])
           ->offset($limit[0])
           ->limit($limit[1])
-          ->get(["id", "tanggal", "no_jurnal", "deskripsi", "debet", "credit"])) as $bukubesar){
+          ->get(["id", "tanggal", "no_jurnal", "keterangan", "debet", "credit"])) as $bukubesar){
             $no = $no+1;
-            array_push($dt, array($bukubesar->id, $bukubesar->tanggal, $bukubesar->no_jurnal, $bukubesar->deskripsi, $bukubesar->debet, $bukubesar->credit, $coa_model->category, $tot->debet, $tot->credit));
+            array_push($dt, array($bukubesar->id, $bukubesar->tanggal, $bukubesar->no_jurnal, $bukubesar->keterangan, $bukubesar->debet, $bukubesar->credit, $coa_model->category, $tot->debet, $tot->credit));
         }
         $output = array(
             "draw" => intval($request->draw),
