@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Coa;
 use App\Models\Neracasaldo;
+use App\Models\Neraca;
+use App\Models\Aruskas;
+use App\Models\Labarugi;
+use App\Models\Jurnal;
+use App\Models\Transaction;
 use PDF;
 use Session;
 
@@ -197,6 +202,26 @@ class CoaController extends Controller
                 "user_updater_id"=> Auth::user()->id
             ]);
 
+            Transaction::where("coa", $id)->update([
+                "coa_label" => $this->convertOnlyCode($request->coa_code)." ".$request->coa_name
+            ]);
+
+            Neracasaldo::where("coa", $id)->update([
+                "coa_label" => $this->convertOnlyCode($request->coa_code)." ".$request->coa_name
+            ]);
+
+            Neraca::where("coa", $id)->update([
+                "coa_label" => $this->convertOnlyCode($request->coa_code)." ".$request->coa_name
+            ]);
+
+            Aruskas::where("coa", $id)->update([
+                "coa_label" => $this->convertOnlyCode($request->coa_code)." ".$request->coa_name
+            ]);
+
+            Labarugi::where("coa", $id)->update([
+                "coa_label" => $this->convertOnlyCode($request->coa_code)." ".$request->coa_name
+            ]);
+
             return response()->json([
                 'status' => 201,
                 'message' => 'Id '.$id.' is updated',
@@ -220,11 +245,11 @@ class CoaController extends Controller
             }
             $results = array(
                 "status" => 417,
-                "message" => "Deleting failed"
+                "message" => "Gagal Hapus"
             );
-            $ns = Neracasaldo::where("coa", $request->id)->first();
+            $ts = Transaction::where("coa", $request->id)->whereNull("isdeleted")->first();
             
-            if(is_null($ns)){
+            if(is_null($ts)){
                 if(Coa::whereId($request->id)->forceDelete()){
                     $results = array(
                         "status" => 204,
@@ -232,12 +257,7 @@ class CoaController extends Controller
                     );
                 }
             }else{
-                if(Coa::whereId($request->id)->update(array("factive" => null))){
-                    $results = array(
-                        "status" => 204,
-                        "message" => "Deleted successfully",
-                    );
-                }
+                abort(417, "Gagal hapus, sudah pernah dipakai untuk menjurnal");
             }
             
             return response()->json($results);
@@ -468,4 +488,22 @@ class CoaController extends Controller
         return $html;
     }
 
+    public function convertOnlyCode($data){
+        $val = "";
+        $array = str_split($data);
+        $i = 0;
+        foreach ($array as $char) {
+            if($i == 0){
+                $val = $val.$char."-";
+            }else if($i == 2 || $i == 4){
+                $val = $val.$char."-";
+            }else if($i > 4 && ($i-4)%3 == 0 && $i != strlen($data)-1){
+                $val = $val.$char."-";
+            }else{
+                $val = $val.$char;
+            }
+            $i++;
+        }
+        return $val;
+     }
 }
