@@ -23,11 +23,12 @@ class BukuBesarExport implements FromView, WithStyles
     {
         $sheet->getColumnDimension('A')->setWidth(100, 'px');
         $sheet->getColumnDimension('B')->setWidth(100, 'px');
-        $sheet->getColumnDimension('C')->setWidth(300, 'px');
-        $sheet->getColumnDimension('D')->setWidth(150, 'px');
+        $sheet->getColumnDimension('C')->setWidth(200, 'px');
+        $sheet->getColumnDimension('D')->setWidth(200, 'px');
         $sheet->getColumnDimension('E')->setWidth(150, 'px');
+        $sheet->getColumnDimension('F')->setWidth(150, 'px');
 
-        $sheet->getStyle('A7:E7')->getFill()
+        $sheet->getStyle('A7:F7')->getFill()
               ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
               ->getStartColor()->setRGB('d2e1ff');
 
@@ -38,7 +39,7 @@ class BukuBesarExport implements FromView, WithStyles
             4    => ['font' => ['bold' => true, 'size' => 11], 'alignment' => ['horizontal' => 'center']],
             7    => ['font' => ['bold' => true], 'alignment' => ['horizontal' => 'center']],
 
-            'A7:E100' => ['borders' => ['allBorders' => [
+            'A7:F100' => ['borders' => ['allBorders' => [
                 'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
             ]]],
         ];
@@ -47,7 +48,7 @@ class BukuBesarExport implements FromView, WithStyles
     public function view(): View
     {
         $coa = null;
-        $list_column = array("id","tanggal", "coa_code", "no_jurnal", "keterangan", "debet", "kredit");
+        $list_column = array("id","tanggal", "coa_code", "no_jurnal", "deskripsi", "keterangan", "debet", "kredit");
         
         $keyword = null;
         
@@ -103,12 +104,12 @@ class BukuBesarExport implements FromView, WithStyles
                 $q->where("unitkerja", $unitkerja);
             }
         })
-          ->get(["id", "tanggal", "no_jurnal", "keterangan", "debet", "credit"])) as $bukubesar){
+          ->get(["id", "tanggal", "no_jurnal", "deskripsi", "keterangan", "debet", "credit"])) as $bukubesar){
         
             $no = $no+1;
             $deb = $bukubesar->debet;
             $cre = $bukubesar->credit;
-            array_push($dt, array($bukubesar->id, $bukubesar->tanggal, $bukubesar->no_jurnal, $bukubesar->keterangan, $deb, $cre));
+            array_push($dt, array($bukubesar->id, $bukubesar->tanggal, $bukubesar->no_jurnal, $bukubesar->deskripsi, $bukubesar->keterangan, $deb, $cre));
             $deb_total += (int) $bukubesar->debet;
             $cre_total += (int) $bukubesar->credit;
         }

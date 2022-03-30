@@ -74,6 +74,7 @@
                                                 <th class="column-hidden">No</th>
                                                 <th>Tanggal</th>
                                                 <th>No Jurnal</th>
+                                                <th>Deskripsi</th>
                                                 <th>Keterangan</th>
                                                 <th>Debet</th>
                                                 <th>Kredit</th>
@@ -84,6 +85,7 @@
                                                 <td class="column-hidden"></td>
                                                 <td></td>
                                                 <td></td>
+                                                <td></td>
                                                 <td class="right total"></td>
                                                 <td class="total" style="border-top: 1px solid #000 !Important;"></td>
                                                 <td class="total" style="border-top: 1px solid #000 !Important;"></td>
@@ -92,12 +94,14 @@
                                                 <td class="column-hidden"></td>
                                                 <td></td>
                                                 <td></td>
+                                                <td></td>
                                                 <td class="right total"></td>
                                                 <td class="total" style="border-top: 1px solid #d7dae3 !Important;"></td>
                                                 <td class="total" style="border-top: 1px solid #d7dae3 !Important;"></td>
                                             </tr>
                                             <tr>
                                                 <td class="column-hidden"></td>
+                                                <td></td>
                                                 <td></td>
                                                 <td></td>
                                                 <td class="right total"></td>

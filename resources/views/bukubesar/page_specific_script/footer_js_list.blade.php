@@ -170,14 +170,14 @@
               var category = null;
               
               if(data.length > 0){
-                category = data[0][6];
+                category = data[0][7];
               }
               
               var intVal = function ( i ) {
                   return typeof i === 'string' ? i.replace(/[\$,]/g, '')*1 : typeof i === 'number' ?i : 0;
               };
-              debet = api.column( 4 ).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
-              kredit = api.column( 5 ).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
+              debet = api.column( 5 ).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
+              kredit = api.column( 6 ).data().reduce( function (a, b) {return intVal(a) + intVal(b);}, 0 );
               saldo_debet = "";
               saldo_kredit = "";
               sd = "";
@@ -189,9 +189,9 @@
                 saldo_debet = formatRupiahWNegative(saldo,".");
                 saldo_kredit = "";
                 if(data.length > 0){
-                  sd = formatRupiahWNegative(data[0][7],".");
-                  sk = formatRupiahWNegative(data[0][8],".");
-                  saldo_total = data[0][7]-data[0][8];
+                  sd = formatRupiahWNegative(data[0][8],".");
+                  sk = formatRupiahWNegative(data[0][9],".");
+                  saldo_total = data[0][8]-data[0][9];
                   saldo_debet_total = "";
                   saldo_credit_total = formatRupiahWNegative(saldo_total,".");
                 }
@@ -201,24 +201,24 @@
                 saldo_kredit = formatRupiahWNegative(saldo,".");
                 
                 if(data.length > 0){
-                  sd = formatRupiahWNegative(data[0][7],".");
-                  sk = formatRupiahWNegative(data[0][8],".");
-                  saldo_total = data[0][8]-data[0][7];
+                  sd = formatRupiahWNegative(data[0][8],".");
+                  sk = formatRupiahWNegative(data[0][9],".");
+                  saldo_total = data[0][9]-data[0][8];
                   saldo_debet_total = formatRupiahWNegative(saldo_total,".");
                   saldo_credit_total = "";
                 }
               }
               // Update footer
-              $( api.column( 3 ).footer() ).html("JUMLAH");
-              $( api.column( 4 ).footer() ).html(formatRupiahWNegative(debet,"."));
-              $( api.column( 5 ).footer() ).html(formatRupiahWNegative(kredit,"."));
-              $( 'tr:eq(1) td:eq(3)', api.table().footer() ).html("JUMLAH TOTAL").addClass("text-right");
-              $( 'tr:eq(1) td:eq(4)', api.table().footer() ).html(sd);
-              $( 'tr:eq(1) td:eq(5)', api.table().footer() ).html(sk);
+              $( api.column( 4 ).footer() ).html("JUMLAH");
+              $( api.column( 5 ).footer() ).html(formatRupiahWNegative(debet,"."));
+              $( api.column( 6 ).footer() ).html(formatRupiahWNegative(kredit,"."));
+              $( 'tr:eq(1) td:eq(4)', api.table().footer() ).html("JUMLAH TOTAL").addClass("text-right");
+              $( 'tr:eq(1) td:eq(5)', api.table().footer() ).html(sd);
+              $( 'tr:eq(1) td:eq(6)', api.table().footer() ).html(sk);
               
-              $( 'tr:eq(2) td:eq(3)', api.table().footer() ).html("SALDO TOTAL").addClass("text-right");
-              $( 'tr:eq(2) td:eq(4)', api.table().footer() ).html(saldo_debet_total);
-              $( 'tr:eq(2) td:eq(5)', api.table().footer() ).html(saldo_credit_total);
+              $( 'tr:eq(2) td:eq(4)', api.table().footer() ).html("SALDO TOTAL").addClass("text-right");
+              $( 'tr:eq(2) td:eq(5)', api.table().footer() ).html(saldo_debet_total);
+              $( 'tr:eq(2) td:eq(6)', api.table().footer() ).html(saldo_credit_total);
             },
             "columnDefs": [
               { 
@@ -236,20 +236,24 @@
               },
               { 
                 "targets": 3,
-                "width": 250, 
+                "width": 125, 
               },
               { 
                 "targets": 4,
-                "width": 130,
-                "render":  function ( data, type, row, meta ) {
-                  return formatRupiahWNegative(row[4],".") ;
-                }
+                "width": 123, 
               },
               { 
                 "targets": 5,
                 "width": 130,
                 "render":  function ( data, type, row, meta ) {
-                  return formatRupiahWNegative(row[5],".") ;
+                  return formatRupiahWNegative(row[6],".") ;
+                }
+              },
+              { 
+                "targets": 6,
+                "width": 130,
+                "render":  function ( data, type, row, meta ) {
+                  return formatRupiahWNegative(row[7],".") ;
                 }
               },
               

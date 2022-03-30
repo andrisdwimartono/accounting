@@ -81,7 +81,7 @@ class BukuBesarController extends Controller
     {
         $coa = null;
         $coa_model = null;
-        $list_column = array("id","tanggal", "coa_code", "no_jurnal", "keterangan", "debet", "kredit");
+        $list_column = array("id","tanggal", "coa_code", "no_jurnal", "deskripsi", "keterangan", "debet", "kredit");
         
         $keyword = null;
         
@@ -155,15 +155,15 @@ class BukuBesarController extends Controller
           ->orderBy($orders[0], $orders[1])
           ->offset($limit[0])
           ->limit($limit[1])
-          ->get(["id", "tanggal", "no_jurnal", "keterangan", "debet", "credit"])) as $bukubesar){
+          ->get(["id", "tanggal", "no_jurnal", "deskripsi", "keterangan", "debet", "credit"])) as $bukubesar){
             $no = $no+1;
-            array_push($dt, array($bukubesar->id, $bukubesar->tanggal, $bukubesar->no_jurnal, $bukubesar->keterangan, $bukubesar->debet, $bukubesar->credit, $coa_model->category, $tot->debet, $tot->credit));
+            array_push($dt, array($bukubesar->id, $bukubesar->tanggal, $bukubesar->no_jurnal, $bukubesar->deskripsi, $bukubesar->keterangan, $bukubesar->debet, $bukubesar->credit, $coa_model->category, $tot->debet, $tot->credit));
         }
         $output = array(
             "draw" => intval($request->draw),
             "recordsTotal" => Transaction::get()->count(),
             "recordsFiltered" => intval(Transaction::where(function($q) use ($keyword) {
-                    $q->where("tanggal", "ILIKE", "%" . $keyword. "%")->orWhere("no_jurnal", "ILIKE", "%" . $keyword. "%")->orWhere("keterangan", "ILIKE", "%" . $keyword. "%");
+                    $q->where("tanggal", "ILIKE", "%" . $keyword. "%")->orWhere("no_jurnal", "ILIKE", "%" . $keyword. "%")->orWhere("deskripsi", "ILIKE", "%" . $keyword. "%")->orWhere("keterangan", "ILIKE", "%" . $keyword. "%");
                 })->where(function($q) {
                     $q->where("debet", "!=", 0)->orWhere("credit", "!=", 0);
                 })->where("coa", $coa)
@@ -317,7 +317,7 @@ class BukuBesarController extends Controller
     public function print(Request $request)
     {
         $coa = null;
-        $list_column = array("id","tanggal", "coa_code", "no_jurnal", "keterangan", "debet", "kredit");
+        $list_column = array("id","tanggal", "coa_code", "no_jurnal", "deskripsi", "keterangan", "debet", "kredit");
         
         $keyword = null;
         
@@ -368,12 +368,12 @@ class BukuBesarController extends Controller
                 $q->where("unitkerja", $unitkerja);
             }
         })
-          ->get(["id", "tanggal", "no_jurnal", "keterangan", "debet", "credit"])) as $bukubesar){
+          ->get(["id", "tanggal", "no_jurnal", "deskripsi", "keterangan", "debet", "credit"])) as $bukubesar){
         
             $no = $no+1;
             $deb = "<td class='rp'>Rp</td><td class='nom'><b>".number_format($bukubesar->debet,0,",",".")."</td>";
             $cre = "<td class='rp'>Rp</td><td class='nom'><b>".number_format($bukubesar->credit,0,",",".")."</td>";
-            array_push($dt, array($bukubesar->id, $bukubesar->tanggal, $bukubesar->no_jurnal, $bukubesar->keterangan, $deb, $cre));
+            array_push($dt, array($bukubesar->id, $bukubesar->tanggal, $bukubesar->no_jurnal, $bukubesar->deskripsi, $bukubesar->keterangan, $deb, $cre));
             $deb_total += (int) $bukubesar->debet;
             $cre_total += (int) $bukubesar->credit;
         }

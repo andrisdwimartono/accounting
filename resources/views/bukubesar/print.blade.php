@@ -114,7 +114,8 @@
                     <tr>
                         <td scope="col" width="100px">Tanggal</th>
                         <td scope="col" width="70px">No Jurnal</th>
-                        <td scope="col" width="200px">Deskripsi</th>
+                        <td scope="col" width="100px">Deskripsi</th>
+                        <td scope="col" width="100px">Keterangan</th>
                         <td scope="col" colspan=2>Debet</th>
                         <td scope="col" colspan=2>Kredit</th>
                     </tr>
@@ -125,8 +126,9 @@
                         <td scope="col">{!! $d[1] !!}</td>
                         <td scope="col">{!! $d[2] !!}</td>
                         <td scope="col">{!! $d[3] !!}</td>
-                        {!! $d[4] !!}
+                        <td scope="col">{!! $d[4] !!}</td>
                         {!! $d[5] !!}
+                        {!! $d[6] !!}
                     </tr>
                     @endforeach
                     
@@ -135,12 +137,14 @@
                     <tr>
                         <td style="border:none;"></td>
                         <td  style="border:none;"></td>
+                        <td  style="border:none;"></td>
                         <td class="nom" style="border:none;"><b>JUMLAH</b></td>
                         {!! $bukubesar['deb'] !!}
                         {!! $bukubesar['cre'] !!}                        
                     </tr>
                     <tr>
                         <td style="border:none;"></td>
+                        <td  style="border:none;"></td>
                         <td  style="border:none;"></td>
                         <td class="nom" style="border:none;"><b>SALDO</b></td>
                         {!! $bukubesar['sal_deb'] !!}
