@@ -318,7 +318,7 @@ class NeracasaldoController extends Controller
             $deb = $item[3];
             $cre = $item[4];
             for($i=$d[6] ; $i>1 ; $i--){
-                if($d[5]){
+                if(!is_null($d[5])){
                     $dt[$d[5]][3] = (int) $dt[$d[5]][3] + $deb;
                     $dt[$d[5]][4] = (int) $dt[$d[5]][4] + $cre;
                     $d = $dt[$d[5]];
