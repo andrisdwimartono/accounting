@@ -257,7 +257,7 @@ class NeracasaldoController extends Controller
         $yearopen = Session::get('global_setting');
         
         foreach(Coa::find(1)
-        ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader", DB::raw("SUM(neracasaldos.debet) as debet"), DB::raw("SUM(neracasaldos.credit) as credit")]) //"neracas.debet", "neracas.credit"])//DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")])
+        ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.id", "coas.level_coa", "coas.fheader", DB::raw("SUM(neracasaldos.debet) as debet"), DB::raw("SUM(neracasaldos.credit) as credit")]) //"neracas.debet", "neracas.credit"])//DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")])
         ->leftJoin('neracasaldos', 'coas.id', '=', 'neracasaldos.coa')
         ->where(function($q){
             $q->where(function($q){
@@ -298,13 +298,13 @@ class NeracasaldoController extends Controller
                 $q->where("coas.fheader","on");
             });
         })
-        ->groupBy(["coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader"])
+        ->groupBy(["coas.id", "coas.coa_name", "coas.coa_code", "coas.id", "coas.level_coa", "coas.fheader"])
         ->orderBy("coas.level_coa", "desc")
           ->get() as $neracasaldo){
             
             $no = $no+1;
             $coa_code = $this->patokanUrutan($neracasaldo->coa_code."");
-            $dt[$neracasaldo->id] = array($neracasaldo->id, $neracasaldo->coa_code, $neracasaldo->coa_name, $neracasaldo->debet, $neracasaldo->credit, $neracasaldo->coa, $neracasaldo->level_coa, $neracasaldo->fheader, $coa_code);
+            $dt[$neracasaldo->id] = array($neracasaldo->id, $neracasaldo->coa_code, $neracasaldo->coa_name, $neracasaldo->debet, $neracasaldo->credit, $neracasaldo->id, $neracasaldo->level_coa, $neracasaldo->fheader, $coa_code);
         }
         
         // get nominal
@@ -312,10 +312,8 @@ class NeracasaldoController extends Controller
             return ($dt[3] != 0) || ($dt[4] != 0) && ($dt[7] != "on");
         });
 
-        var_dump($dt);
         // sum nominal to header
         foreach($iter as $key => $item){
-            echo "item ".$item."<br>";
             $d = $item;
             $deb = $item[3];
             $cre = $item[4];
@@ -453,7 +451,7 @@ class NeracasaldoController extends Controller
         $no = 0;
         $yearopen = Session::get('global_setting');
         foreach(Coa::find(1)
-        ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader", DB::raw("SUM(neracasaldos.debet) as debet"), DB::raw("SUM(neracasaldos.credit) as credit")]) //"neracas.debet", "neracas.credit"])//DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")])
+        ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.id", "coas.level_coa", "coas.fheader", DB::raw("SUM(neracasaldos.debet) as debet"), DB::raw("SUM(neracasaldos.credit) as credit")]) //"neracas.debet", "neracas.credit"])//DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")])
         ->leftJoin('neracasaldos', 'coas.id', '=', 'neracasaldos.coa')
         ->where(function($q){
             $q->where(function($q){
@@ -494,12 +492,12 @@ class NeracasaldoController extends Controller
                 $q->where("coas.fheader","on");
             });
         })
-        ->groupBy(["coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader"])
+        ->groupBy(["coas.id", "coas.coa_name", "coas.coa_code", "coas.id", "coas.level_coa", "coas.fheader"])
         ->orderBy("coas.level_coa", "desc")
           ->get() as $neraca){    
             $no = $no+1;
             $coa_code = $this->patokanUrutan($neraca->coa_code."");
-            $dt[$neraca->id] = array($neraca->id, $neraca->coa_code, $neraca->coa_name, $neraca->debet, $neraca->credit, $neraca->coa, $neraca->level_coa, $neraca->fheader, $coa_code);
+            $dt[$neraca->id] = array($neraca->id, $neraca->coa_code, $neraca->coa_name, $neraca->debet, $neraca->credit, $neraca->id, $neraca->level_coa, $neraca->fheader, $coa_code);
         }
         
 
