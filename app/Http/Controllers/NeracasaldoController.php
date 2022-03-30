@@ -312,8 +312,10 @@ class NeracasaldoController extends Controller
             return ($dt[3] != 0) || ($dt[4] != 0) && ($dt[7] != "on");
         });
 
+        var_dump($dt);
         // sum nominal to header
         foreach($iter as $key => $item){
+            echo "item ".$item."<br>";
             $d = $item;
             $deb = $item[3];
             $cre = $item[4];
