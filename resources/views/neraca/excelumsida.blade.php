@@ -39,7 +39,7 @@
             $total3_credit = 0;
         ?>
         @foreach($transactions['data'] as $transaction)
-        <?php if($transaction[6]==2 && $last3_account != ""){ 
+        <?php if($transaction[6]==2 && $last3_account == ""){ 
             $last3_account = $transaction[2]; } 
         ?>
         <?php 
