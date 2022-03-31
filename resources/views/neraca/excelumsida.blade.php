@@ -28,8 +28,8 @@
             <th></th>
             <th></th>
             <th>Catatan</th>
-            <th>2022</th>
-            <th>2021</th>
+            <th></th>
+            <th>{{$transactions['bulan']}} {{$transactions['tahun']}}</th>
         </tr>
     </thead>
     <tbody>
