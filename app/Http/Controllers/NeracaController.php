@@ -9,6 +9,7 @@ use App\Models\Neraca;
 use App\Models\Coa;
 use App\Models\Unitkerja;
 use App\Exports\NeracaExport;
+use App\Exports\NeracaUmsidaExport;
 use PDF;
 use Excel;
 use Session;
@@ -638,6 +639,12 @@ class NeracaController extends Controller
     {
         $date = date("m-d-Y h:i:s a", time());
         return Excel::download(new NeracaExport($request), 'laporan_posisi_keuangan_'.$date.'.xlsx');
+    }
+
+    public function excelumsida(Request $request)
+    {
+        $date = date("m-d-Y h:i:s a", time());
+        return Excel::download(new NeracaUmsidaExport($request), 'laporan_posisi_keuangan_umsida_'.$date.'.xlsx');
     }
 
     public function convertBulan($bulan){

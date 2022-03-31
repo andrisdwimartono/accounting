@@ -174,6 +174,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getlistneraca', 'App\Http\Controllers\NeracaController@get_list');
         Route::post('/neraca/print', 'App\Http\Controllers\NeracaController@print');
         Route::post('/neraca/excel', 'App\Http\Controllers\NeracaController@excel');
+        Route::post('/neraca/excelumsida', 'App\Http\Controllers\NeracaController@excelumsida');
         
         Route::get('/labarugi', 'App\Http\Controllers\LabarugiController@index')->name('labarugi');
         Route::post('/getlinkslabarugi', 'App\Http\Controllers\LabarugiController@getlinks');

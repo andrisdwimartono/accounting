@@ -130,6 +130,26 @@
                       form.submit();
                     },
                 },
+                {
+                    text: "Excel UMSIDA<span class='btn-icon-right'><i class='fa fa-print'></i></span>",
+                    className: "btn btn-success",
+                    init: function(api, node, config) {
+                      $(node).removeClass('dt-buttons')
+                      $(node).removeClass('dt-button')
+                    },
+                    action: function ( e, dt, node, config ) {
+                      var url = '/neraca/excelumsida';
+                      var form = $('<form action="' + url + '" target="_blank" method="post">' +
+                        '<input type="hidden" name="_token" value="'+$("input[name=_token]").val()+'" />' +
+                        '<input type="hidden" name="search[bulan_periode]" value="'+$("#bulan_periode").val()+'" />' +
+                        '<input type="hidden" name="search[tahun_periode]" value="'+$("#tahun_periode").val()+'" />' +
+                        '<input type="hidden" name="search[child_level]" value="'+$("#child_level").val()+'" />' +
+                        '<input type="hidden" name="search[unitkerja]" value="'+$("#unitkerja_label").val()+'" />' +
+                        '</form>');
+                      $('body').append(form);
+                      form.submit();
+                    },
+                },
             ],
           "colResize": {
             isEnabled: true,
