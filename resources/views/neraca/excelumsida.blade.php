@@ -40,8 +40,8 @@
         ?>
         @foreach($transactions['data'] as $transaction)
         <?php 
-            $total3_debet = $total3_debet + $transaction[3];
-            $total3_credit = $total3_credit + $transaction[4];
+            $total3_debet = $total3_debet + (double)$transaction[3];
+            $total3_credit = $total3_credit + (double)$transaction[4];
         ?>
         <tr>
             <td></td>
