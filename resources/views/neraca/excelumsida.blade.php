@@ -54,7 +54,7 @@
             <td>{{ $transaction[6]==4?$transaction[2]:"" }}</td>
             <td></td>
             <td></td>
-            <td>{{ ((double)$transaction[3])>0?$transaction[3]:$transaction[4] }}</td>
+            <td>{{ ((double)$transaction[3])>0||$transaction[3]!="0"?$transaction[3]:$transaction[4] }}</td>
         </tr>
         <!-- <?php if($transaction[6]==1 || ($transaction[6]==2 && $last3_account != $transaction[2])){ ?>
         <tr>
