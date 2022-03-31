@@ -355,7 +355,8 @@ class LabarugiController extends Controller
           ->get() as $labarugi){
             
             $no = $no+1;
-            $dt[$labarugi->id] = array($labarugi->id, $labarugi->coa_code, $labarugi->coa_name, $labarugi->debet, $labarugi->credit, $labarugi->coa, $labarugi->level_coa, $labarugi->fheader);
+            $coa_code = $this->patokanUrutan($neracasaldo->coa_code."");
+            $dt[$labarugi->id] = array($labarugi->id, $labarugi->coa_code, $labarugi->coa_name, $labarugi->debet, $labarugi->credit, $labarugi->coa, $labarugi->level_coa, $labarugi->fheader, $coa_code);
         }
 
         
@@ -390,10 +391,13 @@ class LabarugiController extends Controller
         }
         
         // sort by code
-        $columns = array_column($dt, 1);
-        array_multisort($columns, SORT_ASC, SORT_STRING, $dt);
-        // convert array
-        $dt = array_values($dt);
+        // $columns = array_column($dt, 1);
+        // array_multisort($columns, SORT_ASC, SORT_STRING, $dt);
+        // // convert array
+        // $dt = array_values($dt);
+        usort($dt, function($a, $b) {
+            return (int)$a[8] <=> (int)$b[8];
+        });
         
         $output = array(
             "draw" => intval($request->draw),
@@ -608,7 +612,8 @@ class LabarugiController extends Controller
         ->orderBy("coas.level_coa", "desc")
           ->get() as $labarugi){    
             $no = $no+1;
-            $dt[$labarugi->id] = array($labarugi->id, $labarugi->coa_code, $labarugi->coa_name, $labarugi->debet, $labarugi->credit, $labarugi->coa, $labarugi->level_coa, $labarugi->fheader);
+            $coa_code = $this->patokanUrutan($neracasaldo->coa_code."");
+            $dt[$labarugi->id] = array($labarugi->id, $labarugi->coa_code, $labarugi->coa_name, $labarugi->debet, $labarugi->credit, $labarugi->coa, $labarugi->level_coa, $labarugi->fheader, $coa_code);
         }
         
 
@@ -641,10 +646,13 @@ class LabarugiController extends Controller
         }
         
         // sort by code
-        $columns = array_column($dt, 1);
-        array_multisort($columns, SORT_ASC, $dt);
-        // convert array
-        $dt = array_values($dt);
+        // $columns = array_column($dt, 1);
+        // array_multisort($columns, SORT_ASC, $dt);
+        // // convert array
+        // $dt = array_values($dt);
+        usort($dt, function($a, $b) {
+            return (int)$a[8] <=> (int)$b[8];
+        });
         
         // re-formatting
         $deb_total = 0;
@@ -769,5 +777,13 @@ class LabarugiController extends Controller
         $padd = (((int) $level-1)*20);
         $html = "<span style='padding-left:".strval($padd)."px'>".$data."</span>";        
         return $html;
+    }
+
+    public function patokanUrutan($coa_code){
+        for($i = 0; $i < 12-strlen($coa_code); $i++){
+            $coa_code .= '0';
+        }
+
+        return $coa_code;
     }
 }

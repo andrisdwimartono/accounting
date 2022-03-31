@@ -118,7 +118,8 @@ class LabarugiUmsidaExport implements FromView, WithStyles
         ->orderBy("coas.level_coa", "desc")
           ->get() as $neraca){    
             $no = $no+1;
-            $dt[$neraca->id] = array($neraca->id, $neraca->coa_code, $neraca->coa_name, $neraca->debet, $neraca->credit, $neraca->coa, $neraca->level_coa, $neraca->fheader);
+            $coa_code = $this->patokanUrutan($neracasaldo->coa_code."");
+            $dt[$neraca->id] = array($neraca->id, $neraca->coa_code, $neraca->coa_name, $neraca->debet, $neraca->credit, $neraca->coa, $neraca->level_coa, $neraca->fheader, $coa_code);
         }
 
         // get nominal
@@ -154,11 +155,14 @@ class LabarugiUmsidaExport implements FromView, WithStyles
         }
         
         // sort by code
-        $columns = array_column($dt, 1);
-        array_multisort($columns, SORT_ASC, $dt);
+        // $columns = array_column($dt, 1);
+        // array_multisort($columns, SORT_ASC, $dt);
         
-        // convert array
-        $dt = array_values($dt);
+        // // convert array
+        // $dt = array_values($dt);
+        usort($dt, function($a, $b) {
+            return (int)$a[8] <=> (int)$b[8];
+        });
         
         // re-formatting
         $deb_total = 0;
@@ -239,5 +243,13 @@ class LabarugiUmsidaExport implements FromView, WithStyles
         $padd = (((int) $level-1)*2);
         $html = str_repeat(' ',strval($padd))." ".$val;        
         return $html;
+    }
+
+    public function patokanUrutan($coa_code){
+        for($i = 0; $i < 12-strlen($coa_code); $i++){
+            $coa_code .= '0';
+        }
+
+        return $coa_code;
     }
 }
