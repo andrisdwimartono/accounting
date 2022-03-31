@@ -355,7 +355,7 @@ class LabarugiController extends Controller
           ->get() as $labarugi){
             
             $no = $no+1;
-            $coa_code = $this->patokanUrutan($neracasaldo->coa_code."");
+            $coa_code = $this->patokanUrutan($labarugi->coa_code."");
             $dt[$labarugi->id] = array($labarugi->id, $labarugi->coa_code, $labarugi->coa_name, $labarugi->debet, $labarugi->credit, $labarugi->coa, $labarugi->level_coa, $labarugi->fheader, $coa_code);
         }
 
@@ -612,7 +612,7 @@ class LabarugiController extends Controller
         ->orderBy("coas.level_coa", "desc")
           ->get() as $labarugi){    
             $no = $no+1;
-            $coa_code = $this->patokanUrutan($neracasaldo->coa_code."");
+            $coa_code = $this->patokanUrutan($labarugi->coa_code."");
             $dt[$labarugi->id] = array($labarugi->id, $labarugi->coa_code, $labarugi->coa_name, $labarugi->debet, $labarugi->credit, $labarugi->coa, $labarugi->level_coa, $labarugi->fheader, $coa_code);
         }
         
