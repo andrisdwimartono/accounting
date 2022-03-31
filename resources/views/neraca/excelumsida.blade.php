@@ -39,6 +39,9 @@
             $total3_credit = 0;
         ?>
         @foreach($transactions['data'] as $transaction)
+        <?php if($transaction[6]==2 && $last3_account != ""){ 
+            $last3_account = $transaction[2]; } 
+        ?>
         <?php 
             $total3_debet = $total3_debet + (double)$transaction[3];
             $total3_credit = $total3_credit + (double)$transaction[4];
@@ -53,7 +56,7 @@
             <td></td>
             <td>{{ ((double)$transaction[3])>0?$transaction[3]:$transaction[4] }}</td>
         </tr>
-        <?php if($transaction[6]==2 && $last3_account != $transaction[2] && $last3_account != ""){ ?>
+        <?php if($transaction[6]==2 && $last3_account != $transaction[2]){ ?>
         <tr>
             <td></td>
             <td></td>
