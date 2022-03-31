@@ -11,6 +11,7 @@ use App\Models\Jenisbayar;
 use App\Models\Globalsetting;
 use App\Models\Unitkerja;
 use App\Exports\LabarugiExport;
+use App\Exports\LabarugiUmsidaExport;
 use PDF;
 use Excel;
 
@@ -729,6 +730,12 @@ class LabarugiController extends Controller
     {
         $date = date("m-d-Y h:i:s a", time());
         return Excel::download(new LabarugiExport($request), 'laporan_penghasilan_komprehensif_'.$date.'.xlsx');
+    }
+
+    public function excelumsida(Request $request)
+    {
+        $date = date("m-d-Y h:i:s a", time());
+        return Excel::download(new LabarugiUmsidaExport($request), 'laporan_penghasilan_komprehensif_umsida_'.$date.'.xlsx');
     }
 
     public function convertBulan($bulan){
