@@ -196,13 +196,12 @@
               var api2 = this.api(), data;
   
               var intVal = function ( i ) {
-                console.log(i);
                   return typeof i === 'string' ? i.replace(/[\$,]/g, '')*1 : typeof i === 'number' ?i : 0;
               };
               debet = 0;
               kredit = 0;
               for(var i = 0; i < data.length; i++){
-                if(data[i][6] == 1){ // if level_coa < 1
+                if(data[i][7] == null){ // if level_coa < 1
                   debet = debet+intVal(data[i][3]);
                   kredit = kredit+intVal(data[i][4]);
                 }
