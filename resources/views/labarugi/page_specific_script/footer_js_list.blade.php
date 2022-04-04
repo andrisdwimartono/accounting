@@ -196,6 +196,7 @@
               var api2 = this.api(), data;
   
               var intVal = function ( i ) {
+                console.log(i);
                   return typeof i === 'string' ? i.replace(/[\$,]/g, '')*1 : typeof i === 'number' ?i : 0;
               };
               debet = 0;
