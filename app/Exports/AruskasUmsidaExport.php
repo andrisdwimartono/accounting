@@ -93,7 +93,7 @@ class AruskasUmsidaExport implements FromView, WithStyles
         ->orderBy("coas.id", "asc")
           ->get() as $aruskas){
             if($jenis_aktivitas != $aruskas->jenis_aktivitas){
-                array_push($dt, array(0, "", $aruskas->jenis_aktivitas, "", "", 0, 1, "on", $aruskas->jenis_aktivitas));
+                array_push($dt, array(0, "", $aruskas->jenis_aktivitas, "", "", 1, "on", $aruskas->jenis_aktivitas));
                 $jenis_aktivitas = $aruskas->jenis_aktivitas;
             }
             
