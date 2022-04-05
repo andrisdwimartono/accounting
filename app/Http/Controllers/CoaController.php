@@ -420,6 +420,23 @@ class CoaController extends Controller
         }
     }
 
+    public function nextcoacode(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()){
+            $last_coa = Coa::where("coa", $request->id)->orderBy("coa_code", "DESC")->first();
+            $coa_code = "";
+            if($last_coa){
+                $coa_code = ((int)$last_coa->coa_code)+1;
+            }
+
+            $results = array(
+                "coa_code" => $coa_code
+            );
+
+            return response()->json($results);
+        }
+    }
+
     public function print(Request $request){
         ini_set('max_execution_time', 300);
         $page_data = $this->tabledesign();

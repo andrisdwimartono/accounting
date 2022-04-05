@@ -197,9 +197,13 @@
           $("#example1").on("click",".row-add-child", function (event) {
             var data = [];
             $tr = $(this).parents('tr');
+            var id_new = 0;
             $($tr).find('td').each(function(index, value) {
               if(index == 2){
                 data[index] = $(this).find('span').html();
+              }
+              if(index == 0){
+                id_new = $(this).html();
               }
               data[index] = $(this).html();
             });
@@ -219,7 +223,22 @@
             cols += '<td><i class="add-row-save fas fa-check text-success" style="cursor: pointer;"></i> &nbsp;&nbsp;&nbsp;&nbsp;<i class="add-row-cancel fas fa-times text-danger" style="cursor: pointer;"></i></td>';
             newRow.append(cols);
             newRow.insertAfter($(this).parents().closest('tr'));
-            $("input[name=add_new_coa_code]").focus();
+            $.ajax({
+              url: "/nextcoacode",
+              type: "post",
+              data: {
+                  id: id_new,
+                  _token: $("#quickForm input[name=_token]").val()
+              },
+              success: function(data){
+                $("input[name=add_new_coa_code]").val(data.coa_code);
+              },
+              error: function (err) {
+                  
+              }
+          });
+            
+            $("input[name=add_new_coa_name]").focus();
           });
         }
    });

@@ -129,6 +129,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getoptionscoa', 'App\Http\Controllers\CoaController@getoptions');
         Route::post('/getlinkscoa', 'App\Http\Controllers\CoaController@getlinks');
         Route::post('/printcoa', 'App\Http\Controllers\CoaController@print');
+        Route::post('/nextcoacode', 'App\Http\Controllers\CoaController@nextcoacode');
 
         Route::get('/jurnal', 'App\Http\Controllers\JurnalController@index')->name('jurnal');
         Route::post('/getlistjurnal', 'App\Http\Controllers\JurnalController@get_list');
