@@ -108,19 +108,19 @@ class AruskasUmsidaExport implements FromView, WithStyles
                     $coa_name_credit = "Pengurangan ".$aruskas->coa_name;
                 }
                 if($aruskas->debet != 0){
-                    array_push($dt, array($aruskas->id, $aruskas->coa_code, $coa_name_debet, $aruskas->debet, $aruskas->coa, $aruskas->level_coa, $aruskas->fheader, $aruskas->jenis_aktivitas));
+                    array_push($dt, array($aruskas->id, $aruskas->coa_code, $coa_name_debet, $aruskas->debet, $aruskas->coa, 2, $aruskas->fheader, $aruskas->jenis_aktivitas));
                 }
                 if($aruskas->credit != 0){
-                    array_push($dt, array($aruskas->id, $aruskas->coa_code, $coa_name_credit, $aruskas->credit*(-1), $aruskas->coa, $aruskas->level_coa, $aruskas->fheader, $aruskas->jenis_aktivitas));
+                    array_push($dt, array($aruskas->id, $aruskas->coa_code, $coa_name_credit, $aruskas->credit*(-1), $aruskas->coa, 2, $aruskas->fheader, $aruskas->jenis_aktivitas));
                 }
             }else{
                 $coa_name_debet = "Pengurangan ".$aruskas->coa_name;
                 $coa_name_credit = "Penambahan ".$aruskas->coa_name;
                 if($aruskas->debet != 0){
-                    array_push($dt, array($aruskas->id, $aruskas->coa_code, $coa_name_debet, $aruskas->debet*(-1), $aruskas->coa, $aruskas->level_coa, $aruskas->fheader, $aruskas->jenis_aktivitas));
+                    array_push($dt, array($aruskas->id, $aruskas->coa_code, $coa_name_debet, $aruskas->debet*(-1), $aruskas->coa, 2, $aruskas->fheader, $aruskas->jenis_aktivitas));
                 }
                 if($aruskas->credit != 0){
-                    array_push($dt, array($aruskas->id, $aruskas->coa_code, $coa_name_credit, $aruskas->credit, $aruskas->coa, $aruskas->level_coa, $aruskas->fheader, $aruskas->jenis_aktivitas));
+                    array_push($dt, array($aruskas->id, $aruskas->coa_code, $coa_name_credit, $aruskas->credit, $aruskas->coa, 2, $aruskas->fheader, $aruskas->jenis_aktivitas));
                 }
             }
         }
