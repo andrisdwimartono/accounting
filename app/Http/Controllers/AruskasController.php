@@ -10,6 +10,7 @@ use App\Models\Coa;
 use App\Models\Unitkerja;
 use App\Models\Jenisbayar;
 use App\Exports\AruskasExport;
+use App\Exports\AruskasUmsidaExport;
 use PDF;
 use Excel;
 use Session;
@@ -824,6 +825,12 @@ class AruskasController extends Controller
     {
         $date = date("m-d-Y h:i:s a", time());
         return Excel::download(new AruskasExport($request), 'arus_kas_'.$date.'.xlsx');
+    }
+
+    public function excelumsida(Request $request)
+    {
+        $date = date("m-d-Y h:i:s a", time());
+        return Excel::download(new AruskasUmsidaExport($request), 'arus_kas_umsida_'.$date.'.xlsx');
     }
 
     public function convertBulan($bulan){

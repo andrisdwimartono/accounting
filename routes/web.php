@@ -237,6 +237,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/aruskas/print', 'App\Http\Controllers\AruskasController@print');
         Route::post('/get_saldo_awalaruskas', 'App\Http\Controllers\AruskasController@get_saldo_awal');
         Route::post('/aruskas/excel', 'App\Http\Controllers\AruskasController@excel');
+        Route::post('/aruskas/excelumsida', 'App\Http\Controllers\AruskasController@excelumsida');
         Route::get('/forecast', 'App\Http\Controllers\AruskasController@forecast');
         Route::get('/total-forecast', 'App\Http\Controllers\AruskasController@get_total_forecast');
         Route::post('/get_forecast', 'App\Http\Controllers\AruskasController@get_forecast');

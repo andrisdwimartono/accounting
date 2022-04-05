@@ -12,7 +12,7 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Illuminate\Support\Facades\DB;
 
-class AruskasExport implements FromView, WithStyles
+class AruskasUmsidaExport implements FromView, WithStyles
 { 
 
     protected $request;
@@ -144,7 +144,7 @@ class AruskasExport implements FromView, WithStyles
             "unitkerja_label" => $uk?$uk->unitkerja_name:""
         );
 
-        return view('aruskas.excel', [
+        return view('aruskas.excelumsida', [
             'transactions' => $output
         ]);
     }
