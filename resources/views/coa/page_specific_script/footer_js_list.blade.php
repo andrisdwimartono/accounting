@@ -556,6 +556,17 @@
                     position: 'mid-center',
                     textAlign: 'left'
                 });
+          }else{
+            $.toast({
+                  text: err.responseJSON.message,
+                  heading: 'Status',
+                  icon: 'danger',
+                  showHideTransition: 'fade',
+                  allowToastClose: true,
+                  hideAfter: 3000,
+                  position: 'mid-center',
+                  textAlign: 'left'
+              });
           }
         cto_loading_hide();
       }
