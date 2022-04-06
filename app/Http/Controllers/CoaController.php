@@ -250,6 +250,11 @@ class CoaController extends Controller
             $ts = Transaction::where("coa", $request->id)->whereNull("isdeleted")->first();
             
             if(is_null($ts)){
+                $coa_child = Coa::where("coa", $request->id)->first();
+                if($coa_child){
+                    abort(417, "Gagal hapus, COA ini memiliki child");
+                }
+
                 if(Coa::whereId($request->id)->forceDelete()){
                     $results = array(
                         "status" => 204,
