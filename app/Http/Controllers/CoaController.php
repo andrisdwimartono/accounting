@@ -188,6 +188,10 @@ class CoaController extends Controller
         }
         $messages = $page_data["fieldsmessages"];
         if($request->validate($rules, $messages)){
+            $current_coa = Coa::where("id", $id)->first();
+            if($current_coa && ($current_coa->fheader == "" || $current_coa->fheader == null) && isset($request->fheader) && $request->fheader == "on"){
+                abort(403, "Tidak bisa diubah menjadi header");
+            }
             Coa::where("id", $id)->update([
                 "coa_code"=> $request->coa_code,
                 "coa_name"=> $request->coa_name,
