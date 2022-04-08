@@ -86,12 +86,7 @@ class AruskasUmsidaExport implements FromView, WithStyles, WithDrawings
         
         $jenis_aktivitas = "";
         foreach(Coa::find(1)
-        ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.category", "coas.coa", DB::raw("2 as level_coa"), "coas.fheader", 
-                    DB::raw("SUM(CASE WHEN tahun_periode = ".((int) $tahun_periode-1)." THEN aruskass.debet ELSE 0 END) AS debet_0"), 
-                    DB::raw("SUM(CASE WHEN tahun_periode = ".((int) $tahun_periode-1)." THEN aruskass.credit ELSE 0 END) AS credit_0"),
-                    DB::raw("SUM(CASE WHEN tahun_periode = ".$tahun_periode." THEN aruskass.debet ELSE 0 END) AS debet_1"), 
-                    DB::raw("SUM(CASE WHEN tahun_periode = ".$tahun_periode." THEN aruskass.credit ELSE 0 END) AS credit_1"), 
-                    "coas.jenis_aktivitas"])
+        ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.category", "coas.coa", DB::raw("2 as level_coa"), "coas.fheader", DB::raw("SUM(aruskass.debet) AS debet"), DB::raw("SUM(aruskass.credit) AS credit"), "coas.jenis_aktivitas"])
         ->leftJoin('aruskass', 'coas.id', '=', 'aruskass.coa')
         ->where(function($q){
             $q->where(function($q){
