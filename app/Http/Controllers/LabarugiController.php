@@ -378,10 +378,10 @@ class LabarugiController extends Controller
                 }
             }
         }
+
         // remove null value
         $dt = array_filter($dt, function ($dt) {
             return ($dt[3] != 0) || ($dt[4] != 0);
-            // return $dt;
         });
         // leveling
         if($child_level==0){
@@ -615,7 +615,7 @@ class LabarugiController extends Controller
             $coa_code = $this->patokanUrutan($labarugi->coa_code."");
             $dt[$labarugi->id] = array($labarugi->id, $labarugi->coa_code, $labarugi->coa_name, $labarugi->debet, $labarugi->credit, $labarugi->coa, $labarugi->level_coa, $labarugi->fheader, $coa_code);
         }
-        
+        // dd($dt);
 
         // get nominal
         $iter = array_filter($dt, function ($dt) {

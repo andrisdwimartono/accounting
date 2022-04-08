@@ -9,10 +9,12 @@ use App\Models\Unitkerja;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Concerns\WithDrawings;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Illuminate\Support\Facades\DB;
 
-class AruskasUmsidaExport implements FromView, WithStyles
+class AruskasUmsidaExport implements FromView, WithStyles, WithDrawings
 { 
 
     protected $request;
@@ -49,6 +51,20 @@ class AruskasUmsidaExport implements FromView, WithStyles
         ];
     }
 
+    public function drawings()
+    {
+        $gs = Session::get('global_setting');
+
+        $drawing = new Drawing();
+        $drawing->setName($gs->nama_instansi);
+        $drawing->setDescription($gs->nama_lengkap_instansi);
+        $drawing->setPath(public_path('/logo_instansi/'.$gs->logo_instansi));
+        $drawing->setHeight(75);
+        $drawing->setCoordinates('C2');
+
+        return $drawing;
+    }
+
     public function view(): View
     {
         $bulan_periode = 1;
@@ -70,7 +86,12 @@ class AruskasUmsidaExport implements FromView, WithStyles
         
         $jenis_aktivitas = "";
         foreach(Coa::find(1)
-        ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.category", "coas.coa", DB::raw("2 as level_coa"), "coas.fheader", DB::raw("SUM(aruskass.debet) as debet"), DB::raw("SUM(aruskass.credit) as credit"), "coas.jenis_aktivitas"])
+        ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.category", "coas.coa", DB::raw("2 as level_coa"), "coas.fheader", 
+                    DB::raw("SUM(CASE WHEN tahun_periode = ".((int) $tahun_periode-1)." THEN aruskass.debet ELSE 0 END) AS debet_0"), 
+                    DB::raw("SUM(CASE WHEN tahun_periode = ".((int) $tahun_periode-1)." THEN aruskass.credit ELSE 0 END) AS credit_0"),
+                    DB::raw("SUM(CASE WHEN tahun_periode = ".$tahun_periode." THEN aruskass.debet ELSE 0 END) AS debet_1"), 
+                    DB::raw("SUM(CASE WHEN tahun_periode = ".$tahun_periode." THEN aruskass.credit ELSE 0 END) AS credit_1"), 
+                    "coas.jenis_aktivitas"])
         ->leftJoin('aruskass', 'coas.id', '=', 'aruskass.coa')
         ->where(function($q){
             $q->where(function($q){
