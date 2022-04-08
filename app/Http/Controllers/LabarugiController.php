@@ -379,6 +379,32 @@ class LabarugiController extends Controller
             }
         }
 
+        // get header
+        $header = array_filter($dt, function ($dt) {
+            return $dt[7] == "on";
+        });
+        // $header = $dt;
+
+        // show total each header
+        foreach($header as $key => $item){
+            $d = $item;
+            $d[7] = '';
+            $code = $d[8];
+            if($d[6]==1){
+                $code = substr($code, 0, 1) . "999999999";
+            } else if($d[6]==2){
+                $code = substr($code, 0, 3) . "9999999";
+            } else if($d[6]==3){
+                $code = substr($code, 0, 5). "99999";
+            } 
+            $d[8] = $code;
+            $d[1] = '';
+            $d[6] = (int) $d[6] + 1;
+            $d[2] = 'Jumlah ' . $d[2];
+
+            array_push($dt, $d);
+        }
+
         // remove null value
         $dt = array_filter($dt, function ($dt) {
             return ($dt[3] != 0) || ($dt[4] != 0);

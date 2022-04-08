@@ -247,7 +247,7 @@
                 "targets": 2,
                 "width" : 250,
                 "render":  function ( data, type, row, meta ) {
-                  if(row[7]=='on'){
+                  if(row[7]=='on' || row[2]===''){
                     return "<b>"+row[2]+"</b>";
                   } else {
                     return row[2];
@@ -263,7 +263,7 @@
                 "width" : 130,
                 "render":  function ( data, type, row, meta ) {
                   if($("#child_level").val() == 1){
-                    if(row[7]!='on'){
+                    if(row[7]!='on' || row[2]==''){
                       return formatRupiahWNegative(row[3],".") ;
                     } else {
                       return "";
@@ -271,7 +271,6 @@
                   } else {
                     return formatRupiahWNegative(row[3],".") ;
                   }
-                          
                 }
               },
               { 
@@ -279,7 +278,7 @@
                 "width" : 130,
                 "render":  function ( data, type, row, meta ) {
                   if($("#child_level").val() == 1){
-                    if(row[7]!='on'){
+                    if(row[7]!='on' || row[2]==''){
                       return formatRupiahWNegative(row[4],".") ;
                     } else {
                       return "";
@@ -287,6 +286,7 @@
                   } else {
                     return formatRupiahWNegative(row[4],".") ;
                   }
+
                 }
               },
               { 
