@@ -263,7 +263,7 @@
                 "width" : 130,
                 "render":  function ( data, type, row, meta ) {
                   if($("#child_level").val() == 1){
-                    if(row[7]!='on' || row[2]==''){
+                    if(row[7]!='on'){
                       return formatRupiahWNegative(row[3],".") ;
                     } else {
                       return "";
@@ -278,7 +278,7 @@
                 "width" : 130,
                 "render":  function ( data, type, row, meta ) {
                   if($("#child_level").val() == 1){
-                    if(row[7]!='on' || row[2]==''){
+                    if(row[7]!='on'){
                       return formatRupiahWNegative(row[4],".") ;
                     } else {
                       return "";

@@ -400,7 +400,7 @@ class LabarugiController extends Controller
             $d[8] = $code;
             $d[1] = '';
             $d[6] = (int) $d[6] + 1;
-            $d[2] = 'Jumlah ' . $d[2];
+            $d[2] = '<b>Jumlah ' . $d[2] . '</b>';
 
             array_push($dt, $d);
         }
