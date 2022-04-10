@@ -9,10 +9,12 @@ use App\Models\Unitkerja;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Concerns\WithDrawings;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Illuminate\Support\Facades\DB;
 
-class LabarugiUmsidaExport implements FromView, WithStyles
+class LabarugiUmsidaExport implements FromView, WithStyles, WithDrawings
 { 
 
     protected $request;
@@ -47,6 +49,20 @@ class LabarugiUmsidaExport implements FromView, WithStyles
             4    => ['font' => ['bold' => true, 'size' => 16, 'color' => array('rgb' => 'FFFFFF')], 'alignment' => ['horizontal' => 'center']],
             6    => ['font' => ['bold' => true, 'size' => 14, 'color' => array('rgb' => 'FFFFFF')], 'alignment' => ['horizontal' => 'center']],            
         ];
+    }
+
+    public function drawings()
+    {
+        $gs = Session::get('global_setting');
+
+        $drawing = new Drawing();
+        $drawing->setName($gs->nama_instansi);
+        $drawing->setDescription($gs->nama_lengkap_instansi);
+        $drawing->setPath(public_path('/logo_instansi/'.$gs->logo_instansi));
+        $drawing->setHeight(70);
+        $drawing->setCoordinates('C2');
+
+        return $drawing;
     }
 
     public function view(): View

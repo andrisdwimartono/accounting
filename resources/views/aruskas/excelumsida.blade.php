@@ -28,7 +28,7 @@
             <th></th>
             <th></th>
             <th>Catatan</th>
-            <th></th>
+            <th>{{$transactions['bulan_before']}} {{$transactions['tahun_before']}}</th>
             <th>{{$transactions['bulan']}} {{$transactions['tahun']}}</th>
         </tr>
     </thead>
@@ -53,8 +53,8 @@
             <td>{{ $transaction[5]==3?$transaction[2]:"" }}</td>
             <td>{{ $transaction[5]==4?$transaction[2]:"" }}</td>
             <td></td>
-            <td></td>
-            <td>{{ ((double)$transaction[3])>0||$transaction[3]!="0"?$transaction[3]:$transaction[4] }}</td>
+            <td>{{ ((double)$transaction[8])>0||$transaction[8]!="0"?$transaction[8]:0 }}</td>
+            <td>{{ ((double)$transaction[3])>0||$transaction[3]!="0"?$transaction[3]:0 }}</td>
         </tr>
         <!-- <?php if($transaction[5]==1 || ($transaction[5]==2 && $last3_account != $transaction[2])){ ?>
         <tr>
