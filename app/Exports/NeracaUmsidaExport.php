@@ -80,7 +80,7 @@ class NeracaUmsidaExport implements FromView, WithStyles, WithDrawings
         }
         $child_level = 1;
         if(isset($this->request->search["child_level"])){
-            $child_level = $this->request->search["child_level"];
+            $child_level = 3;
         }
         $unitkerja = 0;
         if(isset($this->request->search["unitkerja"])){
@@ -91,7 +91,7 @@ class NeracaUmsidaExport implements FromView, WithStyles, WithDrawings
         $no = 0;
         $yearopen = Session::get('global_setting');
         foreach(Coa::find(1)
-        ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader", DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")]) //"neracas.debet", "neracas.credit"])//DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")])
+        ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader", DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit"), "coas.category"]) //"neracas.debet", "neracas.credit"])//DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")])
         ->leftJoin('neracas', 'coas.id', '=', 'neracas.coa')
         ->whereIn('coas.category',['aset','hutang','modal'])
         ->where(function($q){
@@ -137,9 +137,93 @@ class NeracaUmsidaExport implements FromView, WithStyles, WithDrawings
         ->orderBy("coas.level_coa", "desc")
           ->get() as $neraca){    
             $no = $no+1;
-            $dt[$neraca->id] = array($neraca->id, $neraca->coa_code, $neraca->coa_name, $neraca->debet, $neraca->credit, $neraca->coa, $neraca->level_coa, $neraca->fheader);
+            $dt[$neraca->id] = array($neraca->id, $neraca->coa_code, $neraca->coa_name, $neraca->category=="aset"||$neraca->category=="biaya"||$neraca->category=="biaya_lainnya"?$neraca->debet-$neraca->credit:$neraca->credit-$neraca->debet, 0, $neraca->coa, $neraca->level_coa, $neraca->fheader);
+        }
+
+        $dt_before = array();
+        foreach(Coa::find(1)
+        ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader", DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit"), "coas.category"]) //"neracas.debet", "neracas.credit"])//DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")])
+        ->leftJoin('neracas', 'coas.id', '=', 'neracas.coa')
+        ->whereIn('coas.category',['aset','hutang','modal'])
+        ->where(function($q){
+            $q->where(function($q){
+                $q->where("neracas.debet","!=",0)->orWhere("neracas.credit","!=",0);
+            })
+            ->orWhere(function($q){
+                $q->where("coas.fheader","on");
+            });  
+        })
+        ->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
+            $tahun_periode_before = $tahun_periode-1;
+            // dd($yearopen);
+            if($bulan_periode >= $yearopen->bulan_tutup_tahun){
+                //only one year
+                $q->where(function($q) use ($bulan_periode, $tahun_periode_before, $yearopen){
+                    $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode_before);
+                });
+            }else{
+                //cross year
+                $q->where(function($q) use ($bulan_periode, $tahun_periode_before, $yearopen){
+                    $q->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode_before);
+                })->orWhere(function($q) use ($bulan_periode, $tahun_periode_before, $yearopen){
+                    $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("tahun_periode", $tahun_periode_before-1);
+                });
+            }
+            $q->orWhere(function($q){
+                $q->whereNull("bulan_periode");
+            });  
+        })
+        ->where(function($q) use ($unitkerja){
+            $q->where(function($q) use ($unitkerja){
+                if($unitkerja != null && $unitkerja != 0){
+                    $q->where("neracas.unitkerja", $unitkerja);
+                }else{
+                    $q->whereNull("coas.fheader");
+                }
+            })
+            ->orWhere(function($q){
+                $q->where("coas.fheader","on");
+            });
+        })
+        ->groupBy(["coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader"])
+        ->orderBy("coas.level_coa", "desc")
+          ->get() as $neraca){    
+            $no = $no+1;
+            $dt_before[$neraca->id] = array($neraca->id, $neraca->coa_code, $neraca->coa_name, $neraca->category=="aset"||$neraca->category=="biaya"||$neraca->category=="biaya_lainnya"?$neraca->debet-$neraca->credit:$neraca->credit-$neraca->debet, 0, $neraca->coa, $neraca->level_coa, $neraca->fheader);
         }
         
+
+        //add value last periode
+        $total = 0;
+        foreach($dt as $index=>$dtd){
+            //$total = $total+(float)$dtd[3];
+            foreach($dt_before as $dt_befored){
+                if($dtd[5] == $dt_befored[5]){
+                    $dtd[4] = $dt_befored[3];
+                    $dt[$index][4] = $dt_befored[3];
+                    continue 2;
+                }
+            }
+        }
+
+        //add dt_before row to dt where not in dt
+        $total_before = 0;
+        foreach($dt_before as $dt_befored){
+            //$total_before = $total_before+(float)$dt_befored[3];
+            $exist = false;
+            foreach($dt as $dtd){
+                if($dtd[5] == $dt_befored[5]){
+                    $exist = true;
+                    continue 2;
+                }
+            }
+            
+            if(!$exist){
+                $dt_befored[4] = $dt_befored[3];
+                $dt_befored[3] = 0;
+                array_push($dt, $dt_befored);
+            }
+        }
 
         // get nominal
         $iter = array_filter($dt, function ($dt) {
@@ -188,21 +272,21 @@ class NeracaUmsidaExport implements FromView, WithStyles, WithDrawings
             }
 
             // format nominal
-            if($child_level==1){
-                $dt[$key][3] = $data[3];
-                $dt[$key][4] = $data[4];
-                if($data[7]=="on"){
-                    $dt[$key][3] = "";
-                    $dt[$key][4] = "";
-                }    
-            } else {
-                $dt[$key][3] = $data[3];
-                $dt[$key][4] = $data[4];
-                if($data[7]!="on"){
-                    $dt[$key][3] = "";
-                    $dt[$key][4] = "";
-                }
-            }
+            // if($child_level==1){
+            //     $dt[$key][3] = $data[3];
+            //     $dt[$key][4] = $data[4];
+            //     if($data[7]=="on"){
+            //         $dt[$key][3] = "";
+            //         $dt[$key][4] = "";
+            //     }    
+            // } else {
+            //     $dt[$key][3] = $data[3];
+            //     $dt[$key][4] = $data[4];
+            //     if($data[7]!="on"){
+            //         $dt[$key][3] = "";
+            //         $dt[$key][4] = "";
+            //     }
+            // }
         }
 
         $uk = null;
@@ -219,6 +303,8 @@ class NeracaUmsidaExport implements FromView, WithStyles, WithDrawings
             "cre" => $cre_total,
             "bulan" => $this->convertBulan($bulan_periode), 
             "tahun" => $tahun_periode,
+            "bulan_before" => $this->convertBulan($bulan_periode), 
+            "tahun_before" => $tahun_periode-1,
             "unitkerja" => $unitkerja, 
             "unitkerja_label" => $uk?$uk->unitkerja_name:""
         );

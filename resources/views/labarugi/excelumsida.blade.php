@@ -51,7 +51,7 @@
             $total3_debet = $total3_debet + (double)$transaction[3];
             $total3_credit = $total3_credit + (double)$transaction[4];
 
-            if($transaction[6] == 2){
+            if($transaction[6] == 2 || $transaction[6] == 1){
                 if(!$first){
                     //print last jumlah
                     ?>
@@ -72,6 +72,9 @@
                 $last_level_2 = $transaction[2];
                 $total_level_2 = $transaction[3];
                 $total_level_2_before = $transaction[4];
+                if($transaction[6] == 1){
+                    $first = true;
+                }
             }
         ?>
         <tr>

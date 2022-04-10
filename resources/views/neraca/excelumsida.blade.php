@@ -28,7 +28,7 @@
             <th></th>
             <th></th>
             <th>Catatan</th>
-            <th></th>
+            <th>{{$transactions['bulan_before']}} {{$transactions['tahun_before']}}</th>
             <th>{{$transactions['bulan']}} {{$transactions['tahun']}}</th>
         </tr>
     </thead>
@@ -37,6 +37,11 @@
             $last3_account = "";
             $total3_debet = 0;
             $total3_credit = 0;
+
+            $first = true;
+            $last_level_2 = "";
+            $total_level_2 = 0;
+            $total_level_2_before = 0;
         ?>
         @foreach($transactions['data'] as $transaction)
         <?php if($transaction[6]==2 && $last3_account == ""){ 
@@ -45,6 +50,32 @@
         <?php 
             $total3_debet = $total3_debet + (double)$transaction[3];
             $total3_credit = $total3_credit + (double)$transaction[4];
+        
+            if($transaction[6] == 2 || $transaction[6] == 1){
+                if(!$first){
+                    //print last jumlah
+                    ?>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>Jumlah {{ $last_level_2 }}</td>
+            <td></td>
+            <td>{{ (double)$total_level_2_before }}</td>
+            <td>{{ (double)$total_level_2 }}</td>
+        </tr>
+
+                    <?php
+                }
+                $first = false;
+                $last_level_2 = $transaction[2];
+                $total_level_2 = $transaction[3];
+                $total_level_2_before = $transaction[4];
+                if($transaction[6] == 1){
+                    $first = true;
+                }
+            }
         ?>
         <tr>
             <td></td>
@@ -53,8 +84,8 @@
             <td>{{ $transaction[6]==3?$transaction[2]:"" }}</td>
             <td>{{ $transaction[6]==4?$transaction[2]:"" }}</td>
             <td></td>
-            <td></td>
-            <td>{{ ((double)$transaction[3])>0||$transaction[3]!="0"?$transaction[3]:$transaction[4] }}</td>
+            <td>{{ $transaction[7]!='on'?(((double)$transaction[4])>0||$transaction[4]!="0"?$transaction[4]:0):"" }}</td>
+            <td>{{ $transaction[7]!='on'?(((double)$transaction[3])>0||$transaction[3]!="0"?$transaction[3]:0):"" }}</td>
         </tr>
         <!-- <?php if($transaction[6]==1 || ($transaction[6]==2 && $last3_account != $transaction[2])){ ?>
         <tr>
@@ -69,5 +100,17 @@
         </tr>
         <?php $last3_account = $transaction[2]; } ?> -->
         @endforeach
+        @if($last_level_2 != "")
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>Jumlah {{ $last_level_2 }}</td>
+            <td></td>
+            <td>{{ (double)$total_level_2_before }}</td>
+            <td>{{ (double)$total_level_2 }}</td>
+        </tr>
+        @endif
     </tbody>
 </table>
