@@ -238,9 +238,8 @@ class AruskasUmsidaExport implements FromView, WithStyles, WithDrawings
         }
 
         //add value last periode
-        $index = 0;
         $total = 0;
-        foreach($dt as $dtd){
+        foreach($dt as $index=>$dtd){
             $total = $total+(float)$dtd[3];
             foreach($dt_before as $dt_befored){
                 if($dtd[2] == $dt_befored[2]){
@@ -249,7 +248,6 @@ class AruskasUmsidaExport implements FromView, WithStyles, WithDrawings
                     continue 2;
                 }
             }
-            $index++;
         }
 
         //add dt_before row to dt where not in dt
