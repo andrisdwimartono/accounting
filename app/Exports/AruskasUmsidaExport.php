@@ -159,6 +159,7 @@ class AruskasUmsidaExport implements FromView, WithStyles, WithDrawings
                 }
             }
         }
+        var_dump($dt);die();
 
         $dt_before = array();
         foreach(Coa::find(1)
