@@ -107,7 +107,7 @@ class NeracaUmsidaExport implements FromView, WithStyles, WithDrawings
             if($bulan_periode >= $yearopen->bulan_tutup_tahun){
                 //only one year
                 $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
-                    $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    $q->where("bulan_periode", ">=", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
                 });
             }else{
                 //cross year
@@ -159,7 +159,7 @@ class NeracaUmsidaExport implements FromView, WithStyles, WithDrawings
             if($bulan_periode >= $yearopen->bulan_tutup_tahun){
                 //only one year
                 $q->where(function($q) use ($bulan_periode, $tahun_periode_before, $yearopen){
-                    $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode_before);
+                    $q->where("bulan_periode", ">=", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode_before);
                 });
             }else{
                 //cross year
