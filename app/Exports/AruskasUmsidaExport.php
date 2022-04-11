@@ -236,6 +236,8 @@ class AruskasUmsidaExport implements FromView, WithStyles, WithDrawings
                 }
             }
         }
+        var_dump($dt);
+        die();
 
         //add value last periode
         $total = 0;
