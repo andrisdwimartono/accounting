@@ -1984,7 +1984,7 @@ class KegiatanController extends Controller
                 $count = Iku::count();
             }elseif($request->field == "coa"){
                 $lists = Coa::where(function($q) use ($request) {
-                    $q->where("coa_name", "ILIKE", "%" . $request->term. "%")->where("coa_code", "ILIKE", "%" . $request->term. "%");
+                    $q->where("coa_name", "ILIKE", "%" . $request->term. "%")->orWhere("coa_code", "ILIKE", "%" . $request->term. "%");
                 })->whereNull("fheader")->whereIn("category", ["biaya", "biaya_lainnya"])->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("concat(concat(coa_code, ' '), coa_name) as text")]);
                 $count = Coa::count();
             }elseif($request->field == "programkerja"){
