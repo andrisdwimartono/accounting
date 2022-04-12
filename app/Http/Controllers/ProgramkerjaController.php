@@ -229,7 +229,7 @@ class ProgramkerjaController extends Controller
 
             $new_menu_field_ids = array();
             foreach($requests_ct1_detailbiayaproker as $ct_request){
-                if(isset($ct_request["id"])){
+                if(isset($ct_request["id"]) && $ct_request["id"] != ""){
                     Detailbiayaproker::where("id", $ct_request["id"])->update([
                         "no_seq" => $ct_request["no_seq"],
                         "parent_id" => $id,
