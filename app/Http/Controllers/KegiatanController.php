@@ -780,7 +780,7 @@ class KegiatanController extends Controller
                 "output"=> $request->output == ''?null:$request->output,
                 "proposal"=> $request->proposal == ''?null:$request->proposal,
                 "user_updater_id"=> Auth::user()->id,
-                "tanggal"=> $request->tanggal
+                "tanggal"=> $request->tanggal,
             ]);
 
             $new_menu_field_ids = array();
@@ -880,8 +880,8 @@ class KegiatanController extends Controller
                         "volume" => $ct_request["volume"],
                         "satuan" => $ct_request["satuan"],
                         "satuan_label" => $ct_request["satuan_label"],
-                        "status" => $ct_request["status"],
-                        "komentarrevisi" => $ct_request["komentarrevisi"],
+                        //"status" => $ct_request["status"],
+                        //"komentarrevisi" => $ct_request["komentarrevisi"],
                         "user_updater_id" => Auth::user()->id
                     ]);
                 }else{
@@ -894,8 +894,8 @@ class KegiatanController extends Controller
                         "volume" => $ct_request["volume"],
                         "satuan" => $ct_request["satuan"],
                         "satuan_label" => $ct_request["satuan_label"],
-                        "status" => $ct_request["status"],
-                        "komentarrevisi" => $ct_request["komentarrevisi"],
+                        //"status" => $ct_request["status"],
+                        //"komentarrevisi" => $ct_request["komentarrevisi"],
                         "user_creator_id" => Auth::user()->id
                     ])->id;
                     array_push($new_menu_field_ids, $idct);

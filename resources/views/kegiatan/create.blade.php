@@ -125,6 +125,7 @@
                                                         </div>
                                                         <div class="input-group-append">
                                                             <button class="btn btn-outline-secondary" type="button" id="btn_proposal" disabled>Upload</button>
+                                                            <button class="btn btn-outline-secondary" type="button" id="btn_clear_proposal" disabled><i class="fas fa-times"></i></button>
                                                         </div>
                                                     </div>
                                                     <input type="hidden" class="custom-file-input" id="proposal" name="proposal">    
@@ -139,16 +140,17 @@
                                                         <table id="caktable4" class="display" style="width: 100%">
                                                             <thead>
                                                                 <tr>
-                                                                    <th scope="col" style="width: 13%; overflow: hidden;">Biaya</th>
-                                                                    <th scope="col" style="width: 13%; overflow: hidden;">Deskripsi</th>
-                                                                    <th scope="col" style="width: 13%; overflow: hidden;">Volume</th>
+                                                                    <th scope="col" style="width: 12%; overflow: hidden;">Biaya</th>
+                                                                    <th scope="col" style="width: 11%; overflow: hidden;">Deskripsi</th>
+                                                                    <th scope="col" style="width: 11%; overflow: hidden;">Volume</th>
                                                                     <th class="column-hidden">Satuan</th>
-                                                                    <th scope="col" style="width: 13%; overflow: hidden;">Satuan</th>
-                                                                    <th scope="col" style="width: 13%; overflow: hidden;">Nominal</th>
+                                                                    <th scope="col" style="width: 11%; overflow: hidden;">Satuan</th>
+                                                                    <th scope="col" style="width: 11%; overflow: hidden;">By Satuan</th>
+                                                                    <th scope="col" style="width: 12%; overflow: hidden;">Nominal</th>
 
                                                                     @if($page_data["page_method_name"] == "View")
                                                                         <th scope="col" style="width: 7%;">Status</th>
-                                                                        <th scope="col" style="width: 10%;">Komentar Revisi</th>
+                                                                        <th scope="col" style="width: 9%;">Komentar Revisi</th>
                                                                         <th class="column-hidden" scope="col" style="width: 5%;"></th>
                                                                     @else
                                                                         <th scope="col" style="width: 10%;"></th>
@@ -168,6 +170,7 @@
                                                                                 @endif
                                                                             </div>
                                                                         </td>
+                                                                        <td class="p-0"></td>
                                                                         <td class="p-0"></td>
                                                                         <td class="p-0"></td>
                                                                         <td class="p-0 text-right">Total : </td>

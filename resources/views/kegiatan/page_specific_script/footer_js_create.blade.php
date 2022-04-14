@@ -86,10 +86,11 @@ $('input[name=tanggal_kegiatan]').on("change", function(){
 //     $("#tahun_label").val($("#tahun option:selected").text());
 //     $('#iku').val('').trigger('change');
 // });
-
+var awal = 0;
 $("#programkerja").on("change", function() {
     $("#programkerja_label").val($("#programkerja option:selected").text());
-    getdatadetailkegiatan();
+    getdatadetailkegiatan(awal);
+    awal++;
 });
 
 $("#coa").on("change", function() {
@@ -554,6 +555,9 @@ function getdata(){
                                 var filename = Object.keys(data.data.kegiatan)[i];
                                 $("label[for=upload_"+Object.keys(data.data.kegiatan)[i]+"]").html(filename);
                                 $("#btn_"+Object.keys(data.data.kegiatan)[i]+"").html("Download");
+
+                                $("#btn_clear_"+Object.keys(data.data.kegiatan)[i]+"").removeAttr("disabled");
+                                $("#btn_clear_"+Object.keys(data.data.kegiatan)[i]+"").addClass("btn-danger text-white");
                             }
                         }
                     }
@@ -718,6 +722,10 @@ function getdata(){
                     $("select[name='satuan_"+(parseInt(data.data.ct4_detailkegiatan[i].no_seq)+1)+"']").empty();
                     var newState = new Option(data.data.ct4_detailkegiatan[i].satuan_label, data.data.ct4_detailkegiatan[i].satuan, true, false);
                     $("#satuan_"+(parseInt(data.data.ct4_detailkegiatan[i].no_seq)+1)+"").append(newState).trigger('change');
+                    
+                    AutoNumeric.getAutoNumericElement('#biayasatuan_'+(parseInt(data.data.ct4_detailkegiatan[i].no_seq)+1)).set(data.data.ct4_detailkegiatan[i].standarbiaya/data.data.ct4_detailkegiatan[i].volume);
+                    $("input[name='biayasatuan_"+(parseInt(data.data.ct4_detailkegiatan[i].no_seq)+1)+"']").trigger("change");
+
                     AutoNumeric.getAutoNumericElement('#standarbiaya_'+(parseInt(data.data.ct4_detailkegiatan[i].no_seq)+1)).set(data.data.ct4_detailkegiatan[i].standarbiaya);
                     $("input[name='standarbiaya_"+(parseInt(data.data.ct4_detailkegiatan[i].no_seq)+1)+"']").trigger("change");
 
@@ -996,7 +1004,19 @@ function selectingfile(fieldid){
     $("label[for=upload_"+fieldid+"]").html(filename);
     $("#btn_"+fieldid).html("Upload");
     $("#"+fieldid).val("");
+
+    $("#btn_clear_"+fieldid).removeAttr("disabled");
+    $("#btn_clear_"+fieldid).addClass("btn-danger text-white");
 }
+
+$("#btn_clear_proposal").on('click', function(){
+    $("#proposal").val("");
+    $("#btn_proposal").attr("disabled", true);
+    $("#btn_proposal").removeClass("btn-primary text-white");
+    $("#btn_clear_proposal").attr("disabled", true);
+    $("#btn_clear_proposal").removeClass("btn-danger text-white");
+    $("label[for=upload_proposal").html("Pilih file Proposal");
+});
 
 $("#btn_proposal").on('click', function(){
     if($("#proposal").val() != ""){
@@ -1026,6 +1046,8 @@ $("#btn_proposal").on('click', function(){
     }else{
         $("#btn_proposal").attr("disabled", true);
         $("#btn_proposal").removeClass("btn-primary text-white");
+        $("#btn_clear_proposal").attr("disabled", true);
+        $("#btn_clear_proposal").removeClass("btn-danger text-white");
         
         var uploadfile = document.getElementById("upload_proposal").files[0];
         var name = uploadfile.name;
@@ -1080,6 +1102,9 @@ $("#btn_proposal").on('click', function(){
                         $("#btn_proposal").attr("disabled", false);
                         $("#btn_proposal").addClass("btn-success text-white");
                         $("#btn_proposal").html("Download");
+                        
+                        $("#btn_clear_proposal").removeAttr("disabled");
+                        $("#btn_clear_proposal").addClass("btn-danger text-white");
                     }
                 },
                 error: function (err) {
@@ -1227,13 +1252,13 @@ function processapprove(status, komentar = ""){
                 satuan = $(td).text();
             }else if(index == 4){
                 satuan_label = $(td).find("select option:selected").text();
-            }else if(index == 5){
+            }else if(index == 6){
                 standarbiaya = AutoNumeric.getNumber("#standarbiaya_"+$(tr).attr("row-seq"));
-            }else if(index == 10){
+            }else if(index == 11){
                 id = $(td).text();
-            }else if(index == 8){
+            }else if(index == 9){
                 komentarrevisi = $(td).find("input").val();
-            }else if(index == 7){
+            }else if(index == 8){
                 status4 = $(td).find("select option:selected").val();
                 if(status4 && status4 !== 'undefined'){
                     
@@ -1795,6 +1820,7 @@ $(document).keydown(function(event) {
                     +"<td class=\"p-0\"><input type=\"text\" name=\"volume_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"volume_"+rowlen+"\" placeholder=\"Enter Nominal\"></td>"
                     +"<td class=\"column-hidden\"></td>"
                     +"<td class=\"p-0\"><select name=\"satuan_"+rowlen+"\" id=\"satuan_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%; overflow: hidden; white-space: nowrap;\"></select></td>"
+                    +"<td class=\"p-0\"><input type=\"text\" name=\"biayasatuan_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"biayasatuan_"+rowlen+"\" placeholder=\"Enter Nominal\"></td>"
                     +"<td class=\"p-0\"><input type=\"text\" name=\"standarbiaya_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"standarbiaya_"+rowlen+"\" placeholder=\"Enter Nominal\"></td>"
                     +"<td class=\"column-hidden\"></td>"
                     +"<td class=\"p-0\"><select name=\"status4_"+rowlen+"\" id=\"status4_"+rowlen+"\" class=\"status_acc form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
@@ -1809,6 +1835,7 @@ $(document).keydown(function(event) {
                     +"<td class=\"p-0\"><input type=\"text\" name=\"volume_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"volume_"+rowlen+"\" placeholder=\"Enter Nominal\"></td>"
                     +"<td class=\"column-hidden\"></td>"
                     +"<td class=\"p-0\"><select name=\"satuan_"+rowlen+"\" id=\"satuan_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%; overflow: hidden; white-space: nowrap;\"></select></td>"
+                    +"<td class=\"p-0\"><input type=\"text\" name=\"biayasatuan_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"biayasatuan_"+rowlen+"\" placeholder=\"Enter Nominal\"></td>"
                     +"<td class=\"p-0\"><input type=\"text\" name=\"standarbiaya_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"standarbiaya_"+rowlen+"\" placeholder=\"Enter Nominal\"></td>"
                     +"<td class=\"p-0 text-center\"><button id=\"row_delete4_"+rowlen+"\" class=\"bg-white border-0\"><i class=\"text-danger fas fa-minus-circle row-delete\" style=\"cursor: pointer;\"></i></button></td>"
                     +"<td class=\"column-hidden\"></td>"
@@ -1823,9 +1850,14 @@ $(document).keydown(function(event) {
             $($tr).remove();
             calcTotal4();
         });
+        
 
-        $("#standarbiaya_"+rowlen+"").on("change", function(){
-            calcTotal4();
+        var noms3 = new AutoNumeric("#biayasatuan_"+rowlen, {
+            decimalCharacter : ',',
+            digitGroupSeparator : '.',
+            minimumValue : 0,
+            decimalPlaces : 2,
+            unformatOnSubmit : true,
         });
 
         var noms3 = new AutoNumeric("#standarbiaya_"+rowlen, {
@@ -1833,7 +1865,8 @@ $(document).keydown(function(event) {
             digitGroupSeparator : '.',
             minimumValue : 0,
             decimalPlaces : 2,
-            unformatOnSubmit : true
+            unformatOnSubmit : true,
+            readOnly : true
         });
 
         var noms2 = new AutoNumeric("#volume_"+rowlen, {
@@ -1842,6 +1875,34 @@ $(document).keydown(function(event) {
             minimumValue : 0,
             decimalPlaces : 2,
             unformatOnSubmit : true
+        });
+
+
+        $("#volume_"+rowlen+"").on("change", function(){
+            var volume = AutoNumeric.getNumber("#volume_"+rowlen+"");
+            var biayasatuan = AutoNumeric.getNumber("#biayasatuan_"+rowlen+"");
+            AutoNumeric.getAutoNumericElement('#standarbiaya_'+rowlen).set(volume*biayasatuan);
+            $("input[name='standarbiaya_"+rowlen+"']").trigger("change");
+
+            calcTotal4();
+        });
+
+        $("#biayasatuan_"+rowlen+"").on("change", function(){
+            var volume = AutoNumeric.getNumber("#volume_"+rowlen+"");
+            var biayasatuan = AutoNumeric.getNumber("#biayasatuan_"+rowlen+"");
+            AutoNumeric.getAutoNumericElement('#standarbiaya_'+rowlen).set(volume*biayasatuan);
+            $("input[name='standarbiaya_"+rowlen+"']").trigger("change");
+
+            calcTotal4();
+        });
+
+        $("#standarbiaya_"+rowlen+"").on("change", function(){
+            // var volume = AutoNumeric.getNumber("#volume_"+rowlen+"");
+            // var standarbiaya = AutoNumeric.getNumber("#standarbiaya_"+rowlen+"");
+            // AutoNumeric.getAutoNumericElement('#biayasatuan_'+rowlen).set(standarbiaya/volume);
+            // $("input[name='biayasatuan_"+rowlen+"']").trigger("change");
+
+            calcTotal4();
         });
 
         $("#satuan_"+rowlen+"").on("change", function() {
@@ -2091,9 +2152,9 @@ $(document).keydown(function(event) {
                         satuan = $(td).text();
                     }else if(index == 4){
                         satuan_label = $(td).find("select option:selected").text();
-                    }else if(index == 5){
+                    }else if(index == 6){
                         standarbiaya = AutoNumeric.getNumber("#standarbiaya_"+$(tr).attr("row-seq"));
-                    }else if(index == 7){
+                    }else if(index == 8){
                         id = $(td).text();
                     }
                 });
@@ -2229,10 +2290,13 @@ $(document).keydown(function(event) {
     }
 
 
-    function getdatadetailkegiatan(){
+    function getdatadetailkegiatan(awal = 0){
         @if($page_data["page_method_name"] == "View") 
         return;
         @endif
+        if(awal == 0){
+            return;
+        }
         var pk = $("#programkerja").val();
 
         if(!pk){
@@ -2297,6 +2361,8 @@ $(document).keydown(function(event) {
                         $("select[name='satuan_"+(parseInt(data.data.ct4_detailkegiatan[i].no_seq))+"']").empty();
                         var newState = new Option(data.data.ct4_detailkegiatan[i].satuan_label, data.data.ct4_detailkegiatan[i].satuan, true, false);
                         $("#satuan_"+(parseInt(data.data.ct4_detailkegiatan[i].no_seq))+"").append(newState).trigger('change');
+                        AutoNumeric.getAutoNumericElement('#biayasatuan_'+(parseInt(data.data.ct4_detailkegiatan[i].no_seq))).set(data.data.ct4_detailkegiatan[i].standarbiaya/data.data.ct4_detailkegiatan[i].volume);
+                        $("input[name='biayasatuan_"+(parseInt(data.data.ct4_detailkegiatan[i].no_seq))+"']").trigger("change");
                         AutoNumeric.getAutoNumericElement('#standarbiaya_'+(parseInt(data.data.ct4_detailkegiatan[i].no_seq))).set(data.data.ct4_detailkegiatan[i].standarbiaya);
                         $("input[name='standarbiaya_"+(parseInt(data.data.ct4_detailkegiatan[i].no_seq))+"']").trigger("change");
 
