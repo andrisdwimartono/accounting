@@ -54,13 +54,14 @@
                                                     <table id="caktable1" class="display" style="width: 100%">
                                                         <thead>
                                                             <tr>
-                                                                <th scope="col" style="width: 20%; overflow: hidden;">Biaya</th>
-                                                                <th scope="col" style="width: 20%; overflow: hidden;">Deskripsi</th>
+                                                                <th scope="col" style="width: 15%; overflow: hidden;">Biaya</th>
+                                                                <th scope="col" style="width: 15%; overflow: hidden;">Deskripsi</th>
                                                                 <th scope="col" style="width: 15%; overflow: hidden;">Volume</th>
                                                                 <th class="column-hidden">Satuan</th>
-                                                                <th scope="col" style="width: 20%; overflow: hidden;">Satuan Label</th>
-                                                                <th scope="col" style="width: 20%; overflow: hidden;">Standar Biaya</th>
-                                                                <th scope="col" style="width: 5%; overflow: hidden;">Act</th>
+                                                                <th scope="col" style="width: 15%; overflow: hidden;">Satuan Label</th>
+                                                                <th scope="col" style="width: 15%; overflow: hidden;">Biaya Satuan</th>
+                                                                <th scope="col" style="width: 15%; overflow: hidden;">Standar Biaya</th>
+                                                                <th scope="col" style="width: 10%; overflow: hidden;">Act</th>
                                                                 <th class="column-hidden">id</th>
                                                             </tr>
                                                         </thead>
@@ -78,6 +79,7 @@
                                                                         </div>
                                                                     </td>
                                                                     
+                                                                    <td class="p-0 text-right"></td>
                                                                     <td class="p-0 text-right"></td>
                                                                     <td class="p-0 text-right"></td>
                                                                     <td class="p-0 text-right">

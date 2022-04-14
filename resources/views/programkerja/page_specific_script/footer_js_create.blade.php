@@ -190,10 +190,13 @@ function getdata(){
                     var newState = new Option(data.data.ct1_detailbiayaproker[i].satuan_label, data.data.ct1_detailbiayaproker[i].satuan, true, false);
                     $("#satuan_"+(parseInt(data.data.ct1_detailbiayaproker[i].no_seq))+"").append(newState).trigger('change');
 
+                    AutoNumeric.getAutoNumericElement('#biayasatuan_'+(parseInt(data.data.ct1_detailbiayaproker[i].no_seq))).set(data.data.ct1_detailbiayaproker[i].standarbiaya/data.data.ct1_detailbiayaproker[i].volume);
+                    $("input[name='biayasatuan_"+(parseInt(data.data.ct1_detailbiayaproker[i].no_seq))+"']").trigger("change");
+
                     AutoNumeric.getAutoNumericElement('#standarbiaya_'+(parseInt(data.data.ct1_detailbiayaproker[i].no_seq))).set(data.data.ct1_detailbiayaproker[i].standarbiaya);
                     $("input[name='standarbiaya_"+(parseInt(data.data.ct1_detailbiayaproker[i].no_seq))+"']").trigger("change");
 
-                    $("#caktable1 > tbody > tr[row-seq="+(parseInt(data.data.ct1_detailbiayaproker[i].no_seq))+"]").find("td:eq(7)").text(data.data.ct1_detailbiayaproker[i].id);
+                    $("#caktable1 > tbody > tr[row-seq="+(parseInt(data.data.ct1_detailbiayaproker[i].no_seq))+"]").find("td:eq(8)").text(data.data.ct1_detailbiayaproker[i].id);
                     
 
                     // $("#caktable1 > tbody").find("[row-seq="+(parseInt(data.data.ct1_detailbiayaproker[i].no_seq))+"]").find("td:eq(0)").text(data.data.ct1_detailbiayaproker[i].kegiatan);
@@ -459,6 +462,7 @@ $(document).keydown(function(event) {
                 +"<td class=\"p-0\"><input type=\"text\" name=\"volume_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"volume_"+rowlen+"\" placeholder=\"Enter Nominal\"></td>"
                 +"<td class=\"column-hidden\"></td>"
                 +"<td class=\"p-0\"><select name=\"satuan_"+rowlen+"\" id=\"satuan_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
+                +"<td class=\"p-0\"><input type=\"text\" name=\"biayasatuan_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"biayasatuan_"+rowlen+"\" placeholder=\"Enter Nominal\"></td>"
                 +"<td class=\"p-0\"><input type=\"text\" name=\"standarbiaya_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"standarbiaya_"+rowlen+"\" placeholder=\"Enter Nominal\"></td>"
                 +"<td class=\"p-0 text-center\"><button id=\"row_delete_"+rowlen+"\" class=\"bg-white border-0\"><i class=\"text-danger fas fa-minus-circle row-delete\" style=\"cursor: pointer;\"></i></button></td>"
                 +"<td class=\"column-hidden\"></td>"
@@ -479,7 +483,7 @@ $(document).keydown(function(event) {
             $($tr).find("td:eq(3)").text($(this).val());
         });
 
-        var noms = new AutoNumeric("#standarbiaya_"+rowlen, {
+        var noms = new AutoNumeric("#biayasatuan_"+rowlen, {
             currencySymbol : 'Rp ',
             decimalCharacter : ',',
             digitGroupSeparator : '.',
@@ -488,9 +492,15 @@ $(document).keydown(function(event) {
             unformatOnSubmit : true
         });
 
-        $("#standarbiaya_"+rowlen+"").on("change", function(){
-            calcTotal();
-        });
+        var noms = new AutoNumeric("#standarbiaya_"+rowlen, {
+            currencySymbol : 'Rp ',
+            decimalCharacter : ',',
+            digitGroupSeparator : '.',
+            minimumValue : 0,
+            decimalPlaces : 2,
+            unformatOnSubmit : true,
+            readOnly: true
+        });        
 
         var noms = new AutoNumeric("#volume_"+rowlen, {
             currencySymbol : '',
@@ -499,6 +509,33 @@ $(document).keydown(function(event) {
             minimumValue : 0,
             decimalPlaces : 2,
             unformatOnSubmit : true
+        });
+
+        $("#volume_"+rowlen+"").on("change", function(){
+            var volume = AutoNumeric.getNumber("#volume_"+rowlen+"");
+            var biayasatuan = AutoNumeric.getNumber("#biayasatuan_"+rowlen+"");
+            AutoNumeric.getAutoNumericElement('#standarbiaya_'+rowlen).set(volume*biayasatuan);
+            $("input[name='standarbiaya_"+rowlen+"']").trigger("change");
+
+            calcTotal();
+        });
+
+        $("#biayasatuan_"+rowlen+"").on("change", function(){
+            var volume = AutoNumeric.getNumber("#volume_"+rowlen+"");
+            var biayasatuan = AutoNumeric.getNumber("#biayasatuan_"+rowlen+"");
+            AutoNumeric.getAutoNumericElement('#standarbiaya_'+rowlen).set(volume*biayasatuan);
+            $("input[name='standarbiaya_"+rowlen+"']").trigger("change");
+
+            calcTotal();
+        });
+
+        $("#standarbiaya_"+rowlen+"").on("change", function(){
+            // var volume = AutoNumeric.getNumber("#volume_"+rowlen+"");
+            // var standarbiaya = AutoNumeric.getNumber("#standarbiaya_"+rowlen+"");
+            // AutoNumeric.getAutoNumericElement('#biayasatuan_'+rowlen).set(standarbiaya/volume);
+            // $("input[name='biayasatuan_"+rowlen+"']").trigger("change");
+
+            calcTotal();
         });
 
         $("#satuan_"+rowlen+"").select2({
@@ -572,9 +609,9 @@ $(document).keydown(function(event) {
                         satuan = $(td).text();
                     }else if(index == 4){
                         satuan_label = $(td).find("select option:selected").text();
-                    }else if(index == 5){
+                    }else if(index == 6){
                         standarbiaya = AutoNumeric.getNumber("#standarbiaya_"+$(tr).attr("row-seq"));
-                    }else if(index == 7){
+                    }else if(index == 8){
                         id = $(td).text();
                     }
                 });
