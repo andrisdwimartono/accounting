@@ -3548,6 +3548,7 @@ class JurnalController extends Controller
     }
 
     public function checkOpenPeriode($date){
+        return true;
         if(Auth::user() && Auth::user()->role == "admin"){
             return true;
         }
