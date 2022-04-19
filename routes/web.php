@@ -181,6 +181,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getlinkslabarugi', 'App\Http\Controllers\LabarugiController@getlinks');
         Route::post('/getlistlabarugi', 'App\Http\Controllers\LabarugiController@get_list');
         Route::post('/labarugi/print', 'App\Http\Controllers\LabarugiController@print');
+        Route::post('/labarugi/printumsida', 'App\Http\Controllers\LabarugiController@printumsida');
         Route::post('/labarugi/excel', 'App\Http\Controllers\LabarugiController@excel');
         Route::post('/labarugi/excelumsida', 'App\Http\Controllers\LabarugiController@excelumsida');
 
