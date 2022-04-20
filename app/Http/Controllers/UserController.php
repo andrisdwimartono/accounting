@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\User_menu;
 use App\Models\User_role_menu;
 use App\Models\Menu;
+use App\Models\Role;
 use App\Models\Unitkerja;
 use Validator;
 use Hash;
@@ -180,6 +181,8 @@ class UserController extends Controller
                 "photo_profile"=> $request->photo_profile,
                 "unitkerja"=> $request->unitkerja,
                 "unitkerja_label"=> $request->unitkerja_label,
+                "role"=> $request->role_label,
+                "role_label"=> $request->role_label,
                 "user_creator_id"=> Auth::user()->id
             ])->id;
 
@@ -225,6 +228,18 @@ class UserController extends Controller
         return view("user.create", ["page_data" => $page_data]);
     }
 
+    public function change_password($id)
+    {
+        $page_data = $this->tabledesign();
+        $page_data["page_method_name"] = "Change Password";
+        $page_data["footer_js_page_specific_script"] = ["user.page_specific_script.footer_js_create"];
+        $page_data["header_js_page_specific_script"] = ["paging.page_specific_script.header_js_create"];
+        
+        $page_data["id"] = $id;
+        $user = Auth::user();
+        return view("user.change", ["page_data" => $page_data, "user" => $user]);
+    }
+
     /**
     * Update the specified resource in storage.
     *
@@ -246,6 +261,8 @@ class UserController extends Controller
                 "photo_profile"=> $request->photo_profile,
                 "unitkerja"=> $request->unitkerja,
                 "unitkerja_label"=> $request->unitkerja_label,
+                "role"=> $request->role,
+                "role_label"=> $request->role_label,
                 "user_updater_id"=> Auth::user()->id
             ]);
 
@@ -255,6 +272,38 @@ class UserController extends Controller
                 'data' => ['id' => $id]
             ]);
         }
+    }
+
+    public function update_password(Request $request, $id)
+    {
+        $page_data = $this->tabledesign(); 
+
+        if (!(Hash::check($request->currentpassword, Auth::user()->password))) {
+            // The passwords matches
+            return response()->json(array('error' =>"Your current password does not matches with the password."), 400);
+        }
+
+        if(strcmp($request->currentpassword, $request->password) == 0){
+            // Current password and new password same
+            return response()->json(array('error' =>"New Password cannot be same as your current password."), 400);
+        }
+
+        $validatedData = $request->validate([
+            'currentpassword' => 'required',
+            'password' => 'required|string|min:5',
+        ]);
+
+        if($validatedData){
+            User::where("id", $id)->update([
+                "password"=> Hash::make($request->password),
+            ]);
+         
+            return response()->json([
+                'status' => 201,
+                'message' => 'Id '.$id.' is updated',
+                'data' => ['id' => $id]
+            ]);
+        }            
     }
 
     /**
@@ -314,28 +363,20 @@ class UserController extends Controller
                 ->orWhere('email', 'like', '%'.$keyword.'%');
         })->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get($list_column) as $user){
             $no = $no+1;
-            $act = '
-            <a href="/assignmenu/'.$user->id.'/edit" data-bs-toggle="tooltip" data-bs-placement="top" title="Assign Menus to this user"><i class="fas fa-bars text-success"></i></a>
+            $act = '';
 
-            <a href="/user/'.$user->id.'" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-primary"></i></a>
-            
-            <a href="/user/'.$user->id.'/edit" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-warning"></i></a>
-            
-            <button type="button" class="btn row-delete">
-                <i class="fas fa-minus-circle text-danger"></i>
-            </button>';
+            if(Auth::user()->role == 'admin'){
+                $act = '    
+                <a href="/change_password/'.$user->id.'" class="btn btn-primary shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="Change Password"><i class="fa fa-key"></i></a>';    
+            }
 
-            $act = '
-            <a href="/assignmenu/'.$user->id.'/edit" class="btn btn-success shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="Assign Menus to this user"><i class="fa fa-bars"></i></a>
-            
+            $act .= '
             <a href="/user/'.$user->id.'" class="btn btn-info shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fa fa-eye"></i></a>
 
             <a href="/user/'.$user->id.'/edit" class="btn btn-warning shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit User Data"><i class="fa fa-edit"></i></a>
 
             <a class="row-delete btn btn-danger shadow btn-xs sharp" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete User"><i class="fa fa-trash" ></i></a>';
             
-
-            //array_push($dt, array($no+$limit[0], $user->nama, $user->email, $act));
             array_push($dt, array($user->id, $user->name, $user->email, $act));
         }
 		$output = array(
@@ -394,9 +435,14 @@ class UserController extends Controller
             $count = 0;
             if($request->field == "unitkerja"){
                 $lists = Unitkerja::where(function($q) use ($request) {
-                    $q->where("unitkerja_name", "LIKE", "%" . $request->term. "%");
+                    $q->where("unitkerja_name", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("unitkerja_name as text")]);
                 $count = Unitkerja::count();
+            } else if($request->field == "role"){
+                $lists = Role::where(function($q) use ($request) {
+                    $q->where("nama", "ILIKE", "%" . $request->term. "%");
+                })->orderBy("id")->skip($offset)->take($resultCount)->get([DB::raw("alias as id"), DB::raw("alias as text")]);
+                $count = Role::count();
             }
 
             $endCount = $offset + $resultCount;
@@ -631,7 +677,7 @@ class UserController extends Controller
               'success' => true,
               'token' => $success,
               'user' => $user
-          ]);
+            ]);
         } else {
        //if authentication is unsuccessfull, notice how I return json parameters
           return response()->json([
@@ -713,10 +759,11 @@ class UserController extends Controller
 
     public function getRoleMenu(){
         if(Auth::user()){
+            
             $user_menus = User_role_menu::find(1)
             ->select(['menus.*'])
             ->leftJoin('menus','menus.id','user_role_menus.menu_id')
-            ->where("role",Auth::user()->role)->where("is_granted", "on")
+            ->where("role",Auth::user()->role_label)->where("is_granted", "on")
             ->where("is_shown_at_side_menu", "on")->orderBy("mp_sequence", "ASC")->orderBy("m_sequence", "ASC")
             ->get();
 

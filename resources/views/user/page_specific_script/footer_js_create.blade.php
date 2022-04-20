@@ -1,5 +1,5 @@
     <!-- Required vendors -->
-<script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
+    <script src="{{ asset ("/assets/motaadmin/vendor/global/global.min.js") }}"></script>
 	<script src="{{ asset ("/assets/motaadmin/vendor/bootstrap-select/dist/js/bootstrap-select.min.js") }} "></script>
     <script src="{{ asset ("/assets/motaadmin/vendor/chart.js/Chart.bundle.min.js") }}"></script>
     <script src="{{ asset ("/assets/motaadmin/js/custom.min.js") }}"></script>
@@ -41,9 +41,11 @@ $(function () {
             var ajaxRequest;
             ajaxRequest = $.ajax({
                 @if($page_data["page_method_name"] == "Update")
-                url: "{{ env('APP_URL') }}/update{{$page_data["page_data_urlname"]}}/{{$page_data["id"]}}",
+                    url: "/update{{$page_data["page_data_urlname"]}}/{{$page_data["id"]}}",
+                @elseif($page_data["page_method_name"] == "Change Password")
+                    url: "/update_password/{{$page_data["id"]}}",
                 @else
-                url: "{{ env('APP_URL') }}/store{{$page_data["page_data_urlname"]}}",
+                    url: "/store{{$page_data["page_data_urlname"]}}",
                 @endif
                 type: "post",
                 data: values,
@@ -73,6 +75,18 @@ $(function () {
                             var errors = {};
                             errors[i] = error[0];
                             validator.showErrors(errors);
+                    });                    
+                }
+                if(err){
+                    $.toast({
+                        text: err.responseJSON.error,
+                        heading: 'Status',
+                        icon: 'warning',
+                        showHideTransition: 'fade',
+                        allowToastClose: true,
+                        hideAfter: 3000,
+                        position: 'mid-center',
+                        textAlign: 'left'
                     });
                 }
                 cto_loading_hide();
@@ -90,6 +104,10 @@ $("select").select2({
 
 $("#unitkerja").on("change", function() {
     $("#unitkerja_label").val($("#unitkerja option:selected").text());
+});
+
+$("#role").on("change", function() {
+    $("#role_label").val($("#role option:selected").text());
 });
 
 var fields = $("#quickForm").serialize();
@@ -113,6 +131,32 @@ $("#unitkerja").select2({
                 results: data.items,
                 pagination: {
                 more: (params.page * 25) < data.total_count
+                }
+            };
+        },
+        cache: true
+    }
+});
+
+$("#role").select2({
+    ajax: {
+        url: "{{ env('APP_URL') }}/getlinksuser",
+        type: "post",
+        dataType: "json",
+        data: function(params) {
+            return {
+                term: params.term || "",
+                page: params.page,
+                field: "role",
+                _token: $("input[name=_token]").val()
+            }
+        },
+        processResults: function (data, params) {
+            params.page = params.page || 1;
+            return {
+                results: data.items,
+                pagination: {
+                    more: (params.page * 25) < data.total_count
                 }
             };
         },
@@ -201,8 +245,8 @@ function getdata(){
             _token: $("#quickForm input[name=_token]").val()
         },
         success: function(data){
-            for(var i = 0; i < Object.keys(data.data.{{$page_data["page_data_urlname"]}}).length; i++){
-                if(Object.keys(data.data.user)[i] == "unitkerja"){
+            for(var i = 0; i < Object.keys(data.data.{{$page_data['page_data_urlname']}}).length; i++){
+                if(Object.keys(data.data.user)[i] == "unitkerja" || Object.keys(data.data.user)[i] == "role"){
                     if(data.data.user[Object.keys(data.data.user)[i]]){
                         var newState = new Option(data.data.user[Object.keys(data.data.user)[i]+"_label"], data.data.user[Object.keys(data.data.user)[i]], true, false);
                         $("#"+Object.keys(data.data.user)[i]).append(newState).trigger("change");
