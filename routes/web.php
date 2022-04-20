@@ -174,6 +174,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getlinksneraca', 'App\Http\Controllers\NeracaController@getlinks');
         Route::post('/getlistneraca', 'App\Http\Controllers\NeracaController@get_list');
         Route::post('/neraca/print', 'App\Http\Controllers\NeracaController@print');
+        Route::post('/neraca/printumsida', 'App\Http\Controllers\NeracaController@printumsida');
         Route::post('/neraca/excel', 'App\Http\Controllers\NeracaController@excel');
         Route::post('/neraca/excelumsida', 'App\Http\Controllers\NeracaController@excelumsida');
         
@@ -237,6 +238,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getlinksaruskas', 'App\Http\Controllers\AruskasController@getlinks');
         Route::post('/getsaldoawalaruskas', 'App\Http\Controllers\AruskasController@get_saldo_awal');
         Route::post('/aruskas/print', 'App\Http\Controllers\AruskasController@print');
+        Route::post('/aruskas/printumsida', 'App\Http\Controllers\AruskasController@printumsida');
         Route::post('/get_saldo_awalaruskas', 'App\Http\Controllers\AruskasController@get_saldo_awal');
         Route::post('/aruskas/excel', 'App\Http\Controllers\AruskasController@excel');
         Route::post('/aruskas/excelumsida', 'App\Http\Controllers\AruskasController@excelumsida');
