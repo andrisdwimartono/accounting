@@ -529,7 +529,7 @@ class KegiatanController extends Controller
         $plafon = $this->getdatakegiatanplafon2($request);
 
         if($totaldetailkegiatan > $plafon){
-            abort(401, "Plafon > Total Kegiatan");
+            //abort(401, "Plafon > Total Kegiatan");
         }
 
         $lpjopen = $this->checklpjopen($request);
