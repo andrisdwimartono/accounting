@@ -153,6 +153,9 @@ $("#role").select2({
         },
         processResults: function (data, params) {
             params.page = params.page || 1;
+            for(var i = 0; i < data.items.length; i++){
+                data.items[i].id = data.items[i].text;
+            }
             return {
                 results: data.items,
                 pagination: {

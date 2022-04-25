@@ -63,6 +63,15 @@
                                             </div>
                                         </div>
                                         <div class="form-group row">
+                                            <label class="col-sm-4 col-form-label" for="role">Role</label>
+                                            <div class="col-sm-6 cakfield">
+                                                <select name="role" id="role" class="form-control form-control-sm select2bs4" style="width: 100%;" @if($page_data["page_method_name"] == "View") readonly @endif>
+
+                                                </select>
+                                                <input type="hidden" name="role_label" id="role_label">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
                                             <label class="col-sm-4 col-form-label"></label>
                                             <div class="input-group col-sm-6">
                                                 <div class="custom-file">

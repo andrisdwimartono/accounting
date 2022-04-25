@@ -16,7 +16,7 @@ class User extends Authenticatable
     protected $fillable = ['name', 'company_id', 'email', 'phone', 'password', 'photo_profile', 'role', 'role_label', 'unitkerja', 'unitkerja_label', 'otp', 'user_creator_id', 'user_updater_id', 'updated_at'];
 
     function getUserMenu(){
-        return $this->hasMany('App\Models\User_menu')->orderBy('mp_sequence', 'ASC')->orderBy('m_sequence', 'ASC');
+        return $this->hasMany('App\Models\User_role_menu')->orderBy('mp_sequence', 'ASC')->orderBy('m_sequence', 'ASC');
     }
     
     /**
