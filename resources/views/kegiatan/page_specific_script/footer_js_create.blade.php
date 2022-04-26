@@ -2056,7 +2056,7 @@ $(document).keydown(function(event) {
                     if(index == 0){
                         coa = $(td).text();
                     }else if(index == 1){
-                        coa_label = $(td).find("select").text();
+                        coa_label = $(td).find("select selected").text();
                         // coa_label = "";
                     }else if(index == 2){
                         deskripsibiaya = $(td).find("input").val();
