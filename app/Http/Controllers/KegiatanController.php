@@ -780,7 +780,7 @@ class KegiatanController extends Controller
                 "output"=> $request->output == ''?null:$request->output,
                 "proposal"=> $request->proposal == ''?null:$request->proposal,
                 "user_updater_id"=> Auth::user()->id,
-                "tanggal"=> $request->tanggal,
+                "tanggal"=> $request->tanggal_kegiatan_submit,
             ]);
 
             $new_menu_field_ids = array();
