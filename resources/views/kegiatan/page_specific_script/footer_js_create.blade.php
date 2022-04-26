@@ -2062,7 +2062,7 @@ $(document).keydown(function(event) {
                         deskripsibiaya = $(td).find("input").val();
                     }else if(index == 3){
                         nominalbiaya = AutoNumeric.getNumber("#nom_"+$(tr).attr("row-seq"));
-                    }else if(index == 7){
+                    }else if(index == 6){
                         id = $(td).text();
                     }
                 });

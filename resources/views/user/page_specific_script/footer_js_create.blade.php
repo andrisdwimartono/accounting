@@ -75,6 +75,18 @@ $(function () {
                             var errors = {};
                             errors[i] = error[0];
                             validator.showErrors(errors);
+                    });                    
+                }
+                if(err){
+                    $.toast({
+                        text: err.responseJSON.error,
+                        heading: 'Status',
+                        icon: 'warning',
+                        showHideTransition: 'fade',
+                        allowToastClose: true,
+                        hideAfter: 3000,
+                        position: 'mid-center',
+                        textAlign: 'left'
                     });
                 }
                 cto_loading_hide();
@@ -141,6 +153,9 @@ $("#role").select2({
         },
         processResults: function (data, params) {
             params.page = params.page || 1;
+            for(var i = 0; i < data.items.length; i++){
+                data.items[i].id = data.items[i].text;
+            }
             return {
                 results: data.items,
                 pagination: {
