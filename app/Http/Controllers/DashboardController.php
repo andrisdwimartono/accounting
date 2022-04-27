@@ -812,21 +812,23 @@ class DashboardController extends Controller
             
             $dt[$neraca->id] = array($neraca->id, $neraca->coa_code, $neraca->coa_name, $nom, $nom, $neraca->coa, $neraca->level_coa, $neraca->fheader);
         }
-        
+
         // get nominal
         $iter = array_filter($dt, function ($dt) {
             return ($dt[3] != 0) || ($dt[4] != 0) && ($dt[7] != "on");
         });
-        
+
         // sum nominal to header
         foreach($iter as $key => $item){
             $d = $item;
             $deb = $item[3];
             $cre = $item[4];
             for($i=$d[6] ; $i>1 ; $i--){
-                $dt[$d[5]][3] = (int) $dt[$d[5]][3] + $deb;
-                $dt[$d[5]][4] = (int) $dt[$d[5]][4] + $cre;
-                $d = $dt[$d[5]];
+                if(array_key_exists(5, $d) && array_key_exists($d[5], $dt) && array_key_exists(3, $dt[$d[5]]) && array_key_exists(4, $dt[$d[5]])){
+                    $dt[$d[5]][3] = (int) $dt[$d[5]][3] + $deb;
+                    $dt[$d[5]][4] = (int) $dt[$d[5]][4] + $cre;
+                    $d = $dt[$d[5]];
+                }
             }
         }
         // remove null value
@@ -834,16 +836,16 @@ class DashboardController extends Controller
             return ($dt[3] != 0) || ($dt[4] != 0);
             // return $dt;
         });
-        // leveling
-        if($child_level==0){
-            $dt = array_filter($dt, function ($dt) use ($child_level) {
-                return ((int)$dt[6] <= 1);
-            });
-        }
+
         
         // sort by code
-        $columns = array_column($dt, 1);
-        array_multisort($columns, SORT_ASC, $dt);
+        // $columns = array_column($dt, 8);
+        // array_multisort($columns, SORT_ASC, $dt);
+
+        usort($dt, function($a, $b) {
+            return (int)$a[8] <=> (int)$b[8];
+        });
+        
         // convert array
         $dt = array_values($dt);
 
