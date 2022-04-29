@@ -99,6 +99,13 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group row m-0">
+                                                    <label class="col-sm-4 col-form-label" for="plafon_kegiatan">Nama Kegiatan</label>
+                                                    <div class="col-sm-6 cakfield">
+                                                        <select name="plafon_kegiatan" id="plafon_kegiatan" class="form-control select2bs4" style="width: 100%;" @if($page_data["page_method_name"] == "View") readonly @endif></select>
+                                                        <input type="hidden" name="plafon_kegiatan_label" id="plafon_kegiatan_label">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row m-0 d-none">
                                                     <label class="col-sm-4 col-form-label" for="kegiatan_name">Nama Kegiatan</label>
                                                     <div class="col-sm-6 cakfield">
                                                         <input type="text" name="kegiatan_name" class="form-control" id="kegiatan_name" placeholder="Enter Nama" @if($page_data["page_method_name"] == "View") readonly @endif>

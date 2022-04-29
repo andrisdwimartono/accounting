@@ -26,7 +26,10 @@ use App\Models\Detailkegiatan;
 use App\Models\Satuan;
 use App\Models\Detailbiayaproker;
 use App\Models\Detailpjk;
+use App\Models\Plafon_kegiatan;
+use App\Exports\KegiatanExport;
 use PDF;
+use Excel;
 use Session;
 
 class KegiatanController extends Controller
@@ -546,6 +549,8 @@ class KegiatanController extends Controller
                 "tanggal"=> $request->tanggal_kegiatan_submit,
                 "programkerja"=> $request->programkerja,
                 "programkerja_label"=> $request->programkerja_label,
+                "plafon_kegiatan"=> $request->plafon_kegiatan,
+                "plafon_kegiatan_label"=> $request->plafon_kegiatan_label,
                 "kegiatan_name"=> $request->kegiatan_name,
                 "Deskripsi"=> $request->Deskripsi,
                 "output"=> $request->output,
@@ -775,6 +780,8 @@ class KegiatanController extends Controller
                 "tahun_label"=> $request->tahun_label,
                 "programkerja"=> $request->programkerja,
                 "programkerja_label"=> $request->programkerja_label,
+                "plafon_kegiatan"=> $request->plafon_kegiatan,
+                "plafon_kegiatan_label"=> $request->plafon_kegiatan_label,
                 "kegiatan_name"=> $request->kegiatan_name,
                 "Deskripsi"=> $request->Deskripsi == ''?null:$request->Deskripsi,
                 "output"=> $request->output == ''?null:$request->output,
@@ -1886,6 +1893,31 @@ class KegiatanController extends Controller
         }
     }
 
+    public function getdatadetailbiayakegiatan(Request $request){
+        if($request->ajax() || $request->wantsJson()){
+            $plafon_kegiatan = Plafon_kegiatan::whereId($request->plafon_kegiatan)->get();
+
+            $ct1_detailbiayakegiatan = array();
+            $i = 0;
+            foreach($plafon_kegiatan as $plafon_kegiatan){
+                $plafon_kegiatan->no_seq = ($i++)."";
+                $plafon_kegiatan->nominalbiaya = 0;
+                $plafon_kegiatan->deskripsibiaya = $plafon_kegiatan->deskripsi;
+                array_push($ct1_detailbiayakegiatan, $plafon_kegiatan);
+            }
+
+            $results = array(
+                "status" => 201,
+                "message" => "Data available",
+                "data" => [
+                    "ct1_detailbiayakegiatan" => $ct1_detailbiayakegiatan,
+                ]
+            );
+
+            return response()->json($results);
+        }
+    }
+
     public function getdata_pengajuan(Request $request)
     {
         if($request->ajax() || $request->wantsJson()){
@@ -1997,6 +2029,11 @@ class KegiatanController extends Controller
                     $q->where("satuan_name", "ILIKE", "%" . $request->term. "%");
                 })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("satuan_name as text")]);
                 $count = Satuan::count();
+            }elseif($request->field == "plafon_kegiatan"){
+                $lists = Plafon_kegiatan::where(function($q) use ($request) {
+                    $q->where("kegiatan_name", "ILIKE", "%" . $request->term. "%")->orWhere("tahun", "ILIKE", "%" . $request->term. "%");
+                })->orderBy("id")->skip($offset)->take($resultCount)->get(["id", DB::raw("kegiatan_name as text")]);
+                $count = Plafon_kegiatan::count();
             }
 
             $endCount = $offset + $resultCount;
@@ -3046,7 +3083,7 @@ class KegiatanController extends Controller
 
     public function getdatakegiatanplafon(Request $request){
         if($request->ajax() || $request->wantsJson()){
-            if(isset($request->tanggal_kegiatan) && isset($request->unitkerja)){
+            if(isset($request->tanggal_kegiatan) && isset($request->plafon_kegiatan)){
                 $valplafon = 0;
                 $valprocess = 0;
                 $valapproved = 0;
@@ -3057,15 +3094,13 @@ class KegiatanController extends Controller
                 $valsisa = 0;
 
                 $tahun = explode("/", $request->tanggal_kegiatan)[2];
-                $sett = Settingpagupendapatan::where("tahun", $tahun)->orderBy("id", "desc")->first();
-                if($sett){
-                    $nilaipagu = Nilaipagu::where("parent_id", $sett->id)->where("unitkerja", $request->unitkerja)->first();
-                    if($nilaipagu){
-                        $valplafon = $nilaipagu->maxbiaya;
-                    }
+                $nilaipagu = Plafon_kegiatan::where("id", $request->plafon_kegiatan)->first();
+                if($nilaipagu){
+                    $valplafon = $nilaipagu->plafon;
                 }
+                
 
-                foreach(Kegiatan::where("unit_pelaksana", $request->unitkerja)->whereBetween("tanggal", [$tahun."-01-01", $tahun."-12-31"])->get() as $keg){
+                foreach(Kegiatan::where("plafon_kegiatan", $request->plafon_kegiatan)->whereBetween("tanggal", [$tahun."-01-01", $tahun."-12-31"])->get() as $keg){
                     if($keg->status == "process" || $keg->status == "approving"){
                         $nom = 0;
                         foreach(Detailbiayakegiatan::whereParentId($keg->id)->whereNull("isarchived")->orderBy("no_seq")->get() as $det){
@@ -3500,5 +3535,11 @@ class KegiatanController extends Controller
         }
         $kode_anggaran = $kode_anggaran.'-'.$nomor;
         return $kode_anggaran;
+    }
+
+    public function excel(Request $request)
+    {
+        $date = date("m-d-Y h:i:s a", time());
+        return Excel::download(new KegiatanExport($request), 'kegiatan_'.$date.'.xlsx');
     }
 }

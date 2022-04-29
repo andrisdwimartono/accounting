@@ -332,6 +332,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getlistpersetujuankegiatan', 'App\Http\Controllers\KegiatanController@get_list_persetujuankegiatan');
         Route::post('/getdatakegiatanplafon', 'App\Http\Controllers\KegiatanController@getdatakegiatanplafon');
         Route::post('/getdatadetailkegiatan', 'App\Http\Controllers\KegiatanController@getdatadetailkegiatan');
+        Route::post('/getdatadetailbiayakegiatan', 'App\Http\Controllers\KegiatanController@getdatadetailbiayakegiatan');
+        Route::post('/kegiatan/excel', 'App\Http\Controllers\KegiatanController@excel');
 
         Route::get('/pjk/{kegiatan}/edit', 'App\Http\Controllers\KegiatanController@createpjk');
         Route::post('/storepjk', 'App\Http\Controllers\KegiatanController@storepjk');

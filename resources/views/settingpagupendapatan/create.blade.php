@@ -38,7 +38,7 @@
                                                     </div>
                                                 </div>
                                                 
-                                                <div class="form-group" >
+                                                <div class="form-group d-none" >
                                                     <label for="ct1_nilaipagu">Nilai Pagu / Plafon</label>
                                                     <div id="result">
                                                         Event result:

@@ -75,7 +75,6 @@ $.fn.modal.Constructor.prototype._enforceFocus = function() {
 $("#unit_pelaksana").on("change", function() {
     $("#unit_pelaksana_label").val($("#unit_pelaksana option:selected").text());
     //$('#iku').val('').trigger('change');
-    plafonanggaran();
 });
 
 $('input[name=tanggal_kegiatan]').on("change", function(){
@@ -91,6 +90,15 @@ $("#programkerja").on("change", function() {
     $("#programkerja_label").val($("#programkerja option:selected").text());
     getdatadetailkegiatan(awal);
     awal++;
+});
+
+var awal2 = 0;
+$("#plafon_kegiatan").on("change", function() {
+    $("#plafon_kegiatan_label").val($("#plafon_kegiatan option:selected").text());
+    $("#kegiatan_name").val($("#plafon_kegiatan option:selected").text());
+    plafonanggaran();
+    getdatadetailbiayakegiatan(awal2);
+    awal2++;
 });
 
 $("#coa").on("change", function() {
@@ -235,6 +243,38 @@ $("#programkerja").select2({
                 term: params.term || "",
                 page: params.page,
                 field: "programkerja",
+                unit_pelaksana: $("#unit_pelaksana").val(),
+                tahun: $("#tahun").val(),
+                _token: $("input[name=_token]").val()
+            }
+        },
+        processResults: function (data, params) {
+            params.page = params.page || 1;
+            return {
+                results: data.items,
+                pagination: {
+                more: (params.page * 25) < data.total_count
+                }
+            };
+        },
+        cache: true
+    }
+});
+
+$("#plafon_kegiatan").select2({
+    placeholder: "Pilih satu",
+    allowClear: true,
+    theme: "bootstrap4", @if($page_data["page_method_name"] == "View")
+    disabled: true, @endif
+    ajax: {
+        url: "/getlinks{{$page_data["page_data_urlname"]}}",
+        type: "post",
+        dataType: "json",
+        data: function(params) {
+            return {
+                term: params.term || "",
+                page: params.page,
+                field: "plafon_kegiatan",
                 unit_pelaksana: $("#unit_pelaksana").val(),
                 tahun: $("#tahun").val(),
                 _token: $("input[name=_token]").val()
@@ -532,7 +572,7 @@ function getdata(){
         },
         success: function(data){
             for(var i = 0; i < Object.keys(data.data.kegiatan).length; i++){
-                if(Object.keys(data.data.kegiatan)[i] == "unit_pelaksana" || Object.keys(data.data.kegiatan)[i] == "iku" || Object.keys(data.data.kegiatan)[i] == "programkerja"){
+                if(Object.keys(data.data.kegiatan)[i] == "unit_pelaksana" || Object.keys(data.data.kegiatan)[i] == "iku" || Object.keys(data.data.kegiatan)[i] == "programkerja" || Object.keys(data.data.kegiatan)[i] == "plafon_kegiatan"){
                     if(data.data.kegiatan[Object.keys(data.data.kegiatan)[i]]){
                         var newState = new Option(data.data.kegiatan[Object.keys(data.data.kegiatan)[i]+"_label"], data.data.kegiatan[Object.keys(data.data.kegiatan)[i]], true, false);
                         $("#"+Object.keys(data.data.kegiatan)[i]).append(newState).trigger("change");
@@ -2247,17 +2287,17 @@ $(document).keydown(function(event) {
     });
 
     function plafonanggaran(){
-        var uk = $("#unit_pelaksana").val();
+        var pk = $("#plafon_kegiatan").val();
         var tk = $("input[name=tanggal_kegiatan]").val();
 
-        if(!tk || !uk){
+        if(!tk || !pk){
             return;
         }
         $.ajax({
             url: "/getdatakegiatanplafon",
             type: "post",
             data: {
-                unitkerja: uk,
+                plafon_kegiatan: pk,
                 tanggal_kegiatan: tk,
                 _token: $("#quickForm input[name=_token]").val()
             },
@@ -2367,6 +2407,70 @@ $(document).keydown(function(event) {
                         $("input[name='standarbiaya_"+(parseInt(data.data.ct4_detailkegiatan[i].no_seq))+"']").trigger("change");
 
                         $("input[name='komentarrevisi_"+(parseInt(data.data.ct4_detailkegiatan[i].no_seq))+"']").val(data.data.ct4_detailkegiatan[i].komentarrevisi);
+                    }
+                }
+            },
+            error: function (err) {
+                if (err.status >= 400 && err.status <= 500) {
+                    $.toast({
+                        text: err.status+" "+err.responseJSON.message,
+                        heading: 'Status',
+                        icon: 'warning',
+                        showHideTransition: 'fade',
+                        allowToastClose: true,
+                        hideAfter: 3000,
+                        position: 'mid-center',
+                        textAlign: 'left'
+                    });
+                }
+            }
+        });
+    }
+
+    function getdatadetailbiayakegiatan(awal = 0){
+        @if($page_data["page_method_name"] == "View") 
+        return;
+        @endif
+        if(awal == 0){
+            return;
+        }
+        var pk = $("#plafon_kegiatan").val();
+
+        if(!pk){
+            return;
+        }
+        $.ajax({
+            url: "/getdatadetailbiayakegiatan",
+            type: "post",
+            data: {
+                plafon_kegiatan: pk,
+                _token: $("#quickForm input[name=_token]").val()
+            },
+            success: function(data){
+                console.log(data.data.ct1_detailbiayakegiatan);
+                if(data.data.ct1_detailbiayakegiatan.length > 0){
+                    $("#caktable1 > tbody > tr").each(function(index){
+                        $(this).remove();
+                    });
+                    
+                    
+                    for(var i = 0; i < data.data.ct1_detailbiayakegiatan.length; i++){
+                        addRow();
+                        $("#caktable1 > tbody").find("[row-seq="+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"]").find("td:eq(0)").text(data.data.ct1_detailbiayakegiatan[i].coa);
+                        $("select[name='coa_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"']").empty();
+                        var newState = new Option(data.data.ct1_detailbiayakegiatan[i].coa_label, data.data.ct1_detailbiayakegiatan[i].coa, true, false);
+                        $("#coa_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"").append(newState).trigger('change');
+                        console.log((data.data.ct1_detailbiayakegiatan[i].no_seq)+1);
+                        // @if($page_data["page_method_name"] == "View")
+                        //     $("#coa_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"").attr("disabled", true); 
+                        // @endif
+
+                        $("input[name='deskripsi_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"']").val(data.data.ct1_detailbiayakegiatan[i].deskripsibiaya);
+
+                        //console.log(data.data.ct1_detailbiayakegiatan[i].nominalbiaya);
+                        AutoNumeric.getAutoNumericElement('#nom_'+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)).set(data.data.ct1_detailbiayakegiatan[i].nominalbiaya);
+                        $("input[name='nom_"+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"']").trigger("change");
+                        $("#caktable1 > tbody > tr[row-seq="+(parseInt(data.data.ct1_detailbiayakegiatan[i].no_seq)+1)+"]").find("td:eq(7)").text(data.data.ct1_detailbiayakegiatan[i].id);
                     }
                 }
             },
