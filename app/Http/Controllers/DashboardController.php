@@ -758,11 +758,6 @@ class DashboardController extends Controller
             $child_level = $request->search["child_level"];
         }
 
-        $category = null;
-        if(isset($request->search["category"])){
-            $category = $request->search["category"];
-        }
-
         if($x==0){
             $bulan_periode -= 1;
             if($bulan_periode==0){
@@ -776,29 +771,23 @@ class DashboardController extends Controller
         $sum_nom = 0;
         $yearopen = Session::get('global_setting');
         foreach(Coa::find(1)
-        ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader", DB::raw("SUM(neracasaldos.debet) as debet"), DB::raw("SUM(neracasaldos.credit) as credit")]) //"neracas.debet", "neracas.credit"])//DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")])
-        ->leftJoin('neracasaldos', 'coas.id', '=', 'neracasaldos.coa')
+        ->select([ "coas.id", "coas.coa_name", "coas.coa_code", "coas.coa", "coas.level_coa", "coas.fheader", DB::raw("SUM(labarugis.debet) as debet"), DB::raw("SUM(labarugis.credit) as credit")]) //"neracas.debet", "neracas.credit"])//DB::raw("SUM(neracas.debet) as debet"), DB::raw("SUM(neracas.credit) as credit")])
+        ->leftJoin('labarugis', 'coas.id', '=', 'labarugis.coa')
+        ->whereIn('coas.category',["pendapatan", "biaya", "biaya_lainnya", "pendapatan_lainnya"])
         ->where(function($q){
             $q->where(function($q){
-                $q->where("neracasaldos.debet","!=",0)->orWhere("neracasaldos.credit","!=",0);
+                $q->where("labarugis.debet","!=",0)->orWhere("labarugis.credit","!=",0);
             })
             ->orWhere(function($q){
                 $q->where("coas.fheader","on");
             });  
-        })
-        ->where(function($q) use($category){
-            if($category == 'labarugi'){
-                $q->whereIn('coas.category',['pendapatan', 'biaya', 'biaya_lainnya', 'pendapatan_lainnya']);
-            } else if($category == 'neraca') {
-                $q->whereIn('coas.category',['aset','hutang','modal']);
-            }
         })
         ->where(function($q) use($bulan_periode, $tahun_periode, $yearopen){
             // dd($yearopen);
             if($bulan_periode >= $yearopen->bulan_tutup_tahun){
                 //only one year
                 $q->where(function($q) use ($bulan_periode, $tahun_periode, $yearopen){
-                    $q->where("bulan_periode", ">", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
+                    $q->where("bulan_periode", ">=", $yearopen->bulan_tutup_tahun)->where("bulan_periode", "<=", $bulan_periode)->where("tahun_periode", $tahun_periode);
                 });
             }else{
                 //cross year
@@ -823,21 +812,23 @@ class DashboardController extends Controller
             
             $dt[$neraca->id] = array($neraca->id, $neraca->coa_code, $neraca->coa_name, $nom, $nom, $neraca->coa, $neraca->level_coa, $neraca->fheader);
         }
-        
+
         // get nominal
         $iter = array_filter($dt, function ($dt) {
             return ($dt[3] != 0) || ($dt[4] != 0) && ($dt[7] != "on");
         });
-        
+
         // sum nominal to header
         foreach($iter as $key => $item){
             $d = $item;
             $deb = $item[3];
             $cre = $item[4];
             for($i=$d[6] ; $i>1 ; $i--){
-                $dt[$d[5]][3] = (int) $dt[$d[5]][3] + $deb;
-                $dt[$d[5]][4] = (int) $dt[$d[5]][4] + $cre;
-                $d = $dt[$d[5]];
+                if(array_key_exists(5, $d) && array_key_exists($d[5], $dt) && array_key_exists(3, $dt[$d[5]]) && array_key_exists(4, $dt[$d[5]])){
+                    $dt[$d[5]][3] = (int) $dt[$d[5]][3] + $deb;
+                    $dt[$d[5]][4] = (int) $dt[$d[5]][4] + $cre;
+                    $d = $dt[$d[5]];
+                }
             }
         }
         // remove null value
@@ -845,16 +836,16 @@ class DashboardController extends Controller
             return ($dt[3] != 0) || ($dt[4] != 0);
             // return $dt;
         });
-        // leveling
-        if($child_level==0){
-            $dt = array_filter($dt, function ($dt) use ($child_level) {
-                return ((int)$dt[6] <= 1);
-            });
-        }
+
         
         // sort by code
-        $columns = array_column($dt, 1);
-        array_multisort($columns, SORT_ASC, $dt);
+        // $columns = array_column($dt, 8);
+        // array_multisort($columns, SORT_ASC, $dt);
+
+        // usort($dt, function($a, $b) {
+        //     return (int)$a[8] <=> (int)$b[8];
+        // });
+        
         // convert array
         $dt = array_values($dt);
 

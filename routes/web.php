@@ -384,6 +384,18 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/updateprogramkerja/{programkerja}', 'App\Http\Controllers\ProgramkerjaController@update');
         Route::post('/deleteprogramkerja', 'App\Http\Controllers\ProgramkerjaController@destroy');
         Route::post('/getlinksprogramkerja', 'App\Http\Controllers\ProgramkerjaController@getlinks');
+
+        Route::get('/plafon_kegiatan', 'App\Http\Controllers\Plafon_kegiatanController@index')->name('plafon_kegiatan');
+        Route::post('/getlistplafon_kegiatan', 'App\Http\Controllers\Plafon_kegiatanController@get_list');
+        Route::get('/plafon_kegiatan/{plafon_kegiatan}', 'App\Http\Controllers\Plafon_kegiatanController@show');
+        Route::get('/createplafon_kegiatan', 'App\Http\Controllers\Plafon_kegiatanController@create');
+        Route::post('/storeplafon_kegiatan', 'App\Http\Controllers\Plafon_kegiatanController@store');
+        Route::get('/plafon_kegiatan/{tahun}/{unit_pelaksana}/edit', 'App\Http\Controllers\Plafon_kegiatanController@edit');
+        Route::post('/getdataplafon_kegiatan', 'App\Http\Controllers\Plafon_kegiatanController@getdata');
+        Route::post('/updateplafon_kegiatan/{plafon_kegiatan}', 'App\Http\Controllers\Plafon_kegiatanController@update');
+        Route::post('/deleteplafon_kegiatan', 'App\Http\Controllers\Plafon_kegiatanController@destroy');
+        Route::post('/getoptionsplafon_kegiatan', 'App\Http\Controllers\Plafon_kegiatanController@getoptions');
+        Route::post('/getlinksplafon_kegiatan', 'App\Http\Controllers\Plafon_kegiatanController@getlinks');
     });
 });
 
