@@ -54,6 +54,9 @@ class KegiatanExport implements FromView, WithStyles
             'A6:G7' => ['borders' => ['allBorders' => [
                 'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
             ]]],
+            'G' => 
+                ['numberFormat' => ['formatCode' => \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1
+            ]]
         ];
     }
 
