@@ -67,13 +67,13 @@ class KegiatanExport implements FromView, WithStyles
         ->leftJoin("potensipendapatans", "potensipendapatans.parent_id", "=", "settingpagupendapatans.id")
         ->leftJoin("coas", "potensipendapatans.coa", "=", "coas.id")
         ->whereNotNull("potensipendapatans.id")
-        ->select(["coas.coa_label", "coas.coa_name", "coas.coa_code", "potensipendapatans.nominalpendapatan"])->get();
+        ->select(["coas.coa_label", "coas.coa_name", "coas.coa_code", "potensipendapatans.nominalpendapatan"])->orderBy("coas.coa_code")->get();
 
         $detailbiayakegiatan = Kegiatan::whereBetween("kegiatans.tanggal", [$tahun_periode."-01-01", $tahun_periode."-12-31"])
         ->leftJoin("detailbiayakegiatans", "detailbiayakegiatans.parent_id", "=", "kegiatans.id")
         ->leftJoin("coas", "detailbiayakegiatans.coa", "=", "coas.id")
         ->whereNotNull("detailbiayakegiatans.id")
-        ->select(["coas.coa_label", "coas.coa_name", "coas.coa_code", "detailbiayakegiatans.nominalbiaya"])->get();
+        ->select(["coas.coa_label", "coas.coa_name", "coas.coa_code", "detailbiayakegiatans.nominalbiaya"])->orderBy("coas.coa_code")->get();
         $output = array(
             "potensipendapatan" => $potensipendapatan,
             "detailbiayakegiatan" => $detailbiayakegiatan
