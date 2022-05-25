@@ -101,4 +101,16 @@
       height:100%;
     }
 
+    table{
+      table-layout: fixed;
+    }
+
+    .select2-selection--single {
+      height: 100% !important;
+    }
+
+    .select2-selection__rendered{
+      text-overflow: hidden !important;
+      white-space: nowrap !important;
+    }
   </style>

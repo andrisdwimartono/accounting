@@ -372,11 +372,11 @@ $(document).keydown(function(event) {
             .append(
                 "<tr row-seq=\""+rowlen+"\" class=\"addnewrow\">"
                 +"<td class=\"column-hidden\"></td>"
-                +"<td class=\"p-0\"><select name=\"programkerja_"+rowlen+"\" id=\"programkerja_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
-                +"<td class=\"p-0\"><input type=\"text\" name=\"kegiatan_name_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"detailbiayaproker_name_"+rowlen+"\"></td>"
-                +"<td class=\"p-0\"><input type=\"text\" name=\"kegiatan_name_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"deskripsi_"+rowlen+"\"></td>"
+                +"<td class=\"p-0\"><select name=\"programkerja_"+rowlen+"\" id=\"programkerja_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%; overflow: hidden; white-space: nowrap;\"></select></td>"
+                +"<td class=\"p-0\"><input type=\"text\" name=\"kegiatan_name_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"kegiatan_name_"+rowlen+"\"></td>"
+                +"<td class=\"p-0\"><input type=\"text\" name=\"deskripsi_"+rowlen+"\" class=\"form-control form-control-sm\" id=\"deskripsi_"+rowlen+"\"></td>"
                 +"<td class=\"column-hidden\"></td>"
-                +"<td class=\"p-0\"><select name=\"coa_"+rowlen+"\" id=\"coa_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%;\"></select></td>"
+                +"<td class=\"p-0\"><select name=\"coa_"+rowlen+"\" id=\"coa_"+rowlen+"\" class=\"form-control form-control-sm select2bs4staticBackdrop addnewrowselect\" data-row=\""+rowlen+"\" style=\"width: 100%; overflow: hidden; white-space: nowrap;\"></select></td>"
                 +"<td class=\"p-0\"><input type=\"text\" name=\"plafon_"+rowlen+"\" value=\"0\" class=\"form-control form-control-sm cakautonumeric cakautonumeric-float text-right\" id=\"plafon_"+rowlen+"\" placeholder=\"Enter Nominal\"></td>"
                 +"<td class=\"p-0 text-center\"><button id=\"row_delete_"+rowlen+"\" class=\"bg-white border-0\"><i class=\"text-danger fas fa-minus-circle row-delete\" style=\"cursor: pointer;\"></i></button></td>"
                 +"<td class=\"column-hidden\"></td>"
@@ -513,7 +513,7 @@ $(document).keydown(function(event) {
                     stop_submit = true;
                     return;
                 }
-
+                
                 if($("#kegiatan_name_"+$(tr).attr("row-seq")).val() == ""){
                     $("#kegiatan_name_"+$(tr).attr("row-seq")).addClass("border-danger");
                     cto_loading_hide();
