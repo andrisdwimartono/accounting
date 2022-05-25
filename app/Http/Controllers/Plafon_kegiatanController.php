@@ -171,9 +171,7 @@ class Plafon_kegiatanController extends Controller
                         "user_creator_id" => Auth::user()->id
                     ]);
                 }else{
-                    $lastid = Plafon_kegiatan::orderBy("id", "desc")->first();
                     $id = Plafon_kegiatan::create([
-                        'id' => $lastid->id+1,
                         'tahun' => $request->tahun,
                         'tahun_label' => $request->tahun_label,
                         'programkerja' => $ct_request["programkerja"],
