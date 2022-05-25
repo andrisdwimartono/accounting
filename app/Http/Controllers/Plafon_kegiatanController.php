@@ -187,6 +187,7 @@ class Plafon_kegiatanController extends Controller
                         'plafon' => $ct_request["plafon"],
                         "user_creator_id" => Auth::user()->id
                     ])->id;
+                    array_push($new_menu_field_ids, $id);
                 }
             }
 
