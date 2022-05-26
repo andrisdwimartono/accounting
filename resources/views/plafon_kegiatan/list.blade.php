@@ -51,6 +51,8 @@
                                                 </div>
                                                 <div class="modal-body">
                                                     <p>Apakah anda yakin ingin menghapus?</p>
+                                                    <input type="hidden" name="tahundelete" id="tahundelete" value="">
+                                                    <input type="hidden" name="unit_pelaksanadelete" id="unit_pelaksanadelete" value="">
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-danger row-delete-confirmed">Hapus</button>

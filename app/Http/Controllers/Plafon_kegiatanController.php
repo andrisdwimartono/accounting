@@ -339,27 +339,27 @@ class Plafon_kegiatanController extends Controller
     // * @param int $id
     // * @return \Illuminate\Http\Response
     // */
-    // public function destroy(Request $request)
-    // {
-    //     if($request->ajax() || $request->wantsJson()){
-    //         $programkerja = Programkerja::whereId($request->id)->first();
-    //         if(!$programkerja){
-    //             abort(404, "Data not found");
-    //         }
-    //         $results = array(
-    //             "status" => 417,
-    //             "message" => "Deleting failed"
-    //         );
-    //         if(Programkerja::whereId($request->id)->forceDelete()){
-    //             $results = array(
-    //                 "status" => 204,
-    //                 "message" => "Deleted successfully"
-    //             );
-    //         }
+    public function destroy(Request $request)
+    {
+        if($request->ajax() || $request->wantsJson()){
+            $plafon_kegiatan = Plafon_kegiatan::where("tahun", $request->tahun)->where("unit_pelaksana", $request->unit_pelaksana)->first();
+            if(!$plafon_kegiatan){
+                abort(404, "Data not found");
+            }
+            $results = array(
+                "status" => 417,
+                "message" => "Deleting failed"
+            );
+            if(Plafon_kegiatan::where("tahun", $request->tahun)->where("unit_pelaksana", $request->unit_pelaksana)->forceDelete()){
+                $results = array(
+                    "status" => 204,
+                    "message" => "Deleted successfully"
+                );
+            }
 
-    //         return response()->json($results);
-    //     }
-    // }
+            return response()->json($results);
+        }
+    }
 
     public function get_list(Request $request)
     {
@@ -387,9 +387,9 @@ class Plafon_kegiatanController extends Controller
         })->groupBy("tahun")->groupBy("unit_pelaksana")->orderBy($orders[0], $orders[1])->offset($limit[0])->limit($limit[1])->get(["tahun", "unit_pelaksana"]) as $plafon_kegiatan){
             $no = $no+1;
             $act = '
-            <a href="/plafon_kegiatan/'.$plafon_kegiatan->tahun.'/'.$plafon_kegiatan->unit_pelaksana.'" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Detail"><i class="fas fa-eye text-white"></i></a>
-
-            <a href="/plafon_kegiatan/'.$plafon_kegiatan->tahun.'/'.$plafon_kegiatan->unit_pelaksana.'/edit" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-white"></i></a>';
+            <a href="/plafon_kegiatan/'.$plafon_kegiatan->tahun.'/'.$plafon_kegiatan->unit_pelaksana.'/edit" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-warning"></i></a>
+            
+            <a href="#" class="row-delete" onclick="deleterow('.$plafon_kegiatan->tahun.', '.$plafon_kegiatan->unit_pelaksana.');"> <i class="fas fa-minus-circle text-danger"></i> </a>';
 
             $plafon_kegiatan->tahun_label = $plafon_kegiatan->tahun;
             $uk = Unitkerja::where("id", $plafon_kegiatan->unit_pelaksana)->first();

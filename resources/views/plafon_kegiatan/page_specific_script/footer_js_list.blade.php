@@ -44,8 +44,117 @@
   $(document).ready(function(){
 	  var table = null;
     fetch_data();
-    
-  function fetch_data(){
+  });
+ function deleterow(tahun, unit_pelaksana) {
+      $("#modal-delete").modal({'show': true});
+      $("#tahundelete").val(tahun);
+      $("#unit_pelaksanadelete").val(unit_pelaksana);
+      $(".row-delete-confirmed").on('click', function(){
+        cto_loading_show();
+        $.ajax({
+          'async': false,
+          'type': "POST",
+          'global': false,
+          'dataType': 'json',
+          'url': "/delete{{$page_data["page_data_urlname"]}}",
+          'data': { 'tahun': $("#tahundelete").val(), 'unit_pelaksana':  $("#unit_pelaksanadelete").val(), '_token': $("input[name=_token]").val()},
+          'success': function (data) {
+            cto_loading_hide();
+            $.toast({
+                text: data.message,
+                heading: 'Status',
+                icon: 'success',
+                showHideTransition: 'fade',
+                allowToastClose: true,
+                hideAfter: 3000,
+                position: 'mid-center',
+                textAlign: 'left'
+            });
+            
+          },
+          'error': function (err) {    
+            $.toast({
+                text: err.status+"\n"+err.responseJSON.message,
+                heading: 'Status',
+                icon: 'warning',
+                showHideTransition: 'fade',
+                allowToastClose: true,
+                hideAfter: 3000,
+                position: 'mid-center',
+                textAlign: 'left'
+            });
+            cto_loading_hide();
+          }
+        });
+        $("#modal-delete").modal('hide');
+        fetch_data();
+      })
+  } 
+//  function submitform(val_arr, action = 'update'){
+//   var field_arr = ["id", "unitkerja_code", "unitkerja_name"];
+//   cto_loading_show();
+
+//   var urlaction = "/updateunitkerja/"+val_arr[0];
+//   if(action == 'create'){
+//     urlaction = "/storeunitkerja";
+//   }
+
+//   var values = "_token="+$("input[name=_token]").val();
+//   for(var x = 0; x < field_arr.length; x++){
+//     values = values+"&"+field_arr[x]+"="+val_arr[x];
+//   }
+//   var ajaxRequest;
+//   var id_coa = 0;
+//   ajaxRequest = $.ajax({
+//       url: urlaction,
+//       type: "post",
+//       data: values,
+//       async: false,
+//       success: function(data){
+//           if(data.status >= 200 && data.status <= 299){
+//               id_coa = data.data.id;
+//               $.toast({
+//                   text: data.message,
+//                   heading: 'Status',
+//                   icon: 'success',
+//                   showHideTransition: 'fade',
+//                   allowToastClose: true,
+//                   hideAfter: 3000,
+//                   position: 'mid-center',
+//                   textAlign: 'left'
+//               });
+//           }
+//           cto_loading_hide();
+//       },
+//       error: function (err) {
+//           if (err.status == 422) {
+//               var errors = "";
+//               $.each(err.responseJSON.errors, function (i, error) {
+//                   //var validator = $("#quickForm").validate();
+//                   // var errors = {};
+//                   // errors[i] = error[0];
+//                   //validator.showErrors(errors);
+//                   errors += error[0];
+//               });
+//               $.toast({
+//                     text: errors,
+//                     heading: 'Status',
+//                     icon: 'danger',
+//                     showHideTransition: 'fade',
+//                     allowToastClose: true,
+//                     hideAfter: 3000,
+//                     position: 'mid-center',
+//                     textAlign: 'left'
+//                 });
+//           }
+//         cto_loading_hide();
+//       }
+//   });
+
+//   return id_coa;
+//  }
+
+function fetch_data(){
     cto_loading_show();
     var target = [];
     $('#example1 thead tr th').each(function(i, obj) {
@@ -142,114 +251,4 @@
       }
     });
   }
-
-  $('#example1 tbody').on( 'click', '.row-delete', function () {
-      $("#modal-delete").modal({'show': true});
-      var data = table.row( $(this).parents('tr') );
-      var id = data.data()[0];
-      $(".row-delete-confirmed").on('click', function(){
-        cto_loading_show();
-        $.ajax({
-          'async': false,
-          'type': "POST",
-          'global': false,
-          'dataType': 'json',
-          'url': "/delete{{$page_data["page_data_urlname"]}}",
-          'data': { 'id':  id, '_token': $("input[name=_token]").val()},
-          'success': function (data) {
-            cto_loading_hide();
-            $.toast({
-                text: data.message,
-                heading: 'Status',
-                icon: 'success',
-                showHideTransition: 'fade',
-                allowToastClose: true,
-                hideAfter: 3000,
-                position: 'mid-center',
-                textAlign: 'left'
-            });
-            fetch_data();
-          },
-          'error': function (err) {    
-            $.toast({
-                text: err.status+"\n"+err.responseJSON.message,
-                heading: 'Status',
-                icon: 'warning',
-                showHideTransition: 'fade',
-                allowToastClose: true,
-                hideAfter: 3000,
-                position: 'mid-center',
-                textAlign: 'left'
-            });
-            cto_loading_hide();
-          }
-        });
-        $("#modal-delete").modal('hide');
-      })
-  } ); 
- });
-
-//  function submitform(val_arr, action = 'update'){
-//   var field_arr = ["id", "unitkerja_code", "unitkerja_name"];
-//   cto_loading_show();
-
-//   var urlaction = "/updateunitkerja/"+val_arr[0];
-//   if(action == 'create'){
-//     urlaction = "/storeunitkerja";
-//   }
-
-//   var values = "_token="+$("input[name=_token]").val();
-//   for(var x = 0; x < field_arr.length; x++){
-//     values = values+"&"+field_arr[x]+"="+val_arr[x];
-//   }
-//   var ajaxRequest;
-//   var id_coa = 0;
-//   ajaxRequest = $.ajax({
-//       url: urlaction,
-//       type: "post",
-//       data: values,
-//       async: false,
-//       success: function(data){
-//           if(data.status >= 200 && data.status <= 299){
-//               id_coa = data.data.id;
-//               $.toast({
-//                   text: data.message,
-//                   heading: 'Status',
-//                   icon: 'success',
-//                   showHideTransition: 'fade',
-//                   allowToastClose: true,
-//                   hideAfter: 3000,
-//                   position: 'mid-center',
-//                   textAlign: 'left'
-//               });
-//           }
-//           cto_loading_hide();
-//       },
-//       error: function (err) {
-//           if (err.status == 422) {
-//               var errors = "";
-//               $.each(err.responseJSON.errors, function (i, error) {
-//                   //var validator = $("#quickForm").validate();
-//                   // var errors = {};
-//                   // errors[i] = error[0];
-//                   //validator.showErrors(errors);
-//                   errors += error[0];
-//               });
-//               $.toast({
-//                     text: errors,
-//                     heading: 'Status',
-//                     icon: 'danger',
-//                     showHideTransition: 'fade',
-//                     allowToastClose: true,
-//                     hideAfter: 3000,
-//                     position: 'mid-center',
-//                     textAlign: 'left'
-//                 });
-//           }
-//         cto_loading_hide();
-//       }
-//   });
-
-//   return id_coa;
-//  }
 </script>
