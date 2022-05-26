@@ -399,12 +399,17 @@ class Plafon_kegiatanController extends Controller
             }
             array_push($dt, array($no, $plafon_kegiatan->tahun_label, $plafon_kegiatan->unit_pelaksana_label, $act));
     }
+    $jumlah = 0;
+    foreach(Plafon_kegiatan::where(function($q) use ($keyword) {
+        $q->where("tahun_label", "LIKE", "%" . $keyword. "%")->orWhere("unit_pelaksana_label", "LIKE", "%" . $keyword. "%");
+    })->groupBy("tahun")->groupBy("unit_pelaksana")->get(["tahun"]) as $pk){
+        $jumlah++;
+    }
+
         $output = array(
             "draw" => intval($request->draw),
             "recordsTotal" => Plafon_kegiatan::get()->count(),
-            "recordsFiltered" => intval(Plafon_kegiatan::where(function($q) use ($keyword) {
-                $q->where("tahun_label", "LIKE", "%" . $keyword. "%")->orWhere("unit_pelaksana_label", "LIKE", "%" . $keyword. "%");
-            })->orderBy($orders[0], $orders[1])->get()->count()),
+            "recordsFiltered" => $jumlah,
             "data" => $dt
         );
 
