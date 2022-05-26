@@ -8,12 +8,14 @@ $(document).ready(function () {
           $("#cakmenu-transaksi").removeClass(" show active")
           $("#cakmenu-laporan").removeClass(" show active")
           $("#cakmenu-ebudgeting").removeClass(" show active")
+          $("#cakmenu-settings").removeClass(" show active")
 
           $("#caknav-dashboard").removeClass(" active")
           $("#caknav-master").removeClass(" active")
           $("#caknav-transaksi").removeClass(" active")
           $("#caknav-laporan").removeClass(" active")
           $("#caknav-ebudgeting").removeClass(" active")
+          $("#caknav-settings").removeClass(" active")
 
           for(var i = 0; i < data.data.user_menus.length; i++){
             $("#cakmenu-"+data.data.user_menus[i].mainmenu).removeClass("d-none");
@@ -34,6 +36,9 @@ $(document).ready(function () {
           }else if(['ikuunitkerja','iktunitkerja','kegiatan','realisasi','pencairan','pertanggungjawaban','iku','persetujuankegiatan','pengajuan'].includes(current_url)){
             $("#caknav-ebudgeting").addClass("active");
             $("#cakmenu-ebudgeting").addClass(" show active");
+          }else if(['globalsetting','opencloseperiode','saldoawal','kebijakan','pagupendapatan','plafon_kegiatan'].includes(current_url)){
+            $("#caknav-settings").addClass("active");
+            $("#cakmenu-settings").addClass(" show active");
           }else{
             $("#caknav-dashboard").addClass("active");
             $("#cakmenu-dashboard").addClass(" show active");

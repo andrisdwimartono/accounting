@@ -342,7 +342,13 @@ class Plafon_kegiatanController extends Controller
     public function destroy(Request $request)
     {
         if($request->ajax() || $request->wantsJson()){
-            $plafon_kegiatan = Plafon_kegiatan::where("tahun", $request->tahun)->where("unit_pelaksana", $request->unit_pelaksana)->first();
+            $plafon_kegiatan = Plafon_kegiatan::where(function($q) use ($request) {
+                if($request->tahun == "0" || $request->tahun == 0){
+                    $q->whereNull("tahun");
+                }else{
+                    $q->where("tahun", $request->tahun);
+                }
+            })->where("unit_pelaksana", $request->unit_pelaksana)->first();
             if(!$plafon_kegiatan){
                 abort(404, "Data not found");
             }
@@ -350,7 +356,13 @@ class Plafon_kegiatanController extends Controller
                 "status" => 417,
                 "message" => "Deleting failed"
             );
-            if(Plafon_kegiatan::where("tahun", $request->tahun)->where("unit_pelaksana", $request->unit_pelaksana)->forceDelete()){
+            if(Plafon_kegiatan::where(function($q) use ($request) {
+                if($request->tahun == "0" || $request->tahun == 0){
+                    $q->whereNull("tahun");
+                }else{
+                    $q->where("tahun", $request->tahun);
+                }
+            })->where("unit_pelaksana", $request->unit_pelaksana)->forceDelete()){
                 $results = array(
                     "status" => 204,
                     "message" => "Deleted successfully"
@@ -389,7 +401,7 @@ class Plafon_kegiatanController extends Controller
             $act = '
             <a href="/plafon_kegiatan/'.$plafon_kegiatan->tahun.'/'.$plafon_kegiatan->unit_pelaksana.'/edit" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Data"><i class="fas fa-edit text-warning"></i></a>
             
-            <a href="#" class="row-delete" onclick="deleterow('.$plafon_kegiatan->tahun.', '.$plafon_kegiatan->unit_pelaksana.');"> <i class="fas fa-minus-circle text-danger"></i> </a>';
+            <a href="#" class="row-delete" onclick="deleterow('.($plafon_kegiatan->tahun?$plafon_kegiatan->tahun:0).', '.$plafon_kegiatan->unit_pelaksana.');"> <i class="fas fa-minus-circle text-danger"></i> </a>';
 
             $plafon_kegiatan->tahun_label = $plafon_kegiatan->tahun;
             $uk = Unitkerja::where("id", $plafon_kegiatan->unit_pelaksana)->first();
