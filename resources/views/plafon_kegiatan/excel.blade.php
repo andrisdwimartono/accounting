@@ -74,7 +74,7 @@
         <tr>
             <td></td>
             <td></td>
-            <td>{{ $transaction->coa_name }}</td>
+            <td>{{ $transaction->coa_name?$transaction->coa_name:($transaction->coa_name2?$transaction->coa_name2:'') }}</td>
             <td></td>
             <td></td>
             <td>{{ convertCode($transaction->coa_code) }}</td>
@@ -87,7 +87,7 @@
         <tr>
             <td></td>
             <td></td>
-            <td>{{ $transaction->coa_name }}</td>
+            <td>{{ $transaction->coa_name?$transaction->coa_name:($transaction->coa_name2?$transaction->coa_name2:'') }}</td>
             <td></td>
             <td></td>
             <td>{{ convertCode($transaction->coa_code) }}</td>
@@ -182,7 +182,7 @@
         <tr>
             <td></td>
             <td></td>
-            <td>{{ $transaction->coa_name }}</td>
+            <td>{{ $transaction->coa_name?$transaction->coa_name:($transaction->coa_name2?$transaction->coa_name2:'') }}</td>
             <td></td>
             <td></td>
             <td>{{ convertCode($transaction->coa_code) }}</td>
@@ -195,7 +195,7 @@
         <tr>
             <td></td>
             <td></td>
-            <td>{{ $transaction->coa_name }}</td>
+            <td>{{ $transaction->coa_name?$transaction->coa_name:($transaction->coa_name2?$transaction->coa_name2:'') }}</td>
             <td></td>
             <td></td>
             <td>{{ convertCode($transaction->coa_code) }}</td>
