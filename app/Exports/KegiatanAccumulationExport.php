@@ -17,7 +17,7 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Illuminate\Support\Facades\DB;
 
-class KegiatanExport implements FromView, WithStyles
+class KegiatanAccumulationExport implements FromView, WithStyles
 { 
 
     protected $request;
@@ -74,19 +74,10 @@ class KegiatanExport implements FromView, WithStyles
         ->whereNotNull("potensipendapatans.id")
         ->select(["coas.coa_label", "coas.coa_name", "coas.coa_code", "potensipendapatans.nominalpendapatan"])->orderBy("coas.coa_code")->get();
 
-        $detailbiayakegiatan = Kegiatan::whereBetween("kegiatans.tanggal", [$tahun_periode."-01-01", $tahun_periode."-12-31"])
-        ->leftJoin("detailbiayakegiatans", "detailbiayakegiatans.parent_id", "=", "kegiatans.id")
-        ->leftJoin("coas", "detailbiayakegiatans.coa", "=", "coas.id")
-        ->whereNotNull("detailbiayakegiatans.id")
-        ->select(["coas.coa_label", "coas.coa_name", "coas.coa_code", "detailbiayakegiatans.nominalbiaya"])->orderBy("coas.coa_code")->get();
-        $output = array(
-            "potensipendapatan" => $potensipendapatan,
-            "detailbiayakegiatan" => $detailbiayakegiatan
-        );
-
-        $detailbiayakegiatan = Coa::leftJoin(DB::Raw("(SELECT detailbiayakegiatans.coa, detailbiayakegiatans.nominalbiaya FROM detailbiayakegiatans 
+        $detailbiayakegiatan = Coa::leftJoin(DB::Raw("(SELECT detailbiayakegiatans.coa, SUM(detailbiayakegiatans.nominalbiaya) as nominalbiaya FROM detailbiayakegiatans 
         INNER JOIN kegiatans ON kegiatans.id = detailbiayakegiatans.parent_id
         WHERE kegiatans.tanggal between '".$tahun_periode."-01-01' AND '".$tahun_periode."-12-31'
+        GROUP BY detailbiayakegiatans.coa
         ) as detailbiayakegiatans"), function($join){
            $join->on('coas.id', '=', 'detailbiayakegiatans.coa');
         })
@@ -99,14 +90,17 @@ class KegiatanExport implements FromView, WithStyles
         ->where(function($q){
             $q->whereNotNull("detailbiayakegiatans.coa")->orWhereNotNull("plafon_kegiatans.coa");
         })
-        ->select(["coas.coa_label", "coas.coa_name", "coas.coa_code", "nominalbiaya", "plafon"])
+        ->select(["coas.coa_label", "coas.coa_name", "coas.coa_code", DB::Raw("SUM(detailbiayakegiatans.nominalbiaya) AS nominalbiaya"), DB::Raw("SUM(plafon_kegiatans.plafon) AS plafon")])
+        ->groupBy("coas.coa_code")
+        ->groupBy("coas.coa_name")
+        ->groupBy("coas.coa_label")
         ->orderBy("coas.coa_code")->get();
 
         $output = array(
             "potensipendapatan" => $potensipendapatan,
             "detailbiayakegiatan" => $detailbiayakegiatan
         );
-        
+
         return view('plafon_kegiatan.excel', [
             'transactions' => $output
         ]);

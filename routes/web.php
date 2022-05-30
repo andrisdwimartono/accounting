@@ -334,6 +334,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/getdatadetailkegiatan', 'App\Http\Controllers\KegiatanController@getdatadetailkegiatan');
         Route::post('/getdatadetailbiayakegiatan', 'App\Http\Controllers\KegiatanController@getdatadetailbiayakegiatan');
         Route::post('/kegiatan/excel', 'App\Http\Controllers\KegiatanController@excel');
+        Route::post('/kegiatan/excelaccumulation', 'App\Http\Controllers\KegiatanController@excelaccumulation');
 
         Route::get('/pjk/{kegiatan}/edit', 'App\Http\Controllers\KegiatanController@createpjk');
         Route::post('/storepjk', 'App\Http\Controllers\KegiatanController@storepjk');
@@ -398,6 +399,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/deleteplafon_kegiatan', 'App\Http\Controllers\Plafon_kegiatanController@destroy');
         Route::post('/getoptionsplafon_kegiatan', 'App\Http\Controllers\Plafon_kegiatanController@getoptions');
         Route::post('/getlinksplafon_kegiatan', 'App\Http\Controllers\Plafon_kegiatanController@getlinks');
+        
     });
 });
 

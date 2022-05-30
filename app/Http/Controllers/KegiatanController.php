@@ -28,6 +28,7 @@ use App\Models\Detailbiayaproker;
 use App\Models\Detailpjk;
 use App\Models\Plafon_kegiatan;
 use App\Exports\KegiatanExport;
+use App\Exports\KegiatanAccumulationExport;
 use PDF;
 use Excel;
 use Session;
@@ -3540,6 +3541,12 @@ class KegiatanController extends Controller
     public function excel(Request $request)
     {
         $date = date("m-d-Y h:i:s a", time());
-        return Excel::download(new KegiatanExport($request), 'kegiatan_'.$date.'.xlsx');
+        return Excel::download(new KegiatanExport($request), 'kegiatan_detail_'.$date.'.xlsx');
+    }
+
+    public function excelaccumulation(Request $request)
+    {
+        $date = date("m-d-Y h:i:s a", time());
+        return Excel::download(new KegiatanAccumulationExport($request), 'kegiatan_'.$date.'.xlsx');
     }
 }

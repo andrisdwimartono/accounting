@@ -1,16 +1,16 @@
 <table>
     <thead>
         <tr style="text-align:center; font-weight:bold;">
-            <td colspan=7>YAYASAN PENDIDIKAN KATOLIK ARNOLDUS</td>
+            <td colspan=8>YAYASAN PENDIDIKAN KATOLIK ARNOLDUS</td>
         </tr>
         <tr style="text-align:center; font-weight:bold;">
-            <td colspan=7>ANGGARAN PENDAPATAN DAN BELANJA</td>
+            <td colspan=8>ANGGARAN PENDAPATAN DAN BELANJA</td>
         </tr>
         <tr style="text-align:center; font-weight:bold;">
-            <td colspan=7>TAHUN ANGGARAN</td>
+            <td colspan=8>TAHUN ANGGARAN</td>
         </tr>
         <tr style="text-align:center; font-weight:bold;">
-            <td colspan=7>Rincian Lengkap</td>
+            <td colspan=8>Rincian Lengkap</td>
         </tr>
         <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
 
@@ -20,12 +20,14 @@
             <th></th>
         </tr>
         <tr>
+            <th>PLAFON</th>
             <th>ANGGARAN</th>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td>I. PENDAPATAN</td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -53,6 +55,7 @@
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
             <td>{{ $total_per_bagian }}</td>
         </tr>
         <?php 
@@ -66,6 +69,7 @@
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
             <td></td>
@@ -74,6 +78,7 @@
             <td></td>
             <td></td>
             <td>{{ convertCode($transaction->coa_code) }}</td>
+            <td></td>
             <td>{{ $transaction->nominalpendapatan }}</td>
         </tr>
             <?php 
@@ -86,6 +91,7 @@
             <td></td>
             <td></td>
             <td>{{ convertCode($transaction->coa_code) }}</td>
+            <td></td>
             <td>{{ $transaction->nominalpendapatan }}</td>
         </tr>
             <?php } ?>
@@ -94,6 +100,7 @@
             <td></td>
             <td></td>
             <td>Sub total - {{ $parent }}</td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -111,8 +118,10 @@
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
         </tr>
         <tr>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -129,12 +138,14 @@
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
         </tr>
 
         <?php 
             $parent = "";
             $parent2 = "";
             $total_per_bagian = 0;
+            $total_per_bagian_plafon = 0;
             $parent_ct = 0;
             $ct = 0; ?>
         @foreach($transactions['detailbiayakegiatan'] as $transaction)
@@ -151,14 +162,17 @@
             <td></td>
             <td></td>
             <td></td>
+            <td>{{ $total_per_bagian_plafon }}</td>
             <td>{{ $total_per_bagian }}</td>
         </tr>
         <?php 
             $total_per_bagian = 0;
+            $total_per_bagian_plafon = 0;
         } ?>
         <tr>
             <td></td>
             <td>2.{{$parent_ct}} {{ $transaction->coa_label }}</td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -172,6 +186,7 @@
             <td></td>
             <td></td>
             <td>{{ convertCode($transaction->coa_code) }}</td>
+            <td>{{ $transaction->plafon }}</td>
             <td>{{ $transaction->nominalbiaya }}</td>
         </tr>
             <?php 
@@ -184,6 +199,7 @@
             <td></td>
             <td></td>
             <td>{{ convertCode($transaction->coa_code) }}</td>
+            <td>{{ $transaction->plafon }}</td>
             <td>{{ $transaction->nominalbiaya }}</td>
         </tr>
             <?php } ?>
@@ -195,11 +211,15 @@
             <td></td>
             <td></td>
             <td></td>
+            <td>{{ $total_per_bagian_plafon+$transaction->plafon }}</td>
             <td>{{ $total_per_bagian+$transaction->nominalbiaya }}</td>
         </tr>
         <?php } ?>
 
-        <?php $total_per_bagian = $total_per_bagian+$transaction->nominalbiaya; ?>
+        <?php 
+            $total_per_bagian = $total_per_bagian+$transaction->nominalbiaya;
+            $total_per_bagian_plafon = $total_per_bagian_plafon+$transaction->plafon;
+        ?>
         @endforeach
     </tbody>
 </table>
