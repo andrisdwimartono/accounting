@@ -287,7 +287,12 @@ function getdata(){
                     $("#coa_"+(parseInt(data.data.ct2_potensipendapatan[i].no_seq)+1)+"").append(newState).trigger('change');
 
                     //console.log(data.data.ct2_potensipendapatan[i].nominalpendapatan);
-                    AutoNumeric.getAutoNumericElement('#nom2_'+(parseInt(data.data.ct2_potensipendapatan[i].no_seq)+1)).set(data.data.ct2_potensipendapatan[i].nominalpendapatan);
+                    try{
+                        AutoNumeric.getAutoNumericElement('#nom2_'+(parseInt(data.data.ct2_potensipendapatan[i].no_seq)+1)).set(data.data.ct2_potensipendapatan[i].nominalpendapatan);    
+                    }catch{
+                        $("input[name='nom2_"+(parseInt(data.data.ct2_potensipendapatan[i].no_seq)+1)+"']").val(data.data.ct2_potensipendapatan[i].nominalpendapatan);
+                    }
+                    //AutoNumeric.getAutoNumericElement('#nom2_'+(parseInt(data.data.ct2_potensipendapatan[i].no_seq)+1)).set(data.data.ct2_potensipendapatan[i].nominalpendapatan);
                     $("input[name='nom2_"+(parseInt(data.data.ct2_potensipendapatan[i].no_seq)+1)+"']").trigger("change");
                     $("#caktable2 > tbody > tr[row-seq="+(parseInt(data.data.ct2_potensipendapatan[i].no_seq)+1)+"]").find("td:eq(6)").text(data.data.ct2_potensipendapatan[i].id);
                 }
