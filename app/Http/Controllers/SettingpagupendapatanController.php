@@ -447,7 +447,7 @@ class SettingpagupendapatanController extends Controller
             }
 
             $ct1_nilaipagus = Nilaipagu::whereParentId($request->id)->get();
-            $ct2_potensipendapatans = Potensipendapatan::whereParentId($request->id)->get();
+            $ct2_potensipendapatans = Potensipendapatan::whereParentId($request->id)->orderBy("no_seq")->get();
 
             $results = array(
                 "status" => 201,
