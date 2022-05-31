@@ -74,27 +74,28 @@ class KegiatanExport implements FromView, WithStyles
         ->whereNotNull("potensipendapatans.id")
         ->select(["coas.coa_label", "coas.coa_name", "coas.coa_code", "potensipendapatans.nominalpendapatan"])->orderBy("coas.coa_code")->get();
 
-        $detailbiayakegiatan = Coa::leftJoin(DB::Raw("(SELECT kegiatans.kegiatan_name, detailbiayakegiatans.coa, detailbiayakegiatans.nominalbiaya FROM detailbiayakegiatans 
+        $detailbiayakegiatan = Coa::leftJoin(DB::Raw("(SELECT kegiatans.unit_pelaksana_label, kegiatans.kegiatan_name, detailbiayakegiatans.coa, detailbiayakegiatans.nominalbiaya FROM detailbiayakegiatans 
         INNER JOIN kegiatans ON kegiatans.id = detailbiayakegiatans.parent_id
         WHERE kegiatans.tanggal between '".$tahun_periode."-01-01' AND '".$tahun_periode."-12-31'
         ) as detailbiayakegiatans"), function($join){
            $join->on('coas.id', '=', 'detailbiayakegiatans.coa');
         })
-        ->leftJoin(DB::Raw("(SELECT plafon_kegiatans.kegiatan_name, plafon_kegiatans.coa, SUM(plafon_kegiatans.plafon) as plafon FROM plafon_kegiatans 
+        ->leftJoin(DB::Raw("(SELECT plafon_kegiatans.unit_pelaksana_label, plafon_kegiatans.kegiatan_name, plafon_kegiatans.coa, SUM(plafon_kegiatans.plafon) as plafon FROM plafon_kegiatans 
         WHERE plafon_kegiatans.tahun = '".$tahun_periode."'
-        GROUP BY plafon_kegiatans.coa, plafon_kegiatans.kegiatan_name
+        GROUP BY plafon_kegiatans.coa, plafon_kegiatans.kegiatan_name, plafon_kegiatans.unit_pelaksana_label
         ) as plafon_kegiatans"), function($join){
            $join->on('coas.id', '=', 'plafon_kegiatans.coa');
         })
         ->where(function($q){
             $q->whereNotNull("detailbiayakegiatans.coa")->orWhereNotNull("plafon_kegiatans.coa");
         })
-        ->select(["coas.coa_label", "detailbiayakegiatans.kegiatan_name as coa_name", "plafon_kegiatans.kegiatan_name as coa_name2", "coas.coa_code", "nominalbiaya", "plafon"])
+        ->select(["coas.coa_label", "detailbiayakegiatans.kegiatan_name as coa_name", "plafon_kegiatans.kegiatan_name as coa_name2", "detailbiayakegiatans.unit_pelaksana_label as coa_code", "plafon_kegiatans.unit_pelaksana_label as coa_code2", "nominalbiaya", "plafon"])
         ->orderBy("coas.coa_code")->get();
 
         $output = array(
             "potensipendapatan" => $potensipendapatan,
-            "detailbiayakegiatan" => $detailbiayakegiatan
+            "detailbiayakegiatan" => $detailbiayakegiatan,
+            "mode" => "detail"
         );
 
         return view('plafon_kegiatan.excel', [
