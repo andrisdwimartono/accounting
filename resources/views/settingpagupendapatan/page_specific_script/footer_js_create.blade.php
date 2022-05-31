@@ -272,12 +272,10 @@ function getdata(){
                 $("#caktable2 > tbody > tr").each(function(index){
                     $(this).remove();
                 });
-                
+                console.log(data.data.ct2_potensipendapatan.length)
                 for(var i = 0; i < data.data.ct2_potensipendapatan.length; i++){
                     addRow2();
-                    setTimeout(function() {
-                    //your code to be executed after 1 second
-                    }, 500);
+                    
                     $("#caktable2 > tbody").find("[row-seq="+(parseInt(data.data.ct2_potensipendapatan[i].no_seq)+1)+"]").find("td:eq(0)").text(data.data.ct2_potensipendapatan[i].unitkerja2);
                     $("select[name='unitkerja2_"+(parseInt(data.data.ct2_potensipendapatan[i].no_seq)+1)+"']").empty();
                     var newState = new Option(data.data.ct2_potensipendapatan[i].unitkerja2_label, data.data.ct2_potensipendapatan[i].unitkerja2, true, false);
