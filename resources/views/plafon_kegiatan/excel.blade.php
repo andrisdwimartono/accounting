@@ -16,7 +16,7 @@
 
         <tr>
             <th colspan=5 rowspan=2>KETERANGAN</th>
-            <th rowspan=2><?=$transactions['mode'] == "UNIT PELAKSANA"?"":"KODE"?></th>
+            <th rowspan=2><?=$transactions['mode'] == "detail"?"UNIT PELAKSANA":"KODE"?></th>
             <th colspan=2></th>
         </tr>
         <tr>
