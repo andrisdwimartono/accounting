@@ -98,7 +98,8 @@ class KegiatanAccumulationExport implements FromView, WithStyles
 
         $output = array(
             "potensipendapatan" => $potensipendapatan,
-            "detailbiayakegiatan" => $detailbiayakegiatan
+            "detailbiayakegiatan" => $detailbiayakegiatan,
+            "mode" => "accumulation"
         );
 
         return view('plafon_kegiatan.excel', [

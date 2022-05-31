@@ -16,8 +16,8 @@
 
         <tr>
             <th colspan=5 rowspan=2>KETERANGAN</th>
-            <th rowspan=2>KODE</th>
-            <th></th>
+            <th rowspan=2><?=$transactions['mode'] == "UNIT PELAKSANA"?"":"KODE"?></th>
+            <th colspan=2></th>
         </tr>
         <tr>
             <th>PLAFON</th>
@@ -77,7 +77,7 @@
             <td>{{ $transaction->coa_name?$transaction->coa_name:($transaction->coa_name2?$transaction->coa_name2:'') }}</td>
             <td></td>
             <td></td>
-            <td>{{ convertCode($transaction->coa_code) }}</td>
+            <td>{{ $transactions['mode'] == "detail"?$transaction->coa_code:convertCode($transaction->coa_code) }}</td>
             <td></td>
             <td>{{ $transaction->nominalpendapatan }}</td>
         </tr>
@@ -90,7 +90,7 @@
             <td>{{ $transaction->coa_name?$transaction->coa_name:($transaction->coa_name2?$transaction->coa_name2:'') }}</td>
             <td></td>
             <td></td>
-            <td>{{ convertCode($transaction->coa_code) }}</td>
+            <td>{{ $transactions['mode'] == "detail"?$transaction->coa_code:convertCode($transaction->coa_code) }}</td>
             <td></td>
             <td>{{ $transaction->nominalpendapatan }}</td>
         </tr>
@@ -185,7 +185,7 @@
             <td>{{ $transaction->coa_name?$transaction->coa_name:($transaction->coa_name2?$transaction->coa_name2:'') }}</td>
             <td></td>
             <td></td>
-            <td>{{ convertCode($transaction->coa_code) }}</td>
+            <td>{{ $transactions['mode'] == "detail"?$transaction->coa_code:convertCode($transaction->coa_code) }}</td>
             <td>{{ $transaction->plafon }}</td>
             <td>{{ $transaction->nominalbiaya }}</td>
         </tr>
@@ -198,7 +198,7 @@
             <td>{{ $transaction->coa_name?$transaction->coa_name:($transaction->coa_name2?$transaction->coa_name2:'') }}</td>
             <td></td>
             <td></td>
-            <td>{{ convertCode($transaction->coa_code) }}</td>
+            <td>{{ $transactions['mode'] == "detail"?$transaction->coa_code:convertCode($transaction->coa_code) }}</td>
             <td>{{ $transaction->plafon }}</td>
             <td>{{ $transaction->nominalbiaya }}</td>
         </tr>
