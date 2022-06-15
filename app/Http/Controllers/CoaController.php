@@ -273,7 +273,7 @@ class CoaController extends Controller
                         <a class="row-delete btn btn-danger shadow btn-xs sharp"><i class="fa fa-trash"></i></a>                        ';
         
                         if($coa->fheader == 'on'){
-                            $act .= '<a href="#" class="row-add-child btn btn-primary shadow btn-xs sharp mr-1"><i class="fa fa-plus"></i></a>';
+                            $act .= '<button type="button" class="row-add-child btn btn-primary shadow btn-xs sharp mr-1"><i class="fa fa-plus"></i></button>';
                         }
 
                     array_push($dt, array($coa->id, $coa->coa_code, $coa->coa_name, $coa->level_coa, $coa->coa, $coa->coa_label, $coa->category, $coa->category_label, $coa->fheader, $coa->factive, $coa->jenis_aktivitas, $act));
