@@ -667,7 +667,7 @@ $("#quickForm").validate({
     rules: {
         coa_code :{
             required: true,
-            minlength:5,
+            minlength:3,
             maxlength:20
         },
         coa_name :{
