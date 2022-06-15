@@ -319,7 +319,7 @@ class SettingpagupendapatanController extends Controller
 
             $new_menu_field_ids = array();
             foreach($requests_ct2_potensipendapatan as $ct_request){
-                if(isset($ct_request["id"])){
+                if(isset($ct_request["id"]) && $ct_request["id"] != ""){
                     Potensipendapatan::where("id", $ct_request["id"])->update([
                         "no_seq" => $ct_request["no_seq"],
                         "parent_id" => $id,
@@ -447,7 +447,7 @@ class SettingpagupendapatanController extends Controller
             }
 
             $ct1_nilaipagus = Nilaipagu::whereParentId($request->id)->get();
-            $ct2_potensipendapatans = Potensipendapatan::whereParentId($request->id)->get();
+            $ct2_potensipendapatans = Potensipendapatan::whereParentId($request->id)->orderBy("no_seq")->get();
 
             $results = array(
                 "status" => 201,

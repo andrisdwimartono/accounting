@@ -68,7 +68,7 @@
                 }
             },
             {
-                  text: "Excel <span class='btn-icon-right'><i class='fa fa-print'></i></span>",
+                  text: "Excel Detail <span class='btn-icon-right'><i class='fa fa-print'></i></span>",
                   className: "btn btn-success",
                   init: function(api, node, config) {
                     $(node).removeClass('dt-buttons')
@@ -76,6 +76,22 @@
                   },
                   action: function ( e, dt, node, config ) {
                     var url = '/kegiatan/excel';
+                    var form = $('<form action="' + url + '" target="_blank" method="post">' +
+                      '<input type="hidden" name="_token" value="'+$("input[name=_token]").val()+'" />' +
+                      '</form>');
+                    $('body').append(form);
+                    form.submit();
+                  },
+              },
+              {
+                  text: "Excel <span class='btn-icon-right'><i class='fa fa-print'></i></span>",
+                  className: "btn btn-success",
+                  init: function(api, node, config) {
+                    $(node).removeClass('dt-buttons')
+                    $(node).removeClass('dt-button')
+                  },
+                  action: function ( e, dt, node, config ) {
+                    var url = '/kegiatan/excelaccumulation';
                     var form = $('<form action="' + url + '" target="_blank" method="post">' +
                       '<input type="hidden" name="_token" value="'+$("input[name=_token]").val()+'" />' +
                       '</form>');
