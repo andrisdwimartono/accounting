@@ -46,7 +46,7 @@ class CoaController extends Controller
         $category_list = "aset,hutang,modal,pendapatan,biaya,biaya_lainnya,pendapatan_lainnya";
 
         $td["fieldsrules"] = [
-            "coa_code" => "required|min:5|max:20|unique:coas,coa_code",
+            "coa_code" => "required|min:3|max:20|unique:coas,coa_code",
             "coa_name" => "required|min:2|max:255|unique:coas,coa_name",
             "level_coa" => "required|min:1|max:4",
             "coa" => "exists:coas,id",
