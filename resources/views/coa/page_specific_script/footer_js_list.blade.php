@@ -512,6 +512,7 @@
               });
           }
           cto_loading_hide();
+          location.reload();
       },
       error: function (err) {
           if (err.status == 422) {
